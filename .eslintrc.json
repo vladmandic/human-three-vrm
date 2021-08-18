@@ -1,0 +1,82 @@
+{
+  "globals": {},
+  "env": {
+      "browser": true,
+      "commonjs": true,
+      "node": true,
+      "es2020": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "airbnb-base",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:json/recommended-with-comments",
+    "plugin:node/recommended",
+    "plugin:promise/recommended"
+  ],
+  "ignorePatterns": [
+    "assets",
+    "demo/helpers",
+    "dist",
+    "media",
+    "models",
+    "node_modules"
+  ],
+  "rules": {
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-shadow": "error",
+    "@typescript-eslint/no-var-requires": "off",
+    "camelcase": "off",
+    "dot-notation": "off",
+    "func-names": "off",
+    "guard-for-in": "off",
+    "import/extensions": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/no-named-as-default": "off",
+    "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
+    "lines-between-class-members": "off",
+    "max-len": [1, 275, 3],
+    "newline-per-chained-call": "off",
+    "no-async-promise-executor": "off",
+    "no-await-in-loop": "off",
+    "no-bitwise": "off",
+    "no-case-declarations":"off",
+    "no-continue": "off",
+    "no-lonely-if": "off",
+    "no-loop-func": "off",
+    "no-mixed-operators": "off",
+    "no-param-reassign":"off",
+    "no-plusplus": "off",
+    "no-process-exit": "off",
+    "no-regex-spaces": "off",
+    "no-restricted-globals": "off",
+    "no-restricted-syntax": "off",
+    "no-return-assign": "off",
+    "no-shadow": "off",
+    "no-underscore-dangle": "off",
+    "node/no-missing-import": ["error", { "tryExtensions": [".js", ".json", ".ts"] }],
+    "node/no-unpublished-import": "off",
+    "node/no-unpublished-require": "off",
+    "node/no-unsupported-features/es-syntax": "off",
+    "node/shebang": "off",
+    "object-curly-newline": "off",
+    "prefer-destructuring": "off",
+    "prefer-template":"off",
+    "promise/always-return": "off",
+    "promise/catch-or-return": "off",
+    "promise/no-nesting": "off",
+    "radix": "off"
+  }
+}
