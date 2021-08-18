@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { VRM, VRMSchema, VRMUtils } from '@pixiv/three-vrm';
+import { VRM, VRMSchema, VRMUtils } from '@pixiv/three-vrm'; // <https://github.com/pixiv/three-vrm>
+
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { Human } from '@vladmandic/human';
 
@@ -252,6 +253,3 @@ async function main() {
 }
 
 window.onload = main;
-
-/* <https://github.com/pixiv/three-vrm> */
-/* <https://pixiv.github.io/three-vrm/docs/index.html> */
