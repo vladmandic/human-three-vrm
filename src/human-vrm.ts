@@ -5,7 +5,7 @@ import { VRM, VRMSchema, VRMUtils } from '@pixiv/three-vrm';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { Human } from '@vladmandic/human';
 
-const models = ['arisa.vrm', 'base.vrm', 'girl.vrm', 'maya.vrm', 'mikumiku.vrm', 'rin.vrm', 'shibu.vrm', 'victoria.vrm', 'victoria-jeans.vrm'];
+const model = '../assets/victoria-jeans.vrm';
 
 // globals
 let vrm: VRM;
@@ -82,11 +82,11 @@ async function initThree() {
   renderer.render(scene, camera);
 }
 
-async function loadVRM(model): Promise<VRM> {
+async function loadVRM(f): Promise<VRM> {
   const loader = new GLTFLoader();
   return new Promise((resolve, reject) => {
     loader.load(
-      model,
+      f,
       (gltf) => {
         VRMUtils.removeUnnecessaryJoints(gltf.scene);
         VRM.from(gltf).then((vrmInstance) => resolve(vrmInstance));
@@ -238,7 +238,6 @@ async function initWebCam() {
 
 async function main() {
   await initThree();
-  const model = `assets/${models[8]}`;
   log('vrm model:', model);
   vrm = await loadVRM(model);
   scene.add(vrm.scene);

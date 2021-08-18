@@ -88204,11 +88204,11 @@ function decodeBounds(boxOutputs, anchors3, inputSize) {
   return concat2d([startNormalized, endNormalized], concatAxis);
 }
 var BlazeFaceModel = class {
-  constructor(model11, config3) {
-    this.model = model11;
-    this.anchorsData = generateAnchors(model11.inputs[0].shape[1]);
+  constructor(model112, config3) {
+    this.model = model112;
+    this.anchorsData = generateAnchors(model112.inputs[0].shape[1]);
     this.anchors = tensor2d(this.anchorsData);
-    this.inputSize = model11.inputs[0].shape[2];
+    this.inputSize = model112.inputs[0].shape[2];
     this.config = config3;
   }
   async getBoundingBoxes(inputImage, userConfig) {
@@ -88260,12 +88260,12 @@ var BlazeFaceModel = class {
   }
 };
 async function load(config3) {
-  const model11 = await loadGraphModel(join(config3.modelBasePath, config3.face.detector.modelPath), { fromTFHub: config3.face.detector.modelPath.includes("tfhub.dev") });
-  const blazeFace = new BlazeFaceModel(model11, config3);
-  if (!model11 || !model11.modelUrl)
+  const model112 = await loadGraphModel(join(config3.modelBasePath, config3.face.detector.modelPath), { fromTFHub: config3.face.detector.modelPath.includes("tfhub.dev") });
+  const blazeFace = new BlazeFaceModel(model112, config3);
+  if (!model112 || !model112.modelUrl)
     log("load model failed:", config3.face.detector.modelPath);
   else if (config3.debug)
-    log("load model:", model11.modelUrl);
+    log("load model:", model112.modelUrl);
   return blazeFace;
 }
 var MESH_ANNOTATIONS = {
@@ -95368,8 +95368,8 @@ var anchors = [
   { x: 0.9375, y: 0.9375 }
 ];
 var HandDetector = class {
-  constructor(model11) {
-    this.model = model11;
+  constructor(model112) {
+    this.model = model112;
     this.anchors = anchors.map((anchor) => [anchor.x, anchor.y]);
     this.anchorsTensor = tensor2d(this.anchors);
     this.inputSize = this.model && this.model.inputs && this.model.inputs[0].shape ? this.model.inputs[0].shape[2] : 0;
@@ -99459,7 +99459,7 @@ _warmupCanvas = new WeakMap();
 _warmupNode = new WeakMap();
 
 // src/human-vrm.ts
-var models = ["arisa.vrm", "base.vrm", "girl.vrm", "maya.vrm", "mikumiku.vrm", "rin.vrm", "shibu.vrm", "victoria.vrm", "victoria-jeans.vrm"];
+var model11 = "../assets/victoria-jeans.vrm";
 var vrm;
 var renderer;
 var camera;
@@ -99516,10 +99516,10 @@ async function initThree() {
   document.body.appendChild(stats.dom);
   renderer.render(scene, camera);
 }
-async function loadVRM(model11) {
+async function loadVRM(f) {
   const loader = new GLTFLoader();
   return new Promise((resolve, reject) => {
-    loader.load(model11, (gltf) => {
+    loader.load(f, (gltf) => {
       rt.removeUnnecessaryJoints(gltf.scene);
       Qe.from(gltf).then((vrmInstance) => resolve(vrmInstance));
     }, () => {
@@ -99651,7 +99651,6 @@ async function initWebCam() {
 }
 async function main() {
   await initThree();
-  const model11 = `assets/${models[8]}`;
   log5("vrm model:", model11);
   vrm = await loadVRM(model11);
   scene.add(vrm.scene);
