@@ -20,9 +20,17 @@
     "type": "git",
     "url": "git+https://github.com/vladmandic/human-vrm.git"
   },
+  "keywords": [
+    "human",
+    "person",
+    "vrm",
+    "tensorflow",
+    "tensorflowjs",
+    "tfjs"
+  ],
   "dependencies": {
-    "@pixiv/three-vrm": "^0.6.4",
     "@vladmandic/human": "github:vladmandic/human",
+    "@pixiv/three-vrm": "^0.6.4",
     "three": "^0.131.3"
   },
   "devDependencies": {
