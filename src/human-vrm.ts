@@ -1,27 +1,31 @@
 import * as THREE from 'three';
+import Stats from 'three/examples/jsm/libs/stats.module';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { VRM, VRMSchema, VRMUtils } from '@pixiv/three-vrm'; // <https://github.com/pixiv/three-vrm>
-
-import Stats from 'three/examples/jsm/libs/stats.module';
-import { Human } from '@vladmandic/human';
+import { VRM, VRMSchema, VRMUtils } from '@pixiv/three-vrm'; // npm package <https://github.com/pixiv/three-vrm>
+import { Human, Result } from '@vladmandic/human';
+// import { VRM, VRMSchema, VRMUtils } from '../assets/three-vrm.module'; // custom build from 1.0 beta branch <https://github.com/pixiv/three-vrm/tree/1.0>
 
 const model = '../assets/victoria-jeans.vrm';
+// const model = '../assets/downloads/base.vrm';
+// const model = '../assets/downloads/mikumiku.vrm';
+// const model = '../assets/downloads/chim.vrm';
+// const model = '../assets/downloads/yukionna.vrm';
 
 // globals
 let vrm: VRM;
 let renderer: THREE.WebGLRenderer;
 let camera: THREE.PerspectiveCamera;
-let controls: OrbitControls;
 let scene: THREE.Scene;
 let light: THREE.DirectionalLight;
 let clock: THREE.Clock;
 let stats: THREE.Stats;
 let human: Human;
-let res;
+let res: Result;
 
 const humanConfig = {
-  modelBasePath: '../node_modules/@vladmandic/human/models',
+  // modelBasePath: '../node_modules/@vladmandic/human/models',
+  modelBasePath: 'https://vladmandic.github.io/human/models',
   warmup: 'full',
   backend: 'wasm',
   wasmPath: 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@3.8.0/dist/',
@@ -57,7 +61,7 @@ async function initThree() {
   camera = new THREE.PerspectiveCamera(22.0, canvas.width / canvas.height, 0.1, 20.0);
   camera.position.set(0.0, 1.0, 5.0);
   // camera controls
-  controls = new OrbitControls(camera, renderer.domElement);
+  const controls = new OrbitControls(camera, renderer.domElement);
   controls.screenSpacePanning = true;
   controls.target.set(0.0, 0.9, 0.0);
   controls.enabled = true;
@@ -109,6 +113,12 @@ async function initHuman() {
   await human.warmup();
 }
 
+const angle = (pt1, pt2) => {
+  if (!pt1 || !pt2 || pt1.length < 2 || pt2.length < 2) return 0;
+  const radians = Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0]);
+  return radians;
+};
+
 async function animate() {
   const deltaTime = clock.getDelta();
   if (vrm && vrm.humanoid && vrm.blendShapeProxy && vrm.lookAt) {
@@ -121,16 +131,62 @@ async function animate() {
     ctx?.drawImage(video, 0, 0, 640, 480);
     human.draw.all(detected, interpolated);
 
+    light.position.set(Math.sin(Math.PI * clock.elapsedTime), Math.cos(Math.PI * clock.elapsedTime), Math.sin(Math.PI * clock.elapsedTime) + Math.cos(Math.PI * clock.elapsedTime)).normalize();
+
+    const body = (interpolated && interpolated.body) ? interpolated.body[0] : null;
+    let leanBody = 0;
+    if (body) {
+      const part = (what) => {
+        const found = body.keypoints.find((a) => a.part === what);
+        const pos = found ? found.positionRaw : null;
+        return pos;
+      };
+
+      // lean body
+      const posLeftShoulder = part('leftShoulder');
+      const posRightShoulder = part('rightShoulder');
+      leanBody = angle(posRightShoulder, posLeftShoulder);
+      if (posLeftShoulder && posRightShoulder) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Chest).rotation.z = leanBody;
+
+      // arms
+      const posRightElbow = part('rightElbow');
+      if (posRightShoulder && posRightElbow) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.z = angle(posRightElbow, posRightShoulder);
+      const posLeftElbow = part('leftElbow');
+      if (posLeftShoulder && posLeftElbow) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftUpperArm).rotation.z = angle(posLeftShoulder, posLeftElbow);
+
+      // elbows
+      const posRightWrist = part('rightWrist');
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightLowerArm).rotation.z = (posRightWrist && posRightElbow && posRightShoulder) ? angle(posRightWrist, posRightElbow) - angle(posRightElbow, posRightShoulder) : 0;
+      const posLeftWrist = part('leftWrist');
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftLowerArm).rotation.z = (posLeftWrist && posLeftElbow) ? angle(posLeftElbow, posLeftWrist) - angle(posLeftShoulder, posLeftElbow) : 0;
+
+      // legs
+      const posRightHip = part('rightHip');
+      const posRightKnee = part('rightKnee');
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperLeg).rotation.z = (posRightHip && posRightKnee) ? angle(posRightHip, posRightKnee) - (Math.PI / 2) : 0;
+      const posLeftHip = part('leftHip');
+      const posLeftKnee = part('leftKnee');
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftUpperLeg).rotation.z = (posLeftHip && posLeftKnee) ? angle(posLeftHip, posLeftKnee) - (Math.PI / 2) : 0;
+
+      // knees
+      /*
+      const posRightAnkle = part('rightAnkle');
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightLowerLeg).rotation.z = (posRightHip && posRightAnkle) ? angle(posRightHip, posRightAnkle) - (Math.PI / 2) : 0;
+      const posLeftAnkle = part('leftAnkle');
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftLowerLeg).rotation.z = (posLeftHip && posLeftAnkle) ? angle(posLeftHip, posLeftAnkle) - (Math.PI / 2) : 0;
+      */
+    }
+
     const face = (interpolated && interpolated.face) ? interpolated.face[0] : null;
     if (face) {
       // face angles
-      const angle = face.rotation?.angle || { roll: 0, yaw: 0, pitch: 0 };
-      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.x = -angle.pitch;
-      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.y = angle.yaw;
-      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.z = angle.roll;
-      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.x = -angle.pitch / 2;
-      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.y = angle.yaw / 2;
-      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.z = angle.roll / 2;
+      const faceAngle = face.rotation?.angle || { roll: 0, yaw: 0, pitch: 0 };
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.x = -faceAngle.pitch / 2;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.y = -faceAngle.yaw / 2;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.z = faceAngle.roll / 2 - leanBody;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.x = -faceAngle.pitch / 2;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.y = -faceAngle.yaw / 2;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.z = (faceAngle.roll / 2 - leanBody) / 2;
       // eye blinks
       const blinkL = 3 * (Math.abs(face.mesh[374][1] - face.mesh[386][1]) / Math.abs(face.mesh[443][1] - face.mesh[450][1]) - 0.15); // center of eye inner lid y coord div center of wider eye border y coord
       const blinkR = 3 * (Math.abs(face.mesh[145][1] - face.mesh[159][1]) / Math.abs(face.mesh[223][1] - face.mesh[230][1]) - 0.15); // center of eye inner lid y coord div center of wider eye border y coord
@@ -160,38 +216,6 @@ async function animate() {
       vrm.lookAt.target = target;
     }
 
-    const body = (interpolated && interpolated.body) ? interpolated.body[0] : null;
-    if (body) {
-      const part = (what) => {
-        const found = body.keypoints.find((a) => a.part === what);
-        const pos = found ? found.positionRaw : null;
-        return pos;
-      };
-      // vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Chest).rotation.x = 0.5; // lean back
-      // vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Chest).rotation.y = 0.5; // turn left
-      // vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Chest).rotation.z = 0.5; // lean left
-      // vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.x = -0.5; // rotate arm
-      // vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.y = -0.5; // move arm back
-      // vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.z = -0.5; // lower arm
-      // vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightLowerArm).rotation.z = -0.5; // lower arm in elbow
-
-      // lean left/right
-      const posLeftShoulder = part('leftShoulder');
-      const posRightShoulder = part('rightShoulder');
-      if (posLeftShoulder && posRightShoulder) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Chest).rotation.z = 3 * (posLeftShoulder[1] - posRightShoulder[1]);
-
-      // move upper arms up/down
-      const posRightElbow = part('rightElbow');
-      if (posRightShoulder && posRightElbow) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.z = 4 * (posRightShoulder[1] - posRightElbow[1]);
-      const posLeftElbow = part('leftElbow');
-      if (posLeftShoulder && posLeftElbow) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftUpperArm).rotation.z = 4 * (posLeftElbow[1] - posLeftShoulder[1]);
-      // bend elbows up/down
-      const posRightWrist = part('rightWrist');
-      if (posRightWrist && posRightElbow) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightLowerArm).rotation.z = 6 * (posRightElbow[1] - posRightWrist[1]);
-      const posLeftWrist = part('leftWrist');
-      if (posLeftWrist && posLeftElbow) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftLowerArm).rotation.z = 6 * (posLeftWrist[1] - posLeftElbow[1]);
-    }
-
     // log('vrm pose:', vrm.humanoid.getPose()); // print all pose details
     // vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Hips).rotation.y = Math.PI - Math.sin(Math.PI * clock.elapsedTime); // rotate circular
 
@@ -204,7 +228,7 @@ async function animate() {
 
 async function detect() {
   const video = document.getElementById('video') as HTMLVideoElement;
-  res = await human.detect(video);
+  res = await human.detect(video) as Result;
   if (!video.paused) requestAnimationFrame(detect);
 }
 
@@ -241,15 +265,43 @@ async function main() {
   await initThree();
   log('vrm model:', model);
   vrm = await loadVRM(model);
+  if (!vrm) return;
   scene.add(vrm.scene);
-  if (vrm && vrm.humanoid) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Hips).rotation.y = Math.PI; // rotate to face camera
+  if (vrm.humanoid) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Hips).rotation.y = Math.PI; // rotate to face camera
   log('vrm scene:', vrm);
   renderer.render(scene, camera);
   await initHuman();
   await initWebCam();
   log('vrm schema', VRMSchema);
+
+  // debug: export globals so they can be used from inspector
+  window['vrm'] = vrm;
+  window['VRMSchema'] = VRMSchema;
+  window['light'] = light;
+
   animate();
   detect();
 }
 
 window.onload = main;
+
+/* VRMSchema Notes
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.x = - Math.PI / 3 ... Math.PI / 3; // lean forward to back
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.y = - Math.PI / 2 ... Math.PI / 2; // turn left to right
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.z = - Math.PI / 3 ... Math.PI / 3; // tilt left to right
+
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Chest).rotation.x = - Math.PI ... Math.PI; // lean forward to back
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Chest).rotation.y = - Math.PI / 2... Math.PI / 2; // twist left to right
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Chest).rotation.y = - Math.PI / 2... Math.PI / 2; // lean left to right
+
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.x = - Math.PI / 2... Math.PI / 2; // rotate arm
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.y = - 2 * Math.PI / 3... 2 * Math.PI / 3; // move arm back to forward
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.z = - Math.PI / 2... Math.PI / 2; // lower arm
+
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightLowerArm).rotation.z = -0.5; // lower arm in elbow
+
+  const s = 0.25 * Math.PI * Math.sin(Math.PI * clock.elapsedTime);
+  console.log(s);
+  light.position.set(Math.sin(Math.PI * clock.elapsedTime), Math.cos(Math.PI * clock.elapsedTime), Math.sin(Math.PI * clock.elapsedTime) + Math.cos(Math.PI * clock.elapsedTime)).normalize();
+
+*/

@@ -2,7 +2,6 @@
   "name": "human-vrm",
   "version": "0.0.1",
   "description": "VR Humanoid Avatar using Human library",
-  "sideEffects": false,
   "main": "server/serve.js",
   "engines": {
     "node": ">=14.0.0"
@@ -16,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/vladmandic/human-vrm/issues"
   },
-  "homepage": "https://vladmandic.github.io/human/src/human-vrm.html", 
+  "homepage": "https://vladmandic.github.io/human/src/human-vrm.html",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vladmandic/human-vrm.git"
@@ -32,7 +31,7 @@
     "@vladmandic/pilogger": "^0.2.18",
     "chokidar": "^3.5.2",
     "dayjs": "^1.10.6",
-    "esbuild": "^0.12.20",
+    "esbuild": "^0.12.21",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.24.0",
@@ -43,5 +42,3 @@
     "typescript": "^4.3.5"
   }
 }
-
-
