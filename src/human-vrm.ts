@@ -27,7 +27,7 @@ const humanConfig = {
   // modelBasePath: '../node_modules/@vladmandic/human/models',
   modelBasePath: 'https://vladmandic.github.io/human/models',
   warmup: 'full',
-  backend: 'wasm',
+  backend: 'humangl',
   wasmPath: 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@3.8.0/dist/',
   face: { enabled: true,
     detector: { return: false, rotation: true },
@@ -38,7 +38,7 @@ const humanConfig = {
   },
   object: { enabled: false },
   gesture: { enabled: false },
-  hand: { enabled: false },
+  hand: { enabled: true },
   body: { enabled: true },
   segmentation: { enabled: false },
 };
@@ -46,6 +46,8 @@ const humanConfig = {
 async function log(...msg) {
   // eslint-disable-next-line no-console
   console.log(...msg);
+  const div = document.getElementById('log') as HTMLElement;
+  div.innerText = msg.join(' ');
 }
 
 async function initThree() {
@@ -109,6 +111,7 @@ async function loadVRM(f): Promise<VRM> {
 
 async function initHuman() {
   human = new Human(humanConfig);
+  log(`human ${human.version}`);
   await human.load();
   await human.warmup();
 }
@@ -135,6 +138,8 @@ async function animate() {
 
     const body = (interpolated && interpolated.body) ? interpolated.body[0] : null;
     let leanBody = 0;
+    let posLeftWrist;
+    let posRightWrist;
     if (body) {
       const part = (what) => {
         const found = body.keypoints.find((a) => a.part === what);
@@ -155,9 +160,9 @@ async function animate() {
       if (posLeftShoulder && posLeftElbow) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftUpperArm).rotation.z = angle(posLeftShoulder, posLeftElbow);
 
       // elbows
-      const posRightWrist = part('rightWrist');
+      posRightWrist = part('rightWrist');
       vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightLowerArm).rotation.z = (posRightWrist && posRightElbow && posRightShoulder) ? angle(posRightWrist, posRightElbow) - angle(posRightElbow, posRightShoulder) : 0;
-      const posLeftWrist = part('leftWrist');
+      posLeftWrist = part('leftWrist');
       vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftLowerArm).rotation.z = (posLeftWrist && posLeftElbow) ? angle(posLeftElbow, posLeftWrist) - angle(posLeftShoulder, posLeftElbow) : 0;
 
       // legs
@@ -216,6 +221,46 @@ async function animate() {
       vrm.lookAt.target = target;
     }
 
+    // todo: redo hand to use coordinates instead of angles
+    // todo: detect left vs right hand
+    const hands = (interpolated && interpolated.hand) ? interpolated.hand : [];
+    for (const hand of hands) {
+      const distanceLeft = posLeftWrist ? Math.sqrt((hand.boxRaw[0] - posLeftWrist[0]) ** 2) + ((hand.boxRaw[1] - posLeftWrist[1]) ** 2) : Number.MAX_VALUE;
+      const distanceRight = posRightWrist ? Math.sqrt((hand.boxRaw[0] - posRightWrist[0]) ** 2) + ((hand.boxRaw[1] - posRightWrist[1]) ** 2) : Number.MAX_VALUE;
+      if (distanceLeft > 1 && distanceRight > 1) continue; // both hands are too far
+      const left = distanceLeft < distanceRight;
+
+      const handSize = Math.sqrt(((hand.box[2] || 1) ** 2) + (hand.box[3] || 1) ** 2) / Math.PI;
+      const handRotation = (hand.annotations.pinky[0][2] - hand.annotations.thumb[0][2]) / handSize; // normalized z-coord of root of pinky and thumb fingers
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftHand' : 'RightHand']).rotation.z = -handRotation * Math.PI / 2;
+
+      // log('hand', hand); // print detected hand
+
+      // const base = [hand.annotations.palmBase[0][0] / video.videoWidth, hand.annotations.palmBase[0][1] / video.videoWidth, hand.annotations.palmBase[0][2] / video.videoWidth]; // use as reference point
+
+      /*
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftIndexIntermediate' : '']).rotation.z = -hand.annotations.indexFinger[1][2] / handSize;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftIndexProximal' : '']).rotation.z = -hand.annotations.indexFinger[2][2] / handSize;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftIndexDistal' : '']).rotation.z = -hand.annotations.indexFinger[3][2] / handSize;
+
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftMiddleIntermediate' : '']).rotation.z = -hand.annotations.middleFinger[1][2] / handSize;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftMiddleProximal' : '']).rotation.z = -hand.annotations.middleFinger[2][2] / handSize;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftMiddleDistal' : '']).rotation.z = -hand.annotations.middleFinger[3][2] / handSize;
+
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftRingIntermediate' : '']).rotation.z = -hand.annotations.ringFinger[1][2] / handSize;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftRingProximal' : '']).rotation.z = -hand.annotations.ringFinger[2][2] / handSize;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftRingDistal' : '']).rotation.z = -hand.annotations.ringFinger[3][2] / handSize;
+
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftLittleIntermediate' : '']).rotation.z = -hand.annotations.pinky[1][2] / handSize;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftLittleProximal' : '']).rotation.z = -hand.annotations.pinky[2][2] / handSize;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftLittleDistal' : '']).rotation.z = -hand.annotations.pinky[3][2] / handSize;
+
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftThumbIntermediate' : '']).rotation.x = hand.annotations.thumb[1][2] / handSize;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftThumbProximal' : '']).rotation.x = hand.annotations.thumb[2][2] / handSize;
+      vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftThumbDistal' : '']).rotation.x = hand.annotations.thumb[3][2] / handSize;
+      */
+    }
+
     // log('vrm pose:', vrm.humanoid.getPose()); // print all pose details
     // vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Hips).rotation.y = Math.PI - Math.sin(Math.PI * clock.elapsedTime); // rotate circular
 
@@ -229,6 +274,7 @@ async function animate() {
 async function detect() {
   const video = document.getElementById('video') as HTMLVideoElement;
   res = await human.detect(video) as Result;
+  // log(`detect: ${res?.canvas?.width || 0} x ${res?.canvas?.height || 0} in ${res?.performance?.total || 0} ms`);
   if (!video.paused) requestAnimationFrame(detect);
 }
 
@@ -263,16 +309,18 @@ async function initWebCam() {
 
 async function main() {
   await initThree();
-  log('vrm model:', model);
   vrm = await loadVRM(model);
+  log('vrm model:', model);
   if (!vrm) return;
   scene.add(vrm.scene);
-  if (vrm.humanoid) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Hips).rotation.y = Math.PI; // rotate to face camera
-  log('vrm scene:', vrm);
+  if (!vrm.humanoid) return;
+  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Hips).rotation.y = Math.PI; // rotate to face camera
   renderer.render(scene, camera);
   await initHuman();
   await initWebCam();
   log('vrm schema', VRMSchema);
+  log('vrm scene:', vrm);
+  log('vrm pose:', vrm.humanoid.getPose()); // print all pose details
 
   // debug: export globals so they can be used from inspector
   window['vrm'] = vrm;
@@ -281,6 +329,7 @@ async function main() {
 
   animate();
   detect();
+  log('');
 }
 
 window.onload = main;

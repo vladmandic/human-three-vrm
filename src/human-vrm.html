@@ -6,9 +6,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="module" src="../dist/human-vrm.esm.js"></script>
 	</head>
-	<body style="margin: 0; overflow: hidden;">
+	<body style="margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: black; color: white;">
+    <div id="log" style="position: absolute; bottom: 20px; left: 10px; width: 90%;"></div>
     <canvas id="canvas"></canvas>
-    <video id="video" style="position: absolute; top: 10px; right: 10px; width: 640px; height: 480px; z-index: 10;"></video>
-    <canvas id="detected" width=640 height=480 style="position: absolute; top: 10px; right: 10px; width: 640px; height: 480px; z-index: 20;"></video>
-	</body>
+    <video id="video" style="position: absolute; top: 10px; right: 10px; width: 640px; height: 480px; z-index: 10; visibility: hidden;"></video>
+    <canvas id="detected" width=640 height=480 style="position: absolute; top: 10px; right: 10px; width: 320px; height: 240px; z-index: 20;"></video>
+  </body>
 </html>
