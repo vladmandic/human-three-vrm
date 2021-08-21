@@ -39,7 +39,7 @@
     "@vladmandic/pilogger": "^0.2.18",
     "chokidar": "^3.5.2",
     "dayjs": "^1.10.6",
-    "esbuild": "^0.12.21",
+    "esbuild": "^0.12.22",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.24.1",
