@@ -38,7 +38,7 @@ const humanConfig = {
   },
   object: { enabled: false },
   gesture: { enabled: false },
-  hand: { enabled: true },
+  hand: { enabled: true, maxDetected: 2 },
   body: { enabled: true },
   segmentation: { enabled: false },
 };

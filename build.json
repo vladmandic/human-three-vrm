@@ -1,0 +1,54 @@
+{
+  "log": {
+    "enabled": false,
+    "debug": false,
+    "console": true,
+    "output": "build.log"
+  },
+  "profiles": {
+    "production": ["clean", "compile", "lint"],
+    "development": ["serve", "watch", "compile"]
+  },
+  "clean": {
+    "locations": ["dist/*"]
+  },
+  "lint": {
+    "locations": [ "src/*.ts" ],
+    "rules": { }
+  },
+  "changelog": {
+    "log": "CHANGELOG.md"
+  },
+  "serve": {
+    "sslKey": "node_modules/@vladmandic/build/cert/https.key",
+    "sslCrt": "node_modules/@vladmandic/build/cert/https.crt",
+    "httpPort": 10030,
+    "httpsPort": 10031,
+    "documentRoot": ".",
+    "defaultFolder": "src",
+    "defaultFile": "human-vrm.html"
+    },
+  "build": {
+    "global": {
+      "target": "es2018",
+      "banner": { "js": "/*\n  Human-VRM\n  homepage: <https://github.com/vladmandic/human-vrm>\n  author: <https://github.com/vladmandic>'\n*/\n" }
+    },
+    "targets": [
+      {
+        "name": "human-vrm",
+        "platform": "browser",
+        "format": "esm",
+        "input": "src/human-vrm.ts",
+        "output": "dist/human-vrm.esm.js",
+        "sourcemap": true,
+        "external": ["fs", "os", "buffer", "util"]
+      }
+    ]
+  },
+  "watch": {
+    "locations": [ "src/**" ]
+  },
+  "typescript": {
+    "allowJs": false
+  }
+}
