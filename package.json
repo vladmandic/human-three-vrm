@@ -1,8 +1,8 @@
 {
   "name": "human-vrm",
-  "version": "0.0.1",
+  "version": "0.2.1",
   "description": "VR Humanoid Avatar using Human library",
-  "main": "server/serve.js",
+  "main": "",
   "engines": {
     "node": ">=14.0.0"
   },
@@ -12,37 +12,40 @@
   },
   "author": "Vladimir Mandic <mandic00@live.com>",
   "license": "MIT",
-  "bugs": { "url": "https://github.com/vladmandic/human-vrm/issues" },
+  "bugs": {
+    "url": "https://github.com/vladmandic/human-vrm/issues"
+  },
   "homepage": "https://vladmandic.github.io/human/src/human-vrm.html",
-  "repository": { "type": "git", "url": "git+https://github.com/vladmandic/human-vrm.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vladmandic/human-vrm.git"
+  },
   "keywords": [
     "human",
     "person",
     "vrm",
     "tensorflow",
     "tensorflowjs",
-    "tfjs"
+    "tfjs",
+    "three"
   ],
   "dependencies": {
     "@pixiv/three-vrm": "^0.6.6",
-    "@vladmandic/build": "^0.4.1",
     "@vladmandic/human": "github:vladmandic/human",
     "three": "^0.132.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.31.0",
-    "@typescript-eslint/parser": "^4.31.0",
-    "@vladmandic/pilogger": "^0.3.1",
-    "chokidar": "^3.5.2",
-    "dayjs": "^1.10.7",
-    "esbuild": "^0.12.26",
+    "@vladmandic/build": "^0.4.1",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "@typescript-eslint/parser": "^4.31.1",
+    "@vladmandic/pilogger": "^0.3.2",
+    "esbuild": "^0.12.28",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-json": "^3.1.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "rimraf": "^3.0.2",
     "typescript": "^4.4.3"
   }
 }
