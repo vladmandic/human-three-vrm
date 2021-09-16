@@ -41,7 +41,7 @@
         "input": "src/human-vrm.ts",
         "output": "dist/human-vrm.esm.js",
         "sourcemap": true,
-        "external": ["fs", "os", "buffer", "util"]
+        "external": ["fs", "os", "buffer", "util", "@tensorflow"]
       }
     ]
   },
