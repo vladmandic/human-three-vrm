@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "build -p development",
-    "prod": "build -p production"
+    "build": "build -p production"
   },
   "author": "Vladimir Mandic <mandic00@live.com>",
   "license": "MIT",
@@ -35,9 +35,9 @@
     "three": "^0.132.2"
   },
   "devDependencies": {
-    "@vladmandic/build": "^0.4.1",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
+    "@vladmandic/build": "^0.5.1",
     "@vladmandic/pilogger": "^0.3.2",
     "esbuild": "^0.12.28",
     "eslint": "^7.32.0",
