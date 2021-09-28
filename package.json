@@ -35,11 +35,11 @@
     "three": "^0.132.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.31.1",
-    "@typescript-eslint/parser": "^4.31.1",
-    "@vladmandic/build": "^0.5.1",
-    "@vladmandic/pilogger": "^0.3.2",
-    "esbuild": "^0.12.28",
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
+    "@vladmandic/build": "^0.5.3",
+    "@vladmandic/pilogger": "^0.3.3",
+    "esbuild": "^0.13.3",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.24.2",

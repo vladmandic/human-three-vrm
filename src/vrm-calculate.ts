@@ -115,10 +115,12 @@ async function updateFace(vrm, res) {
   vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.y = -faceAngle.yaw / 2;
   vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.z = (faceAngle.roll / 2 - leanBody) / 2;
   // eye blinks
-  const blinkL = 3 * (Math.abs(face.mesh[374][1] - face.mesh[386][1]) / Math.abs(face.mesh[443][1] - face.mesh[450][1]) - 0.15); // center of eye inner lid y coord div center of wider eye border y coord
-  const blinkR = 3 * (Math.abs(face.mesh[145][1] - face.mesh[159][1]) / Math.abs(face.mesh[223][1] - face.mesh[230][1]) - 0.15); // center of eye inner lid y coord div center of wider eye border y coord
-  vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.BlinkL, 1 - blinkL);
-  vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.BlinkR, 1 - blinkR);
+  if (face.mesh.length > 300) {
+    const blinkL = 3 * (Math.abs(face.mesh[374][1] - face.mesh[386][1]) / Math.abs(face.mesh[443][1] - face.mesh[450][1]) - 0.15); // center of eye inner lid y coord div center of wider eye border y coord
+    const blinkR = 3 * (Math.abs(face.mesh[145][1] - face.mesh[159][1]) / Math.abs(face.mesh[223][1] - face.mesh[230][1]) - 0.15); // center of eye inner lid y coord div center of wider eye border y coord
+    vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.BlinkL, 1 - blinkL);
+    vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.BlinkR, 1 - blinkR);
+  }
   // emotion reset
   vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Fun, 0);
   vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Angry, 0);
@@ -133,14 +135,18 @@ async function updateFace(vrm, res) {
     default: vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Neutral, 1);
   }
   // mouth open
-  const mouth = Math.min(1, 5 * Math.abs(face.mesh[13][1] - face.mesh[14][1]) / Math.abs(face.mesh[10][1] - face.mesh[152][1]));
-  vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.O, mouth);
+  if (face.mesh.length > 300) {
+    const mouth = Math.min(1, 5 * Math.abs(face.mesh[13][1] - face.mesh[14][1]) / Math.abs(face.mesh[10][1] - face.mesh[152][1]));
+    vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.O, mouth);
+  }
   // eye gaze direction
   const gaze = face.rotation?.gaze;
-  const target = new THREE.Object3D();
-  if (gaze) target.position.x = 10 * gaze.strength * Math.sin(gaze.bearing);
-  if (gaze) target.position.y = 10 * gaze.strength * Math.cos(gaze.bearing);
-  vrm.lookAt.target = target;
+  if (gaze) {
+    const target = new THREE.Object3D();
+    if (gaze) target.position.x = 10 * gaze.strength * Math.sin(gaze.bearing);
+    if (gaze) target.position.y = 10 * gaze.strength * Math.cos(gaze.bearing);
+    vrm.lookAt.target = target;
+  }
 }
 
 export async function update(vrm, res) {
