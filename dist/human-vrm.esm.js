@@ -12,8 +12,8 @@ var __require = /* @__PURE__ */ ((x2) => typeof require !== "undefined" ? requir
   throw new Error('Dynamic require of "' + x2 + '" is not supported');
 });
 
-// node_modules/.pnpm/three@0.132.2/node_modules/three/build/three.module.js
-var REVISION = "132";
+// node_modules/.pnpm/three@0.133.1/node_modules/three/build/three.module.js
+var REVISION = "133";
 var MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2, ROTATE: 0, DOLLY: 1, PAN: 2 };
 var TOUCH = { ROTATE: 0, PAN: 1, DOLLY_PAN: 2, DOLLY_ROTATE: 3 };
 var CullFaceNone = 0;
@@ -223,14 +223,18 @@ var EventDispatcher = class {
     }
   }
 };
+var _seed = 1234567;
+var DEG2RAD = Math.PI / 180;
+var RAD2DEG = 180 / Math.PI;
 var _lut = [];
 for (let i2 = 0; i2 < 256; i2++) {
   _lut[i2] = (i2 < 16 ? "0" : "") + i2.toString(16);
 }
-var _seed = 1234567;
-var DEG2RAD = Math.PI / 180;
-var RAD2DEG = 180 / Math.PI;
+var hasRandomUUID = typeof crypto !== "undefined" && "randomUUID" in crypto;
 function generateUUID() {
+  if (hasRandomUUID) {
+    return crypto.randomUUID().toUpperCase();
+  }
   const d0 = Math.random() * 4294967295 | 0;
   const d1 = Math.random() * 4294967295 | 0;
   const d2 = Math.random() * 4294967295 | 0;
@@ -238,8 +242,8 @@ function generateUUID() {
   const uuid = _lut[d0 & 255] + _lut[d0 >> 8 & 255] + _lut[d0 >> 16 & 255] + _lut[d0 >> 24 & 255] + "-" + _lut[d1 & 255] + _lut[d1 >> 8 & 255] + "-" + _lut[d1 >> 16 & 15 | 64] + _lut[d1 >> 24 & 255] + "-" + _lut[d2 & 63 | 128] + _lut[d2 >> 8 & 255] + "-" + _lut[d2 >> 16 & 255] + _lut[d2 >> 24 & 255] + _lut[d3 & 255] + _lut[d3 >> 8 & 255] + _lut[d3 >> 16 & 255] + _lut[d3 >> 24 & 255];
   return uuid.toUpperCase();
 }
-function clamp(value, min6, max6) {
-  return Math.max(min6, Math.min(max6, value));
+function clamp(value, min7, max7) {
+  return Math.max(min7, Math.min(max7, value));
 }
 function euclideanModulo(n2, m2) {
   return (n2 % m2 + m2) % m2;
@@ -263,20 +267,20 @@ function damp(x2, y2, lambda, dt) {
 function pingpong(x2, length = 1) {
   return length - Math.abs(euclideanModulo(x2, length * 2) - length);
 }
-function smoothstep(x2, min6, max6) {
-  if (x2 <= min6)
+function smoothstep(x2, min7, max7) {
+  if (x2 <= min7)
     return 0;
-  if (x2 >= max6)
+  if (x2 >= max7)
     return 1;
-  x2 = (x2 - min6) / (max6 - min6);
+  x2 = (x2 - min7) / (max7 - min7);
   return x2 * x2 * (3 - 2 * x2);
 }
-function smootherstep(x2, min6, max6) {
-  if (x2 <= min6)
+function smootherstep(x2, min7, max7) {
+  if (x2 <= min7)
     return 0;
-  if (x2 >= max6)
+  if (x2 >= max7)
     return 1;
-  x2 = (x2 - min6) / (max6 - min6);
+  x2 = (x2 - min7) / (max7 - min7);
   return x2 * x2 * x2 * (x2 * (x2 * 6 - 15) + 10);
 }
 function randInt(low, high) {
@@ -285,8 +289,8 @@ function randInt(low, high) {
 function randFloat(low, high) {
   return low + Math.random() * (high - low);
 }
-function randFloatSpread(range6) {
-  return range6 * (0.5 - Math.random());
+function randFloatSpread(range7) {
+  return range7 * (0.5 - Math.random());
 }
 function seededRandom(s2) {
   if (s2 !== void 0)
@@ -310,16 +314,16 @@ function floorPowerOfTwo(value) {
   return Math.pow(2, Math.floor(Math.log(value) / Math.LN2));
 }
 function setQuaternionFromProperEuler(q2, a6, b2, c2, order) {
-  const cos4 = Math.cos;
-  const sin4 = Math.sin;
-  const c22 = cos4(b2 / 2);
-  const s2 = sin4(b2 / 2);
-  const c13 = cos4((a6 + c2) / 2);
-  const s13 = sin4((a6 + c2) / 2);
-  const c1_3 = cos4((a6 - c2) / 2);
-  const s1_3 = sin4((a6 - c2) / 2);
-  const c3_1 = cos4((c2 - a6) / 2);
-  const s3_1 = sin4((c2 - a6) / 2);
+  const cos5 = Math.cos;
+  const sin5 = Math.sin;
+  const c22 = cos5(b2 / 2);
+  const s2 = sin5(b2 / 2);
+  const c13 = cos5((a6 + c2) / 2);
+  const s13 = sin5((a6 + c2) / 2);
+  const c1_3 = cos5((a6 - c2) / 2);
+  const s1_3 = sin5((a6 - c2) / 2);
+  const c3_1 = cos5((c2 - a6) / 2);
+  const s3_1 = sin5((c2 - a6) / 2);
   switch (order) {
     case "XYX":
       q2.set(c22 * s13, s2 * c1_3, s2 * s1_3, c22 * c13);
@@ -512,9 +516,9 @@ var Vector2 = class {
     this.y = Math.max(this.y, v2.y);
     return this;
   }
-  clamp(min6, max6) {
-    this.x = Math.max(min6.x, Math.min(max6.x, this.x));
-    this.y = Math.max(min6.y, Math.min(max6.y, this.y));
+  clamp(min7, max7) {
+    this.x = Math.max(min7.x, Math.min(max7.x, this.x));
+    this.y = Math.max(min7.y, Math.min(max7.y, this.y));
     return this;
   }
   clampScalar(minVal, maxVal) {
@@ -522,9 +526,9 @@ var Vector2 = class {
     this.y = Math.max(minVal, Math.min(maxVal, this.y));
     return this;
   }
-  clampLength(min6, max6) {
+  clampLength(min7, max7) {
     const length = this.length();
-    return this.divideScalar(length || 1).multiplyScalar(Math.max(min6, Math.min(max6, length)));
+    return this.divideScalar(length || 1).multiplyScalar(Math.max(min7, Math.min(max7, length)));
   }
   floor() {
     this.x = Math.floor(this.x);
@@ -629,6 +633,10 @@ var Vector2 = class {
     this.x = Math.random();
     this.y = Math.random();
     return this;
+  }
+  *[Symbol.iterator]() {
+    yield this.x;
+    yield this.y;
   }
 };
 Vector2.prototype.isVector2 = true;
@@ -855,6 +863,19 @@ var Matrix3 = class {
   }
 };
 Matrix3.prototype.isMatrix3 = true;
+function arrayMax(array2) {
+  if (array2.length === 0)
+    return -Infinity;
+  let max7 = array2[0];
+  for (let i2 = 1, l3 = array2.length; i2 < l3; ++i2) {
+    if (array2[i2] > max7)
+      max7 = array2[i2];
+  }
+  return max7;
+}
+function createElementNS(name) {
+  return document.createElementNS("http://www.w3.org/1999/xhtml", name);
+}
 var _canvas;
 var ImageUtils = class {
   static getDataURL(image2) {
@@ -869,7 +890,7 @@ var ImageUtils = class {
       canvas3 = image2;
     } else {
       if (_canvas === void 0)
-        _canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+        _canvas = createElementNS("canvas");
       _canvas.width = image2.width;
       _canvas.height = image2.height;
       const context = _canvas.getContext("2d");
@@ -1345,11 +1366,11 @@ var Vector4 = class {
     this.w = Math.max(this.w, v2.w);
     return this;
   }
-  clamp(min6, max6) {
-    this.x = Math.max(min6.x, Math.min(max6.x, this.x));
-    this.y = Math.max(min6.y, Math.min(max6.y, this.y));
-    this.z = Math.max(min6.z, Math.min(max6.z, this.z));
-    this.w = Math.max(min6.w, Math.min(max6.w, this.w));
+  clamp(min7, max7) {
+    this.x = Math.max(min7.x, Math.min(max7.x, this.x));
+    this.y = Math.max(min7.y, Math.min(max7.y, this.y));
+    this.z = Math.max(min7.z, Math.min(max7.z, this.z));
+    this.w = Math.max(min7.w, Math.min(max7.w, this.w));
     return this;
   }
   clampScalar(minVal, maxVal) {
@@ -1359,9 +1380,9 @@ var Vector4 = class {
     this.w = Math.max(minVal, Math.min(maxVal, this.w));
     return this;
   }
-  clampLength(min6, max6) {
+  clampLength(min7, max7) {
     const length = this.length();
-    return this.divideScalar(length || 1).multiplyScalar(Math.max(min6, Math.min(max6, length)));
+    return this.divideScalar(length || 1).multiplyScalar(Math.max(min7, Math.min(max7, length)));
   }
   floor() {
     this.x = Math.floor(this.x);
@@ -1463,6 +1484,12 @@ var Vector4 = class {
     this.z = Math.random();
     this.w = Math.random();
     return this;
+  }
+  *[Symbol.iterator]() {
+    yield this.x;
+    yield this.y;
+    yield this.z;
+    yield this.w;
   }
 };
 Vector4.prototype.isVector4 = true;
@@ -1611,11 +1638,11 @@ var Quaternion = class {
     }
     if (w0 !== w1 || x0 !== x1 || y0 !== y1 || z0 !== z1) {
       let s2 = 1 - t2;
-      const cos4 = x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1, dir = cos4 >= 0 ? 1 : -1, sqrSin = 1 - cos4 * cos4;
+      const cos5 = x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1, dir = cos5 >= 0 ? 1 : -1, sqrSin = 1 - cos5 * cos5;
       if (sqrSin > Number.EPSILON) {
-        const sin4 = Math.sqrt(sqrSin), len = Math.atan2(sin4, cos4 * dir);
-        s2 = Math.sin(s2 * len) / sin4;
-        t2 = Math.sin(t2 * len) / sin4;
+        const sin5 = Math.sqrt(sqrSin), len = Math.atan2(sin5, cos5 * dir);
+        s2 = Math.sin(s2 * len) / sin5;
+        t2 = Math.sin(t2 * len) / sin5;
       }
       const tDir = t2 * dir;
       x0 = x0 * s2 + x1 * tDir;
@@ -1702,14 +1729,14 @@ var Quaternion = class {
       throw new Error("THREE.Quaternion: .setFromEuler() now expects an Euler rotation rather than a Vector3 and order.");
     }
     const x2 = euler._x, y2 = euler._y, z2 = euler._z, order = euler._order;
-    const cos4 = Math.cos;
-    const sin4 = Math.sin;
-    const c1 = cos4(x2 / 2);
-    const c2 = cos4(y2 / 2);
-    const c3 = cos4(z2 / 2);
-    const s1 = sin4(x2 / 2);
-    const s2 = sin4(y2 / 2);
-    const s3 = sin4(z2 / 2);
+    const cos5 = Math.cos;
+    const sin5 = Math.sin;
+    const c1 = cos5(x2 / 2);
+    const c2 = cos5(y2 / 2);
+    const c3 = cos5(z2 / 2);
+    const s1 = sin5(x2 / 2);
+    const s2 = sin5(y2 / 2);
+    const s3 = sin5(z2 / 2);
     switch (order) {
       case "XYZ":
         this._x = s1 * c2 * c3 + c1 * s2 * s3;
@@ -1932,6 +1959,14 @@ var Quaternion = class {
   }
   slerpQuaternions(qa, qb, t2) {
     this.copy(qa).slerp(qb, t2);
+  }
+  random() {
+    const u1 = Math.random();
+    const sqrt1u1 = Math.sqrt(1 - u1);
+    const sqrtu1 = Math.sqrt(u1);
+    const u2 = 2 * Math.PI * Math.random();
+    const u3 = 2 * Math.PI * Math.random();
+    return this.set(sqrt1u1 * Math.cos(u2), sqrtu1 * Math.sin(u3), sqrtu1 * Math.cos(u3), sqrt1u1 * Math.sin(u2));
   }
   equals(quaternion) {
     return quaternion._x === this._x && quaternion._y === this._y && quaternion._z === this._z && quaternion._w === this._w;
@@ -2183,10 +2218,10 @@ var Vector3 = class {
     this.z = Math.max(this.z, v2.z);
     return this;
   }
-  clamp(min6, max6) {
-    this.x = Math.max(min6.x, Math.min(max6.x, this.x));
-    this.y = Math.max(min6.y, Math.min(max6.y, this.y));
-    this.z = Math.max(min6.z, Math.min(max6.z, this.z));
+  clamp(min7, max7) {
+    this.x = Math.max(min7.x, Math.min(max7.x, this.x));
+    this.y = Math.max(min7.y, Math.min(max7.y, this.y));
+    this.z = Math.max(min7.z, Math.min(max7.z, this.z));
     return this;
   }
   clampScalar(minVal, maxVal) {
@@ -2195,9 +2230,9 @@ var Vector3 = class {
     this.z = Math.max(minVal, Math.min(maxVal, this.z));
     return this;
   }
-  clampLength(min6, max6) {
+  clampLength(min7, max7) {
     const length = this.length();
-    return this.divideScalar(length || 1).multiplyScalar(Math.max(min6, Math.min(max6, length)));
+    return this.divideScalar(length || 1).multiplyScalar(Math.max(min7, Math.min(max7, length)));
   }
   floor() {
     this.x = Math.floor(this.x);
@@ -2376,18 +2411,32 @@ var Vector3 = class {
     this.z = Math.random();
     return this;
   }
+  randomDirection() {
+    const u2 = (Math.random() - 0.5) * 2;
+    const t2 = Math.random() * Math.PI * 2;
+    const f2 = Math.sqrt(1 - u2 ** 2);
+    this.x = f2 * Math.cos(t2);
+    this.y = f2 * Math.sin(t2);
+    this.z = u2;
+    return this;
+  }
+  *[Symbol.iterator]() {
+    yield this.x;
+    yield this.y;
+    yield this.z;
+  }
 };
 Vector3.prototype.isVector3 = true;
 var _vector$c = /* @__PURE__ */ new Vector3();
 var _quaternion$4 = /* @__PURE__ */ new Quaternion();
 var Box3 = class {
-  constructor(min6 = new Vector3(Infinity, Infinity, Infinity), max6 = new Vector3(-Infinity, -Infinity, -Infinity)) {
-    this.min = min6;
-    this.max = max6;
+  constructor(min7 = new Vector3(Infinity, Infinity, Infinity), max7 = new Vector3(-Infinity, -Infinity, -Infinity)) {
+    this.min = min7;
+    this.max = max7;
   }
-  set(min6, max6) {
-    this.min.copy(min6);
-    this.max.copy(max6);
+  set(min7, max7) {
+    this.min.copy(min7);
+    this.max.copy(max7);
     return this;
   }
   setFromArray(array2) {
@@ -2534,29 +2583,29 @@ var Box3 = class {
     return _vector$b.distanceToSquared(sphere.center) <= sphere.radius * sphere.radius;
   }
   intersectsPlane(plane) {
-    let min6, max6;
+    let min7, max7;
     if (plane.normal.x > 0) {
-      min6 = plane.normal.x * this.min.x;
-      max6 = plane.normal.x * this.max.x;
+      min7 = plane.normal.x * this.min.x;
+      max7 = plane.normal.x * this.max.x;
     } else {
-      min6 = plane.normal.x * this.max.x;
-      max6 = plane.normal.x * this.min.x;
+      min7 = plane.normal.x * this.max.x;
+      max7 = plane.normal.x * this.min.x;
     }
     if (plane.normal.y > 0) {
-      min6 += plane.normal.y * this.min.y;
-      max6 += plane.normal.y * this.max.y;
+      min7 += plane.normal.y * this.min.y;
+      max7 += plane.normal.y * this.max.y;
     } else {
-      min6 += plane.normal.y * this.max.y;
-      max6 += plane.normal.y * this.min.y;
+      min7 += plane.normal.y * this.max.y;
+      max7 += plane.normal.y * this.min.y;
     }
     if (plane.normal.z > 0) {
-      min6 += plane.normal.z * this.min.z;
-      max6 += plane.normal.z * this.max.z;
+      min7 += plane.normal.z * this.min.z;
+      max7 += plane.normal.z * this.max.z;
     } else {
-      min6 += plane.normal.z * this.max.z;
-      max6 += plane.normal.z * this.min.z;
+      min7 += plane.normal.z * this.max.z;
+      max7 += plane.normal.z * this.min.z;
     }
-    return min6 <= -plane.constant && max6 >= -plane.constant;
+    return min7 <= -plane.constant && max7 >= -plane.constant;
   }
   intersectsTriangle(triangle) {
     if (this.isEmpty()) {
@@ -3954,19 +4003,19 @@ var Object3D = class extends EventDispatcher {
   rotateZ(angle2) {
     return this.rotateOnAxis(_zAxis, angle2);
   }
-  translateOnAxis(axis, distance) {
+  translateOnAxis(axis, distance2) {
     _v1$4.copy(axis).applyQuaternion(this.quaternion);
-    this.position.add(_v1$4.multiplyScalar(distance));
+    this.position.add(_v1$4.multiplyScalar(distance2));
     return this;
   }
-  translateX(distance) {
-    return this.translateOnAxis(_xAxis, distance);
+  translateX(distance2) {
+    return this.translateOnAxis(_xAxis, distance2);
   }
-  translateY(distance) {
-    return this.translateOnAxis(_yAxis, distance);
+  translateY(distance2) {
+    return this.translateOnAxis(_yAxis, distance2);
   }
-  translateZ(distance) {
-    return this.translateOnAxis(_zAxis, distance);
+  translateZ(distance2) {
+    return this.translateOnAxis(_zAxis, distance2);
   }
   localToWorld(vector) {
     return vector.applyMatrix4(this.matrixWorld);
@@ -4299,10 +4348,10 @@ var Object3D = class extends EventDispatcher {
     }
     output.object = object2;
     return output;
-    function extractFromCache(cache2) {
+    function extractFromCache(cache5) {
       const values = [];
-      for (const key in cache2) {
-        const data = cache2[key];
+      for (const key in cache5) {
+        const data = cache5[key];
         delete data.metadata;
         values.push(data);
       }
@@ -4413,6 +4462,12 @@ var Triangle = class {
     this.a.copy(points[i0]);
     this.b.copy(points[i1]);
     this.c.copy(points[i2]);
+    return this;
+  }
+  setFromAttributeAndIndices(attribute, i0, i1, i2) {
+    this.a.fromBufferAttribute(attribute, i0);
+    this.b.fromBufferAttribute(attribute, i1);
+    this.c.fromBufferAttribute(attribute, i2);
     return this;
   }
   clone() {
@@ -4562,6 +4617,8 @@ var Material = class extends EventDispatcher {
   }
   onBuild() {
   }
+  onBeforeRender() {
+  }
   onBeforeCompile() {
   }
   customProgramCacheKey() {
@@ -4620,8 +4677,12 @@ var Material = class extends EventDispatcher {
       data.roughness = this.roughness;
     if (this.metalness !== void 0)
       data.metalness = this.metalness;
+    if (this.sheen !== void 0)
+      data.sheen = this.sheen;
     if (this.sheenTint && this.sheenTint.isColor)
       data.sheenTint = this.sheenTint.getHex();
+    if (this.sheenRoughness !== void 0)
+      data.sheenRoughness = this.sheenRoughness;
     if (this.emissive && this.emissive.isColor)
       data.emissive = this.emissive.getHex();
     if (this.emissiveIntensity && this.emissiveIntensity !== 1)
@@ -4784,10 +4845,10 @@ var Material = class extends EventDispatcher {
       data.toneMapped = false;
     if (JSON.stringify(this.userData) !== "{}")
       data.userData = this.userData;
-    function extractFromCache(cache2) {
+    function extractFromCache(cache5) {
       const values = [];
-      for (const key in cache2) {
-        const data2 = cache2[key];
+      for (const key in cache5) {
+        const data2 = cache5[key];
         delete data2.metadata;
         values.push(data2);
       }
@@ -5219,17 +5280,17 @@ var Color = class {
   }
   getHSL(target) {
     const r2 = this.r, g2 = this.g, b2 = this.b;
-    const max6 = Math.max(r2, g2, b2);
-    const min6 = Math.min(r2, g2, b2);
+    const max7 = Math.max(r2, g2, b2);
+    const min7 = Math.min(r2, g2, b2);
     let hue, saturation;
-    const lightness = (min6 + max6) / 2;
-    if (min6 === max6) {
+    const lightness = (min7 + max7) / 2;
+    if (min7 === max7) {
       hue = 0;
       saturation = 0;
     } else {
-      const delta = max6 - min6;
-      saturation = lightness <= 0.5 ? delta / (max6 + min6) : delta / (2 - max6 - min6);
-      switch (max6) {
+      const delta = max7 - min7;
+      saturation = lightness <= 0.5 ? delta / (max7 + min7) : delta / (2 - max7 - min7);
+      switch (max7) {
         case r2:
           hue = (g2 - b2) / delta + (g2 < b2 ? 6 : 0);
           break;
@@ -5645,16 +5706,6 @@ var Float32BufferAttribute = class extends BufferAttribute {
     super(new Float32Array(array2), itemSize, normalized);
   }
 };
-function arrayMax(array2) {
-  if (array2.length === 0)
-    return -Infinity;
-  let max6 = array2[0];
-  for (let i2 = 1, l3 = array2.length; i2 < l3; ++i2) {
-    if (array2[i2] > max6)
-      max6 = array2[i2];
-  }
-  return max6;
-}
 var _id = 0;
 var _m1 = /* @__PURE__ */ new Matrix4();
 var _obj = /* @__PURE__ */ new Object3D();
@@ -6175,7 +6226,7 @@ var BufferGeometry = class extends EventDispatcher {
     return data;
   }
   clone() {
-    return new BufferGeometry().copy(this);
+    return new this.constructor().copy(this);
   }
   copy(source) {
     this.index = null;
@@ -6221,6 +6272,8 @@ var BufferGeometry = class extends EventDispatcher {
     this.drawRange.start = source.drawRange.start;
     this.drawRange.count = source.drawRange.count;
     this.userData = source.userData;
+    if (source.parameters !== void 0)
+      this.parameters = Object.assign({}, source.parameters);
     return this;
   }
   dispose() {
@@ -6323,7 +6376,7 @@ var Mesh = class extends Object3D {
             const group = groups[i2];
             const groupMaterial = material[group.materialIndex];
             const start = Math.max(group.start, drawRange.start);
-            const end = Math.min(group.start + group.count, drawRange.start + drawRange.count);
+            const end = Math.min(index.count, Math.min(group.start + group.count, drawRange.start + drawRange.count));
             for (let j2 = start, jl = end; j2 < jl; j2 += 3) {
               const a6 = index.getX(j2);
               const b2 = index.getX(j2 + 1);
@@ -6356,7 +6409,7 @@ var Mesh = class extends Object3D {
             const group = groups[i2];
             const groupMaterial = material[group.materialIndex];
             const start = Math.max(group.start, drawRange.start);
-            const end = Math.min(group.start + group.count, drawRange.start + drawRange.count);
+            const end = Math.min(position.count, Math.min(group.start + group.count, drawRange.start + drawRange.count));
             for (let j2 = start, jl = end; j2 < jl; j2 += 3) {
               const a6 = j2;
               const b2 = j2 + 1;
@@ -6401,11 +6454,11 @@ function checkIntersection(object2, material, raycaster, ray, pA, pB, pC, point2
     return null;
   _intersectionPointWorld.copy(point2);
   _intersectionPointWorld.applyMatrix4(object2.matrixWorld);
-  const distance = raycaster.ray.origin.distanceTo(_intersectionPointWorld);
-  if (distance < raycaster.near || distance > raycaster.far)
+  const distance2 = raycaster.ray.origin.distanceTo(_intersectionPointWorld);
+  if (distance2 < raycaster.near || distance2 > raycaster.far)
     return null;
   return {
-    distance,
+    distance: distance2,
     point: _intersectionPointWorld.clone(),
     object: object2
   };
@@ -6910,7 +6963,6 @@ var CubeTexture = class extends Texture {
   constructor(images, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy, encoding) {
     images = images !== void 0 ? images : [];
     mapping = mapping !== void 0 ? mapping : CubeReflectionMapping;
-    format = format !== void 0 ? format : RGBFormat;
     super(images, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy, encoding);
     this.flipY = false;
   }
@@ -7173,8 +7225,8 @@ var Frustum = class {
     const center = sphere.center;
     const negRadius = -sphere.radius;
     for (let i2 = 0; i2 < 6; i2++) {
-      const distance = planes[i2].distanceToPoint(center);
-      if (distance < negRadius) {
+      const distance2 = planes[i2].distanceToPoint(center);
+      if (distance2 < negRadius) {
         return false;
       }
     }
@@ -7398,7 +7450,7 @@ var aomap_fragment = "#ifdef USE_AOMAP\n	float ambientOcclusion = ( texture2D( a
 var aomap_pars_fragment = "#ifdef USE_AOMAP\n	uniform sampler2D aoMap;\n	uniform float aoMapIntensity;\n#endif";
 var begin_vertex = "vec3 transformed = vec3( position );";
 var beginnormal_vertex = "vec3 objectNormal = vec3( normal );\n#ifdef USE_TANGENT\n	vec3 objectTangent = vec3( tangent.xyz );\n#endif";
-var bsdfs = "vec3 BRDF_Lambert( const in vec3 diffuseColor ) {\n	return RECIPROCAL_PI * diffuseColor;\n}\nvec3 F_Schlick( const in vec3 f0, const in float f90, const in float dotVH ) {\n	float fresnel = exp2( ( - 5.55473 * dotVH - 6.98316 ) * dotVH );\n	return f0 * ( 1.0 - fresnel ) + ( f90 * fresnel );\n}\nfloat V_GGX_SmithCorrelated( const in float alpha, const in float dotNL, const in float dotNV ) {\n	float a2 = pow2( alpha );\n	float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );\n	float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );\n	return 0.5 / max( gv + gl, EPSILON );\n}\nfloat D_GGX( const in float alpha, const in float dotNH ) {\n	float a2 = pow2( alpha );\n	float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;\n	return RECIPROCAL_PI * a2 / pow2( denom );\n}\nvec3 BRDF_GGX( const in IncidentLight incidentLight, const in vec3 viewDir, const in vec3 normal, const in vec3 f0, const in float f90, const in float roughness ) {\n	float alpha = pow2( roughness );\n	vec3 halfDir = normalize( incidentLight.direction + viewDir );\n	float dotNL = saturate( dot( normal, incidentLight.direction ) );\n	float dotNV = saturate( dot( normal, viewDir ) );\n	float dotNH = saturate( dot( normal, halfDir ) );\n	float dotVH = saturate( dot( viewDir, halfDir ) );\n	vec3 F = F_Schlick( f0, f90, dotVH );\n	float V = V_GGX_SmithCorrelated( alpha, dotNL, dotNV );\n	float D = D_GGX( alpha, dotNH );\n	return F * ( V * D );\n}\nvec2 LTC_Uv( const in vec3 N, const in vec3 V, const in float roughness ) {\n	const float LUT_SIZE = 64.0;\n	const float LUT_SCALE = ( LUT_SIZE - 1.0 ) / LUT_SIZE;\n	const float LUT_BIAS = 0.5 / LUT_SIZE;\n	float dotNV = saturate( dot( N, V ) );\n	vec2 uv = vec2( roughness, sqrt( 1.0 - dotNV ) );\n	uv = uv * LUT_SCALE + LUT_BIAS;\n	return uv;\n}\nfloat LTC_ClippedSphereFormFactor( const in vec3 f ) {\n	float l = length( f );\n	return max( ( l * l + f.z ) / ( l + 1.0 ), 0.0 );\n}\nvec3 LTC_EdgeVectorFormFactor( const in vec3 v1, const in vec3 v2 ) {\n	float x = dot( v1, v2 );\n	float y = abs( x );\n	float a = 0.8543985 + ( 0.4965155 + 0.0145206 * y ) * y;\n	float b = 3.4175940 + ( 4.1616724 + y ) * y;\n	float v = a / b;\n	float theta_sintheta = ( x > 0.0 ) ? v : 0.5 * inversesqrt( max( 1.0 - x * x, 1e-7 ) ) - v;\n	return cross( v1, v2 ) * theta_sintheta;\n}\nvec3 LTC_Evaluate( const in vec3 N, const in vec3 V, const in vec3 P, const in mat3 mInv, const in vec3 rectCoords[ 4 ] ) {\n	vec3 v1 = rectCoords[ 1 ] - rectCoords[ 0 ];\n	vec3 v2 = rectCoords[ 3 ] - rectCoords[ 0 ];\n	vec3 lightNormal = cross( v1, v2 );\n	if( dot( lightNormal, P - rectCoords[ 0 ] ) < 0.0 ) return vec3( 0.0 );\n	vec3 T1, T2;\n	T1 = normalize( V - N * dot( V, N ) );\n	T2 = - cross( N, T1 );\n	mat3 mat = mInv * transposeMat3( mat3( T1, T2, N ) );\n	vec3 coords[ 4 ];\n	coords[ 0 ] = mat * ( rectCoords[ 0 ] - P );\n	coords[ 1 ] = mat * ( rectCoords[ 1 ] - P );\n	coords[ 2 ] = mat * ( rectCoords[ 2 ] - P );\n	coords[ 3 ] = mat * ( rectCoords[ 3 ] - P );\n	coords[ 0 ] = normalize( coords[ 0 ] );\n	coords[ 1 ] = normalize( coords[ 1 ] );\n	coords[ 2 ] = normalize( coords[ 2 ] );\n	coords[ 3 ] = normalize( coords[ 3 ] );\n	vec3 vectorFormFactor = vec3( 0.0 );\n	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 0 ], coords[ 1 ] );\n	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 1 ], coords[ 2 ] );\n	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 2 ], coords[ 3 ] );\n	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 3 ], coords[ 0 ] );\n	float result = LTC_ClippedSphereFormFactor( vectorFormFactor );\n	return vec3( result );\n}\nfloat G_BlinnPhong_Implicit( ) {\n	return 0.25;\n}\nfloat D_BlinnPhong( const in float shininess, const in float dotNH ) {\n	return RECIPROCAL_PI * ( shininess * 0.5 + 1.0 ) * pow( dotNH, shininess );\n}\nvec3 BRDF_BlinnPhong( const in IncidentLight incidentLight, const in GeometricContext geometry, const in vec3 specularColor, const in float shininess ) {\n	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );\n	float dotNH = saturate( dot( geometry.normal, halfDir ) );\n	float dotVH = saturate( dot( geometry.viewDir, halfDir ) );\n	vec3 F = F_Schlick( specularColor, 1.0, dotVH );\n	float G = G_BlinnPhong_Implicit( );\n	float D = D_BlinnPhong( shininess, dotNH );\n	return F * ( G * D );\n}\n#if defined( USE_SHEEN )\nfloat D_Charlie( float roughness, float NoH ) {\n	float invAlpha = 1.0 / roughness;\n	float cos2h = NoH * NoH;\n	float sin2h = max( 1.0 - cos2h, 0.0078125 );\n	return ( 2.0 + invAlpha ) * pow( sin2h, invAlpha * 0.5 ) / ( 2.0 * PI );\n}\nfloat V_Neubelt( float NoV, float NoL ) {\n	return saturate( 1.0 / ( 4.0 * ( NoL + NoV - NoL * NoV ) ) );\n}\nvec3 BRDF_Sheen( const in float roughness, const in vec3 L, const in GeometricContext geometry, vec3 specularColor ) {\n	vec3 N = geometry.normal;\n	vec3 V = geometry.viewDir;\n	vec3 H = normalize( V + L );\n	float dotNH = saturate( dot( N, H ) );\n	return specularColor * D_Charlie( roughness, dotNH ) * V_Neubelt( dot(N, V), dot(N, L) );\n}\n#endif";
+var bsdfs = "vec3 BRDF_Lambert( const in vec3 diffuseColor ) {\n	return RECIPROCAL_PI * diffuseColor;\n}\nvec3 F_Schlick( const in vec3 f0, const in float f90, const in float dotVH ) {\n	float fresnel = exp2( ( - 5.55473 * dotVH - 6.98316 ) * dotVH );\n	return f0 * ( 1.0 - fresnel ) + ( f90 * fresnel );\n}\nfloat V_GGX_SmithCorrelated( const in float alpha, const in float dotNL, const in float dotNV ) {\n	float a2 = pow2( alpha );\n	float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );\n	float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );\n	return 0.5 / max( gv + gl, EPSILON );\n}\nfloat D_GGX( const in float alpha, const in float dotNH ) {\n	float a2 = pow2( alpha );\n	float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0;\n	return RECIPROCAL_PI * a2 / pow2( denom );\n}\nvec3 BRDF_GGX( const in vec3 lightDir, const in vec3 viewDir, const in vec3 normal, const in vec3 f0, const in float f90, const in float roughness ) {\n	float alpha = pow2( roughness );\n	vec3 halfDir = normalize( lightDir + viewDir );\n	float dotNL = saturate( dot( normal, lightDir ) );\n	float dotNV = saturate( dot( normal, viewDir ) );\n	float dotNH = saturate( dot( normal, halfDir ) );\n	float dotVH = saturate( dot( viewDir, halfDir ) );\n	vec3 F = F_Schlick( f0, f90, dotVH );\n	float V = V_GGX_SmithCorrelated( alpha, dotNL, dotNV );\n	float D = D_GGX( alpha, dotNH );\n	return F * ( V * D );\n}\nvec2 LTC_Uv( const in vec3 N, const in vec3 V, const in float roughness ) {\n	const float LUT_SIZE = 64.0;\n	const float LUT_SCALE = ( LUT_SIZE - 1.0 ) / LUT_SIZE;\n	const float LUT_BIAS = 0.5 / LUT_SIZE;\n	float dotNV = saturate( dot( N, V ) );\n	vec2 uv = vec2( roughness, sqrt( 1.0 - dotNV ) );\n	uv = uv * LUT_SCALE + LUT_BIAS;\n	return uv;\n}\nfloat LTC_ClippedSphereFormFactor( const in vec3 f ) {\n	float l = length( f );\n	return max( ( l * l + f.z ) / ( l + 1.0 ), 0.0 );\n}\nvec3 LTC_EdgeVectorFormFactor( const in vec3 v1, const in vec3 v2 ) {\n	float x = dot( v1, v2 );\n	float y = abs( x );\n	float a = 0.8543985 + ( 0.4965155 + 0.0145206 * y ) * y;\n	float b = 3.4175940 + ( 4.1616724 + y ) * y;\n	float v = a / b;\n	float theta_sintheta = ( x > 0.0 ) ? v : 0.5 * inversesqrt( max( 1.0 - x * x, 1e-7 ) ) - v;\n	return cross( v1, v2 ) * theta_sintheta;\n}\nvec3 LTC_Evaluate( const in vec3 N, const in vec3 V, const in vec3 P, const in mat3 mInv, const in vec3 rectCoords[ 4 ] ) {\n	vec3 v1 = rectCoords[ 1 ] - rectCoords[ 0 ];\n	vec3 v2 = rectCoords[ 3 ] - rectCoords[ 0 ];\n	vec3 lightNormal = cross( v1, v2 );\n	if( dot( lightNormal, P - rectCoords[ 0 ] ) < 0.0 ) return vec3( 0.0 );\n	vec3 T1, T2;\n	T1 = normalize( V - N * dot( V, N ) );\n	T2 = - cross( N, T1 );\n	mat3 mat = mInv * transposeMat3( mat3( T1, T2, N ) );\n	vec3 coords[ 4 ];\n	coords[ 0 ] = mat * ( rectCoords[ 0 ] - P );\n	coords[ 1 ] = mat * ( rectCoords[ 1 ] - P );\n	coords[ 2 ] = mat * ( rectCoords[ 2 ] - P );\n	coords[ 3 ] = mat * ( rectCoords[ 3 ] - P );\n	coords[ 0 ] = normalize( coords[ 0 ] );\n	coords[ 1 ] = normalize( coords[ 1 ] );\n	coords[ 2 ] = normalize( coords[ 2 ] );\n	coords[ 3 ] = normalize( coords[ 3 ] );\n	vec3 vectorFormFactor = vec3( 0.0 );\n	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 0 ], coords[ 1 ] );\n	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 1 ], coords[ 2 ] );\n	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 2 ], coords[ 3 ] );\n	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 3 ], coords[ 0 ] );\n	float result = LTC_ClippedSphereFormFactor( vectorFormFactor );\n	return vec3( result );\n}\nfloat G_BlinnPhong_Implicit( ) {\n	return 0.25;\n}\nfloat D_BlinnPhong( const in float shininess, const in float dotNH ) {\n	return RECIPROCAL_PI * ( shininess * 0.5 + 1.0 ) * pow( dotNH, shininess );\n}\nvec3 BRDF_BlinnPhong( const in vec3 lightDir, const in vec3 viewDir, const in vec3 normal, const in vec3 specularColor, const in float shininess ) {\n	vec3 halfDir = normalize( lightDir + viewDir );\n	float dotNH = saturate( dot( normal, halfDir ) );\n	float dotVH = saturate( dot( viewDir, halfDir ) );\n	vec3 F = F_Schlick( specularColor, 1.0, dotVH );\n	float G = G_BlinnPhong_Implicit( );\n	float D = D_BlinnPhong( shininess, dotNH );\n	return F * ( G * D );\n}\n#if defined( USE_SHEEN )\nfloat D_Charlie( float roughness, float dotNH ) {\n	float alpha = pow2( roughness );\n	float invAlpha = 1.0 / alpha;\n	float cos2h = dotNH * dotNH;\n	float sin2h = max( 1.0 - cos2h, 0.0078125 );\n	return ( 2.0 + invAlpha ) * pow( sin2h, invAlpha * 0.5 ) / ( 2.0 * PI );\n}\nfloat V_Neubelt( float dotNV, float dotNL ) {\n	return saturate( 1.0 / ( 4.0 * ( dotNL + dotNV - dotNL * dotNV ) ) );\n}\nvec3 BRDF_Sheen( const in vec3 lightDir, const in vec3 viewDir, const in vec3 normal, vec3 sheenTint, const in float sheenRoughness ) {\n	vec3 halfDir = normalize( lightDir + viewDir );\n	float dotNL = saturate( dot( normal, lightDir ) );\n	float dotNV = saturate( dot( normal, viewDir ) );\n	float dotNH = saturate( dot( normal, halfDir ) );\n	float D = D_Charlie( sheenRoughness, dotNH );\n	float V = V_Neubelt( dotNV, dotNL );\n	return sheenTint * ( D * V );\n}\n#endif";
 var bumpmap_pars_fragment = "#ifdef USE_BUMPMAP\n	uniform sampler2D bumpMap;\n	uniform float bumpScale;\n	vec2 dHdxy_fwd() {\n		vec2 dSTdx = dFdx( vUv );\n		vec2 dSTdy = dFdy( vUv );\n		float Hll = bumpScale * texture2D( bumpMap, vUv ).x;\n		float dBx = bumpScale * texture2D( bumpMap, vUv + dSTdx ).x - Hll;\n		float dBy = bumpScale * texture2D( bumpMap, vUv + dSTdy ).x - Hll;\n		return vec2( dBx, dBy );\n	}\n	vec3 perturbNormalArb( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy, float faceDirection ) {\n		vec3 vSigmaX = vec3( dFdx( surf_pos.x ), dFdx( surf_pos.y ), dFdx( surf_pos.z ) );\n		vec3 vSigmaY = vec3( dFdy( surf_pos.x ), dFdy( surf_pos.y ), dFdy( surf_pos.z ) );\n		vec3 vN = surf_norm;\n		vec3 R1 = cross( vSigmaY, vN );\n		vec3 R2 = cross( vN, vSigmaX );\n		float fDet = dot( vSigmaX, R1 ) * faceDirection;\n		vec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );\n		return normalize( abs( fDet ) * surf_norm - vGrad );\n	}\n#endif";
 var clipping_planes_fragment = "#if NUM_CLIPPING_PLANES > 0\n	vec4 plane;\n	#pragma unroll_loop_start\n	for ( int i = 0; i < UNION_CLIPPING_PLANES; i ++ ) {\n		plane = clippingPlanes[ i ];\n		if ( dot( vClipPosition, plane.xyz ) > plane.w ) discard;\n	}\n	#pragma unroll_loop_end\n	#if UNION_CLIPPING_PLANES < NUM_CLIPPING_PLANES\n		bool clipped = true;\n		#pragma unroll_loop_start\n		for ( int i = UNION_CLIPPING_PLANES; i < NUM_CLIPPING_PLANES; i ++ ) {\n			plane = clippingPlanes[ i ];\n			clipped = ( dot( vClipPosition, plane.xyz ) > plane.w ) && clipped;\n		}\n		#pragma unroll_loop_end\n		if ( clipped ) discard;\n	#endif\n#endif";
 var clipping_planes_pars_fragment = "#if NUM_CLIPPING_PLANES > 0\n	varying vec3 vClipPosition;\n	uniform vec4 clippingPlanes[ NUM_CLIPPING_PLANES ];\n#endif";
@@ -7429,17 +7481,17 @@ var fog_pars_fragment = "#ifdef USE_FOG\n	uniform vec3 fogColor;\n	varying float
 var gradientmap_pars_fragment = "#ifdef USE_GRADIENTMAP\n	uniform sampler2D gradientMap;\n#endif\nvec3 getGradientIrradiance( vec3 normal, vec3 lightDirection ) {\n	float dotNL = dot( normal, lightDirection );\n	vec2 coord = vec2( dotNL * 0.5 + 0.5, 0.0 );\n	#ifdef USE_GRADIENTMAP\n		return texture2D( gradientMap, coord ).rgb;\n	#else\n		return ( coord.x < 0.7 ) ? vec3( 0.7 ) : vec3( 1.0 );\n	#endif\n}";
 var lightmap_fragment = "#ifdef USE_LIGHTMAP\n	vec4 lightMapTexel = texture2D( lightMap, vUv2 );\n	vec3 lightMapIrradiance = lightMapTexelToLinear( lightMapTexel ).rgb * lightMapIntensity;\n	#ifndef PHYSICALLY_CORRECT_LIGHTS\n		lightMapIrradiance *= PI;\n	#endif\n	reflectedLight.indirectDiffuse += lightMapIrradiance;\n#endif";
 var lightmap_pars_fragment = "#ifdef USE_LIGHTMAP\n	uniform sampler2D lightMap;\n	uniform float lightMapIntensity;\n#endif";
-var lights_lambert_vertex = "vec3 diffuse = vec3( 1.0 );\nGeometricContext geometry;\ngeometry.position = mvPosition.xyz;\ngeometry.normal = normalize( transformedNormal );\ngeometry.viewDir = ( isOrthographic ) ? vec3( 0, 0, 1 ) : normalize( -mvPosition.xyz );\nGeometricContext backGeometry;\nbackGeometry.position = geometry.position;\nbackGeometry.normal = -geometry.normal;\nbackGeometry.viewDir = geometry.viewDir;\nvLightFront = vec3( 0.0 );\nvIndirectFront = vec3( 0.0 );\n#ifdef DOUBLE_SIDED\n	vLightBack = vec3( 0.0 );\n	vIndirectBack = vec3( 0.0 );\n#endif\nIncidentLight directLight;\nfloat dotNL;\nvec3 directLightColor_Diffuse;\nvIndirectFront += getAmbientLightIrradiance( ambientLightColor );\nvIndirectFront += getLightProbeIrradiance( lightProbe, geometry );\n#ifdef DOUBLE_SIDED\n	vIndirectBack += getAmbientLightIrradiance( ambientLightColor );\n	vIndirectBack += getLightProbeIrradiance( lightProbe, backGeometry );\n#endif\n#if NUM_POINT_LIGHTS > 0\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n		getPointLightInfo( pointLights[ i ], geometry, directLight );\n		dotNL = dot( geometry.normal, directLight.direction );\n		directLightColor_Diffuse = directLight.color;\n		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;\n		#ifdef DOUBLE_SIDED\n			vLightBack += saturate( - dotNL ) * directLightColor_Diffuse;\n		#endif\n	}\n	#pragma unroll_loop_end\n#endif\n#if NUM_SPOT_LIGHTS > 0\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n		getSpotLightInfo( spotLights[ i ], geometry, directLight );\n		dotNL = dot( geometry.normal, directLight.direction );\n		directLightColor_Diffuse = directLight.color;\n		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;\n		#ifdef DOUBLE_SIDED\n			vLightBack += saturate( - dotNL ) * directLightColor_Diffuse;\n		#endif\n	}\n	#pragma unroll_loop_end\n#endif\n#if NUM_DIR_LIGHTS > 0\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n		getDirectionalLightInfo( directionalLights[ i ], geometry, directLight );\n		dotNL = dot( geometry.normal, directLight.direction );\n		directLightColor_Diffuse = directLight.color;\n		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;\n		#ifdef DOUBLE_SIDED\n			vLightBack += saturate( - dotNL ) * directLightColor_Diffuse;\n		#endif\n	}\n	#pragma unroll_loop_end\n#endif\n#if NUM_HEMI_LIGHTS > 0\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n		vIndirectFront += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n		#ifdef DOUBLE_SIDED\n			vIndirectBack += getHemisphereLightIrradiance( hemisphereLights[ i ], backGeometry );\n		#endif\n	}\n	#pragma unroll_loop_end\n#endif";
-var lights_pars_begin = "uniform bool receiveShadow;\nuniform vec3 ambientLightColor;\nuniform vec3 lightProbe[ 9 ];\nvec3 shGetIrradianceAt( in vec3 normal, in vec3 shCoefficients[ 9 ] ) {\n	float x = normal.x, y = normal.y, z = normal.z;\n	vec3 result = shCoefficients[ 0 ] * 0.886227;\n	result += shCoefficients[ 1 ] * 2.0 * 0.511664 * y;\n	result += shCoefficients[ 2 ] * 2.0 * 0.511664 * z;\n	result += shCoefficients[ 3 ] * 2.0 * 0.511664 * x;\n	result += shCoefficients[ 4 ] * 2.0 * 0.429043 * x * y;\n	result += shCoefficients[ 5 ] * 2.0 * 0.429043 * y * z;\n	result += shCoefficients[ 6 ] * ( 0.743125 * z * z - 0.247708 );\n	result += shCoefficients[ 7 ] * 2.0 * 0.429043 * x * z;\n	result += shCoefficients[ 8 ] * 0.429043 * ( x * x - y * y );\n	return result;\n}\nvec3 getLightProbeIrradiance( const in vec3 lightProbe[ 9 ], const in GeometricContext geometry ) {\n	vec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n	vec3 irradiance = shGetIrradianceAt( worldNormal, lightProbe );\n	return irradiance;\n}\nvec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {\n	vec3 irradiance = ambientLightColor;\n	return irradiance;\n}\nfloat getDistanceAttenuation( const in float lightDistance, const in float cutoffDistance, const in float decayExponent ) {\n	#if defined ( PHYSICALLY_CORRECT_LIGHTS )\n		float distanceFalloff = 1.0 / max( pow( lightDistance, decayExponent ), 0.01 );\n		if ( cutoffDistance > 0.0 ) {\n			distanceFalloff *= pow2( saturate( 1.0 - pow4( lightDistance / cutoffDistance ) ) );\n		}\n		return distanceFalloff;\n	#else\n		if ( cutoffDistance > 0.0 && decayExponent > 0.0 ) {\n			return pow( saturate( - lightDistance / cutoffDistance + 1.0 ), decayExponent );\n		}\n		return 1.0;\n	#endif\n}\nfloat getSpotAttenuation( const in float coneCosine, const in float penumbraCosine, const in float angleCosine ) {\n	return smoothstep( coneCosine, penumbraCosine, angleCosine );\n}\n#if NUM_DIR_LIGHTS > 0\n	struct DirectionalLight {\n		vec3 direction;\n		vec3 color;\n	};\n	uniform DirectionalLight directionalLights[ NUM_DIR_LIGHTS ];\n	void getDirectionalLightInfo( const in DirectionalLight directionalLight, const in GeometricContext geometry, out IncidentLight light ) {\n		light.color = directionalLight.color;\n		light.direction = directionalLight.direction;\n		light.visible = true;\n	}\n#endif\n#if NUM_POINT_LIGHTS > 0\n	struct PointLight {\n		vec3 position;\n		vec3 color;\n		float distance;\n		float decay;\n	};\n	uniform PointLight pointLights[ NUM_POINT_LIGHTS ];\n	void getPointLightInfo( const in PointLight pointLight, const in GeometricContext geometry, out IncidentLight light ) {\n		vec3 lVector = pointLight.position - geometry.position;\n		light.direction = normalize( lVector );\n		float lightDistance = length( lVector );\n		light.color = pointLight.color;\n		light.color *= getDistanceAttenuation( lightDistance, pointLight.distance, pointLight.decay );\n		light.visible = ( light.color != vec3( 0.0 ) );\n	}\n#endif\n#if NUM_SPOT_LIGHTS > 0\n	struct SpotLight {\n		vec3 position;\n		vec3 direction;\n		vec3 color;\n		float distance;\n		float decay;\n		float coneCos;\n		float penumbraCos;\n	};\n	uniform SpotLight spotLights[ NUM_SPOT_LIGHTS ];\n	void getSpotLightInfo( const in SpotLight spotLight, const in GeometricContext geometry, out IncidentLight light ) {\n		vec3 lVector = spotLight.position - geometry.position;\n		light.direction = normalize( lVector );\n		float angleCos = dot( light.direction, spotLight.direction );\n		float spotAttenuation = getSpotAttenuation( spotLight.coneCos, spotLight.penumbraCos, angleCos );\n		if ( spotAttenuation > 0.0 ) {\n			float lightDistance = length( lVector );\n			light.color = spotLight.color * spotAttenuation;\n			light.color *= getDistanceAttenuation( lightDistance, spotLight.distance, spotLight.decay );\n			light.visible = ( light.color != vec3( 0.0 ) );\n		} else {\n			light.color = vec3( 0.0 );\n			light.visible = false;\n		}\n	}\n#endif\n#if NUM_RECT_AREA_LIGHTS > 0\n	struct RectAreaLight {\n		vec3 color;\n		vec3 position;\n		vec3 halfWidth;\n		vec3 halfHeight;\n	};\n	uniform sampler2D ltc_1;	uniform sampler2D ltc_2;\n	uniform RectAreaLight rectAreaLights[ NUM_RECT_AREA_LIGHTS ];\n#endif\n#if NUM_HEMI_LIGHTS > 0\n	struct HemisphereLight {\n		vec3 direction;\n		vec3 skyColor;\n		vec3 groundColor;\n	};\n	uniform HemisphereLight hemisphereLights[ NUM_HEMI_LIGHTS ];\n	vec3 getHemisphereLightIrradiance( const in HemisphereLight hemiLight, const in GeometricContext geometry ) {\n		float dotNL = dot( geometry.normal, hemiLight.direction );\n		float hemiDiffuseWeight = 0.5 * dotNL + 0.5;\n		vec3 irradiance = mix( hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight );\n		return irradiance;\n	}\n#endif";
-var envmap_physical_pars_fragment = "#if defined( USE_ENVMAP )\n	#ifdef ENVMAP_MODE_REFRACTION\n		uniform float refractionRatio;\n	#endif\n	vec3 getIBLIrradiance( const in GeometricContext geometry ) {\n		#if defined( ENVMAP_TYPE_CUBE_UV )\n			vec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n			vec4 envMapColor = textureCubeUV( envMap, worldNormal, 1.0 );\n			return PI * envMapColor.rgb * envMapIntensity;\n		#else\n			return vec3( 0.0 );\n		#endif\n	}\n	vec3 getIBLRadiance( const in vec3 viewDir, const in vec3 normal, const in float roughness ) {\n		#if defined( ENVMAP_TYPE_CUBE_UV )\n			vec3 reflectVec;\n			#ifdef ENVMAP_MODE_REFLECTION\n				reflectVec = reflect( - viewDir, normal );\n				reflectVec = normalize( mix( reflectVec, normal, roughness * roughness) );\n			#else\n				reflectVec = refract( - viewDir, normal, refractionRatio );\n			#endif\n			reflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n			vec4 envMapColor = textureCubeUV( envMap, reflectVec, roughness );\n			return envMapColor.rgb * envMapIntensity;\n		#else\n			return vec3( 0.0 );\n		#endif\n	}\n#endif";
+var lights_lambert_vertex = "vec3 diffuse = vec3( 1.0 );\nGeometricContext geometry;\ngeometry.position = mvPosition.xyz;\ngeometry.normal = normalize( transformedNormal );\ngeometry.viewDir = ( isOrthographic ) ? vec3( 0, 0, 1 ) : normalize( -mvPosition.xyz );\nGeometricContext backGeometry;\nbackGeometry.position = geometry.position;\nbackGeometry.normal = -geometry.normal;\nbackGeometry.viewDir = geometry.viewDir;\nvLightFront = vec3( 0.0 );\nvIndirectFront = vec3( 0.0 );\n#ifdef DOUBLE_SIDED\n	vLightBack = vec3( 0.0 );\n	vIndirectBack = vec3( 0.0 );\n#endif\nIncidentLight directLight;\nfloat dotNL;\nvec3 directLightColor_Diffuse;\nvIndirectFront += getAmbientLightIrradiance( ambientLightColor );\nvIndirectFront += getLightProbeIrradiance( lightProbe, geometry.normal );\n#ifdef DOUBLE_SIDED\n	vIndirectBack += getAmbientLightIrradiance( ambientLightColor );\n	vIndirectBack += getLightProbeIrradiance( lightProbe, backGeometry.normal );\n#endif\n#if NUM_POINT_LIGHTS > 0\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n		getPointLightInfo( pointLights[ i ], geometry, directLight );\n		dotNL = dot( geometry.normal, directLight.direction );\n		directLightColor_Diffuse = directLight.color;\n		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;\n		#ifdef DOUBLE_SIDED\n			vLightBack += saturate( - dotNL ) * directLightColor_Diffuse;\n		#endif\n	}\n	#pragma unroll_loop_end\n#endif\n#if NUM_SPOT_LIGHTS > 0\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n		getSpotLightInfo( spotLights[ i ], geometry, directLight );\n		dotNL = dot( geometry.normal, directLight.direction );\n		directLightColor_Diffuse = directLight.color;\n		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;\n		#ifdef DOUBLE_SIDED\n			vLightBack += saturate( - dotNL ) * directLightColor_Diffuse;\n		#endif\n	}\n	#pragma unroll_loop_end\n#endif\n#if NUM_DIR_LIGHTS > 0\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n		getDirectionalLightInfo( directionalLights[ i ], geometry, directLight );\n		dotNL = dot( geometry.normal, directLight.direction );\n		directLightColor_Diffuse = directLight.color;\n		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;\n		#ifdef DOUBLE_SIDED\n			vLightBack += saturate( - dotNL ) * directLightColor_Diffuse;\n		#endif\n	}\n	#pragma unroll_loop_end\n#endif\n#if NUM_HEMI_LIGHTS > 0\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n		vIndirectFront += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry.normal );\n		#ifdef DOUBLE_SIDED\n			vIndirectBack += getHemisphereLightIrradiance( hemisphereLights[ i ], backGeometry.normal );\n		#endif\n	}\n	#pragma unroll_loop_end\n#endif";
+var lights_pars_begin = "uniform bool receiveShadow;\nuniform vec3 ambientLightColor;\nuniform vec3 lightProbe[ 9 ];\nvec3 shGetIrradianceAt( in vec3 normal, in vec3 shCoefficients[ 9 ] ) {\n	float x = normal.x, y = normal.y, z = normal.z;\n	vec3 result = shCoefficients[ 0 ] * 0.886227;\n	result += shCoefficients[ 1 ] * 2.0 * 0.511664 * y;\n	result += shCoefficients[ 2 ] * 2.0 * 0.511664 * z;\n	result += shCoefficients[ 3 ] * 2.0 * 0.511664 * x;\n	result += shCoefficients[ 4 ] * 2.0 * 0.429043 * x * y;\n	result += shCoefficients[ 5 ] * 2.0 * 0.429043 * y * z;\n	result += shCoefficients[ 6 ] * ( 0.743125 * z * z - 0.247708 );\n	result += shCoefficients[ 7 ] * 2.0 * 0.429043 * x * z;\n	result += shCoefficients[ 8 ] * 0.429043 * ( x * x - y * y );\n	return result;\n}\nvec3 getLightProbeIrradiance( const in vec3 lightProbe[ 9 ], const in vec3 normal ) {\n	vec3 worldNormal = inverseTransformDirection( normal, viewMatrix );\n	vec3 irradiance = shGetIrradianceAt( worldNormal, lightProbe );\n	return irradiance;\n}\nvec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {\n	vec3 irradiance = ambientLightColor;\n	return irradiance;\n}\nfloat getDistanceAttenuation( const in float lightDistance, const in float cutoffDistance, const in float decayExponent ) {\n	#if defined ( PHYSICALLY_CORRECT_LIGHTS )\n		float distanceFalloff = 1.0 / max( pow( lightDistance, decayExponent ), 0.01 );\n		if ( cutoffDistance > 0.0 ) {\n			distanceFalloff *= pow2( saturate( 1.0 - pow4( lightDistance / cutoffDistance ) ) );\n		}\n		return distanceFalloff;\n	#else\n		if ( cutoffDistance > 0.0 && decayExponent > 0.0 ) {\n			return pow( saturate( - lightDistance / cutoffDistance + 1.0 ), decayExponent );\n		}\n		return 1.0;\n	#endif\n}\nfloat getSpotAttenuation( const in float coneCosine, const in float penumbraCosine, const in float angleCosine ) {\n	return smoothstep( coneCosine, penumbraCosine, angleCosine );\n}\n#if NUM_DIR_LIGHTS > 0\n	struct DirectionalLight {\n		vec3 direction;\n		vec3 color;\n	};\n	uniform DirectionalLight directionalLights[ NUM_DIR_LIGHTS ];\n	void getDirectionalLightInfo( const in DirectionalLight directionalLight, const in GeometricContext geometry, out IncidentLight light ) {\n		light.color = directionalLight.color;\n		light.direction = directionalLight.direction;\n		light.visible = true;\n	}\n#endif\n#if NUM_POINT_LIGHTS > 0\n	struct PointLight {\n		vec3 position;\n		vec3 color;\n		float distance;\n		float decay;\n	};\n	uniform PointLight pointLights[ NUM_POINT_LIGHTS ];\n	void getPointLightInfo( const in PointLight pointLight, const in GeometricContext geometry, out IncidentLight light ) {\n		vec3 lVector = pointLight.position - geometry.position;\n		light.direction = normalize( lVector );\n		float lightDistance = length( lVector );\n		light.color = pointLight.color;\n		light.color *= getDistanceAttenuation( lightDistance, pointLight.distance, pointLight.decay );\n		light.visible = ( light.color != vec3( 0.0 ) );\n	}\n#endif\n#if NUM_SPOT_LIGHTS > 0\n	struct SpotLight {\n		vec3 position;\n		vec3 direction;\n		vec3 color;\n		float distance;\n		float decay;\n		float coneCos;\n		float penumbraCos;\n	};\n	uniform SpotLight spotLights[ NUM_SPOT_LIGHTS ];\n	void getSpotLightInfo( const in SpotLight spotLight, const in GeometricContext geometry, out IncidentLight light ) {\n		vec3 lVector = spotLight.position - geometry.position;\n		light.direction = normalize( lVector );\n		float angleCos = dot( light.direction, spotLight.direction );\n		float spotAttenuation = getSpotAttenuation( spotLight.coneCos, spotLight.penumbraCos, angleCos );\n		if ( spotAttenuation > 0.0 ) {\n			float lightDistance = length( lVector );\n			light.color = spotLight.color * spotAttenuation;\n			light.color *= getDistanceAttenuation( lightDistance, spotLight.distance, spotLight.decay );\n			light.visible = ( light.color != vec3( 0.0 ) );\n		} else {\n			light.color = vec3( 0.0 );\n			light.visible = false;\n		}\n	}\n#endif\n#if NUM_RECT_AREA_LIGHTS > 0\n	struct RectAreaLight {\n		vec3 color;\n		vec3 position;\n		vec3 halfWidth;\n		vec3 halfHeight;\n	};\n	uniform sampler2D ltc_1;	uniform sampler2D ltc_2;\n	uniform RectAreaLight rectAreaLights[ NUM_RECT_AREA_LIGHTS ];\n#endif\n#if NUM_HEMI_LIGHTS > 0\n	struct HemisphereLight {\n		vec3 direction;\n		vec3 skyColor;\n		vec3 groundColor;\n	};\n	uniform HemisphereLight hemisphereLights[ NUM_HEMI_LIGHTS ];\n	vec3 getHemisphereLightIrradiance( const in HemisphereLight hemiLight, const in vec3 normal ) {\n		float dotNL = dot( normal, hemiLight.direction );\n		float hemiDiffuseWeight = 0.5 * dotNL + 0.5;\n		vec3 irradiance = mix( hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight );\n		return irradiance;\n	}\n#endif";
+var envmap_physical_pars_fragment = "#if defined( USE_ENVMAP )\n	#ifdef ENVMAP_MODE_REFRACTION\n		uniform float refractionRatio;\n	#endif\n	vec3 getIBLIrradiance( const in vec3 normal ) {\n		#if defined( ENVMAP_TYPE_CUBE_UV )\n			vec3 worldNormal = inverseTransformDirection( normal, viewMatrix );\n			vec4 envMapColor = textureCubeUV( envMap, worldNormal, 1.0 );\n			return PI * envMapColor.rgb * envMapIntensity;\n		#else\n			return vec3( 0.0 );\n		#endif\n	}\n	vec3 getIBLRadiance( const in vec3 viewDir, const in vec3 normal, const in float roughness ) {\n		#if defined( ENVMAP_TYPE_CUBE_UV )\n			vec3 reflectVec;\n			#ifdef ENVMAP_MODE_REFLECTION\n				reflectVec = reflect( - viewDir, normal );\n				reflectVec = normalize( mix( reflectVec, normal, roughness * roughness) );\n			#else\n				reflectVec = refract( - viewDir, normal, refractionRatio );\n			#endif\n			reflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n			vec4 envMapColor = textureCubeUV( envMap, reflectVec, roughness );\n			return envMapColor.rgb * envMapIntensity;\n		#else\n			return vec3( 0.0 );\n		#endif\n	}\n#endif";
 var lights_toon_fragment = "ToonMaterial material;\nmaterial.diffuseColor = diffuseColor.rgb;";
 var lights_toon_pars_fragment = "varying vec3 vViewPosition;\nstruct ToonMaterial {\n	vec3 diffuseColor;\n};\nvoid RE_Direct_Toon( const in IncidentLight directLight, const in GeometricContext geometry, const in ToonMaterial material, inout ReflectedLight reflectedLight ) {\n	vec3 irradiance = getGradientIrradiance( geometry.normal, directLight.direction ) * directLight.color;\n	reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n}\nvoid RE_IndirectDiffuse_Toon( const in vec3 irradiance, const in GeometricContext geometry, const in ToonMaterial material, inout ReflectedLight reflectedLight ) {\n	reflectedLight.indirectDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n}\n#define RE_Direct				RE_Direct_Toon\n#define RE_IndirectDiffuse		RE_IndirectDiffuse_Toon\n#define Material_LightProbeLOD( material )	(0)";
 var lights_phong_fragment = "BlinnPhongMaterial material;\nmaterial.diffuseColor = diffuseColor.rgb;\nmaterial.specularColor = specular;\nmaterial.specularShininess = shininess;\nmaterial.specularStrength = specularStrength;";
-var lights_phong_pars_fragment = "varying vec3 vViewPosition;\nstruct BlinnPhongMaterial {\n	vec3 diffuseColor;\n	vec3 specularColor;\n	float specularShininess;\n	float specularStrength;\n};\nvoid RE_Direct_BlinnPhong( const in IncidentLight directLight, const in GeometricContext geometry, const in BlinnPhongMaterial material, inout ReflectedLight reflectedLight ) {\n	float dotNL = saturate( dot( geometry.normal, directLight.direction ) );\n	vec3 irradiance = dotNL * directLight.color;\n	reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n	reflectedLight.directSpecular += irradiance * BRDF_BlinnPhong( directLight, geometry, material.specularColor, material.specularShininess ) * material.specularStrength;\n}\nvoid RE_IndirectDiffuse_BlinnPhong( const in vec3 irradiance, const in GeometricContext geometry, const in BlinnPhongMaterial material, inout ReflectedLight reflectedLight ) {\n	reflectedLight.indirectDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n}\n#define RE_Direct				RE_Direct_BlinnPhong\n#define RE_IndirectDiffuse		RE_IndirectDiffuse_BlinnPhong\n#define Material_LightProbeLOD( material )	(0)";
-var lights_physical_fragment = "PhysicalMaterial material;\nmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\nvec3 dxy = max( abs( dFdx( geometryNormal ) ), abs( dFdy( geometryNormal ) ) );\nfloat geometryRoughness = max( max( dxy.x, dxy.y ), dxy.z );\nmaterial.roughness = max( roughnessFactor, 0.0525 );material.roughness += geometryRoughness;\nmaterial.roughness = min( material.roughness, 1.0 );\n#ifdef IOR\n	#ifdef SPECULAR\n		float specularIntensityFactor = specularIntensity;\n		vec3 specularTintFactor = specularTint;\n		#ifdef USE_SPECULARINTENSITYMAP\n			specularIntensityFactor *= texture2D( specularIntensityMap, vUv ).a;\n		#endif\n		#ifdef USE_SPECULARTINTMAP\n			specularTintFactor *= specularTintMapTexelToLinear( texture2D( specularTintMap, vUv ) ).rgb;\n		#endif\n		material.specularF90 = mix( specularIntensityFactor, 1.0, metalnessFactor );\n	#else\n		float specularIntensityFactor = 1.0;\n		vec3 specularTintFactor = vec3( 1.0 );\n		material.specularF90 = 1.0;\n	#endif\n	material.specularColor = mix( min( pow2( ( ior - 1.0 ) / ( ior + 1.0 ) ) * specularTintFactor, vec3( 1.0 ) ) * specularIntensityFactor, diffuseColor.rgb, metalnessFactor );\n#else\n	material.specularColor = mix( vec3( 0.04 ), diffuseColor.rgb, metalnessFactor );\n	material.specularF90 = 1.0;\n#endif\n#ifdef USE_CLEARCOAT\n	material.clearcoat = clearcoat;\n	material.clearcoatRoughness = clearcoatRoughness;\n	material.clearcoatF0 = vec3( 0.04 );\n	material.clearcoatF90 = 1.0;\n	#ifdef USE_CLEARCOATMAP\n		material.clearcoat *= texture2D( clearcoatMap, vUv ).x;\n	#endif\n	#ifdef USE_CLEARCOAT_ROUGHNESSMAP\n		material.clearcoatRoughness *= texture2D( clearcoatRoughnessMap, vUv ).y;\n	#endif\n	material.clearcoat = saturate( material.clearcoat );	material.clearcoatRoughness = max( material.clearcoatRoughness, 0.0525 );\n	material.clearcoatRoughness += geometryRoughness;\n	material.clearcoatRoughness = min( material.clearcoatRoughness, 1.0 );\n#endif\n#ifdef USE_SHEEN\n	material.sheenTint = sheenTint;\n#endif";
-var lights_physical_pars_fragment = "struct PhysicalMaterial {\n	vec3 diffuseColor;\n	float roughness;\n	vec3 specularColor;\n	float specularF90;\n	#ifdef USE_CLEARCOAT\n		float clearcoat;\n		float clearcoatRoughness;\n		vec3 clearcoatF0;\n		float clearcoatF90;\n	#endif\n	#ifdef USE_SHEEN\n		vec3 sheenTint;\n	#endif\n};\nvec3 clearcoatSpecular = vec3( 0.0 );\nvec2 DFGApprox( const in vec3 normal, const in vec3 viewDir, const in float roughness ) {\n	float dotNV = saturate( dot( normal, viewDir ) );\n	const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );\n	const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );\n	vec4 r = roughness * c0 + c1;\n	float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;\n	vec2 fab = vec2( - 1.04, 1.04 ) * a004 + r.zw;\n	return fab;\n}\nvec3 EnvironmentBRDF( const in vec3 normal, const in vec3 viewDir, const in vec3 specularColor, const in float specularF90, const in float roughness ) {\n	vec2 fab = DFGApprox( normal, viewDir, roughness );\n	return specularColor * fab.x + specularF90 * fab.y;\n}\nvoid computeMultiscattering( const in vec3 normal, const in vec3 viewDir, const in vec3 specularColor, const in float specularF90, const in float roughness, inout vec3 singleScatter, inout vec3 multiScatter ) {\n	vec2 fab = DFGApprox( normal, viewDir, roughness );\n	vec3 FssEss = specularColor * fab.x + specularF90 * fab.y;\n	float Ess = fab.x + fab.y;\n	float Ems = 1.0 - Ess;\n	vec3 Favg = specularColor + ( 1.0 - specularColor ) * 0.047619;	vec3 Fms = FssEss * Favg / ( 1.0 - Ems * Favg );\n	singleScatter += FssEss;\n	multiScatter += Fms * Ems;\n}\n#if NUM_RECT_AREA_LIGHTS > 0\n	void RE_Direct_RectArea_Physical( const in RectAreaLight rectAreaLight, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n		vec3 normal = geometry.normal;\n		vec3 viewDir = geometry.viewDir;\n		vec3 position = geometry.position;\n		vec3 lightPos = rectAreaLight.position;\n		vec3 halfWidth = rectAreaLight.halfWidth;\n		vec3 halfHeight = rectAreaLight.halfHeight;\n		vec3 lightColor = rectAreaLight.color;\n		float roughness = material.roughness;\n		vec3 rectCoords[ 4 ];\n		rectCoords[ 0 ] = lightPos + halfWidth - halfHeight;		rectCoords[ 1 ] = lightPos - halfWidth - halfHeight;\n		rectCoords[ 2 ] = lightPos - halfWidth + halfHeight;\n		rectCoords[ 3 ] = lightPos + halfWidth + halfHeight;\n		vec2 uv = LTC_Uv( normal, viewDir, roughness );\n		vec4 t1 = texture2D( ltc_1, uv );\n		vec4 t2 = texture2D( ltc_2, uv );\n		mat3 mInv = mat3(\n			vec3( t1.x, 0, t1.y ),\n			vec3(    0, 1,    0 ),\n			vec3( t1.z, 0, t1.w )\n		);\n		vec3 fresnel = ( material.specularColor * t2.x + ( vec3( 1.0 ) - material.specularColor ) * t2.y );\n		reflectedLight.directSpecular += lightColor * fresnel * LTC_Evaluate( normal, viewDir, position, mInv, rectCoords );\n		reflectedLight.directDiffuse += lightColor * material.diffuseColor * LTC_Evaluate( normal, viewDir, position, mat3( 1.0 ), rectCoords );\n	}\n#endif\nvoid RE_Direct_Physical( const in IncidentLight directLight, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n	float dotNL = saturate( dot( geometry.normal, directLight.direction ) );\n	vec3 irradiance = dotNL * directLight.color;\n	#ifdef USE_CLEARCOAT\n		float dotNLcc = saturate( dot( geometry.clearcoatNormal, directLight.direction ) );\n		vec3 ccIrradiance = dotNLcc * directLight.color;\n		clearcoatSpecular += ccIrradiance * BRDF_GGX( directLight, geometry.viewDir, geometry.clearcoatNormal, material.clearcoatF0, material.clearcoatF90, material.clearcoatRoughness );\n	#endif\n	#ifdef USE_SHEEN\n		reflectedLight.directSpecular += irradiance * BRDF_Sheen( material.roughness, directLight.direction, geometry, material.sheenTint );\n	#else\n		reflectedLight.directSpecular += irradiance * BRDF_GGX( directLight, geometry.viewDir, geometry.normal, material.specularColor, material.specularF90, material.roughness );\n	#endif\n	reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n}\nvoid RE_IndirectDiffuse_Physical( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n	reflectedLight.indirectDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n}\nvoid RE_IndirectSpecular_Physical( const in vec3 radiance, const in vec3 irradiance, const in vec3 clearcoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight) {\n	#ifdef USE_CLEARCOAT\n		clearcoatSpecular += clearcoatRadiance * EnvironmentBRDF( geometry.clearcoatNormal, geometry.viewDir, material.clearcoatF0, material.clearcoatF90, material.clearcoatRoughness );\n	#endif\n	vec3 singleScattering = vec3( 0.0 );\n	vec3 multiScattering = vec3( 0.0 );\n	vec3 cosineWeightedIrradiance = irradiance * RECIPROCAL_PI;\n	computeMultiscattering( geometry.normal, geometry.viewDir, material.specularColor, material.specularF90, material.roughness, singleScattering, multiScattering );\n	vec3 diffuse = material.diffuseColor * ( 1.0 - ( singleScattering + multiScattering ) );\n	reflectedLight.indirectSpecular += radiance * singleScattering;\n	reflectedLight.indirectSpecular += multiScattering * cosineWeightedIrradiance;\n	reflectedLight.indirectDiffuse += diffuse * cosineWeightedIrradiance;\n}\n#define RE_Direct				RE_Direct_Physical\n#define RE_Direct_RectArea		RE_Direct_RectArea_Physical\n#define RE_IndirectDiffuse		RE_IndirectDiffuse_Physical\n#define RE_IndirectSpecular		RE_IndirectSpecular_Physical\nfloat computeSpecularOcclusion( const in float dotNV, const in float ambientOcclusion, const in float roughness ) {\n	return saturate( pow( dotNV + ambientOcclusion, exp2( - 16.0 * roughness - 1.0 ) ) - 1.0 + ambientOcclusion );\n}";
-var lights_fragment_begin = "\nGeometricContext geometry;\ngeometry.position = - vViewPosition;\ngeometry.normal = normal;\ngeometry.viewDir = ( isOrthographic ) ? vec3( 0, 0, 1 ) : normalize( vViewPosition );\n#ifdef USE_CLEARCOAT\n	geometry.clearcoatNormal = clearcoatNormal;\n#endif\nIncidentLight directLight;\n#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n	PointLight pointLight;\n	#if defined( USE_SHADOWMAP ) && NUM_POINT_LIGHT_SHADOWS > 0\n	PointLightShadow pointLightShadow;\n	#endif\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n		pointLight = pointLights[ i ];\n		getPointLightInfo( pointLight, geometry, directLight );\n		#if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_POINT_LIGHT_SHADOWS )\n		pointLightShadow = pointLightShadows[ i ];\n		directLight.color *= all( bvec2( directLight.visible, receiveShadow ) ) ? getPointShadow( pointShadowMap[ i ], pointLightShadow.shadowMapSize, pointLightShadow.shadowBias, pointLightShadow.shadowRadius, vPointShadowCoord[ i ], pointLightShadow.shadowCameraNear, pointLightShadow.shadowCameraFar ) : 1.0;\n		#endif\n		RE_Direct( directLight, geometry, material, reflectedLight );\n	}\n	#pragma unroll_loop_end\n#endif\n#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n	SpotLight spotLight;\n	#if defined( USE_SHADOWMAP ) && NUM_SPOT_LIGHT_SHADOWS > 0\n	SpotLightShadow spotLightShadow;\n	#endif\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n		spotLight = spotLights[ i ];\n		getSpotLightInfo( spotLight, geometry, directLight );\n		#if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_SPOT_LIGHT_SHADOWS )\n		spotLightShadow = spotLightShadows[ i ];\n		directLight.color *= all( bvec2( directLight.visible, receiveShadow ) ) ? getShadow( spotShadowMap[ i ], spotLightShadow.shadowMapSize, spotLightShadow.shadowBias, spotLightShadow.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n		#endif\n		RE_Direct( directLight, geometry, material, reflectedLight );\n	}\n	#pragma unroll_loop_end\n#endif\n#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n	DirectionalLight directionalLight;\n	#if defined( USE_SHADOWMAP ) && NUM_DIR_LIGHT_SHADOWS > 0\n	DirectionalLightShadow directionalLightShadow;\n	#endif\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n		directionalLight = directionalLights[ i ];\n		getDirectionalLightInfo( directionalLight, geometry, directLight );\n		#if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_DIR_LIGHT_SHADOWS )\n		directionalLightShadow = directionalLightShadows[ i ];\n		directLight.color *= all( bvec2( directLight.visible, receiveShadow ) ) ? getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n		#endif\n		RE_Direct( directLight, geometry, material, reflectedLight );\n	}\n	#pragma unroll_loop_end\n#endif\n#if ( NUM_RECT_AREA_LIGHTS > 0 ) && defined( RE_Direct_RectArea )\n	RectAreaLight rectAreaLight;\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_RECT_AREA_LIGHTS; i ++ ) {\n		rectAreaLight = rectAreaLights[ i ];\n		RE_Direct_RectArea( rectAreaLight, geometry, material, reflectedLight );\n	}\n	#pragma unroll_loop_end\n#endif\n#if defined( RE_IndirectDiffuse )\n	vec3 iblIrradiance = vec3( 0.0 );\n	vec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n	irradiance += getLightProbeIrradiance( lightProbe, geometry );\n	#if ( NUM_HEMI_LIGHTS > 0 )\n		#pragma unroll_loop_start\n		for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n			irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n		}\n		#pragma unroll_loop_end\n	#endif\n#endif\n#if defined( RE_IndirectSpecular )\n	vec3 radiance = vec3( 0.0 );\n	vec3 clearcoatRadiance = vec3( 0.0 );\n#endif";
-var lights_fragment_maps = "#if defined( RE_IndirectDiffuse )\n	#ifdef USE_LIGHTMAP\n		vec4 lightMapTexel = texture2D( lightMap, vUv2 );\n		vec3 lightMapIrradiance = lightMapTexelToLinear( lightMapTexel ).rgb * lightMapIntensity;\n		#ifndef PHYSICALLY_CORRECT_LIGHTS\n			lightMapIrradiance *= PI;\n		#endif\n		irradiance += lightMapIrradiance;\n	#endif\n	#if defined( USE_ENVMAP ) && defined( STANDARD ) && defined( ENVMAP_TYPE_CUBE_UV )\n		iblIrradiance += getIBLIrradiance( geometry );\n	#endif\n#endif\n#if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )\n	radiance += getIBLRadiance( geometry.viewDir, geometry.normal, material.roughness );\n	#ifdef USE_CLEARCOAT\n		clearcoatRadiance += getIBLRadiance( geometry.viewDir, geometry.clearcoatNormal, material.clearcoatRoughness );\n	#endif\n#endif";
+var lights_phong_pars_fragment = "varying vec3 vViewPosition;\nstruct BlinnPhongMaterial {\n	vec3 diffuseColor;\n	vec3 specularColor;\n	float specularShininess;\n	float specularStrength;\n};\nvoid RE_Direct_BlinnPhong( const in IncidentLight directLight, const in GeometricContext geometry, const in BlinnPhongMaterial material, inout ReflectedLight reflectedLight ) {\n	float dotNL = saturate( dot( geometry.normal, directLight.direction ) );\n	vec3 irradiance = dotNL * directLight.color;\n	reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n	reflectedLight.directSpecular += irradiance * BRDF_BlinnPhong( directLight.direction, geometry.viewDir, geometry.normal, material.specularColor, material.specularShininess ) * material.specularStrength;\n}\nvoid RE_IndirectDiffuse_BlinnPhong( const in vec3 irradiance, const in GeometricContext geometry, const in BlinnPhongMaterial material, inout ReflectedLight reflectedLight ) {\n	reflectedLight.indirectDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n}\n#define RE_Direct				RE_Direct_BlinnPhong\n#define RE_IndirectDiffuse		RE_IndirectDiffuse_BlinnPhong\n#define Material_LightProbeLOD( material )	(0)";
+var lights_physical_fragment = "PhysicalMaterial material;\nmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\nvec3 dxy = max( abs( dFdx( geometryNormal ) ), abs( dFdy( geometryNormal ) ) );\nfloat geometryRoughness = max( max( dxy.x, dxy.y ), dxy.z );\nmaterial.roughness = max( roughnessFactor, 0.0525 );material.roughness += geometryRoughness;\nmaterial.roughness = min( material.roughness, 1.0 );\n#ifdef IOR\n	#ifdef SPECULAR\n		float specularIntensityFactor = specularIntensity;\n		vec3 specularTintFactor = specularTint;\n		#ifdef USE_SPECULARINTENSITYMAP\n			specularIntensityFactor *= texture2D( specularIntensityMap, vUv ).a;\n		#endif\n		#ifdef USE_SPECULARTINTMAP\n			specularTintFactor *= specularTintMapTexelToLinear( texture2D( specularTintMap, vUv ) ).rgb;\n		#endif\n		material.specularF90 = mix( specularIntensityFactor, 1.0, metalnessFactor );\n	#else\n		float specularIntensityFactor = 1.0;\n		vec3 specularTintFactor = vec3( 1.0 );\n		material.specularF90 = 1.0;\n	#endif\n	material.specularColor = mix( min( pow2( ( ior - 1.0 ) / ( ior + 1.0 ) ) * specularTintFactor, vec3( 1.0 ) ) * specularIntensityFactor, diffuseColor.rgb, metalnessFactor );\n#else\n	material.specularColor = mix( vec3( 0.04 ), diffuseColor.rgb, metalnessFactor );\n	material.specularF90 = 1.0;\n#endif\n#ifdef USE_CLEARCOAT\n	material.clearcoat = clearcoat;\n	material.clearcoatRoughness = clearcoatRoughness;\n	material.clearcoatF0 = vec3( 0.04 );\n	material.clearcoatF90 = 1.0;\n	#ifdef USE_CLEARCOATMAP\n		material.clearcoat *= texture2D( clearcoatMap, vUv ).x;\n	#endif\n	#ifdef USE_CLEARCOAT_ROUGHNESSMAP\n		material.clearcoatRoughness *= texture2D( clearcoatRoughnessMap, vUv ).y;\n	#endif\n	material.clearcoat = saturate( material.clearcoat );	material.clearcoatRoughness = max( material.clearcoatRoughness, 0.0525 );\n	material.clearcoatRoughness += geometryRoughness;\n	material.clearcoatRoughness = min( material.clearcoatRoughness, 1.0 );\n#endif\n#ifdef USE_SHEEN\n	material.sheenTint = sheenTint;\n	material.sheenRoughness = clamp( sheenRoughness, 0.07, 1.0 );\n#endif";
+var lights_physical_pars_fragment = "struct PhysicalMaterial {\n	vec3 diffuseColor;\n	float roughness;\n	vec3 specularColor;\n	float specularF90;\n	#ifdef USE_CLEARCOAT\n		float clearcoat;\n		float clearcoatRoughness;\n		vec3 clearcoatF0;\n		float clearcoatF90;\n	#endif\n	#ifdef USE_SHEEN\n		vec3 sheenTint;\n		float sheenRoughness;\n	#endif\n};\nvec3 clearcoatSpecular = vec3( 0.0 );\nvec2 DFGApprox( const in vec3 normal, const in vec3 viewDir, const in float roughness ) {\n	float dotNV = saturate( dot( normal, viewDir ) );\n	const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );\n	const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );\n	vec4 r = roughness * c0 + c1;\n	float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;\n	vec2 fab = vec2( - 1.04, 1.04 ) * a004 + r.zw;\n	return fab;\n}\nvec3 EnvironmentBRDF( const in vec3 normal, const in vec3 viewDir, const in vec3 specularColor, const in float specularF90, const in float roughness ) {\n	vec2 fab = DFGApprox( normal, viewDir, roughness );\n	return specularColor * fab.x + specularF90 * fab.y;\n}\nvoid computeMultiscattering( const in vec3 normal, const in vec3 viewDir, const in vec3 specularColor, const in float specularF90, const in float roughness, inout vec3 singleScatter, inout vec3 multiScatter ) {\n	vec2 fab = DFGApprox( normal, viewDir, roughness );\n	vec3 FssEss = specularColor * fab.x + specularF90 * fab.y;\n	float Ess = fab.x + fab.y;\n	float Ems = 1.0 - Ess;\n	vec3 Favg = specularColor + ( 1.0 - specularColor ) * 0.047619;	vec3 Fms = FssEss * Favg / ( 1.0 - Ems * Favg );\n	singleScatter += FssEss;\n	multiScatter += Fms * Ems;\n}\n#if NUM_RECT_AREA_LIGHTS > 0\n	void RE_Direct_RectArea_Physical( const in RectAreaLight rectAreaLight, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n		vec3 normal = geometry.normal;\n		vec3 viewDir = geometry.viewDir;\n		vec3 position = geometry.position;\n		vec3 lightPos = rectAreaLight.position;\n		vec3 halfWidth = rectAreaLight.halfWidth;\n		vec3 halfHeight = rectAreaLight.halfHeight;\n		vec3 lightColor = rectAreaLight.color;\n		float roughness = material.roughness;\n		vec3 rectCoords[ 4 ];\n		rectCoords[ 0 ] = lightPos + halfWidth - halfHeight;		rectCoords[ 1 ] = lightPos - halfWidth - halfHeight;\n		rectCoords[ 2 ] = lightPos - halfWidth + halfHeight;\n		rectCoords[ 3 ] = lightPos + halfWidth + halfHeight;\n		vec2 uv = LTC_Uv( normal, viewDir, roughness );\n		vec4 t1 = texture2D( ltc_1, uv );\n		vec4 t2 = texture2D( ltc_2, uv );\n		mat3 mInv = mat3(\n			vec3( t1.x, 0, t1.y ),\n			vec3(    0, 1,    0 ),\n			vec3( t1.z, 0, t1.w )\n		);\n		vec3 fresnel = ( material.specularColor * t2.x + ( vec3( 1.0 ) - material.specularColor ) * t2.y );\n		reflectedLight.directSpecular += lightColor * fresnel * LTC_Evaluate( normal, viewDir, position, mInv, rectCoords );\n		reflectedLight.directDiffuse += lightColor * material.diffuseColor * LTC_Evaluate( normal, viewDir, position, mat3( 1.0 ), rectCoords );\n	}\n#endif\nvoid RE_Direct_Physical( const in IncidentLight directLight, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n	float dotNL = saturate( dot( geometry.normal, directLight.direction ) );\n	vec3 irradiance = dotNL * directLight.color;\n	#ifdef USE_CLEARCOAT\n		float dotNLcc = saturate( dot( geometry.clearcoatNormal, directLight.direction ) );\n		vec3 ccIrradiance = dotNLcc * directLight.color;\n		clearcoatSpecular += ccIrradiance * BRDF_GGX( directLight.direction, geometry.viewDir, geometry.clearcoatNormal, material.clearcoatF0, material.clearcoatF90, material.clearcoatRoughness );\n	#endif\n	#ifdef USE_SHEEN\n		reflectedLight.directSpecular += irradiance * BRDF_Sheen( directLight.direction, geometry.viewDir, geometry.normal, material.sheenTint, material.sheenRoughness );\n	#endif\n	reflectedLight.directSpecular += irradiance * BRDF_GGX( directLight.direction, geometry.viewDir, geometry.normal, material.specularColor, material.specularF90, material.roughness );\n	reflectedLight.directDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n}\nvoid RE_IndirectDiffuse_Physical( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n	reflectedLight.indirectDiffuse += irradiance * BRDF_Lambert( material.diffuseColor );\n}\nvoid RE_IndirectSpecular_Physical( const in vec3 radiance, const in vec3 irradiance, const in vec3 clearcoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight) {\n	#ifdef USE_CLEARCOAT\n		clearcoatSpecular += clearcoatRadiance * EnvironmentBRDF( geometry.clearcoatNormal, geometry.viewDir, material.clearcoatF0, material.clearcoatF90, material.clearcoatRoughness );\n	#endif\n	vec3 singleScattering = vec3( 0.0 );\n	vec3 multiScattering = vec3( 0.0 );\n	vec3 cosineWeightedIrradiance = irradiance * RECIPROCAL_PI;\n	computeMultiscattering( geometry.normal, geometry.viewDir, material.specularColor, material.specularF90, material.roughness, singleScattering, multiScattering );\n	vec3 diffuse = material.diffuseColor * ( 1.0 - ( singleScattering + multiScattering ) );\n	reflectedLight.indirectSpecular += radiance * singleScattering;\n	reflectedLight.indirectSpecular += multiScattering * cosineWeightedIrradiance;\n	reflectedLight.indirectDiffuse += diffuse * cosineWeightedIrradiance;\n}\n#define RE_Direct				RE_Direct_Physical\n#define RE_Direct_RectArea		RE_Direct_RectArea_Physical\n#define RE_IndirectDiffuse		RE_IndirectDiffuse_Physical\n#define RE_IndirectSpecular		RE_IndirectSpecular_Physical\nfloat computeSpecularOcclusion( const in float dotNV, const in float ambientOcclusion, const in float roughness ) {\n	return saturate( pow( dotNV + ambientOcclusion, exp2( - 16.0 * roughness - 1.0 ) ) - 1.0 + ambientOcclusion );\n}";
+var lights_fragment_begin = "\nGeometricContext geometry;\ngeometry.position = - vViewPosition;\ngeometry.normal = normal;\ngeometry.viewDir = ( isOrthographic ) ? vec3( 0, 0, 1 ) : normalize( vViewPosition );\n#ifdef USE_CLEARCOAT\n	geometry.clearcoatNormal = clearcoatNormal;\n#endif\nIncidentLight directLight;\n#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n	PointLight pointLight;\n	#if defined( USE_SHADOWMAP ) && NUM_POINT_LIGHT_SHADOWS > 0\n	PointLightShadow pointLightShadow;\n	#endif\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n		pointLight = pointLights[ i ];\n		getPointLightInfo( pointLight, geometry, directLight );\n		#if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_POINT_LIGHT_SHADOWS )\n		pointLightShadow = pointLightShadows[ i ];\n		directLight.color *= all( bvec2( directLight.visible, receiveShadow ) ) ? getPointShadow( pointShadowMap[ i ], pointLightShadow.shadowMapSize, pointLightShadow.shadowBias, pointLightShadow.shadowRadius, vPointShadowCoord[ i ], pointLightShadow.shadowCameraNear, pointLightShadow.shadowCameraFar ) : 1.0;\n		#endif\n		RE_Direct( directLight, geometry, material, reflectedLight );\n	}\n	#pragma unroll_loop_end\n#endif\n#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n	SpotLight spotLight;\n	#if defined( USE_SHADOWMAP ) && NUM_SPOT_LIGHT_SHADOWS > 0\n	SpotLightShadow spotLightShadow;\n	#endif\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n		spotLight = spotLights[ i ];\n		getSpotLightInfo( spotLight, geometry, directLight );\n		#if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_SPOT_LIGHT_SHADOWS )\n		spotLightShadow = spotLightShadows[ i ];\n		directLight.color *= all( bvec2( directLight.visible, receiveShadow ) ) ? getShadow( spotShadowMap[ i ], spotLightShadow.shadowMapSize, spotLightShadow.shadowBias, spotLightShadow.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n		#endif\n		RE_Direct( directLight, geometry, material, reflectedLight );\n	}\n	#pragma unroll_loop_end\n#endif\n#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n	DirectionalLight directionalLight;\n	#if defined( USE_SHADOWMAP ) && NUM_DIR_LIGHT_SHADOWS > 0\n	DirectionalLightShadow directionalLightShadow;\n	#endif\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n		directionalLight = directionalLights[ i ];\n		getDirectionalLightInfo( directionalLight, geometry, directLight );\n		#if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_DIR_LIGHT_SHADOWS )\n		directionalLightShadow = directionalLightShadows[ i ];\n		directLight.color *= all( bvec2( directLight.visible, receiveShadow ) ) ? getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n		#endif\n		RE_Direct( directLight, geometry, material, reflectedLight );\n	}\n	#pragma unroll_loop_end\n#endif\n#if ( NUM_RECT_AREA_LIGHTS > 0 ) && defined( RE_Direct_RectArea )\n	RectAreaLight rectAreaLight;\n	#pragma unroll_loop_start\n	for ( int i = 0; i < NUM_RECT_AREA_LIGHTS; i ++ ) {\n		rectAreaLight = rectAreaLights[ i ];\n		RE_Direct_RectArea( rectAreaLight, geometry, material, reflectedLight );\n	}\n	#pragma unroll_loop_end\n#endif\n#if defined( RE_IndirectDiffuse )\n	vec3 iblIrradiance = vec3( 0.0 );\n	vec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n	irradiance += getLightProbeIrradiance( lightProbe, geometry.normal );\n	#if ( NUM_HEMI_LIGHTS > 0 )\n		#pragma unroll_loop_start\n		for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n			irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry.normal );\n		}\n		#pragma unroll_loop_end\n	#endif\n#endif\n#if defined( RE_IndirectSpecular )\n	vec3 radiance = vec3( 0.0 );\n	vec3 clearcoatRadiance = vec3( 0.0 );\n#endif";
+var lights_fragment_maps = "#if defined( RE_IndirectDiffuse )\n	#ifdef USE_LIGHTMAP\n		vec4 lightMapTexel = texture2D( lightMap, vUv2 );\n		vec3 lightMapIrradiance = lightMapTexelToLinear( lightMapTexel ).rgb * lightMapIntensity;\n		#ifndef PHYSICALLY_CORRECT_LIGHTS\n			lightMapIrradiance *= PI;\n		#endif\n		irradiance += lightMapIrradiance;\n	#endif\n	#if defined( USE_ENVMAP ) && defined( STANDARD ) && defined( ENVMAP_TYPE_CUBE_UV )\n		iblIrradiance += getIBLIrradiance( geometry.normal );\n	#endif\n#endif\n#if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )\n	radiance += getIBLRadiance( geometry.viewDir, geometry.normal, material.roughness );\n	#ifdef USE_CLEARCOAT\n		clearcoatRadiance += getIBLRadiance( geometry.viewDir, geometry.clearcoatNormal, material.clearcoatRoughness );\n	#endif\n#endif";
 var lights_fragment_end = "#if defined( RE_IndirectDiffuse )\n	RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n#endif\n#if defined( RE_IndirectSpecular )\n	RE_IndirectSpecular( radiance, iblIrradiance, clearcoatRadiance, geometry, material, reflectedLight );\n#endif";
 var logdepthbuf_fragment = "#if defined( USE_LOGDEPTHBUF ) && defined( USE_LOGDEPTHBUF_EXT )\n	gl_FragDepthEXT = vIsPerspective == 0.0 ? gl_FragCoord.z : log2( vFragDepth ) * logDepthBufFC * 0.5;\n#endif";
 var logdepthbuf_pars_fragment = "#if defined( USE_LOGDEPTHBUF ) && defined( USE_LOGDEPTHBUF_EXT )\n	uniform float logDepthBufFC;\n	varying float vFragDepth;\n	varying float vIsPerspective;\n#endif";
@@ -7451,9 +7503,9 @@ var map_particle_fragment = "#if defined( USE_MAP ) || defined( USE_ALPHAMAP )\n
 var map_particle_pars_fragment = "#if defined( USE_MAP ) || defined( USE_ALPHAMAP )\n	uniform mat3 uvTransform;\n#endif\n#ifdef USE_MAP\n	uniform sampler2D map;\n#endif\n#ifdef USE_ALPHAMAP\n	uniform sampler2D alphaMap;\n#endif";
 var metalnessmap_fragment = "float metalnessFactor = metalness;\n#ifdef USE_METALNESSMAP\n	vec4 texelMetalness = texture2D( metalnessMap, vUv );\n	metalnessFactor *= texelMetalness.b;\n#endif";
 var metalnessmap_pars_fragment = "#ifdef USE_METALNESSMAP\n	uniform sampler2D metalnessMap;\n#endif";
-var morphnormal_vertex = "#ifdef USE_MORPHNORMALS\n	objectNormal *= morphTargetBaseInfluence;\n	objectNormal += morphNormal0 * morphTargetInfluences[ 0 ];\n	objectNormal += morphNormal1 * morphTargetInfluences[ 1 ];\n	objectNormal += morphNormal2 * morphTargetInfluences[ 2 ];\n	objectNormal += morphNormal3 * morphTargetInfluences[ 3 ];\n#endif";
-var morphtarget_pars_vertex = "#ifdef USE_MORPHTARGETS\n	uniform float morphTargetBaseInfluence;\n	#ifndef USE_MORPHNORMALS\n		uniform float morphTargetInfluences[ 8 ];\n	#else\n		uniform float morphTargetInfluences[ 4 ];\n	#endif\n#endif";
-var morphtarget_vertex = "#ifdef USE_MORPHTARGETS\n	transformed *= morphTargetBaseInfluence;\n	transformed += morphTarget0 * morphTargetInfluences[ 0 ];\n	transformed += morphTarget1 * morphTargetInfluences[ 1 ];\n	transformed += morphTarget2 * morphTargetInfluences[ 2 ];\n	transformed += morphTarget3 * morphTargetInfluences[ 3 ];\n	#ifndef USE_MORPHNORMALS\n		transformed += morphTarget4 * morphTargetInfluences[ 4 ];\n		transformed += morphTarget5 * morphTargetInfluences[ 5 ];\n		transformed += morphTarget6 * morphTargetInfluences[ 6 ];\n		transformed += morphTarget7 * morphTargetInfluences[ 7 ];\n	#endif\n#endif";
+var morphnormal_vertex = "#ifdef USE_MORPHNORMALS\n	objectNormal *= morphTargetBaseInfluence;\n	#ifdef MORPHTARGETS_TEXTURE\n		for ( int i = 0; i < MORPHTARGETS_COUNT; i ++ ) {\n			if ( morphTargetInfluences[ i ] > 0.0 ) objectNormal += getMorph( gl_VertexID, i, 1, 2 ) * morphTargetInfluences[ i ];\n		}\n	#else\n		objectNormal += morphNormal0 * morphTargetInfluences[ 0 ];\n		objectNormal += morphNormal1 * morphTargetInfluences[ 1 ];\n		objectNormal += morphNormal2 * morphTargetInfluences[ 2 ];\n		objectNormal += morphNormal3 * morphTargetInfluences[ 3 ];\n	#endif\n#endif";
+var morphtarget_pars_vertex = "#ifdef USE_MORPHTARGETS\n	uniform float morphTargetBaseInfluence;\n	#ifdef MORPHTARGETS_TEXTURE\n		uniform float morphTargetInfluences[ MORPHTARGETS_COUNT ];\n		uniform sampler2DArray morphTargetsTexture;\n		uniform vec2 morphTargetsTextureSize;\n		vec3 getMorph( const in int vertexIndex, const in int morphTargetIndex, const in int offset, const in int stride ) {\n			float texelIndex = float( vertexIndex * stride + offset );\n			float y = floor( texelIndex / morphTargetsTextureSize.x );\n			float x = texelIndex - y * morphTargetsTextureSize.x;\n			vec3 morphUV = vec3( ( x + 0.5 ) / morphTargetsTextureSize.x, y / morphTargetsTextureSize.y, morphTargetIndex );\n			return texture( morphTargetsTexture, morphUV ).xyz;\n		}\n	#else\n		#ifndef USE_MORPHNORMALS\n			uniform float morphTargetInfluences[ 8 ];\n		#else\n			uniform float morphTargetInfluences[ 4 ];\n		#endif\n	#endif\n#endif";
+var morphtarget_vertex = "#ifdef USE_MORPHTARGETS\n	transformed *= morphTargetBaseInfluence;\n	#ifdef MORPHTARGETS_TEXTURE\n		for ( int i = 0; i < MORPHTARGETS_COUNT; i ++ ) {\n			#ifndef USE_MORPHNORMALS\n				if ( morphTargetInfluences[ i ] > 0.0 ) transformed += getMorph( gl_VertexID, i, 0, 1 ) * morphTargetInfluences[ i ];\n			#else\n				if ( morphTargetInfluences[ i ] > 0.0 ) transformed += getMorph( gl_VertexID, i, 0, 2 ) * morphTargetInfluences[ i ];\n			#endif\n		}\n	#else\n		transformed += morphTarget0 * morphTargetInfluences[ 0 ];\n		transformed += morphTarget1 * morphTargetInfluences[ 1 ];\n		transformed += morphTarget2 * morphTargetInfluences[ 2 ];\n		transformed += morphTarget3 * morphTargetInfluences[ 3 ];\n		#ifndef USE_MORPHNORMALS\n			transformed += morphTarget4 * morphTargetInfluences[ 4 ];\n			transformed += morphTarget5 * morphTargetInfluences[ 5 ];\n			transformed += morphTarget6 * morphTargetInfluences[ 6 ];\n			transformed += morphTarget7 * morphTargetInfluences[ 7 ];\n		#endif\n	#endif\n#endif";
 var normal_fragment_begin = "float faceDirection = gl_FrontFacing ? 1.0 : - 1.0;\n#ifdef FLAT_SHADED\n	vec3 fdx = vec3( dFdx( vViewPosition.x ), dFdx( vViewPosition.y ), dFdx( vViewPosition.z ) );\n	vec3 fdy = vec3( dFdy( vViewPosition.x ), dFdy( vViewPosition.y ), dFdy( vViewPosition.z ) );\n	vec3 normal = normalize( cross( fdx, fdy ) );\n#else\n	vec3 normal = normalize( vNormal );\n	#ifdef DOUBLE_SIDED\n		normal = normal * faceDirection;\n	#endif\n	#ifdef USE_TANGENT\n		vec3 tangent = normalize( vTangent );\n		vec3 bitangent = normalize( vBitangent );\n		#ifdef DOUBLE_SIDED\n			tangent = tangent * faceDirection;\n			bitangent = bitangent * faceDirection;\n		#endif\n		#if defined( TANGENTSPACE_NORMALMAP ) || defined( USE_CLEARCOAT_NORMALMAP )\n			mat3 vTBN = mat3( tangent, bitangent, normal );\n		#endif\n	#endif\n#endif\nvec3 geometryNormal = normal;";
 var normal_fragment_maps = "#ifdef OBJECTSPACE_NORMALMAP\n	normal = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;\n	#ifdef FLIP_SIDED\n		normal = - normal;\n	#endif\n	#ifdef DOUBLE_SIDED\n		normal = normal * faceDirection;\n	#endif\n	normal = normalize( normalMatrix * normal );\n#elif defined( TANGENTSPACE_NORMALMAP )\n	vec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;\n	mapN.xy *= normalScale;\n	#ifdef USE_TANGENT\n		normal = normalize( vTBN * mapN );\n	#else\n		normal = perturbNormal2Arb( - vViewPosition, normal, mapN, faceDirection );\n	#endif\n#elif defined( USE_BUMPMAP )\n	normal = perturbNormalArb( - vViewPosition, normal, dHdxy_fwd(), faceDirection );\n#endif";
 var normal_pars_fragment = "#ifndef FLAT_SHADED\n	varying vec3 vNormal;\n	#ifdef USE_TANGENT\n		varying vec3 vTangent;\n		varying vec3 vBitangent;\n	#endif\n#endif";
@@ -7483,7 +7535,7 @@ var specularmap_fragment = "float specularStrength;\n#ifdef USE_SPECULARMAP\n	ve
 var specularmap_pars_fragment = "#ifdef USE_SPECULARMAP\n	uniform sampler2D specularMap;\n#endif";
 var tonemapping_fragment = "#if defined( TONE_MAPPING )\n	gl_FragColor.rgb = toneMapping( gl_FragColor.rgb );\n#endif";
 var tonemapping_pars_fragment = "#ifndef saturate\n#define saturate( a ) clamp( a, 0.0, 1.0 )\n#endif\nuniform float toneMappingExposure;\nvec3 LinearToneMapping( vec3 color ) {\n	return toneMappingExposure * color;\n}\nvec3 ReinhardToneMapping( vec3 color ) {\n	color *= toneMappingExposure;\n	return saturate( color / ( vec3( 1.0 ) + color ) );\n}\nvec3 OptimizedCineonToneMapping( vec3 color ) {\n	color *= toneMappingExposure;\n	color = max( vec3( 0.0 ), color - 0.004 );\n	return pow( ( color * ( 6.2 * color + 0.5 ) ) / ( color * ( 6.2 * color + 1.7 ) + 0.06 ), vec3( 2.2 ) );\n}\nvec3 RRTAndODTFit( vec3 v ) {\n	vec3 a = v * ( v + 0.0245786 ) - 0.000090537;\n	vec3 b = v * ( 0.983729 * v + 0.4329510 ) + 0.238081;\n	return a / b;\n}\nvec3 ACESFilmicToneMapping( vec3 color ) {\n	const mat3 ACESInputMat = mat3(\n		vec3( 0.59719, 0.07600, 0.02840 ),		vec3( 0.35458, 0.90834, 0.13383 ),\n		vec3( 0.04823, 0.01566, 0.83777 )\n	);\n	const mat3 ACESOutputMat = mat3(\n		vec3(  1.60475, -0.10208, -0.00327 ),		vec3( -0.53108,  1.10813, -0.07276 ),\n		vec3( -0.07367, -0.00605,  1.07602 )\n	);\n	color *= toneMappingExposure / 0.6;\n	color = ACESInputMat * color;\n	color = RRTAndODTFit( color );\n	color = ACESOutputMat * color;\n	return saturate( color );\n}\nvec3 CustomToneMapping( vec3 color ) { return color; }";
-var transmission_fragment = "#ifdef USE_TRANSMISSION\n	float transmissionAlpha = 1.0;\n	float transmissionFactor = transmission;\n	float thicknessFactor = thickness;\n	#ifdef USE_TRANSMISSIONMAP\n		transmissionFactor *= texture2D( transmissionMap, vUv ).r;\n	#endif\n	#ifdef USE_THICKNESSMAP\n		thicknessFactor *= texture2D( thicknessMap, vUv ).g;\n	#endif\n	vec3 pos = vWorldPosition;\n	vec3 v = normalize( cameraPosition - pos );\n	vec3 n = inverseTransformDirection( normal, viewMatrix );\n	vec4 transmission = getIBLVolumeRefraction(\n		n, v, roughnessFactor, material.diffuseColor, material.specularColor, material.specularF90,\n		pos, modelMatrix, viewMatrix, projectionMatrix, ior, thicknessFactor,\n		attenuationTint, attenuationDistance );\n	totalDiffuse = mix( totalDiffuse, transmission.rgb, transmissionFactor );\n	transmissionAlpha = transmission.a;\n#endif";
+var transmission_fragment = "#ifdef USE_TRANSMISSION\n	float transmissionAlpha = 1.0;\n	float transmissionFactor = transmission;\n	float thicknessFactor = thickness;\n	#ifdef USE_TRANSMISSIONMAP\n		transmissionFactor *= texture2D( transmissionMap, vUv ).r;\n	#endif\n	#ifdef USE_THICKNESSMAP\n		thicknessFactor *= texture2D( thicknessMap, vUv ).g;\n	#endif\n	vec3 pos = vWorldPosition;\n	vec3 v = normalize( cameraPosition - pos );\n	vec3 n = inverseTransformDirection( normal, viewMatrix );\n	vec4 transmission = getIBLVolumeRefraction(\n		n, v, roughnessFactor, material.diffuseColor, material.specularColor, material.specularF90,\n		pos, modelMatrix, viewMatrix, projectionMatrix, ior, thicknessFactor,\n		attenuationTint, attenuationDistance );\n	totalDiffuse = mix( totalDiffuse, transmission.rgb, transmissionFactor );\n	transmissionAlpha = mix( transmissionAlpha, transmission.a, transmissionFactor );\n#endif";
 var transmission_pars_fragment = "#ifdef USE_TRANSMISSION\n	uniform float transmission;\n	uniform float thickness;\n	uniform float attenuationDistance;\n	uniform vec3 attenuationTint;\n	#ifdef USE_TRANSMISSIONMAP\n		uniform sampler2D transmissionMap;\n	#endif\n	#ifdef USE_THICKNESSMAP\n		uniform sampler2D thicknessMap;\n	#endif\n	uniform vec2 transmissionSamplerSize;\n	uniform sampler2D transmissionSamplerMap;\n	uniform mat4 modelMatrix;\n	uniform mat4 projectionMatrix;\n	varying vec3 vWorldPosition;\n	vec3 getVolumeTransmissionRay( vec3 n, vec3 v, float thickness, float ior, mat4 modelMatrix ) {\n		vec3 refractionVector = refract( - v, normalize( n ), 1.0 / ior );\n		vec3 modelScale;\n		modelScale.x = length( vec3( modelMatrix[ 0 ].xyz ) );\n		modelScale.y = length( vec3( modelMatrix[ 1 ].xyz ) );\n		modelScale.z = length( vec3( modelMatrix[ 2 ].xyz ) );\n		return normalize( refractionVector ) * thickness * modelScale;\n	}\n	float applyIorToRoughness( float roughness, float ior ) {\n		return roughness * clamp( ior * 2.0 - 2.0, 0.0, 1.0 );\n	}\n	vec4 getTransmissionSample( vec2 fragCoord, float roughness, float ior ) {\n		float framebufferLod = log2( transmissionSamplerSize.x ) * applyIorToRoughness( roughness, ior );\n		#ifdef TEXTURE_LOD_EXT\n			return texture2DLodEXT( transmissionSamplerMap, fragCoord.xy, framebufferLod );\n		#else\n			return texture2D( transmissionSamplerMap, fragCoord.xy, framebufferLod );\n		#endif\n	}\n	vec3 applyVolumeAttenuation( vec3 radiance, float transmissionDistance, vec3 attenuationColor, float attenuationDistance ) {\n		if ( attenuationDistance == 0.0 ) {\n			return radiance;\n		} else {\n			vec3 attenuationCoefficient = -log( attenuationColor ) / attenuationDistance;\n			vec3 transmittance = exp( - attenuationCoefficient * transmissionDistance );			return transmittance * radiance;\n		}\n	}\n	vec4 getIBLVolumeRefraction( vec3 n, vec3 v, float roughness, vec3 diffuseColor, vec3 specularColor, float specularF90,\n		vec3 position, mat4 modelMatrix, mat4 viewMatrix, mat4 projMatrix, float ior, float thickness,\n		vec3 attenuationColor, float attenuationDistance ) {\n		vec3 transmissionRay = getVolumeTransmissionRay( n, v, thickness, ior, modelMatrix );\n		vec3 refractedRayExit = position + transmissionRay;\n		vec4 ndcPos = projMatrix * viewMatrix * vec4( refractedRayExit, 1.0 );\n		vec2 refractionCoords = ndcPos.xy / ndcPos.w;\n		refractionCoords += 1.0;\n		refractionCoords /= 2.0;\n		vec4 transmittedLight = getTransmissionSample( refractionCoords, roughness, ior );\n		vec3 attenuatedColor = applyVolumeAttenuation( transmittedLight.rgb, length( transmissionRay ), attenuationColor, attenuationDistance );\n		vec3 F = EnvironmentBRDF( n, v, specularColor, specularF90, roughness );\n		return vec4( ( 1.0 - F ) * attenuatedColor * diffuseColor, transmittedLight.a );\n	}\n#endif";
 var uv_pars_fragment = "#if ( defined( USE_UV ) && ! defined( UVS_VERTEX_ONLY ) )\n	varying vec2 vUv;\n#endif";
 var uv_pars_vertex = "#ifdef USE_UV\n	#ifdef UVS_VERTEX_ONLY\n		vec2 vUv;\n	#else\n		varying vec2 vUv;\n	#endif\n	uniform mat3 uvTransform;\n#endif";
@@ -7492,38 +7544,38 @@ var uv2_pars_fragment = "#if defined( USE_LIGHTMAP ) || defined( USE_AOMAP )\n	v
 var uv2_pars_vertex = "#if defined( USE_LIGHTMAP ) || defined( USE_AOMAP )\n	attribute vec2 uv2;\n	varying vec2 vUv2;\n	uniform mat3 uv2Transform;\n#endif";
 var uv2_vertex = "#if defined( USE_LIGHTMAP ) || defined( USE_AOMAP )\n	vUv2 = ( uv2Transform * vec3( uv2, 1 ) ).xy;\n#endif";
 var worldpos_vertex = "#if defined( USE_ENVMAP ) || defined( DISTANCE ) || defined ( USE_SHADOWMAP ) || defined ( USE_TRANSMISSION )\n	vec4 worldPosition = vec4( transformed, 1.0 );\n	#ifdef USE_INSTANCING\n		worldPosition = instanceMatrix * worldPosition;\n	#endif\n	worldPosition = modelMatrix * worldPosition;\n#endif";
-var background_frag = "uniform sampler2D t2D;\nvarying vec2 vUv;\nvoid main() {\n	vec4 texColor = texture2D( t2D, vUv );\n	gl_FragColor = mapTexelToLinear( texColor );\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n}";
-var background_vert = "varying vec2 vUv;\nuniform mat3 uvTransform;\nvoid main() {\n	vUv = ( uvTransform * vec3( uv, 1 ) ).xy;\n	gl_Position = vec4( position.xy, 1.0, 1.0 );\n}";
-var cube_frag = "#include <envmap_common_pars_fragment>\nuniform float opacity;\nvarying vec3 vWorldDirection;\n#include <cube_uv_reflection_fragment>\nvoid main() {\n	vec3 vReflect = vWorldDirection;\n	#include <envmap_fragment>\n	gl_FragColor = envColor;\n	gl_FragColor.a *= opacity;\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n}";
-var cube_vert = "varying vec3 vWorldDirection;\n#include <common>\nvoid main() {\n	vWorldDirection = transformDirection( position, modelMatrix );\n	#include <begin_vertex>\n	#include <project_vertex>\n	gl_Position.z = gl_Position.w;\n}";
-var depth_frag = "#if DEPTH_PACKING == 3200\n	uniform float opacity;\n#endif\n#include <common>\n#include <packing>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvarying vec2 vHighPrecisionZW;\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( 1.0 );\n	#if DEPTH_PACKING == 3200\n		diffuseColor.a = opacity;\n	#endif\n	#include <map_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <logdepthbuf_fragment>\n	float fragCoordZ = 0.5 * vHighPrecisionZW[0] / vHighPrecisionZW[1] + 0.5;\n	#if DEPTH_PACKING == 3200\n		gl_FragColor = vec4( vec3( 1.0 - fragCoordZ ), opacity );\n	#elif DEPTH_PACKING == 3201\n		gl_FragColor = packDepthToRGBA( fragCoordZ );\n	#endif\n}";
-var depth_vert = "#include <common>\n#include <uv_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvarying vec2 vHighPrecisionZW;\nvoid main() {\n	#include <uv_vertex>\n	#include <skinbase_vertex>\n	#ifdef USE_DISPLACEMENTMAP\n		#include <beginnormal_vertex>\n		#include <morphnormal_vertex>\n		#include <skinnormal_vertex>\n	#endif\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vHighPrecisionZW = gl_Position.zw;\n}";
-var distanceRGBA_frag = "#define DISTANCE\nuniform vec3 referencePosition;\nuniform float nearDistance;\nuniform float farDistance;\nvarying vec3 vWorldPosition;\n#include <common>\n#include <packing>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main () {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( 1.0 );\n	#include <map_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	float dist = length( vWorldPosition - referencePosition );\n	dist = ( dist - nearDistance ) / ( farDistance - nearDistance );\n	dist = saturate( dist );\n	gl_FragColor = packDepthToRGBA( dist );\n}";
-var distanceRGBA_vert = "#define DISTANCE\nvarying vec3 vWorldPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <skinbase_vertex>\n	#ifdef USE_DISPLACEMENTMAP\n		#include <beginnormal_vertex>\n		#include <morphnormal_vertex>\n		#include <skinnormal_vertex>\n	#endif\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <worldpos_vertex>\n	#include <clipping_planes_vertex>\n	vWorldPosition = worldPosition.xyz;\n}";
-var equirect_frag = "uniform sampler2D tEquirect;\nvarying vec3 vWorldDirection;\n#include <common>\nvoid main() {\n	vec3 direction = normalize( vWorldDirection );\n	vec2 sampleUV = equirectUv( direction );\n	vec4 texColor = texture2D( tEquirect, sampleUV );\n	gl_FragColor = mapTexelToLinear( texColor );\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n}";
-var equirect_vert = "varying vec3 vWorldDirection;\n#include <common>\nvoid main() {\n	vWorldDirection = transformDirection( position, modelMatrix );\n	#include <begin_vertex>\n	#include <project_vertex>\n}";
-var linedashed_frag = "uniform vec3 diffuse;\nuniform float opacity;\nuniform float dashSize;\nuniform float totalSize;\nvarying float vLineDistance;\n#include <common>\n#include <color_pars_fragment>\n#include <fog_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	if ( mod( vLineDistance, totalSize ) > dashSize ) {\n		discard;\n	}\n	vec3 outgoingLight = vec3( 0.0 );\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <color_fragment>\n	outgoingLight = diffuseColor.rgb;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n}";
-var linedashed_vert = "uniform float scale;\nattribute float lineDistance;\nvarying float vLineDistance;\n#include <common>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	vLineDistance = scale * lineDistance;\n	#include <color_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <fog_vertex>\n}";
-var meshbasic_frag = "uniform vec3 diffuse;\nuniform float opacity;\n#ifndef FLAT_SHADED\n	varying vec3 vNormal;\n#endif\n#include <common>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_pars_fragment>\n#include <cube_uv_reflection_fragment>\n#include <fog_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <specularmap_fragment>\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	#ifdef USE_LIGHTMAP\n		vec4 lightMapTexel= texture2D( lightMap, vUv2 );\n		reflectedLight.indirectDiffuse += lightMapTexelToLinear( lightMapTexel ).rgb * lightMapIntensity;\n	#else\n		reflectedLight.indirectDiffuse += vec3( 1.0 );\n	#endif\n	#include <aomap_fragment>\n	reflectedLight.indirectDiffuse *= diffuseColor.rgb;\n	vec3 outgoingLight = reflectedLight.indirectDiffuse;\n	#include <envmap_fragment>\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
-var meshbasic_vert = "#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <envmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#if defined ( USE_ENVMAP ) || defined ( USE_SKINNING )\n		#include <beginnormal_vertex>\n		#include <morphnormal_vertex>\n		#include <skinbase_vertex>\n		#include <skinnormal_vertex>\n		#include <defaultnormal_vertex>\n	#endif\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <worldpos_vertex>\n	#include <envmap_vertex>\n	#include <fog_vertex>\n}";
-var meshlambert_frag = "uniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float opacity;\nvarying vec3 vLightFront;\nvarying vec3 vIndirectFront;\n#ifdef DOUBLE_SIDED\n	varying vec3 vLightBack;\n	varying vec3 vIndirectBack;\n#endif\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_pars_fragment>\n#include <cube_uv_reflection_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <fog_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <specularmap_fragment>\n	#include <emissivemap_fragment>\n	#ifdef DOUBLE_SIDED\n		reflectedLight.indirectDiffuse += ( gl_FrontFacing ) ? vIndirectFront : vIndirectBack;\n	#else\n		reflectedLight.indirectDiffuse += vIndirectFront;\n	#endif\n	#include <lightmap_fragment>\n	reflectedLight.indirectDiffuse *= BRDF_Lambert( diffuseColor.rgb );\n	#ifdef DOUBLE_SIDED\n		reflectedLight.directDiffuse = ( gl_FrontFacing ) ? vLightFront : vLightBack;\n	#else\n		reflectedLight.directDiffuse = vLightFront;\n	#endif\n	reflectedLight.directDiffuse *= BRDF_Lambert( diffuseColor.rgb ) * getShadowMask();\n	#include <aomap_fragment>\n	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;\n	#include <envmap_fragment>\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
-var meshlambert_vert = "#define LAMBERT\nvarying vec3 vLightFront;\nvarying vec3 vIndirectFront;\n#ifdef DOUBLE_SIDED\n	varying vec3 vLightBack;\n	varying vec3 vIndirectBack;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <envmap_pars_vertex>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <worldpos_vertex>\n	#include <envmap_vertex>\n	#include <lights_lambert_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
-var meshmatcap_frag = "#define MATCAP\nuniform vec3 diffuse;\nuniform float opacity;\nuniform sampler2D matcap;\nvarying vec3 vViewPosition;\n#include <common>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <fog_pars_fragment>\n#include <normal_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	vec3 viewDir = normalize( vViewPosition );\n	vec3 x = normalize( vec3( viewDir.z, 0.0, - viewDir.x ) );\n	vec3 y = cross( viewDir, x );\n	vec2 uv = vec2( dot( x, normal ), dot( y, normal ) ) * 0.495 + 0.5;\n	#ifdef USE_MATCAP\n		vec4 matcapColor = texture2D( matcap, uv );\n		matcapColor = matcapTexelToLinear( matcapColor );\n	#else\n		vec4 matcapColor = vec4( 1.0 );\n	#endif\n	vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
-var meshmatcap_vert = "#define MATCAP\nvarying vec3 vViewPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <color_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <fog_vertex>\n	vViewPosition = - mvPosition.xyz;\n}";
-var meshnormal_frag = "#define NORMAL\nuniform float opacity;\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( TANGENTSPACE_NORMALMAP )\n	varying vec3 vViewPosition;\n#endif\n#include <packing>\n#include <uv_pars_fragment>\n#include <normal_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	#include <logdepthbuf_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	gl_FragColor = vec4( packNormalToRGB( normal ), opacity );\n}";
-var meshnormal_vert = "#define NORMAL\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( TANGENTSPACE_NORMALMAP )\n	varying vec3 vViewPosition;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( TANGENTSPACE_NORMALMAP )\n	vViewPosition = - mvPosition.xyz;\n#endif\n}";
-var meshphong_frag = "#define PHONG\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform vec3 specular;\nuniform float shininess;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_pars_fragment>\n#include <cube_uv_reflection_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_phong_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <specularmap_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_phong_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n	#include <envmap_fragment>\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
-var meshphong_vert = "#define PHONG\nvarying vec3 vViewPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <envmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <envmap_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
-var meshphysical_frag = "#define STANDARD\n#ifdef PHYSICAL\n	#define IOR\n	#define SPECULAR\n#endif\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\n#ifdef IOR\n	uniform float ior;\n#endif\n#ifdef SPECULAR\n	uniform float specularIntensity;\n	uniform vec3 specularTint;\n	#ifdef USE_SPECULARINTENSITYMAP\n		uniform sampler2D specularIntensityMap;\n	#endif\n	#ifdef USE_SPECULARTINTMAP\n		uniform sampler2D specularTintMap;\n	#endif\n#endif\n#ifdef USE_CLEARCOAT\n	uniform float clearcoat;\n	uniform float clearcoatRoughness;\n#endif\n#ifdef USE_SHEEN\n	uniform vec3 sheenTint;\n#endif\nvarying vec3 vViewPosition;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_physical_pars_fragment>\n#include <fog_pars_fragment>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_physical_pars_fragment>\n#include <transmission_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <clearcoat_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <roughnessmap_fragment>\n	#include <metalnessmap_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <clearcoat_normal_fragment_begin>\n	#include <clearcoat_normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_physical_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 totalDiffuse = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;\n	vec3 totalSpecular = reflectedLight.directSpecular + reflectedLight.indirectSpecular;\n	#include <transmission_fragment>\n	vec3 outgoingLight = totalDiffuse + totalSpecular + totalEmissiveRadiance;\n	#ifdef USE_CLEARCOAT\n		float dotNVcc = saturate( dot( geometry.clearcoatNormal, geometry.viewDir ) );\n		vec3 Fcc = F_Schlick( material.clearcoatF0, material.clearcoatF90, dotNVcc );\n		outgoingLight = outgoingLight * ( 1.0 - clearcoat * Fcc ) + clearcoatSpecular * clearcoat;\n	#endif\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
-var meshphysical_vert = "#define STANDARD\nvarying vec3 vViewPosition;\n#ifdef USE_TRANSMISSION\n	varying vec3 vWorldPosition;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n#ifdef USE_TRANSMISSION\n	vWorldPosition = worldPosition.xyz;\n#endif\n}";
-var meshtoon_frag = "#define TOON\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <gradientmap_pars_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_toon_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_toon_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
-var meshtoon_vert = "#define TOON\nvarying vec3 vViewPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
-var points_frag = "uniform vec3 diffuse;\nuniform float opacity;\n#include <common>\n#include <color_pars_fragment>\n#include <map_particle_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <fog_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec3 outgoingLight = vec3( 0.0 );\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <map_particle_fragment>\n	#include <color_fragment>\n	#include <alphatest_fragment>\n	outgoingLight = diffuseColor.rgb;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n}";
-var points_vert = "uniform float size;\nuniform float scale;\n#include <common>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <color_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <project_vertex>\n	gl_PointSize = size;\n	#ifdef USE_SIZEATTENUATION\n		bool isPerspective = isPerspectiveMatrix( projectionMatrix );\n		if ( isPerspective ) gl_PointSize *= ( scale / - mvPosition.z );\n	#endif\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <worldpos_vertex>\n	#include <fog_vertex>\n}";
-var shadow_frag = "uniform vec3 color;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>\nvoid main() {\n	gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) );\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n}";
-var shadow_vert = "#include <common>\n#include <fog_pars_vertex>\n#include <shadowmap_pars_vertex>\nvoid main() {\n	#include <begin_vertex>\n	#include <project_vertex>\n	#include <worldpos_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
-var sprite_frag = "uniform vec3 diffuse;\nuniform float opacity;\n#include <common>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <fog_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec3 outgoingLight = vec3( 0.0 );\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	outgoingLight = diffuseColor.rgb;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n}";
-var sprite_vert = "uniform float rotation;\nuniform vec2 center;\n#include <common>\n#include <uv_pars_vertex>\n#include <fog_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	vec4 mvPosition = modelViewMatrix * vec4( 0.0, 0.0, 0.0, 1.0 );\n	vec2 scale;\n	scale.x = length( vec3( modelMatrix[ 0 ].x, modelMatrix[ 0 ].y, modelMatrix[ 0 ].z ) );\n	scale.y = length( vec3( modelMatrix[ 1 ].x, modelMatrix[ 1 ].y, modelMatrix[ 1 ].z ) );\n	#ifndef USE_SIZEATTENUATION\n		bool isPerspective = isPerspectiveMatrix( projectionMatrix );\n		if ( isPerspective ) scale *= - mvPosition.z;\n	#endif\n	vec2 alignedPosition = ( position.xy - ( center - vec2( 0.5 ) ) ) * scale;\n	vec2 rotatedPosition;\n	rotatedPosition.x = cos( rotation ) * alignedPosition.x - sin( rotation ) * alignedPosition.y;\n	rotatedPosition.y = sin( rotation ) * alignedPosition.x + cos( rotation ) * alignedPosition.y;\n	mvPosition.xy += rotatedPosition;\n	gl_Position = projectionMatrix * mvPosition;\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <fog_vertex>\n}";
+var vertex$g = "varying vec2 vUv;\nuniform mat3 uvTransform;\nvoid main() {\n	vUv = ( uvTransform * vec3( uv, 1 ) ).xy;\n	gl_Position = vec4( position.xy, 1.0, 1.0 );\n}";
+var fragment$g = "uniform sampler2D t2D;\nvarying vec2 vUv;\nvoid main() {\n	vec4 texColor = texture2D( t2D, vUv );\n	gl_FragColor = mapTexelToLinear( texColor );\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n}";
+var vertex$f = "varying vec3 vWorldDirection;\n#include <common>\nvoid main() {\n	vWorldDirection = transformDirection( position, modelMatrix );\n	#include <begin_vertex>\n	#include <project_vertex>\n	gl_Position.z = gl_Position.w;\n}";
+var fragment$f = "#include <envmap_common_pars_fragment>\nuniform float opacity;\nvarying vec3 vWorldDirection;\n#include <cube_uv_reflection_fragment>\nvoid main() {\n	vec3 vReflect = vWorldDirection;\n	#include <envmap_fragment>\n	gl_FragColor = envColor;\n	gl_FragColor.a *= opacity;\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n}";
+var vertex$e = "#include <common>\n#include <uv_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvarying vec2 vHighPrecisionZW;\nvoid main() {\n	#include <uv_vertex>\n	#include <skinbase_vertex>\n	#ifdef USE_DISPLACEMENTMAP\n		#include <beginnormal_vertex>\n		#include <morphnormal_vertex>\n		#include <skinnormal_vertex>\n	#endif\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vHighPrecisionZW = gl_Position.zw;\n}";
+var fragment$e = "#if DEPTH_PACKING == 3200\n	uniform float opacity;\n#endif\n#include <common>\n#include <packing>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvarying vec2 vHighPrecisionZW;\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( 1.0 );\n	#if DEPTH_PACKING == 3200\n		diffuseColor.a = opacity;\n	#endif\n	#include <map_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <logdepthbuf_fragment>\n	float fragCoordZ = 0.5 * vHighPrecisionZW[0] / vHighPrecisionZW[1] + 0.5;\n	#if DEPTH_PACKING == 3200\n		gl_FragColor = vec4( vec3( 1.0 - fragCoordZ ), opacity );\n	#elif DEPTH_PACKING == 3201\n		gl_FragColor = packDepthToRGBA( fragCoordZ );\n	#endif\n}";
+var vertex$d = "#define DISTANCE\nvarying vec3 vWorldPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <skinbase_vertex>\n	#ifdef USE_DISPLACEMENTMAP\n		#include <beginnormal_vertex>\n		#include <morphnormal_vertex>\n		#include <skinnormal_vertex>\n	#endif\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <worldpos_vertex>\n	#include <clipping_planes_vertex>\n	vWorldPosition = worldPosition.xyz;\n}";
+var fragment$d = "#define DISTANCE\nuniform vec3 referencePosition;\nuniform float nearDistance;\nuniform float farDistance;\nvarying vec3 vWorldPosition;\n#include <common>\n#include <packing>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main () {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( 1.0 );\n	#include <map_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	float dist = length( vWorldPosition - referencePosition );\n	dist = ( dist - nearDistance ) / ( farDistance - nearDistance );\n	dist = saturate( dist );\n	gl_FragColor = packDepthToRGBA( dist );\n}";
+var vertex$c = "varying vec3 vWorldDirection;\n#include <common>\nvoid main() {\n	vWorldDirection = transformDirection( position, modelMatrix );\n	#include <begin_vertex>\n	#include <project_vertex>\n}";
+var fragment$c = "uniform sampler2D tEquirect;\nvarying vec3 vWorldDirection;\n#include <common>\nvoid main() {\n	vec3 direction = normalize( vWorldDirection );\n	vec2 sampleUV = equirectUv( direction );\n	vec4 texColor = texture2D( tEquirect, sampleUV );\n	gl_FragColor = mapTexelToLinear( texColor );\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n}";
+var vertex$b = "uniform float scale;\nattribute float lineDistance;\nvarying float vLineDistance;\n#include <common>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	vLineDistance = scale * lineDistance;\n	#include <color_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <fog_vertex>\n}";
+var fragment$b = "uniform vec3 diffuse;\nuniform float opacity;\nuniform float dashSize;\nuniform float totalSize;\nvarying float vLineDistance;\n#include <common>\n#include <color_pars_fragment>\n#include <fog_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	if ( mod( vLineDistance, totalSize ) > dashSize ) {\n		discard;\n	}\n	vec3 outgoingLight = vec3( 0.0 );\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <color_fragment>\n	outgoingLight = diffuseColor.rgb;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n}";
+var vertex$a = "#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <envmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#if defined ( USE_ENVMAP ) || defined ( USE_SKINNING )\n		#include <beginnormal_vertex>\n		#include <morphnormal_vertex>\n		#include <skinbase_vertex>\n		#include <skinnormal_vertex>\n		#include <defaultnormal_vertex>\n	#endif\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <worldpos_vertex>\n	#include <envmap_vertex>\n	#include <fog_vertex>\n}";
+var fragment$a = "uniform vec3 diffuse;\nuniform float opacity;\n#ifndef FLAT_SHADED\n	varying vec3 vNormal;\n#endif\n#include <common>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_pars_fragment>\n#include <cube_uv_reflection_fragment>\n#include <fog_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <specularmap_fragment>\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	#ifdef USE_LIGHTMAP\n		vec4 lightMapTexel= texture2D( lightMap, vUv2 );\n		reflectedLight.indirectDiffuse += lightMapTexelToLinear( lightMapTexel ).rgb * lightMapIntensity;\n	#else\n		reflectedLight.indirectDiffuse += vec3( 1.0 );\n	#endif\n	#include <aomap_fragment>\n	reflectedLight.indirectDiffuse *= diffuseColor.rgb;\n	vec3 outgoingLight = reflectedLight.indirectDiffuse;\n	#include <envmap_fragment>\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
+var vertex$9 = "#define LAMBERT\nvarying vec3 vLightFront;\nvarying vec3 vIndirectFront;\n#ifdef DOUBLE_SIDED\n	varying vec3 vLightBack;\n	varying vec3 vIndirectBack;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <envmap_pars_vertex>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <worldpos_vertex>\n	#include <envmap_vertex>\n	#include <lights_lambert_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
+var fragment$9 = "uniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float opacity;\nvarying vec3 vLightFront;\nvarying vec3 vIndirectFront;\n#ifdef DOUBLE_SIDED\n	varying vec3 vLightBack;\n	varying vec3 vIndirectBack;\n#endif\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_pars_fragment>\n#include <cube_uv_reflection_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <fog_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <specularmap_fragment>\n	#include <emissivemap_fragment>\n	#ifdef DOUBLE_SIDED\n		reflectedLight.indirectDiffuse += ( gl_FrontFacing ) ? vIndirectFront : vIndirectBack;\n	#else\n		reflectedLight.indirectDiffuse += vIndirectFront;\n	#endif\n	#include <lightmap_fragment>\n	reflectedLight.indirectDiffuse *= BRDF_Lambert( diffuseColor.rgb );\n	#ifdef DOUBLE_SIDED\n		reflectedLight.directDiffuse = ( gl_FrontFacing ) ? vLightFront : vLightBack;\n	#else\n		reflectedLight.directDiffuse = vLightFront;\n	#endif\n	reflectedLight.directDiffuse *= BRDF_Lambert( diffuseColor.rgb ) * getShadowMask();\n	#include <aomap_fragment>\n	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;\n	#include <envmap_fragment>\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
+var vertex$8 = "#define MATCAP\nvarying vec3 vViewPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <color_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <fog_vertex>\n	vViewPosition = - mvPosition.xyz;\n}";
+var fragment$8 = "#define MATCAP\nuniform vec3 diffuse;\nuniform float opacity;\nuniform sampler2D matcap;\nvarying vec3 vViewPosition;\n#include <common>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <fog_pars_fragment>\n#include <normal_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	vec3 viewDir = normalize( vViewPosition );\n	vec3 x = normalize( vec3( viewDir.z, 0.0, - viewDir.x ) );\n	vec3 y = cross( viewDir, x );\n	vec2 uv = vec2( dot( x, normal ), dot( y, normal ) ) * 0.495 + 0.5;\n	#ifdef USE_MATCAP\n		vec4 matcapColor = texture2D( matcap, uv );\n		matcapColor = matcapTexelToLinear( matcapColor );\n	#else\n		vec4 matcapColor = vec4( 1.0 );\n	#endif\n	vec3 outgoingLight = diffuseColor.rgb * matcapColor.rgb;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
+var vertex$7 = "#define NORMAL\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( TANGENTSPACE_NORMALMAP )\n	varying vec3 vViewPosition;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( TANGENTSPACE_NORMALMAP )\n	vViewPosition = - mvPosition.xyz;\n#endif\n}";
+var fragment$7 = "#define NORMAL\nuniform float opacity;\n#if defined( FLAT_SHADED ) || defined( USE_BUMPMAP ) || defined( TANGENTSPACE_NORMALMAP )\n	varying vec3 vViewPosition;\n#endif\n#include <packing>\n#include <uv_pars_fragment>\n#include <normal_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	#include <logdepthbuf_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	gl_FragColor = vec4( packNormalToRGB( normal ), opacity );\n}";
+var vertex$6 = "#define PHONG\nvarying vec3 vViewPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <envmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <envmap_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
+var fragment$6 = "#define PHONG\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform vec3 specular;\nuniform float shininess;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_pars_fragment>\n#include <cube_uv_reflection_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_phong_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <specularmap_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_phong_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n	#include <envmap_fragment>\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
+var vertex$5 = "#define STANDARD\nvarying vec3 vViewPosition;\n#ifdef USE_TRANSMISSION\n	varying vec3 vWorldPosition;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n#ifdef USE_TRANSMISSION\n	vWorldPosition = worldPosition.xyz;\n#endif\n}";
+var fragment$5 = "#define STANDARD\n#ifdef PHYSICAL\n	#define IOR\n	#define SPECULAR\n#endif\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\n#ifdef IOR\n	uniform float ior;\n#endif\n#ifdef SPECULAR\n	uniform float specularIntensity;\n	uniform vec3 specularTint;\n	#ifdef USE_SPECULARINTENSITYMAP\n		uniform sampler2D specularIntensityMap;\n	#endif\n	#ifdef USE_SPECULARTINTMAP\n		uniform sampler2D specularTintMap;\n	#endif\n#endif\n#ifdef USE_CLEARCOAT\n	uniform float clearcoat;\n	uniform float clearcoatRoughness;\n#endif\n#ifdef USE_SHEEN\n	uniform vec3 sheenTint;\n	uniform float sheenRoughness;\n#endif\nvarying vec3 vViewPosition;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_physical_pars_fragment>\n#include <fog_pars_fragment>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_physical_pars_fragment>\n#include <transmission_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <clearcoat_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <roughnessmap_fragment>\n	#include <metalnessmap_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <clearcoat_normal_fragment_begin>\n	#include <clearcoat_normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_physical_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 totalDiffuse = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;\n	vec3 totalSpecular = reflectedLight.directSpecular + reflectedLight.indirectSpecular;\n	#include <transmission_fragment>\n	vec3 outgoingLight = totalDiffuse + totalSpecular + totalEmissiveRadiance;\n	#ifdef USE_CLEARCOAT\n		float dotNVcc = saturate( dot( geometry.clearcoatNormal, geometry.viewDir ) );\n		vec3 Fcc = F_Schlick( material.clearcoatF0, material.clearcoatF90, dotNVcc );\n		outgoingLight = outgoingLight * ( 1.0 - clearcoat * Fcc ) + clearcoatSpecular * clearcoat;\n	#endif\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
+var vertex$4 = "#define TOON\nvarying vec3 vViewPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
+var fragment$4 = "#define TOON\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <gradientmap_pars_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_toon_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_toon_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
+var vertex$3 = "uniform float size;\nuniform float scale;\n#include <common>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <color_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <project_vertex>\n	gl_PointSize = size;\n	#ifdef USE_SIZEATTENUATION\n		bool isPerspective = isPerspectiveMatrix( projectionMatrix );\n		if ( isPerspective ) gl_PointSize *= ( scale / - mvPosition.z );\n	#endif\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <worldpos_vertex>\n	#include <fog_vertex>\n}";
+var fragment$3 = "uniform vec3 diffuse;\nuniform float opacity;\n#include <common>\n#include <color_pars_fragment>\n#include <map_particle_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <fog_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec3 outgoingLight = vec3( 0.0 );\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <map_particle_fragment>\n	#include <color_fragment>\n	#include <alphatest_fragment>\n	outgoingLight = diffuseColor.rgb;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n}";
+var vertex$2 = "#include <common>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\nvoid main() {\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <project_vertex>\n	#include <worldpos_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
+var fragment$2 = "uniform vec3 color;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>\nvoid main() {\n	gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) );\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n}";
+var vertex$1 = "uniform float rotation;\nuniform vec2 center;\n#include <common>\n#include <uv_pars_vertex>\n#include <fog_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	vec4 mvPosition = modelViewMatrix * vec4( 0.0, 0.0, 0.0, 1.0 );\n	vec2 scale;\n	scale.x = length( vec3( modelMatrix[ 0 ].x, modelMatrix[ 0 ].y, modelMatrix[ 0 ].z ) );\n	scale.y = length( vec3( modelMatrix[ 1 ].x, modelMatrix[ 1 ].y, modelMatrix[ 1 ].z ) );\n	#ifndef USE_SIZEATTENUATION\n		bool isPerspective = isPerspectiveMatrix( projectionMatrix );\n		if ( isPerspective ) scale *= - mvPosition.z;\n	#endif\n	vec2 alignedPosition = ( position.xy - ( center - vec2( 0.5 ) ) ) * scale;\n	vec2 rotatedPosition;\n	rotatedPosition.x = cos( rotation ) * alignedPosition.x - sin( rotation ) * alignedPosition.y;\n	rotatedPosition.y = sin( rotation ) * alignedPosition.x + cos( rotation ) * alignedPosition.y;\n	mvPosition.xy += rotatedPosition;\n	gl_Position = projectionMatrix * mvPosition;\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <fog_vertex>\n}";
+var fragment$1 = "uniform vec3 diffuse;\nuniform float opacity;\n#include <common>\n#include <uv_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <fog_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec3 outgoingLight = vec3( 0.0 );\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	outgoingLight = diffuseColor.rgb;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n}";
 var ShaderChunk = {
   alphamap_fragment,
   alphamap_pars_fragment,
@@ -7627,38 +7679,38 @@ var ShaderChunk = {
   uv2_pars_vertex,
   uv2_vertex,
   worldpos_vertex,
-  background_frag,
-  background_vert,
-  cube_frag,
-  cube_vert,
-  depth_frag,
-  depth_vert,
-  distanceRGBA_frag,
-  distanceRGBA_vert,
-  equirect_frag,
-  equirect_vert,
-  linedashed_frag,
-  linedashed_vert,
-  meshbasic_frag,
-  meshbasic_vert,
-  meshlambert_frag,
-  meshlambert_vert,
-  meshmatcap_frag,
-  meshmatcap_vert,
-  meshnormal_frag,
-  meshnormal_vert,
-  meshphong_frag,
-  meshphong_vert,
-  meshphysical_frag,
-  meshphysical_vert,
-  meshtoon_frag,
-  meshtoon_vert,
-  points_frag,
-  points_vert,
-  shadow_frag,
-  shadow_vert,
-  sprite_frag,
-  sprite_vert
+  background_vert: vertex$g,
+  background_frag: fragment$g,
+  cube_vert: vertex$f,
+  cube_frag: fragment$f,
+  depth_vert: vertex$e,
+  depth_frag: fragment$e,
+  distanceRGBA_vert: vertex$d,
+  distanceRGBA_frag: fragment$d,
+  equirect_vert: vertex$c,
+  equirect_frag: fragment$c,
+  linedashed_vert: vertex$b,
+  linedashed_frag: fragment$b,
+  meshbasic_vert: vertex$a,
+  meshbasic_frag: fragment$a,
+  meshlambert_vert: vertex$9,
+  meshlambert_frag: fragment$9,
+  meshmatcap_vert: vertex$8,
+  meshmatcap_frag: fragment$8,
+  meshnormal_vert: vertex$7,
+  meshnormal_frag: fragment$7,
+  meshphong_vert: vertex$6,
+  meshphong_frag: fragment$6,
+  meshphysical_vert: vertex$5,
+  meshphysical_frag: fragment$5,
+  meshtoon_vert: vertex$4,
+  meshtoon_frag: fragment$4,
+  points_vert: vertex$3,
+  points_frag: fragment$3,
+  shadow_vert: vertex$2,
+  shadow_frag: fragment$2,
+  sprite_vert: vertex$1,
+  sprite_frag: fragment$1
 };
 var UniformsLib = {
   common: {
@@ -8023,7 +8075,9 @@ ShaderLib.physical = {
       clearcoatRoughnessMap: { value: null },
       clearcoatNormalScale: { value: new Vector2(1, 1) },
       clearcoatNormalMap: { value: null },
+      sheen: { value: 0 },
       sheenTint: { value: new Color(0) },
+      sheenRoughness: { value: 0 },
       transmission: { value: 0 },
       transmissionMap: { value: null },
       transmissionSamplerSize: { value: new Vector2() },
@@ -8275,7 +8329,7 @@ function WebGLBindingStates(gl, extensions2, attributes, capabilities) {
     return false;
   }
   function saveCache(geometry, index) {
-    const cache2 = {};
+    const cache5 = {};
     const attributes2 = geometry.attributes;
     let attributesNum = 0;
     for (const key in attributes2) {
@@ -8285,10 +8339,10 @@ function WebGLBindingStates(gl, extensions2, attributes, capabilities) {
       if (attribute.data) {
         data.data = attribute.data;
       }
-      cache2[key] = data;
+      cache5[key] = data;
       attributesNum++;
     }
-    currentState.attributes = cache2;
+    currentState.attributes = cache5;
     currentState.attributesNum = attributesNum;
     currentState.index = index;
   }
@@ -8985,6 +9039,13 @@ var PMREMGenerator = class {
     renderer2.autoClear = originalAutoClear;
     scene2.background = background;
   }
+  _setEncoding(uniform, texture) {
+    if (this._renderer.capabilities.isWebGL2 === true && texture.format === RGBAFormat && texture.type === UnsignedByteType && texture.encoding === sRGBEncoding) {
+      uniform.value = ENCODINGS[LinearEncoding];
+    } else {
+      uniform.value = ENCODINGS[texture.encoding];
+    }
+  }
   _textureToCubeUV(texture, cubeUVRenderTarget) {
     const renderer2 = this._renderer;
     if (texture.isCubeTexture) {
@@ -9003,8 +9064,8 @@ var PMREMGenerator = class {
     if (!texture.isCubeTexture) {
       uniforms["texelSize"].value.set(1 / texture.image.width, 1 / texture.image.height);
     }
-    uniforms["inputEncoding"].value = ENCODINGS[texture.encoding];
-    uniforms["outputEncoding"].value = ENCODINGS[cubeUVRenderTarget.texture.encoding];
+    this._setEncoding(uniforms["inputEncoding"], texture);
+    this._setEncoding(uniforms["outputEncoding"], cubeUVRenderTarget.texture);
     _setViewport(cubeUVRenderTarget, 0, 0, 3 * SIZE_MAX, 2 * SIZE_MAX);
     renderer2.setRenderTarget(cubeUVRenderTarget);
     renderer2.render(mesh, _flatCamera);
@@ -9042,19 +9103,19 @@ var PMREMGenerator = class {
       console.warn(`sigmaRadians, ${sigmaRadians}, is too large and will clip, as it requested ${samples} samples when the maximum is set to ${MAX_SAMPLES}`);
     }
     const weights = [];
-    let sum6 = 0;
+    let sum7 = 0;
     for (let i2 = 0; i2 < MAX_SAMPLES; ++i2) {
       const x3 = i2 / sigmaPixels;
       const weight = Math.exp(-x3 * x3 / 2);
       weights.push(weight);
       if (i2 == 0) {
-        sum6 += weight;
+        sum7 += weight;
       } else if (i2 < samples) {
-        sum6 += 2 * weight;
+        sum7 += 2 * weight;
       }
     }
     for (let i2 = 0; i2 < weights.length; i2++) {
-      weights[i2] = weights[i2] / sum6;
+      weights[i2] = weights[i2] / sum7;
     }
     blurUniforms["envMap"].value = targetIn.texture;
     blurUniforms["samples"].value = samples;
@@ -9065,12 +9126,12 @@ var PMREMGenerator = class {
     }
     blurUniforms["dTheta"].value = radiansPerPixel;
     blurUniforms["mipInt"].value = LOD_MAX - lodIn;
-    blurUniforms["inputEncoding"].value = ENCODINGS[targetIn.texture.encoding];
-    blurUniforms["outputEncoding"].value = ENCODINGS[targetIn.texture.encoding];
-    const outputSize3 = _sizeLods[lodOut];
-    const x2 = 3 * Math.max(0, SIZE_MAX - 2 * outputSize3);
-    const y2 = (lodOut === 0 ? 0 : 2 * SIZE_MAX) + 2 * outputSize3 * (lodOut > LOD_MAX - LOD_MIN ? lodOut - LOD_MAX + LOD_MIN : 0);
-    _setViewport(targetOut, x2, y2, 3 * outputSize3, 2 * outputSize3);
+    this._setEncoding(blurUniforms["inputEncoding"], targetIn.texture);
+    this._setEncoding(blurUniforms["outputEncoding"], targetIn.texture);
+    const outputSize2 = _sizeLods[lodOut];
+    const x2 = 3 * Math.max(0, SIZE_MAX - 2 * outputSize2);
+    const y2 = (lodOut === 0 ? 0 : 2 * SIZE_MAX) + 2 * outputSize2 * (lodOut > LOD_MAX - LOD_MIN ? lodOut - LOD_MAX + LOD_MIN : 0);
+    _setViewport(targetOut, x2, y2, 3 * outputSize2, 2 * outputSize2);
     renderer2.setRenderTarget(targetOut);
     renderer2.render(blurMesh, _flatCamera);
   }
@@ -9096,9 +9157,9 @@ function _createPlanes() {
     }
     _sigmas2.push(sigma);
     const texelSize = 1 / (sizeLod - 1);
-    const min6 = -texelSize / 2;
-    const max6 = 1 + texelSize / 2;
-    const uv1 = [min6, min6, max6, min6, max6, max6, min6, min6, max6, max6, min6, max6];
+    const min7 = -texelSize / 2;
+    const max7 = 1 + texelSize / 2;
+    const uv1 = [min7, min7, max7, min7, max7, max7, min7, min7, max7, max7, min7, max7];
     const cubeFaces = 6;
     const vertices = 6;
     const positionSize = 3;
@@ -9106,7 +9167,7 @@ function _createPlanes() {
     const faceIndexSize = 1;
     const position = new Float32Array(positionSize * vertices * cubeFaces);
     const uv = new Float32Array(uvSize * vertices * cubeFaces);
-    const faceIndex = new Float32Array(faceIndexSize * vertices * cubeFaces);
+    const faceIndex2 = new Float32Array(faceIndexSize * vertices * cubeFaces);
     for (let face4 = 0; face4 < cubeFaces; face4++) {
       const x2 = face4 % 3 * 2 / 3 - 1;
       const y2 = face4 > 2 ? 0 : -1;
@@ -9132,13 +9193,13 @@ function _createPlanes() {
       ];
       position.set(coordinates, positionSize * vertices * face4);
       uv.set(uv1, uvSize * vertices * face4);
-      const fill5 = [face4, face4, face4, face4, face4, face4];
-      faceIndex.set(fill5, faceIndexSize * vertices * face4);
+      const fill6 = [face4, face4, face4, face4, face4, face4];
+      faceIndex2.set(fill6, faceIndexSize * vertices * face4);
     }
     const planes = new BufferGeometry();
     planes.setAttribute("position", new BufferAttribute(position, positionSize));
     planes.setAttribute("uv", new BufferAttribute(uv, uvSize));
-    planes.setAttribute("faceIndex", new BufferAttribute(faceIndex, faceIndexSize));
+    planes.setAttribute("faceIndex", new BufferAttribute(faceIndex2, faceIndexSize));
     _lodPlanes2.push(planes);
     if (lod > LOD_MIN) {
       lod--;
@@ -9779,75 +9840,168 @@ function WebGLInfo(gl) {
     update: update2
   };
 }
+var DataTexture2DArray = class extends Texture {
+  constructor(data = null, width = 1, height = 1, depth = 1) {
+    super(null);
+    this.image = { data, width, height, depth };
+    this.magFilter = NearestFilter;
+    this.minFilter = NearestFilter;
+    this.wrapR = ClampToEdgeWrapping;
+    this.generateMipmaps = false;
+    this.flipY = false;
+    this.unpackAlignment = 1;
+    this.needsUpdate = true;
+  }
+};
+DataTexture2DArray.prototype.isDataTexture2DArray = true;
 function numericalSort(a6, b2) {
   return a6[0] - b2[0];
 }
 function absNumericalSort(a6, b2) {
   return Math.abs(b2[1]) - Math.abs(a6[1]);
 }
-function WebGLMorphtargets(gl) {
+function denormalize(morph, attribute) {
+  let denominator = 1;
+  const array2 = attribute.isInterleavedBufferAttribute ? attribute.data.array : attribute.array;
+  if (array2 instanceof Int8Array)
+    denominator = 127;
+  else if (array2 instanceof Int16Array)
+    denominator = 32767;
+  else if (array2 instanceof Int32Array)
+    denominator = 2147483647;
+  else
+    console.error("THREE.WebGLMorphtargets: Unsupported morph attribute data type: ", array2);
+  morph.divideScalar(denominator);
+}
+function WebGLMorphtargets(gl, capabilities, textures) {
   const influencesList = {};
   const morphInfluences = new Float32Array(8);
+  const morphTextures = new WeakMap();
+  const morph = new Vector3();
   const workInfluences = [];
   for (let i2 = 0; i2 < 8; i2++) {
     workInfluences[i2] = [i2, 0];
   }
   function update2(object2, geometry, material, program) {
     const objectInfluences = object2.morphTargetInfluences;
-    const length = objectInfluences === void 0 ? 0 : objectInfluences.length;
-    let influences = influencesList[geometry.id];
-    if (influences === void 0 || influences.length !== length) {
-      influences = [];
+    if (capabilities.isWebGL2 === true) {
+      const numberOfMorphTargets = geometry.morphAttributes.position.length;
+      let entry = morphTextures.get(geometry);
+      if (entry === void 0 || entry.count !== numberOfMorphTargets) {
+        if (entry !== void 0)
+          entry.texture.dispose();
+        const hasMorphNormals = geometry.morphAttributes.normal !== void 0;
+        const morphTargets = geometry.morphAttributes.position;
+        const morphNormals = geometry.morphAttributes.normal || [];
+        const numberOfVertices = geometry.attributes.position.count;
+        const numberOfVertexData = hasMorphNormals === true ? 2 : 1;
+        let width = numberOfVertices * numberOfVertexData;
+        let height = 1;
+        if (width > capabilities.maxTextureSize) {
+          height = Math.ceil(width / capabilities.maxTextureSize);
+          width = capabilities.maxTextureSize;
+        }
+        const buffer2 = new Float32Array(width * height * 4 * numberOfMorphTargets);
+        const texture = new DataTexture2DArray(buffer2, width, height, numberOfMorphTargets);
+        texture.format = RGBAFormat;
+        texture.type = FloatType;
+        const vertexDataStride = numberOfVertexData * 4;
+        for (let i2 = 0; i2 < numberOfMorphTargets; i2++) {
+          const morphTarget = morphTargets[i2];
+          const morphNormal = morphNormals[i2];
+          const offset = width * height * 4 * i2;
+          for (let j2 = 0; j2 < morphTarget.count; j2++) {
+            morph.fromBufferAttribute(morphTarget, j2);
+            if (morphTarget.normalized === true)
+              denormalize(morph, morphTarget);
+            const stride = j2 * vertexDataStride;
+            buffer2[offset + stride + 0] = morph.x;
+            buffer2[offset + stride + 1] = morph.y;
+            buffer2[offset + stride + 2] = morph.z;
+            buffer2[offset + stride + 3] = 0;
+            if (hasMorphNormals === true) {
+              morph.fromBufferAttribute(morphNormal, j2);
+              if (morphNormal.normalized === true)
+                denormalize(morph, morphNormal);
+              buffer2[offset + stride + 4] = morph.x;
+              buffer2[offset + stride + 5] = morph.y;
+              buffer2[offset + stride + 6] = morph.z;
+              buffer2[offset + stride + 7] = 0;
+            }
+          }
+        }
+        entry = {
+          count: numberOfMorphTargets,
+          texture,
+          size: new Vector2(width, height)
+        };
+        morphTextures.set(geometry, entry);
+      }
+      let morphInfluencesSum = 0;
+      for (let i2 = 0; i2 < objectInfluences.length; i2++) {
+        morphInfluencesSum += objectInfluences[i2];
+      }
+      const morphBaseInfluence = geometry.morphTargetsRelative ? 1 : 1 - morphInfluencesSum;
+      program.getUniforms().setValue(gl, "morphTargetBaseInfluence", morphBaseInfluence);
+      program.getUniforms().setValue(gl, "morphTargetInfluences", objectInfluences);
+      program.getUniforms().setValue(gl, "morphTargetsTexture", entry.texture, textures);
+      program.getUniforms().setValue(gl, "morphTargetsTextureSize", entry.size);
+    } else {
+      const length = objectInfluences === void 0 ? 0 : objectInfluences.length;
+      let influences = influencesList[geometry.id];
+      if (influences === void 0 || influences.length !== length) {
+        influences = [];
+        for (let i2 = 0; i2 < length; i2++) {
+          influences[i2] = [i2, 0];
+        }
+        influencesList[geometry.id] = influences;
+      }
       for (let i2 = 0; i2 < length; i2++) {
-        influences[i2] = [i2, 0];
+        const influence = influences[i2];
+        influence[0] = i2;
+        influence[1] = objectInfluences[i2];
       }
-      influencesList[geometry.id] = influences;
-    }
-    for (let i2 = 0; i2 < length; i2++) {
-      const influence = influences[i2];
-      influence[0] = i2;
-      influence[1] = objectInfluences[i2];
-    }
-    influences.sort(absNumericalSort);
-    for (let i2 = 0; i2 < 8; i2++) {
-      if (i2 < length && influences[i2][1]) {
-        workInfluences[i2][0] = influences[i2][0];
-        workInfluences[i2][1] = influences[i2][1];
-      } else {
-        workInfluences[i2][0] = Number.MAX_SAFE_INTEGER;
-        workInfluences[i2][1] = 0;
+      influences.sort(absNumericalSort);
+      for (let i2 = 0; i2 < 8; i2++) {
+        if (i2 < length && influences[i2][1]) {
+          workInfluences[i2][0] = influences[i2][0];
+          workInfluences[i2][1] = influences[i2][1];
+        } else {
+          workInfluences[i2][0] = Number.MAX_SAFE_INTEGER;
+          workInfluences[i2][1] = 0;
+        }
       }
-    }
-    workInfluences.sort(numericalSort);
-    const morphTargets = geometry.morphAttributes.position;
-    const morphNormals = geometry.morphAttributes.normal;
-    let morphInfluencesSum = 0;
-    for (let i2 = 0; i2 < 8; i2++) {
-      const influence = workInfluences[i2];
-      const index = influence[0];
-      const value = influence[1];
-      if (index !== Number.MAX_SAFE_INTEGER && value) {
-        if (morphTargets && geometry.getAttribute("morphTarget" + i2) !== morphTargets[index]) {
-          geometry.setAttribute("morphTarget" + i2, morphTargets[index]);
+      workInfluences.sort(numericalSort);
+      const morphTargets = geometry.morphAttributes.position;
+      const morphNormals = geometry.morphAttributes.normal;
+      let morphInfluencesSum = 0;
+      for (let i2 = 0; i2 < 8; i2++) {
+        const influence = workInfluences[i2];
+        const index = influence[0];
+        const value = influence[1];
+        if (index !== Number.MAX_SAFE_INTEGER && value) {
+          if (morphTargets && geometry.getAttribute("morphTarget" + i2) !== morphTargets[index]) {
+            geometry.setAttribute("morphTarget" + i2, morphTargets[index]);
+          }
+          if (morphNormals && geometry.getAttribute("morphNormal" + i2) !== morphNormals[index]) {
+            geometry.setAttribute("morphNormal" + i2, morphNormals[index]);
+          }
+          morphInfluences[i2] = value;
+          morphInfluencesSum += value;
+        } else {
+          if (morphTargets && geometry.hasAttribute("morphTarget" + i2) === true) {
+            geometry.deleteAttribute("morphTarget" + i2);
+          }
+          if (morphNormals && geometry.hasAttribute("morphNormal" + i2) === true) {
+            geometry.deleteAttribute("morphNormal" + i2);
+          }
+          morphInfluences[i2] = 0;
         }
-        if (morphNormals && geometry.getAttribute("morphNormal" + i2) !== morphNormals[index]) {
-          geometry.setAttribute("morphNormal" + i2, morphNormals[index]);
-        }
-        morphInfluences[i2] = value;
-        morphInfluencesSum += value;
-      } else {
-        if (morphTargets && geometry.hasAttribute("morphTarget" + i2) === true) {
-          geometry.deleteAttribute("morphTarget" + i2);
-        }
-        if (morphNormals && geometry.hasAttribute("morphNormal" + i2) === true) {
-          geometry.deleteAttribute("morphNormal" + i2);
-        }
-        morphInfluences[i2] = 0;
       }
+      const morphBaseInfluence = geometry.morphTargetsRelative ? 1 : 1 - morphInfluencesSum;
+      program.getUniforms().setValue(gl, "morphTargetBaseInfluence", morphBaseInfluence);
+      program.getUniforms().setValue(gl, "morphTargetInfluences", morphInfluences);
     }
-    const morphBaseInfluence = geometry.morphTargetsRelative ? 1 : 1 - morphInfluencesSum;
-    program.getUniforms().setValue(gl, "morphTargetBaseInfluence", morphBaseInfluence);
-    program.getUniforms().setValue(gl, "morphTargetInfluences", morphInfluences);
   }
   return {
     update: update2
@@ -9889,20 +10043,6 @@ function WebGLObjects(gl, geometries, attributes, info) {
     dispose: dispose2
   };
 }
-var DataTexture2DArray = class extends Texture {
-  constructor(data = null, width = 1, height = 1, depth = 1) {
-    super(null);
-    this.image = { data, width, height, depth };
-    this.magFilter = NearestFilter;
-    this.minFilter = NearestFilter;
-    this.wrapR = ClampToEdgeWrapping;
-    this.generateMipmaps = false;
-    this.flipY = false;
-    this.unpackAlignment = 1;
-    this.needsUpdate = true;
-  }
-};
-DataTexture2DArray.prototype.isDataTexture2DArray = true;
 var DataTexture3D = class extends Texture {
   constructor(data = null, width = 1, height = 1, depth = 1) {
     super(null);
@@ -9971,204 +10111,204 @@ function allocTexUnits(textures, n2) {
   return r2;
 }
 function setValueV1f(gl, v2) {
-  const cache2 = this.cache;
-  if (cache2[0] === v2)
+  const cache5 = this.cache;
+  if (cache5[0] === v2)
     return;
   gl.uniform1f(this.addr, v2);
-  cache2[0] = v2;
+  cache5[0] = v2;
 }
 function setValueV2f(gl, v2) {
-  const cache2 = this.cache;
+  const cache5 = this.cache;
   if (v2.x !== void 0) {
-    if (cache2[0] !== v2.x || cache2[1] !== v2.y) {
+    if (cache5[0] !== v2.x || cache5[1] !== v2.y) {
       gl.uniform2f(this.addr, v2.x, v2.y);
-      cache2[0] = v2.x;
-      cache2[1] = v2.y;
+      cache5[0] = v2.x;
+      cache5[1] = v2.y;
     }
   } else {
-    if (arraysEqual(cache2, v2))
+    if (arraysEqual(cache5, v2))
       return;
     gl.uniform2fv(this.addr, v2);
-    copyArray(cache2, v2);
+    copyArray(cache5, v2);
   }
 }
 function setValueV3f(gl, v2) {
-  const cache2 = this.cache;
+  const cache5 = this.cache;
   if (v2.x !== void 0) {
-    if (cache2[0] !== v2.x || cache2[1] !== v2.y || cache2[2] !== v2.z) {
+    if (cache5[0] !== v2.x || cache5[1] !== v2.y || cache5[2] !== v2.z) {
       gl.uniform3f(this.addr, v2.x, v2.y, v2.z);
-      cache2[0] = v2.x;
-      cache2[1] = v2.y;
-      cache2[2] = v2.z;
+      cache5[0] = v2.x;
+      cache5[1] = v2.y;
+      cache5[2] = v2.z;
     }
   } else if (v2.r !== void 0) {
-    if (cache2[0] !== v2.r || cache2[1] !== v2.g || cache2[2] !== v2.b) {
+    if (cache5[0] !== v2.r || cache5[1] !== v2.g || cache5[2] !== v2.b) {
       gl.uniform3f(this.addr, v2.r, v2.g, v2.b);
-      cache2[0] = v2.r;
-      cache2[1] = v2.g;
-      cache2[2] = v2.b;
+      cache5[0] = v2.r;
+      cache5[1] = v2.g;
+      cache5[2] = v2.b;
     }
   } else {
-    if (arraysEqual(cache2, v2))
+    if (arraysEqual(cache5, v2))
       return;
     gl.uniform3fv(this.addr, v2);
-    copyArray(cache2, v2);
+    copyArray(cache5, v2);
   }
 }
 function setValueV4f(gl, v2) {
-  const cache2 = this.cache;
+  const cache5 = this.cache;
   if (v2.x !== void 0) {
-    if (cache2[0] !== v2.x || cache2[1] !== v2.y || cache2[2] !== v2.z || cache2[3] !== v2.w) {
+    if (cache5[0] !== v2.x || cache5[1] !== v2.y || cache5[2] !== v2.z || cache5[3] !== v2.w) {
       gl.uniform4f(this.addr, v2.x, v2.y, v2.z, v2.w);
-      cache2[0] = v2.x;
-      cache2[1] = v2.y;
-      cache2[2] = v2.z;
-      cache2[3] = v2.w;
+      cache5[0] = v2.x;
+      cache5[1] = v2.y;
+      cache5[2] = v2.z;
+      cache5[3] = v2.w;
     }
   } else {
-    if (arraysEqual(cache2, v2))
+    if (arraysEqual(cache5, v2))
       return;
     gl.uniform4fv(this.addr, v2);
-    copyArray(cache2, v2);
+    copyArray(cache5, v2);
   }
 }
 function setValueM2(gl, v2) {
-  const cache2 = this.cache;
+  const cache5 = this.cache;
   const elements = v2.elements;
   if (elements === void 0) {
-    if (arraysEqual(cache2, v2))
+    if (arraysEqual(cache5, v2))
       return;
     gl.uniformMatrix2fv(this.addr, false, v2);
-    copyArray(cache2, v2);
+    copyArray(cache5, v2);
   } else {
-    if (arraysEqual(cache2, elements))
+    if (arraysEqual(cache5, elements))
       return;
     mat2array.set(elements);
     gl.uniformMatrix2fv(this.addr, false, mat2array);
-    copyArray(cache2, elements);
+    copyArray(cache5, elements);
   }
 }
 function setValueM3(gl, v2) {
-  const cache2 = this.cache;
+  const cache5 = this.cache;
   const elements = v2.elements;
   if (elements === void 0) {
-    if (arraysEqual(cache2, v2))
+    if (arraysEqual(cache5, v2))
       return;
     gl.uniformMatrix3fv(this.addr, false, v2);
-    copyArray(cache2, v2);
+    copyArray(cache5, v2);
   } else {
-    if (arraysEqual(cache2, elements))
+    if (arraysEqual(cache5, elements))
       return;
     mat3array.set(elements);
     gl.uniformMatrix3fv(this.addr, false, mat3array);
-    copyArray(cache2, elements);
+    copyArray(cache5, elements);
   }
 }
 function setValueM4(gl, v2) {
-  const cache2 = this.cache;
+  const cache5 = this.cache;
   const elements = v2.elements;
   if (elements === void 0) {
-    if (arraysEqual(cache2, v2))
+    if (arraysEqual(cache5, v2))
       return;
     gl.uniformMatrix4fv(this.addr, false, v2);
-    copyArray(cache2, v2);
+    copyArray(cache5, v2);
   } else {
-    if (arraysEqual(cache2, elements))
+    if (arraysEqual(cache5, elements))
       return;
     mat4array.set(elements);
     gl.uniformMatrix4fv(this.addr, false, mat4array);
-    copyArray(cache2, elements);
+    copyArray(cache5, elements);
   }
 }
 function setValueV1i(gl, v2) {
-  const cache2 = this.cache;
-  if (cache2[0] === v2)
+  const cache5 = this.cache;
+  if (cache5[0] === v2)
     return;
   gl.uniform1i(this.addr, v2);
-  cache2[0] = v2;
+  cache5[0] = v2;
 }
 function setValueV2i(gl, v2) {
-  const cache2 = this.cache;
-  if (arraysEqual(cache2, v2))
+  const cache5 = this.cache;
+  if (arraysEqual(cache5, v2))
     return;
   gl.uniform2iv(this.addr, v2);
-  copyArray(cache2, v2);
+  copyArray(cache5, v2);
 }
 function setValueV3i(gl, v2) {
-  const cache2 = this.cache;
-  if (arraysEqual(cache2, v2))
+  const cache5 = this.cache;
+  if (arraysEqual(cache5, v2))
     return;
   gl.uniform3iv(this.addr, v2);
-  copyArray(cache2, v2);
+  copyArray(cache5, v2);
 }
 function setValueV4i(gl, v2) {
-  const cache2 = this.cache;
-  if (arraysEqual(cache2, v2))
+  const cache5 = this.cache;
+  if (arraysEqual(cache5, v2))
     return;
   gl.uniform4iv(this.addr, v2);
-  copyArray(cache2, v2);
+  copyArray(cache5, v2);
 }
 function setValueV1ui(gl, v2) {
-  const cache2 = this.cache;
-  if (cache2[0] === v2)
+  const cache5 = this.cache;
+  if (cache5[0] === v2)
     return;
   gl.uniform1ui(this.addr, v2);
-  cache2[0] = v2;
+  cache5[0] = v2;
 }
 function setValueV2ui(gl, v2) {
-  const cache2 = this.cache;
-  if (arraysEqual(cache2, v2))
+  const cache5 = this.cache;
+  if (arraysEqual(cache5, v2))
     return;
   gl.uniform2uiv(this.addr, v2);
-  copyArray(cache2, v2);
+  copyArray(cache5, v2);
 }
 function setValueV3ui(gl, v2) {
-  const cache2 = this.cache;
-  if (arraysEqual(cache2, v2))
+  const cache5 = this.cache;
+  if (arraysEqual(cache5, v2))
     return;
   gl.uniform3uiv(this.addr, v2);
-  copyArray(cache2, v2);
+  copyArray(cache5, v2);
 }
 function setValueV4ui(gl, v2) {
-  const cache2 = this.cache;
-  if (arraysEqual(cache2, v2))
+  const cache5 = this.cache;
+  if (arraysEqual(cache5, v2))
     return;
   gl.uniform4uiv(this.addr, v2);
-  copyArray(cache2, v2);
+  copyArray(cache5, v2);
 }
 function setValueT1(gl, v2, textures) {
-  const cache2 = this.cache;
+  const cache5 = this.cache;
   const unit = textures.allocateTextureUnit();
-  if (cache2[0] !== unit) {
+  if (cache5[0] !== unit) {
     gl.uniform1i(this.addr, unit);
-    cache2[0] = unit;
+    cache5[0] = unit;
   }
   textures.safeSetTexture2D(v2 || emptyTexture, unit);
 }
 function setValueT3D1(gl, v2, textures) {
-  const cache2 = this.cache;
+  const cache5 = this.cache;
   const unit = textures.allocateTextureUnit();
-  if (cache2[0] !== unit) {
+  if (cache5[0] !== unit) {
     gl.uniform1i(this.addr, unit);
-    cache2[0] = unit;
+    cache5[0] = unit;
   }
   textures.setTexture3D(v2 || emptyTexture3d, unit);
 }
 function setValueT6(gl, v2, textures) {
-  const cache2 = this.cache;
+  const cache5 = this.cache;
   const unit = textures.allocateTextureUnit();
-  if (cache2[0] !== unit) {
+  if (cache5[0] !== unit) {
     gl.uniform1i(this.addr, unit);
-    cache2[0] = unit;
+    cache5[0] = unit;
   }
   textures.safeSetTextureCube(v2 || emptyCubeTexture, unit);
 }
 function setValueT2DArray1(gl, v2, textures) {
-  const cache2 = this.cache;
+  const cache5 = this.cache;
   const unit = textures.allocateTextureUnit();
-  if (cache2[0] !== unit) {
+  if (cache5[0] !== unit) {
     gl.uniform1i(this.addr, unit);
-    cache2[0] = unit;
+    cache5[0] = unit;
   }
   textures.setTexture2DArray(v2 || emptyTexture2dArray, unit);
 }
@@ -10360,11 +10500,11 @@ function PureArrayUniform(id, activeInfo, addr) {
   this.setValue = getPureArraySetter(activeInfo.type);
 }
 PureArrayUniform.prototype.updateCache = function(data) {
-  const cache2 = this.cache;
-  if (data instanceof Float32Array && cache2.length !== data.length) {
+  const cache5 = this.cache;
+  if (data instanceof Float32Array && cache5.length !== data.length) {
     this.cache = new Float32Array(data.length);
   }
-  copyArray(cache2, data);
+  copyArray(cache5, data);
 };
 function StructuredUniform(id) {
   this.id = id;
@@ -10735,6 +10875,8 @@ function WebGLProgram(renderer2, cacheKey, parameters, bindingStates) {
       parameters.useVertexTexture ? "#define BONE_TEXTURE" : "",
       parameters.morphTargets ? "#define USE_MORPHTARGETS" : "",
       parameters.morphNormals && parameters.flatShading === false ? "#define USE_MORPHNORMALS" : "",
+      parameters.morphTargets && parameters.isWebGL2 ? "#define MORPHTARGETS_TEXTURE" : "",
+      parameters.morphTargets && parameters.isWebGL2 ? "#define MORPHTARGETS_COUNT " + parameters.morphTargetsCount : "",
       parameters.doubleSided ? "#define DOUBLE_SIDED" : "",
       parameters.flipSided ? "#define FLIP_SIDED" : "",
       parameters.shadowMapEnabled ? "#define USE_SHADOWMAP" : "",
@@ -10766,7 +10908,7 @@ function WebGLProgram(renderer2, cacheKey, parameters, bindingStates) {
       "#elif defined( USE_COLOR )",
       "	attribute vec3 color;",
       "#endif",
-      "#ifdef USE_MORPHTARGETS",
+      "#if ( defined( USE_MORPHTARGETS ) && ! defined( MORPHTARGETS_TEXTURE ) )",
       "	attribute vec3 morphTarget0;",
       "	attribute vec3 morphTarget1;",
       "	attribute vec3 morphTarget2;",
@@ -10821,7 +10963,7 @@ function WebGLProgram(renderer2, cacheKey, parameters, bindingStates) {
       parameters.metalnessMap ? "#define USE_METALNESSMAP" : "",
       parameters.alphaMap ? "#define USE_ALPHAMAP" : "",
       parameters.alphaTest ? "#define USE_ALPHATEST" : "",
-      parameters.sheenTint ? "#define USE_SHEEN" : "",
+      parameters.sheen ? "#define USE_SHEEN" : "",
       parameters.transmission ? "#define USE_TRANSMISSION" : "",
       parameters.transmissionMap ? "#define USE_TRANSMISSIONMAP" : "",
       parameters.thicknessMap ? "#define USE_THICKNESSMAP" : "",
@@ -10872,6 +11014,7 @@ function WebGLProgram(renderer2, cacheKey, parameters, bindingStates) {
   if (parameters.isWebGL2 && parameters.isRawShaderMaterial !== true) {
     versionString = "#version 300 es\n";
     prefixVertex = [
+      "precision mediump sampler2DArray;",
       "#define attribute in",
       "#define varying out",
       "#define texture2D texture"
@@ -11045,6 +11188,7 @@ function WebGLPrograms(renderer2, cubemaps, cubeuvmaps, extensions2, capabilitie
     "useVertexTexture",
     "morphTargets",
     "morphNormals",
+    "morphTargetsCount",
     "premultipliedAlpha",
     "numDirLights",
     "numPointLights",
@@ -11065,7 +11209,7 @@ function WebGLPrograms(renderer2, cubemaps, cubeuvmaps, extensions2, capabilitie
     "depthPacking",
     "dithering",
     "format",
-    "sheenTint",
+    "sheen",
     "transmission",
     "transmissionMap",
     "thicknessMap"
@@ -11094,6 +11238,9 @@ function WebGLPrograms(renderer2, cubemaps, cubeuvmaps, extensions2, capabilitie
       console.warn("THREE.WebGLPrograms.getTextureEncodingFromMap: don't use render targets as textures. Use their .texture property instead.");
       encoding = map.texture.encoding;
     } else {
+      encoding = LinearEncoding;
+    }
+    if (isWebGL2 && map && map.isTexture && map.format === RGBAFormat && map.type === UnsignedByteType && map.encoding === sRGBEncoding) {
       encoding = LinearEncoding;
     }
     return encoding;
@@ -11167,7 +11314,7 @@ function WebGLPrograms(renderer2, cubemaps, cubeuvmaps, extensions2, capabilitie
       alphaMap: !!material.alphaMap,
       alphaTest: useAlphaTest,
       gradientMap: !!material.gradientMap,
-      sheenTint: !!material.sheenTint && (material.sheenTint.r > 0 || material.sheenTint.g > 0 || material.sheenTint.b > 0),
+      sheen: material.sheen > 0,
       transmission: material.transmission > 0,
       transmissionMap: !!material.transmissionMap,
       thicknessMap: !!material.thicknessMap,
@@ -11188,6 +11335,7 @@ function WebGLPrograms(renderer2, cubemaps, cubeuvmaps, extensions2, capabilitie
       useVertexTexture: floatVertexTextures,
       morphTargets: !!object2.geometry && !!object2.geometry.morphAttributes.position,
       morphNormals: !!object2.geometry && !!object2.geometry.morphAttributes.normal,
+      morphTargetsCount: !!object2.geometry && !!object2.geometry.morphAttributes.position ? object2.geometry.morphAttributes.position.length : 0,
       numDirLights: lights.directional.length,
       numPointLights: lights.point.length,
       numSpotLights: lights.spot.length,
@@ -11561,7 +11709,7 @@ function shadowCastingLightsFirst(lightA, lightB) {
   return (lightB.castShadow ? 1 : 0) - (lightA.castShadow ? 1 : 0);
 }
 function WebGLLights(extensions2, capabilities) {
-  const cache2 = new UniformsCache();
+  const cache5 = new UniformsCache();
   const shadowCache = ShadowUniformsCache();
   const state = {
     version: 0,
@@ -11617,7 +11765,7 @@ function WebGLLights(extensions2, capabilities) {
       const light2 = lights[i2];
       const color = light2.color;
       const intensity = light2.intensity;
-      const distance = light2.distance;
+      const distance2 = light2.distance;
       const shadowMap = light2.shadow && light2.shadow.map ? light2.shadow.map.texture : null;
       if (light2.isAmbientLight) {
         r2 += color.r * intensity * scaleFactor;
@@ -11628,7 +11776,7 @@ function WebGLLights(extensions2, capabilities) {
           state.probe[j2].addScaledVector(light2.sh.coefficients[j2], intensity);
         }
       } else if (light2.isDirectionalLight) {
-        const uniforms = cache2.get(light2);
+        const uniforms = cache5.get(light2);
         uniforms.color.copy(light2.color).multiplyScalar(light2.intensity * scaleFactor);
         if (light2.castShadow) {
           const shadow = light2.shadow;
@@ -11645,10 +11793,10 @@ function WebGLLights(extensions2, capabilities) {
         state.directional[directionalLength] = uniforms;
         directionalLength++;
       } else if (light2.isSpotLight) {
-        const uniforms = cache2.get(light2);
+        const uniforms = cache5.get(light2);
         uniforms.position.setFromMatrixPosition(light2.matrixWorld);
         uniforms.color.copy(color).multiplyScalar(intensity * scaleFactor);
-        uniforms.distance = distance;
+        uniforms.distance = distance2;
         uniforms.coneCos = Math.cos(light2.angle);
         uniforms.penumbraCos = Math.cos(light2.angle * (1 - light2.penumbra));
         uniforms.decay = light2.decay;
@@ -11667,14 +11815,14 @@ function WebGLLights(extensions2, capabilities) {
         state.spot[spotLength] = uniforms;
         spotLength++;
       } else if (light2.isRectAreaLight) {
-        const uniforms = cache2.get(light2);
+        const uniforms = cache5.get(light2);
         uniforms.color.copy(color).multiplyScalar(intensity);
         uniforms.halfWidth.set(light2.width * 0.5, 0, 0);
         uniforms.halfHeight.set(0, light2.height * 0.5, 0);
         state.rectArea[rectAreaLength] = uniforms;
         rectAreaLength++;
       } else if (light2.isPointLight) {
-        const uniforms = cache2.get(light2);
+        const uniforms = cache5.get(light2);
         uniforms.color.copy(light2.color).multiplyScalar(light2.intensity * scaleFactor);
         uniforms.distance = light2.distance;
         uniforms.decay = light2.decay;
@@ -11695,7 +11843,7 @@ function WebGLLights(extensions2, capabilities) {
         state.point[pointLength] = uniforms;
         pointLength++;
       } else if (light2.isHemisphereLight) {
-        const uniforms = cache2.get(light2);
+        const uniforms = cache5.get(light2);
         uniforms.skyColor.copy(light2.color).multiplyScalar(intensity * scaleFactor);
         uniforms.groundColor.copy(light2.groundColor).multiplyScalar(intensity * scaleFactor);
         state.hemi[hemiLength] = uniforms;
@@ -11923,8 +12071,8 @@ var MeshDistanceMaterial = class extends Material {
   }
 };
 MeshDistanceMaterial.prototype.isMeshDistanceMaterial = true;
-var vsm_frag = "uniform sampler2D shadow_pass;\nuniform vec2 resolution;\nuniform float radius;\nuniform float samples;\n#include <packing>\nvoid main() {\n	float mean = 0.0;\n	float squared_mean = 0.0;\n	float uvStride = samples <= 1.0 ? 0.0 : 2.0 / ( samples - 1.0 );\n	float uvStart = samples <= 1.0 ? 0.0 : - 1.0;\n	for ( float i = 0.0; i < samples; i ++ ) {\n		float uvOffset = uvStart + i * uvStride;\n		#ifdef HORIZONTAL_PASS\n			vec2 distribution = unpackRGBATo2Half( texture2D( shadow_pass, ( gl_FragCoord.xy + vec2( uvOffset, 0.0 ) * radius ) / resolution ) );\n			mean += distribution.x;\n			squared_mean += distribution.y * distribution.y + distribution.x * distribution.x;\n		#else\n			float depth = unpackRGBAToDepth( texture2D( shadow_pass, ( gl_FragCoord.xy + vec2( 0.0, uvOffset ) * radius ) / resolution ) );\n			mean += depth;\n			squared_mean += depth * depth;\n		#endif\n	}\n	mean = mean / samples;\n	squared_mean = squared_mean / samples;\n	float std_dev = sqrt( squared_mean - mean * mean );\n	gl_FragColor = pack2HalfToRGBA( vec2( mean, std_dev ) );\n}";
-var vsm_vert = "void main() {\n	gl_Position = vec4( position, 1.0 );\n}";
+var vertex = "void main() {\n	gl_Position = vec4( position, 1.0 );\n}";
+var fragment = "uniform sampler2D shadow_pass;\nuniform vec2 resolution;\nuniform float radius;\nuniform float samples;\n#include <packing>\nvoid main() {\n	float mean = 0.0;\n	float squared_mean = 0.0;\n	float uvStride = samples <= 1.0 ? 0.0 : 2.0 / ( samples - 1.0 );\n	float uvStart = samples <= 1.0 ? 0.0 : - 1.0;\n	for ( float i = 0.0; i < samples; i ++ ) {\n		float uvOffset = uvStart + i * uvStride;\n		#ifdef HORIZONTAL_PASS\n			vec2 distribution = unpackRGBATo2Half( texture2D( shadow_pass, ( gl_FragCoord.xy + vec2( uvOffset, 0.0 ) * radius ) / resolution ) );\n			mean += distribution.x;\n			squared_mean += distribution.y * distribution.y + distribution.x * distribution.x;\n		#else\n			float depth = unpackRGBAToDepth( texture2D( shadow_pass, ( gl_FragCoord.xy + vec2( 0.0, uvOffset ) * radius ) / resolution ) );\n			mean += depth;\n			squared_mean += depth * depth;\n		#endif\n	}\n	mean = mean / samples;\n	squared_mean = squared_mean / samples;\n	float std_dev = sqrt( squared_mean - mean * mean );\n	gl_FragColor = pack2HalfToRGBA( vec2( mean, std_dev ) );\n}";
 function WebGLShadowMap(_renderer, _objects, _capabilities) {
   let _frustum = new Frustum();
   const _shadowMapSize = new Vector2(), _viewportSize = new Vector2(), _viewport = new Vector4(), _depthMaterial = new MeshDepthMaterial({ depthPacking: RGBADepthPacking }), _distanceMaterial = new MeshDistanceMaterial(), _materialCache = {}, _maxTextureSize = _capabilities.maxTextureSize;
@@ -11936,8 +12084,8 @@ function WebGLShadowMap(_renderer, _objects, _capabilities) {
       radius: { value: 4 },
       samples: { value: 8 }
     },
-    vertexShader: vsm_vert,
-    fragmentShader: vsm_frag
+    vertexShader: vertex,
+    fragmentShader: fragment
   });
   const shadowMaterialHorizontal = shadowMaterialVertical.clone();
   shadowMaterialHorizontal.defines.HORIZONTAL_PASS = 1;
@@ -12744,7 +12892,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
   } catch (err) {
   }
   function createCanvas2(width, height) {
-    return useOffscreenCanvas ? new OffscreenCanvas(width, height) : document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+    return useOffscreenCanvas ? new OffscreenCanvas(width, height) : createElementNS("canvas");
   }
   function resizeImage(image2, needsPowerOfTwo, needsNewCanvas, maxSize2) {
     let scale3 = 1;
@@ -12753,9 +12901,9 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
     }
     if (scale3 < 1 || needsPowerOfTwo === true) {
       if (typeof HTMLImageElement !== "undefined" && image2 instanceof HTMLImageElement || typeof HTMLCanvasElement !== "undefined" && image2 instanceof HTMLCanvasElement || typeof ImageBitmap !== "undefined" && image2 instanceof ImageBitmap) {
-        const floor4 = needsPowerOfTwo ? floorPowerOfTwo : Math.floor;
-        const width = floor4(scale3 * image2.width);
-        const height = floor4(scale3 * image2.height);
+        const floor5 = needsPowerOfTwo ? floorPowerOfTwo : Math.floor;
+        const width = floor5(scale3 * image2.width);
+        const height = floor5(scale3 * image2.height);
         if (_canvas2 === void 0)
           _canvas2 = createCanvas2(width, height);
         const canvas3 = needsNewCanvas ? createCanvas2(width, height) : _canvas2;
@@ -12790,7 +12938,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
     const textureProperties = properties.get(texture);
     textureProperties.__maxMipLevel = Math.log2(Math.max(width, height, depth));
   }
-  function getInternalFormat(internalFormatName, glFormat, glType) {
+  function getInternalFormat(internalFormatName, glFormat, glType, encoding) {
     if (isWebGL2 === false)
       return glFormat;
     if (internalFormatName !== null) {
@@ -12821,7 +12969,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
       if (glType === 5131)
         internalFormat = 34842;
       if (glType === 5121)
-        internalFormat = 32856;
+        internalFormat = encoding === sRGBEncoding ? 35907 : 32856;
     }
     if (internalFormat === 33325 || internalFormat === 33326 || internalFormat === 34842 || internalFormat === 34836) {
       extensions2.get("EXT_color_buffer_float");
@@ -13028,7 +13176,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
     const needsPowerOfTwo = textureNeedsPowerOfTwo(texture) && isPowerOfTwo$1(texture.image) === false;
     const image2 = resizeImage(texture.image, needsPowerOfTwo, false, maxTextureSize);
     const supportsMips = isPowerOfTwo$1(image2) || isWebGL2, glFormat = utils.convert(texture.format);
-    let glType = utils.convert(texture.type), glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType);
+    let glType = utils.convert(texture.type), glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType, texture.encoding);
     setTextureParameters(textureType, texture, supportsMips);
     let mipmap;
     const mipmaps = texture.mipmaps;
@@ -13137,7 +13285,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
         cubeImage[i2] = isDataTexture ? texture.image[i2].image : texture.image[i2];
       }
     }
-    const image2 = cubeImage[0], supportsMips = isPowerOfTwo$1(image2) || isWebGL2, glFormat = utils.convert(texture.format), glType = utils.convert(texture.type), glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType);
+    const image2 = cubeImage[0], supportsMips = isPowerOfTwo$1(image2) || isWebGL2, glFormat = utils.convert(texture.format), glType = utils.convert(texture.type), glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType, texture.encoding);
     setTextureParameters(34067, texture, supportsMips);
     let mipmaps;
     if (isCompressed) {
@@ -13187,7 +13335,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
   function setupFrameBufferTexture(framebuffer, renderTarget, texture, attachment, textureTarget) {
     const glFormat = utils.convert(texture.format);
     const glType = utils.convert(texture.type);
-    const glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType);
+    const glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType, texture.encoding);
     if (textureTarget === 32879 || textureTarget === 35866) {
       state.texImage3D(textureTarget, 0, glInternalFormat, renderTarget.width, renderTarget.height, renderTarget.depth, 0, glFormat, glType, null);
     } else {
@@ -13228,7 +13376,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
       const texture = renderTarget.isWebGLMultipleRenderTargets === true ? renderTarget.texture[0] : renderTarget.texture;
       const glFormat = utils.convert(texture.format);
       const glType = utils.convert(texture.type);
-      const glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType);
+      const glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType, texture.encoding);
       if (isMultisample) {
         const samples = getRenderTargetSamples(renderTarget);
         _gl.renderbufferStorageMultisample(36161, samples, glInternalFormat, renderTarget.width, renderTarget.height);
@@ -13330,7 +13478,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
           _gl.bindRenderbuffer(36161, renderTargetProperties.__webglColorRenderbuffer);
           const glFormat = utils.convert(texture.format);
           const glType = utils.convert(texture.type);
-          const glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType);
+          const glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType, texture.encoding);
           const samples = getRenderTargetSamples(renderTarget);
           _gl.renderbufferStorageMultisample(36161, samples, glInternalFormat, renderTarget.width, renderTarget.height);
           state.bindFramebuffer(36160, renderTargetProperties.__webglMultisampledFramebuffer);
@@ -13735,17 +13883,17 @@ var WebXRController = class {
         }
         const indexTip = hand3.joints["index-finger-tip"];
         const thumbTip = hand3.joints["thumb-tip"];
-        const distance = indexTip.position.distanceTo(thumbTip.position);
+        const distance2 = indexTip.position.distanceTo(thumbTip.position);
         const distanceToPinch = 0.02;
         const threshold3 = 5e-3;
-        if (hand3.inputState.pinching && distance > distanceToPinch + threshold3) {
+        if (hand3.inputState.pinching && distance2 > distanceToPinch + threshold3) {
           hand3.inputState.pinching = false;
           this.dispatchEvent({
             type: "pinchend",
             handedness: inputSource.handedness,
             target: this
           });
-        } else if (!hand3.inputState.pinching && distance <= distanceToPinch - threshold3) {
+        } else if (!hand3.inputState.pinching && distance2 <= distanceToPinch - threshold3) {
           hand3.inputState.pinching = true;
           this.dispatchEvent({
             type: "pinchstart",
@@ -14491,8 +14639,10 @@ function WebGLMaterials(properties) {
   function refreshUniformsPhysical(uniforms, material, transmissionRenderTarget) {
     refreshUniformsStandard(uniforms, material);
     uniforms.ior.value = material.ior;
-    if (material.sheenTint)
-      uniforms.sheenTint.value.copy(material.sheenTint);
+    if (material.sheen > 0) {
+      uniforms.sheenTint.value.copy(material.sheenTint).multiplyScalar(material.sheen);
+      uniforms.sheenRoughness.value = material.sheenRoughness;
+    }
     if (material.clearcoat > 0) {
       uniforms.clearcoat.value = material.clearcoat;
       uniforms.clearcoatRoughness.value = material.clearcoatRoughness;
@@ -14597,7 +14747,7 @@ function WebGLMaterials(properties) {
   };
 }
 function createCanvasElement() {
-  const canvas3 = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+  const canvas3 = createElementNS("canvas");
   canvas3.style.display = "block";
   return canvas3;
 }
@@ -14719,7 +14869,7 @@ function WebGLRenderer(parameters = {}) {
     bindingStates = new WebGLBindingStates(_gl, extensions2, attributes, capabilities);
     geometries = new WebGLGeometries(_gl, attributes, info, bindingStates);
     objects = new WebGLObjects(_gl, geometries, attributes, info);
-    morphtargets = new WebGLMorphtargets(_gl);
+    morphtargets = new WebGLMorphtargets(_gl, capabilities, textures);
     clipping = new WebGLClipping(properties);
     programCache = new WebGLPrograms(_this, cubemaps, cubeuvmaps, extensions2, capabilities, bindingStates, clipping);
     materials = new WebGLMaterials(properties);
@@ -14968,7 +15118,7 @@ function WebGLRenderer(parameters = {}) {
     if (scene2 === null)
       scene2 = _emptyScene;
     const frontFaceCW = object2.isMesh && object2.matrixWorld.determinant() < 0;
-    const program = setProgram(camera2, scene2, material, object2);
+    const program = setProgram(camera2, scene2, geometry, material, object2);
     state.setMaterial(material, frontFaceCW);
     let index = geometry.index;
     const position = geometry.attributes.position;
@@ -14982,9 +15132,6 @@ function WebGLRenderer(parameters = {}) {
     if (material.wireframe === true) {
       index = geometries.getWireframeAttribute(geometry);
       rangeFactor = 2;
-    }
-    if (geometry.morphAttributes.position !== void 0 || geometry.morphAttributes.normal !== void 0) {
-      morphtargets.update(object2, geometry, material, program);
     }
     bindingStates.setup(object2, material, program, geometry, index);
     let attribute;
@@ -15287,8 +15434,9 @@ function WebGLRenderer(parameters = {}) {
     object2.onBeforeRender(_this, scene2, camera2, geometry, material, group);
     object2.modelViewMatrix.multiplyMatrices(camera2.matrixWorldInverse, object2.matrixWorld);
     object2.normalMatrix.getNormalMatrix(object2.modelViewMatrix);
+    material.onBeforeRender(_this, scene2, camera2, geometry, object2, group);
     if (object2.isImmediateRenderObject) {
-      const program = setProgram(camera2, scene2, material, object2);
+      const program = setProgram(camera2, scene2, geometry, material, object2);
       state.setMaterial(material);
       bindingStates.reset();
       renderObjectImmediate(object2, program);
@@ -15379,12 +15527,13 @@ function WebGLRenderer(parameters = {}) {
     materialProperties.skinning = parameters2.skinning;
     materialProperties.morphTargets = parameters2.morphTargets;
     materialProperties.morphNormals = parameters2.morphNormals;
+    materialProperties.morphTargetsCount = parameters2.morphTargetsCount;
     materialProperties.numClippingPlanes = parameters2.numClippingPlanes;
     materialProperties.numIntersection = parameters2.numClipIntersection;
     materialProperties.vertexAlphas = parameters2.vertexAlphas;
     materialProperties.vertexTangents = parameters2.vertexTangents;
   }
-  function setProgram(camera2, scene2, material, object2) {
+  function setProgram(camera2, scene2, geometry, material, object2) {
     if (scene2.isScene !== true)
       scene2 = _emptyScene;
     textures.resetTextureUnits();
@@ -15392,10 +15541,11 @@ function WebGLRenderer(parameters = {}) {
     const environment = material.isMeshStandardMaterial ? scene2.environment : null;
     const encoding = _currentRenderTarget === null ? _this.outputEncoding : _currentRenderTarget.texture.encoding;
     const envMap = (material.isMeshStandardMaterial ? cubeuvmaps : cubemaps).get(material.envMap || environment);
-    const vertexAlphas = material.vertexColors === true && !!object2.geometry && !!object2.geometry.attributes.color && object2.geometry.attributes.color.itemSize === 4;
-    const vertexTangents = !!object2.geometry && !!object2.geometry.attributes.tangent;
-    const morphTargets = !!object2.geometry && !!object2.geometry.morphAttributes.position;
-    const morphNormals = !!object2.geometry && !!object2.geometry.morphAttributes.normal;
+    const vertexAlphas = material.vertexColors === true && !!geometry && !!geometry.attributes.color && geometry.attributes.color.itemSize === 4;
+    const vertexTangents = !!material.normalMap && !!geometry && !!geometry.attributes.tangent;
+    const morphTargets = !!geometry && !!geometry.morphAttributes.position;
+    const morphNormals = !!geometry && !!geometry.morphAttributes.normal;
+    const morphTargetsCount = !!geometry && !!geometry.morphAttributes.position ? geometry.morphAttributes.position.length : 0;
     const materialProperties = properties.get(material);
     const lights = currentRenderState.state.lights;
     if (_clippingEnabled === true) {
@@ -15431,6 +15581,8 @@ function WebGLRenderer(parameters = {}) {
       } else if (materialProperties.morphTargets !== morphTargets) {
         needsProgramChange = true;
       } else if (materialProperties.morphNormals !== morphNormals) {
+        needsProgramChange = true;
+      } else if (capabilities.isWebGL2 === true && materialProperties.morphTargetsCount !== morphTargetsCount) {
         needsProgramChange = true;
       }
     } else {
@@ -15491,6 +15643,9 @@ function WebGLRenderer(parameters = {}) {
           p_uniforms.setOptional(_gl, skeleton, "boneMatrices");
         }
       }
+    }
+    if (!!geometry && (geometry.morphAttributes.position !== void 0 || geometry.morphAttributes.normal !== void 0)) {
+      morphtargets.update(object2, geometry, material, program);
     }
     if (refreshMaterial || materialProperties.receiveShadow !== object2.receiveShadow) {
       materialProperties.receiveShadow = object2.receiveShadow;
@@ -16156,32 +16311,32 @@ var Sprite = class extends Object3D {
       _worldScale.multiplyScalar(-_mvPosition.z);
     }
     const rotation = this.material.rotation;
-    let sin4, cos4;
+    let sin5, cos5;
     if (rotation !== 0) {
-      cos4 = Math.cos(rotation);
-      sin4 = Math.sin(rotation);
+      cos5 = Math.cos(rotation);
+      sin5 = Math.sin(rotation);
     }
     const center = this.center;
-    transformVertex(_vA.set(-0.5, -0.5, 0), _mvPosition, center, _worldScale, sin4, cos4);
-    transformVertex(_vB.set(0.5, -0.5, 0), _mvPosition, center, _worldScale, sin4, cos4);
-    transformVertex(_vC.set(0.5, 0.5, 0), _mvPosition, center, _worldScale, sin4, cos4);
+    transformVertex(_vA.set(-0.5, -0.5, 0), _mvPosition, center, _worldScale, sin5, cos5);
+    transformVertex(_vB.set(0.5, -0.5, 0), _mvPosition, center, _worldScale, sin5, cos5);
+    transformVertex(_vC.set(0.5, 0.5, 0), _mvPosition, center, _worldScale, sin5, cos5);
     _uvA.set(0, 0);
     _uvB.set(1, 0);
     _uvC.set(1, 1);
     let intersect = raycaster.ray.intersectTriangle(_vA, _vB, _vC, false, _intersectPoint);
     if (intersect === null) {
-      transformVertex(_vB.set(-0.5, 0.5, 0), _mvPosition, center, _worldScale, sin4, cos4);
+      transformVertex(_vB.set(-0.5, 0.5, 0), _mvPosition, center, _worldScale, sin5, cos5);
       _uvB.set(0, 1);
       intersect = raycaster.ray.intersectTriangle(_vA, _vC, _vB, false, _intersectPoint);
       if (intersect === null) {
         return;
       }
     }
-    const distance = raycaster.ray.origin.distanceTo(_intersectPoint);
-    if (distance < raycaster.near || distance > raycaster.far)
+    const distance2 = raycaster.ray.origin.distanceTo(_intersectPoint);
+    if (distance2 < raycaster.near || distance2 > raycaster.far)
       return;
     intersects2.push({
-      distance,
+      distance: distance2,
       point: _intersectPoint.clone(),
       uv: Triangle.getUV(_intersectPoint, _vA, _vB, _vC, _uvA, _uvB, _uvC, new Vector2()),
       face: null,
@@ -16197,11 +16352,11 @@ var Sprite = class extends Object3D {
   }
 };
 Sprite.prototype.isSprite = true;
-function transformVertex(vertexPosition, mvPosition, center, scale3, sin4, cos4) {
+function transformVertex(vertexPosition, mvPosition, center, scale3, sin5, cos5) {
   _alignedPosition.subVectors(vertexPosition, center).addScalar(0.5).multiply(scale3);
-  if (sin4 !== void 0) {
-    _rotatedPosition.x = cos4 * _alignedPosition.x - sin4 * _alignedPosition.y;
-    _rotatedPosition.y = sin4 * _alignedPosition.x + cos4 * _alignedPosition.y;
+  if (sin5 !== void 0) {
+    _rotatedPosition.x = cos5 * _alignedPosition.x - sin5 * _alignedPosition.y;
+    _rotatedPosition.y = sin5 * _alignedPosition.x + cos5 * _alignedPosition.y;
   } else {
     _rotatedPosition.copy(_alignedPosition);
   }
@@ -16276,7 +16431,7 @@ var SkinnedMesh = class extends Mesh {
     const geometry = this.geometry;
     _skinIndex.fromBufferAttribute(geometry.attributes.skinIndex, index);
     _skinWeight.fromBufferAttribute(geometry.attributes.skinWeight, index);
-    _basePosition.fromBufferAttribute(geometry.attributes.position, index).applyMatrix4(this.bindMatrix);
+    _basePosition.copy(target).applyMatrix4(this.bindMatrix);
     target.set(0, 0, 0);
     for (let i2 = 0; i2 < 4; i2++) {
       const weight = _skinWeight.getComponent(i2);
@@ -16633,11 +16788,11 @@ var Line = class extends Object3D {
           if (distSq > localThresholdSq)
             continue;
           interRay.applyMatrix4(this.matrixWorld);
-          const distance = raycaster.ray.origin.distanceTo(interRay);
-          if (distance < raycaster.near || distance > raycaster.far)
+          const distance2 = raycaster.ray.origin.distanceTo(interRay);
+          if (distance2 < raycaster.near || distance2 > raycaster.far)
             continue;
           intersects2.push({
-            distance,
+            distance: distance2,
             point: interSegment.clone().applyMatrix4(this.matrixWorld),
             index: i2,
             face: null,
@@ -16655,11 +16810,11 @@ var Line = class extends Object3D {
           if (distSq > localThresholdSq)
             continue;
           interRay.applyMatrix4(this.matrixWorld);
-          const distance = raycaster.ray.origin.distanceTo(interRay);
-          if (distance < raycaster.near || distance > raycaster.far)
+          const distance2 = raycaster.ray.origin.distanceTo(interRay);
+          if (distance2 < raycaster.near || distance2 > raycaster.far)
             continue;
           intersects2.push({
-            distance,
+            distance: distance2,
             point: interSegment.clone().applyMatrix4(this.matrixWorld),
             index: i2,
             face: null,
@@ -16847,11 +17002,11 @@ function testPoint(point2, index, localThresholdSq, matrixWorld, raycaster, inte
     const intersectPoint = new Vector3();
     _ray.closestPointToPoint(point2, intersectPoint);
     intersectPoint.applyMatrix4(matrixWorld);
-    const distance = raycaster.ray.origin.distanceTo(intersectPoint);
-    if (distance < raycaster.near || distance > raycaster.far)
+    const distance2 = raycaster.ray.origin.distanceTo(intersectPoint);
+    if (distance2 < raycaster.near || distance2 > raycaster.far)
       return;
     intersects2.push({
-      distance,
+      distance: distance2,
       distanceToRay: Math.sqrt(rayPointDistanceSq),
       point: intersectPoint,
       index,
@@ -16964,30 +17119,30 @@ var Curve = class {
       return this.cacheArcLengths;
     }
     this.needsUpdate = false;
-    const cache2 = [];
+    const cache5 = [];
     let current, last5 = this.getPoint(0);
-    let sum6 = 0;
-    cache2.push(0);
+    let sum7 = 0;
+    cache5.push(0);
     for (let p3 = 1; p3 <= divisions; p3++) {
       current = this.getPoint(p3 / divisions);
-      sum6 += current.distanceTo(last5);
-      cache2.push(sum6);
+      sum7 += current.distanceTo(last5);
+      cache5.push(sum7);
       last5 = current;
     }
-    this.cacheArcLengths = cache2;
-    return cache2;
+    this.cacheArcLengths = cache5;
+    return cache5;
   }
   updateArcLengths() {
     this.needsUpdate = true;
     this.getLengths();
   }
-  getUtoTmapping(u2, distance) {
+  getUtoTmapping(u2, distance2) {
     const arcLengths = this.getLengths();
     let i2 = 0;
     const il = arcLengths.length;
     let targetArcLength;
-    if (distance) {
-      targetArcLength = distance;
+    if (distance2) {
+      targetArcLength = distance2;
     } else {
       targetArcLength = u2 * arcLengths[il - 1];
     }
@@ -17043,23 +17198,22 @@ var Curve = class {
     for (let i2 = 0; i2 <= segments; i2++) {
       const u2 = i2 / segments;
       tangents[i2] = this.getTangentAt(u2, new Vector3());
-      tangents[i2].normalize();
     }
     normals[0] = new Vector3();
     binormals[0] = new Vector3();
-    let min6 = Number.MAX_VALUE;
+    let min7 = Number.MAX_VALUE;
     const tx = Math.abs(tangents[0].x);
     const ty = Math.abs(tangents[0].y);
     const tz = Math.abs(tangents[0].z);
-    if (tx <= min6) {
-      min6 = tx;
+    if (tx <= min7) {
+      min7 = tx;
       normal.set(1, 0, 0);
     }
-    if (ty <= min6) {
-      min6 = ty;
+    if (ty <= min7) {
+      min7 = ty;
       normal.set(0, 1, 0);
     }
-    if (tz <= min6) {
+    if (tz <= min7) {
       normal.set(0, 0, 1);
     }
     vec.crossVectors(tangents[0], normal).normalize();
@@ -17157,12 +17311,12 @@ var EllipseCurve = class extends Curve {
     let x2 = this.aX + this.xRadius * Math.cos(angle2);
     let y2 = this.aY + this.yRadius * Math.sin(angle2);
     if (this.aRotation !== 0) {
-      const cos4 = Math.cos(this.aRotation);
-      const sin4 = Math.sin(this.aRotation);
+      const cos5 = Math.cos(this.aRotation);
+      const sin5 = Math.sin(this.aRotation);
       const tx = x2 - this.aX;
       const ty = y2 - this.aY;
-      x2 = tx * cos4 - ty * sin4 + this.aX;
-      y2 = tx * sin4 + ty * cos4 + this.aY;
+      x2 = tx * cos5 - ty * sin5 + this.aX;
+      y2 = tx * sin5 + ty * cos5 + this.aY;
     }
     return point2.set(x2, y2);
   }
@@ -17279,10 +17433,10 @@ var CatmullRomCurve3 = class extends Curve {
       p32 = tmp;
     }
     if (this.curveType === "centripetal" || this.curveType === "chordal") {
-      const pow4 = this.curveType === "chordal" ? 0.5 : 0.25;
-      let dt0 = Math.pow(p0.distanceToSquared(p1), pow4);
-      let dt1 = Math.pow(p1.distanceToSquared(p22), pow4);
-      let dt2 = Math.pow(p22.distanceToSquared(p32), pow4);
+      const pow5 = this.curveType === "chordal" ? 0.5 : 0.25;
+      let dt0 = Math.pow(p0.distanceToSquared(p1), pow5);
+      let dt1 = Math.pow(p1.distanceToSquared(p22), pow5);
+      let dt2 = Math.pow(p22.distanceToSquared(p32), pow5);
       if (dt1 < 1e-4)
         dt1 = 1;
       if (dt0 < 1e-4)
@@ -17677,6 +17831,262 @@ var Curves = /* @__PURE__ */ Object.freeze({
   QuadraticBezierCurve3,
   SplineCurve
 });
+var CurvePath = class extends Curve {
+  constructor() {
+    super();
+    this.type = "CurvePath";
+    this.curves = [];
+    this.autoClose = false;
+  }
+  add(curve) {
+    this.curves.push(curve);
+  }
+  closePath() {
+    const startPoint = this.curves[0].getPoint(0);
+    const endPoint = this.curves[this.curves.length - 1].getPoint(1);
+    if (!startPoint.equals(endPoint)) {
+      this.curves.push(new LineCurve(endPoint, startPoint));
+    }
+  }
+  getPoint(t2, optionalTarget) {
+    const d2 = t2 * this.getLength();
+    const curveLengths = this.getCurveLengths();
+    let i2 = 0;
+    while (i2 < curveLengths.length) {
+      if (curveLengths[i2] >= d2) {
+        const diff = curveLengths[i2] - d2;
+        const curve = this.curves[i2];
+        const segmentLength = curve.getLength();
+        const u2 = segmentLength === 0 ? 0 : 1 - diff / segmentLength;
+        return curve.getPointAt(u2, optionalTarget);
+      }
+      i2++;
+    }
+    return null;
+  }
+  getLength() {
+    const lens = this.getCurveLengths();
+    return lens[lens.length - 1];
+  }
+  updateArcLengths() {
+    this.needsUpdate = true;
+    this.cacheLengths = null;
+    this.getCurveLengths();
+  }
+  getCurveLengths() {
+    if (this.cacheLengths && this.cacheLengths.length === this.curves.length) {
+      return this.cacheLengths;
+    }
+    const lengths = [];
+    let sums = 0;
+    for (let i2 = 0, l3 = this.curves.length; i2 < l3; i2++) {
+      sums += this.curves[i2].getLength();
+      lengths.push(sums);
+    }
+    this.cacheLengths = lengths;
+    return lengths;
+  }
+  getSpacedPoints(divisions = 40) {
+    const points = [];
+    for (let i2 = 0; i2 <= divisions; i2++) {
+      points.push(this.getPoint(i2 / divisions));
+    }
+    if (this.autoClose) {
+      points.push(points[0]);
+    }
+    return points;
+  }
+  getPoints(divisions = 12) {
+    const points = [];
+    let last5;
+    for (let i2 = 0, curves2 = this.curves; i2 < curves2.length; i2++) {
+      const curve = curves2[i2];
+      const resolution = curve && curve.isEllipseCurve ? divisions * 2 : curve && (curve.isLineCurve || curve.isLineCurve3) ? 1 : curve && curve.isSplineCurve ? divisions * curve.points.length : divisions;
+      const pts = curve.getPoints(resolution);
+      for (let j2 = 0; j2 < pts.length; j2++) {
+        const point2 = pts[j2];
+        if (last5 && last5.equals(point2))
+          continue;
+        points.push(point2);
+        last5 = point2;
+      }
+    }
+    if (this.autoClose && points.length > 1 && !points[points.length - 1].equals(points[0])) {
+      points.push(points[0]);
+    }
+    return points;
+  }
+  copy(source) {
+    super.copy(source);
+    this.curves = [];
+    for (let i2 = 0, l3 = source.curves.length; i2 < l3; i2++) {
+      const curve = source.curves[i2];
+      this.curves.push(curve.clone());
+    }
+    this.autoClose = source.autoClose;
+    return this;
+  }
+  toJSON() {
+    const data = super.toJSON();
+    data.autoClose = this.autoClose;
+    data.curves = [];
+    for (let i2 = 0, l3 = this.curves.length; i2 < l3; i2++) {
+      const curve = this.curves[i2];
+      data.curves.push(curve.toJSON());
+    }
+    return data;
+  }
+  fromJSON(json20) {
+    super.fromJSON(json20);
+    this.autoClose = json20.autoClose;
+    this.curves = [];
+    for (let i2 = 0, l3 = json20.curves.length; i2 < l3; i2++) {
+      const curve = json20.curves[i2];
+      this.curves.push(new Curves[curve.type]().fromJSON(curve));
+    }
+    return this;
+  }
+};
+var Path = class extends CurvePath {
+  constructor(points) {
+    super();
+    this.type = "Path";
+    this.currentPoint = new Vector2();
+    if (points) {
+      this.setFromPoints(points);
+    }
+  }
+  setFromPoints(points) {
+    this.moveTo(points[0].x, points[0].y);
+    for (let i2 = 1, l3 = points.length; i2 < l3; i2++) {
+      this.lineTo(points[i2].x, points[i2].y);
+    }
+    return this;
+  }
+  moveTo(x2, y2) {
+    this.currentPoint.set(x2, y2);
+    return this;
+  }
+  lineTo(x2, y2) {
+    const curve = new LineCurve(this.currentPoint.clone(), new Vector2(x2, y2));
+    this.curves.push(curve);
+    this.currentPoint.set(x2, y2);
+    return this;
+  }
+  quadraticCurveTo(aCPx, aCPy, aX, aY) {
+    const curve = new QuadraticBezierCurve(this.currentPoint.clone(), new Vector2(aCPx, aCPy), new Vector2(aX, aY));
+    this.curves.push(curve);
+    this.currentPoint.set(aX, aY);
+    return this;
+  }
+  bezierCurveTo(aCP1x, aCP1y, aCP2x, aCP2y, aX, aY) {
+    const curve = new CubicBezierCurve(this.currentPoint.clone(), new Vector2(aCP1x, aCP1y), new Vector2(aCP2x, aCP2y), new Vector2(aX, aY));
+    this.curves.push(curve);
+    this.currentPoint.set(aX, aY);
+    return this;
+  }
+  splineThru(pts) {
+    const npts = [this.currentPoint.clone()].concat(pts);
+    const curve = new SplineCurve(npts);
+    this.curves.push(curve);
+    this.currentPoint.copy(pts[pts.length - 1]);
+    return this;
+  }
+  arc(aX, aY, aRadius, aStartAngle, aEndAngle, aClockwise) {
+    const x0 = this.currentPoint.x;
+    const y0 = this.currentPoint.y;
+    this.absarc(aX + x0, aY + y0, aRadius, aStartAngle, aEndAngle, aClockwise);
+    return this;
+  }
+  absarc(aX, aY, aRadius, aStartAngle, aEndAngle, aClockwise) {
+    this.absellipse(aX, aY, aRadius, aRadius, aStartAngle, aEndAngle, aClockwise);
+    return this;
+  }
+  ellipse(aX, aY, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation) {
+    const x0 = this.currentPoint.x;
+    const y0 = this.currentPoint.y;
+    this.absellipse(aX + x0, aY + y0, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation);
+    return this;
+  }
+  absellipse(aX, aY, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation) {
+    const curve = new EllipseCurve(aX, aY, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation);
+    if (this.curves.length > 0) {
+      const firstPoint = curve.getPoint(0);
+      if (!firstPoint.equals(this.currentPoint)) {
+        this.lineTo(firstPoint.x, firstPoint.y);
+      }
+    }
+    this.curves.push(curve);
+    const lastPoint = curve.getPoint(1);
+    this.currentPoint.copy(lastPoint);
+    return this;
+  }
+  copy(source) {
+    super.copy(source);
+    this.currentPoint.copy(source.currentPoint);
+    return this;
+  }
+  toJSON() {
+    const data = super.toJSON();
+    data.currentPoint = this.currentPoint.toArray();
+    return data;
+  }
+  fromJSON(json20) {
+    super.fromJSON(json20);
+    this.currentPoint.fromArray(json20.currentPoint);
+    return this;
+  }
+};
+var Shape = class extends Path {
+  constructor(points) {
+    super(points);
+    this.uuid = generateUUID();
+    this.type = "Shape";
+    this.holes = [];
+  }
+  getPointsHoles(divisions) {
+    const holesPts = [];
+    for (let i2 = 0, l3 = this.holes.length; i2 < l3; i2++) {
+      holesPts[i2] = this.holes[i2].getPoints(divisions);
+    }
+    return holesPts;
+  }
+  extractPoints(divisions) {
+    return {
+      shape: this.getPoints(divisions),
+      holes: this.getPointsHoles(divisions)
+    };
+  }
+  copy(source) {
+    super.copy(source);
+    this.holes = [];
+    for (let i2 = 0, l3 = source.holes.length; i2 < l3; i2++) {
+      const hole = source.holes[i2];
+      this.holes.push(hole.clone());
+    }
+    return this;
+  }
+  toJSON() {
+    const data = super.toJSON();
+    data.uuid = this.uuid;
+    data.holes = [];
+    for (let i2 = 0, l3 = this.holes.length; i2 < l3; i2++) {
+      const hole = this.holes[i2];
+      data.holes.push(hole.toJSON());
+    }
+    return data;
+  }
+  fromJSON(json20) {
+    super.fromJSON(json20);
+    this.uuid = json20.uuid;
+    this.holes = [];
+    for (let i2 = 0, l3 = json20.holes.length; i2 < l3; i2++) {
+      const hole = json20.holes[i2];
+      this.holes.push(new Path().fromJSON(hole));
+    }
+    return this;
+  }
+};
 var Earcut = {
   triangulate: function(data, holeIndices, dim = 2) {
     const hasHoles = holeIndices && holeIndices.length;
@@ -18101,12 +18511,12 @@ function Node(i2, x2, y2) {
   this.steiner = false;
 }
 function signedArea(data, start, end, dim) {
-  let sum6 = 0;
+  let sum7 = 0;
   for (let i2 = start, j2 = end - dim; i2 < end; i2 += dim) {
-    sum6 += (data[j2] - data[i2]) * (data[i2 + 1] + data[j2 + 1]);
+    sum7 += (data[j2] - data[i2]) * (data[i2 + 1] + data[j2 + 1]);
     j2 = i2;
   }
-  return sum6;
+  return sum7;
 }
 var ShapeUtils = class {
   static area(contour) {
@@ -18153,7 +18563,7 @@ function addContour(vertices, contour) {
   }
 }
 var ExtrudeGeometry = class extends BufferGeometry {
-  constructor(shapes, options3) {
+  constructor(shapes = new Shape([new Vector2(0.5, 0.5), new Vector2(-0.5, 0.5), new Vector2(-0.5, -0.5), new Vector2(0.5, -0.5)]), options3 = {}) {
     super();
     this.type = "ExtrudeGeometry";
     this.parameters = {
@@ -18175,10 +18585,10 @@ var ExtrudeGeometry = class extends BufferGeometry {
       const placeholder = [];
       const curveSegments = options3.curveSegments !== void 0 ? options3.curveSegments : 12;
       const steps = options3.steps !== void 0 ? options3.steps : 1;
-      let depth = options3.depth !== void 0 ? options3.depth : 100;
+      let depth = options3.depth !== void 0 ? options3.depth : 1;
       let bevelEnabled = options3.bevelEnabled !== void 0 ? options3.bevelEnabled : true;
-      let bevelThickness = options3.bevelThickness !== void 0 ? options3.bevelThickness : 6;
-      let bevelSize = options3.bevelSize !== void 0 ? options3.bevelSize : bevelThickness - 2;
+      let bevelThickness = options3.bevelThickness !== void 0 ? options3.bevelThickness : 0.2;
+      let bevelSize = options3.bevelSize !== void 0 ? options3.bevelSize : bevelThickness - 0.1;
       let bevelOffset = options3.bevelOffset !== void 0 ? options3.bevelOffset : 0;
       let bevelSegments = options3.bevelSegments !== void 0 ? options3.bevelSegments : 3;
       const extrudePath = options3.extrudePath;
@@ -18542,7 +18952,7 @@ function toJSON$1(shapes, options3, data) {
   return data;
 }
 var ShapeGeometry = class extends BufferGeometry {
-  constructor(shapes, curveSegments = 12) {
+  constructor(shapes = new Shape([new Vector2(0, 0.5), new Vector2(-0.5, -0.5), new Vector2(0.5, -0.5)]), curveSegments = 12) {
     super();
     this.type = "ShapeGeometry";
     this.parameters = {
@@ -18589,10 +18999,10 @@ var ShapeGeometry = class extends BufferGeometry {
         shapeVertices = shapeVertices.concat(shapeHole);
       }
       for (let i2 = 0, l3 = shapeVertices.length; i2 < l3; i2++) {
-        const vertex = shapeVertices[i2];
-        vertices.push(vertex.x, vertex.y, 0);
+        const vertex2 = shapeVertices[i2];
+        vertices.push(vertex2.x, vertex2.y, 0);
         normals.push(0, 0, 1);
-        uvs.push(vertex.x, vertex.y);
+        uvs.push(vertex2.x, vertex2.y);
       }
       for (let i2 = 0, l3 = faces.length; i2 < l3; i2++) {
         const face4 = faces[i2];
@@ -18648,7 +19058,7 @@ var SphereGeometry = class extends BufferGeometry {
     const thetaEnd = Math.min(thetaStart + thetaLength, Math.PI);
     let index = 0;
     const grid = [];
-    const vertex = new Vector3();
+    const vertex2 = new Vector3();
     const normal = new Vector3();
     const indices = [];
     const vertices = [];
@@ -18665,11 +19075,11 @@ var SphereGeometry = class extends BufferGeometry {
       }
       for (let ix = 0; ix <= widthSegments; ix++) {
         const u2 = ix / widthSegments;
-        vertex.x = -radius * Math.cos(phiStart + u2 * phiLength) * Math.sin(thetaStart + v2 * thetaLength);
-        vertex.y = radius * Math.cos(thetaStart + v2 * thetaLength);
-        vertex.z = radius * Math.sin(phiStart + u2 * phiLength) * Math.sin(thetaStart + v2 * thetaLength);
-        vertices.push(vertex.x, vertex.y, vertex.z);
-        normal.copy(vertex).normalize();
+        vertex2.x = -radius * Math.cos(phiStart + u2 * phiLength) * Math.sin(thetaStart + v2 * thetaLength);
+        vertex2.y = radius * Math.cos(thetaStart + v2 * thetaLength);
+        vertex2.z = radius * Math.sin(phiStart + u2 * phiLength) * Math.sin(thetaStart + v2 * thetaLength);
+        vertices.push(vertex2.x, vertex2.y, vertex2.z);
+        normal.copy(vertex2).normalize();
         normals.push(normal.x, normal.y, normal.z);
         uvs.push(u2 + uOffset, 1 - v2);
         verticesRow.push(index++);
@@ -18809,7 +19219,7 @@ var MeshPhysicalMaterial = class extends MeshStandardMaterial {
       }
     });
     this.sheenTint = new Color(0);
-    this.transmission = 0;
+    this.sheenRoughness = 1;
     this.transmissionMap = null;
     this.thickness = 0.01;
     this.thicknessMap = null;
@@ -18819,9 +19229,19 @@ var MeshPhysicalMaterial = class extends MeshStandardMaterial {
     this.specularIntensityMap = null;
     this.specularTint = new Color(1, 1, 1);
     this.specularTintMap = null;
+    this._sheen = 0;
     this._clearcoat = 0;
     this._transmission = 0;
     this.setValues(parameters);
+  }
+  get sheen() {
+    return this._sheen;
+  }
+  set sheen(value) {
+    if (this._sheen > 0 !== value > 0) {
+      this.version++;
+    }
+    this._sheen = value;
   }
   get clearcoat() {
     return this._clearcoat;
@@ -18854,7 +19274,9 @@ var MeshPhysicalMaterial = class extends MeshStandardMaterial {
     this.clearcoatNormalMap = source.clearcoatNormalMap;
     this.clearcoatNormalScale.copy(source.clearcoatNormalScale);
     this.ior = source.ior;
+    this.sheen = source.sheen;
     this.sheenTint.copy(source.sheenTint);
+    this.sheenRoughness = source.sheenRoughness;
     this.transmission = source.transmission;
     this.transmissionMap = source.transmissionMap;
     this.thickness = source.thickness;
@@ -20067,8 +20489,8 @@ var LoadingManager = class {
       }
       return url;
     };
-    this.setURLModifier = function(transform5) {
-      urlModifier = transform5;
+    this.setURLModifier = function(transform6) {
+      urlModifier = transform6;
       return this;
     };
     this.addHandler = function(regex, loader) {
@@ -20322,7 +20744,7 @@ var ImageLoader = class extends Loader {
       }, 0);
       return cached;
     }
-    const image2 = document.createElementNS("http://www.w3.org/1999/xhtml", "img");
+    const image2 = createElementNS("img");
     function onImageLoad() {
       image2.removeEventListener("load", onImageLoad, false);
       image2.removeEventListener("error", onImageError, false);
@@ -20388,270 +20810,12 @@ var TextureLoader = class extends Loader {
     loader.setPath(this.path);
     loader.load(url, function(image2) {
       texture.image = image2;
-      const isJPEG = url.search(/\.jpe?g($|\?)/i) > 0 || url.search(/^data\:image\/jpeg/) === 0;
-      texture.format = isJPEG ? RGBFormat : RGBAFormat;
       texture.needsUpdate = true;
       if (onLoad !== void 0) {
         onLoad(texture);
       }
     }, onProgress, onError);
     return texture;
-  }
-};
-var CurvePath = class extends Curve {
-  constructor() {
-    super();
-    this.type = "CurvePath";
-    this.curves = [];
-    this.autoClose = false;
-  }
-  add(curve) {
-    this.curves.push(curve);
-  }
-  closePath() {
-    const startPoint = this.curves[0].getPoint(0);
-    const endPoint = this.curves[this.curves.length - 1].getPoint(1);
-    if (!startPoint.equals(endPoint)) {
-      this.curves.push(new LineCurve(endPoint, startPoint));
-    }
-  }
-  getPoint(t2) {
-    const d2 = t2 * this.getLength();
-    const curveLengths = this.getCurveLengths();
-    let i2 = 0;
-    while (i2 < curveLengths.length) {
-      if (curveLengths[i2] >= d2) {
-        const diff = curveLengths[i2] - d2;
-        const curve = this.curves[i2];
-        const segmentLength = curve.getLength();
-        const u2 = segmentLength === 0 ? 0 : 1 - diff / segmentLength;
-        return curve.getPointAt(u2);
-      }
-      i2++;
-    }
-    return null;
-  }
-  getLength() {
-    const lens = this.getCurveLengths();
-    return lens[lens.length - 1];
-  }
-  updateArcLengths() {
-    this.needsUpdate = true;
-    this.cacheLengths = null;
-    this.getCurveLengths();
-  }
-  getCurveLengths() {
-    if (this.cacheLengths && this.cacheLengths.length === this.curves.length) {
-      return this.cacheLengths;
-    }
-    const lengths = [];
-    let sums = 0;
-    for (let i2 = 0, l3 = this.curves.length; i2 < l3; i2++) {
-      sums += this.curves[i2].getLength();
-      lengths.push(sums);
-    }
-    this.cacheLengths = lengths;
-    return lengths;
-  }
-  getSpacedPoints(divisions = 40) {
-    const points = [];
-    for (let i2 = 0; i2 <= divisions; i2++) {
-      points.push(this.getPoint(i2 / divisions));
-    }
-    if (this.autoClose) {
-      points.push(points[0]);
-    }
-    return points;
-  }
-  getPoints(divisions = 12) {
-    const points = [];
-    let last5;
-    for (let i2 = 0, curves2 = this.curves; i2 < curves2.length; i2++) {
-      const curve = curves2[i2];
-      const resolution = curve && curve.isEllipseCurve ? divisions * 2 : curve && (curve.isLineCurve || curve.isLineCurve3) ? 1 : curve && curve.isSplineCurve ? divisions * curve.points.length : divisions;
-      const pts = curve.getPoints(resolution);
-      for (let j2 = 0; j2 < pts.length; j2++) {
-        const point2 = pts[j2];
-        if (last5 && last5.equals(point2))
-          continue;
-        points.push(point2);
-        last5 = point2;
-      }
-    }
-    if (this.autoClose && points.length > 1 && !points[points.length - 1].equals(points[0])) {
-      points.push(points[0]);
-    }
-    return points;
-  }
-  copy(source) {
-    super.copy(source);
-    this.curves = [];
-    for (let i2 = 0, l3 = source.curves.length; i2 < l3; i2++) {
-      const curve = source.curves[i2];
-      this.curves.push(curve.clone());
-    }
-    this.autoClose = source.autoClose;
-    return this;
-  }
-  toJSON() {
-    const data = super.toJSON();
-    data.autoClose = this.autoClose;
-    data.curves = [];
-    for (let i2 = 0, l3 = this.curves.length; i2 < l3; i2++) {
-      const curve = this.curves[i2];
-      data.curves.push(curve.toJSON());
-    }
-    return data;
-  }
-  fromJSON(json20) {
-    super.fromJSON(json20);
-    this.autoClose = json20.autoClose;
-    this.curves = [];
-    for (let i2 = 0, l3 = json20.curves.length; i2 < l3; i2++) {
-      const curve = json20.curves[i2];
-      this.curves.push(new Curves[curve.type]().fromJSON(curve));
-    }
-    return this;
-  }
-};
-var Path = class extends CurvePath {
-  constructor(points) {
-    super();
-    this.type = "Path";
-    this.currentPoint = new Vector2();
-    if (points) {
-      this.setFromPoints(points);
-    }
-  }
-  setFromPoints(points) {
-    this.moveTo(points[0].x, points[0].y);
-    for (let i2 = 1, l3 = points.length; i2 < l3; i2++) {
-      this.lineTo(points[i2].x, points[i2].y);
-    }
-    return this;
-  }
-  moveTo(x2, y2) {
-    this.currentPoint.set(x2, y2);
-    return this;
-  }
-  lineTo(x2, y2) {
-    const curve = new LineCurve(this.currentPoint.clone(), new Vector2(x2, y2));
-    this.curves.push(curve);
-    this.currentPoint.set(x2, y2);
-    return this;
-  }
-  quadraticCurveTo(aCPx, aCPy, aX, aY) {
-    const curve = new QuadraticBezierCurve(this.currentPoint.clone(), new Vector2(aCPx, aCPy), new Vector2(aX, aY));
-    this.curves.push(curve);
-    this.currentPoint.set(aX, aY);
-    return this;
-  }
-  bezierCurveTo(aCP1x, aCP1y, aCP2x, aCP2y, aX, aY) {
-    const curve = new CubicBezierCurve(this.currentPoint.clone(), new Vector2(aCP1x, aCP1y), new Vector2(aCP2x, aCP2y), new Vector2(aX, aY));
-    this.curves.push(curve);
-    this.currentPoint.set(aX, aY);
-    return this;
-  }
-  splineThru(pts) {
-    const npts = [this.currentPoint.clone()].concat(pts);
-    const curve = new SplineCurve(npts);
-    this.curves.push(curve);
-    this.currentPoint.copy(pts[pts.length - 1]);
-    return this;
-  }
-  arc(aX, aY, aRadius, aStartAngle, aEndAngle, aClockwise) {
-    const x0 = this.currentPoint.x;
-    const y0 = this.currentPoint.y;
-    this.absarc(aX + x0, aY + y0, aRadius, aStartAngle, aEndAngle, aClockwise);
-    return this;
-  }
-  absarc(aX, aY, aRadius, aStartAngle, aEndAngle, aClockwise) {
-    this.absellipse(aX, aY, aRadius, aRadius, aStartAngle, aEndAngle, aClockwise);
-    return this;
-  }
-  ellipse(aX, aY, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation) {
-    const x0 = this.currentPoint.x;
-    const y0 = this.currentPoint.y;
-    this.absellipse(aX + x0, aY + y0, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation);
-    return this;
-  }
-  absellipse(aX, aY, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation) {
-    const curve = new EllipseCurve(aX, aY, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation);
-    if (this.curves.length > 0) {
-      const firstPoint = curve.getPoint(0);
-      if (!firstPoint.equals(this.currentPoint)) {
-        this.lineTo(firstPoint.x, firstPoint.y);
-      }
-    }
-    this.curves.push(curve);
-    const lastPoint = curve.getPoint(1);
-    this.currentPoint.copy(lastPoint);
-    return this;
-  }
-  copy(source) {
-    super.copy(source);
-    this.currentPoint.copy(source.currentPoint);
-    return this;
-  }
-  toJSON() {
-    const data = super.toJSON();
-    data.currentPoint = this.currentPoint.toArray();
-    return data;
-  }
-  fromJSON(json20) {
-    super.fromJSON(json20);
-    this.currentPoint.fromArray(json20.currentPoint);
-    return this;
-  }
-};
-var Shape = class extends Path {
-  constructor(points) {
-    super(points);
-    this.uuid = generateUUID();
-    this.type = "Shape";
-    this.holes = [];
-  }
-  getPointsHoles(divisions) {
-    const holesPts = [];
-    for (let i2 = 0, l3 = this.holes.length; i2 < l3; i2++) {
-      holesPts[i2] = this.holes[i2].getPoints(divisions);
-    }
-    return holesPts;
-  }
-  extractPoints(divisions) {
-    return {
-      shape: this.getPoints(divisions),
-      holes: this.getPointsHoles(divisions)
-    };
-  }
-  copy(source) {
-    super.copy(source);
-    this.holes = [];
-    for (let i2 = 0, l3 = source.holes.length; i2 < l3; i2++) {
-      const hole = source.holes[i2];
-      this.holes.push(hole.clone());
-    }
-    return this;
-  }
-  toJSON() {
-    const data = super.toJSON();
-    data.uuid = this.uuid;
-    data.holes = [];
-    for (let i2 = 0, l3 = this.holes.length; i2 < l3; i2++) {
-      const hole = this.holes[i2];
-      data.holes.push(hole.toJSON());
-    }
-    return data;
-  }
-  fromJSON(json20) {
-    super.fromJSON(json20);
-    this.uuid = json20.uuid;
-    this.holes = [];
-    for (let i2 = 0, l3 = json20.holes.length; i2 < l3; i2++) {
-      const hole = json20.holes[i2];
-      this.holes.push(new Path().fromJSON(hole));
-    }
-    return this;
   }
 };
 var Light = class extends Object3D {
@@ -20812,13 +20976,13 @@ var SpotLightShadow = class extends LightShadow {
 };
 SpotLightShadow.prototype.isSpotLightShadow = true;
 var SpotLight = class extends Light {
-  constructor(color, intensity, distance = 0, angle2 = Math.PI / 3, penumbra = 0, decay = 1) {
+  constructor(color, intensity, distance2 = 0, angle2 = Math.PI / 3, penumbra = 0, decay = 1) {
     super(color, intensity);
     this.type = "SpotLight";
     this.position.copy(Object3D.DefaultUp);
     this.updateMatrix();
     this.target = new Object3D();
-    this.distance = distance;
+    this.distance = distance2;
     this.angle = angle2;
     this.penumbra = penumbra;
     this.decay = decay;
@@ -20900,10 +21064,10 @@ var PointLightShadow = class extends LightShadow {
 };
 PointLightShadow.prototype.isPointLightShadow = true;
 var PointLight = class extends Light {
-  constructor(color, intensity, distance = 0, decay = 1) {
+  constructor(color, intensity, distance2 = 0, decay = 1) {
     super(color, intensity);
     this.type = "PointLight";
-    this.distance = distance;
+    this.distance = distance2;
     this.decay = decay;
     this.shadow = new PointLightShadow();
   }
@@ -21218,249 +21382,6 @@ var ImageBitmapLoader = class extends Loader {
   }
 };
 ImageBitmapLoader.prototype.isImageBitmapLoader = true;
-var ShapePath = class {
-  constructor() {
-    this.type = "ShapePath";
-    this.color = new Color();
-    this.subPaths = [];
-    this.currentPath = null;
-  }
-  moveTo(x2, y2) {
-    this.currentPath = new Path();
-    this.subPaths.push(this.currentPath);
-    this.currentPath.moveTo(x2, y2);
-    return this;
-  }
-  lineTo(x2, y2) {
-    this.currentPath.lineTo(x2, y2);
-    return this;
-  }
-  quadraticCurveTo(aCPx, aCPy, aX, aY) {
-    this.currentPath.quadraticCurveTo(aCPx, aCPy, aX, aY);
-    return this;
-  }
-  bezierCurveTo(aCP1x, aCP1y, aCP2x, aCP2y, aX, aY) {
-    this.currentPath.bezierCurveTo(aCP1x, aCP1y, aCP2x, aCP2y, aX, aY);
-    return this;
-  }
-  splineThru(pts) {
-    this.currentPath.splineThru(pts);
-    return this;
-  }
-  toShapes(isCCW, noHoles) {
-    function toShapesNoHoles(inSubpaths) {
-      const shapes2 = [];
-      for (let i2 = 0, l3 = inSubpaths.length; i2 < l3; i2++) {
-        const tmpPath2 = inSubpaths[i2];
-        const tmpShape2 = new Shape();
-        tmpShape2.curves = tmpPath2.curves;
-        shapes2.push(tmpShape2);
-      }
-      return shapes2;
-    }
-    function isPointInsidePolygon(inPt, inPolygon) {
-      const polyLen = inPolygon.length;
-      let inside = false;
-      for (let p3 = polyLen - 1, q2 = 0; q2 < polyLen; p3 = q2++) {
-        let edgeLowPt = inPolygon[p3];
-        let edgeHighPt = inPolygon[q2];
-        let edgeDx = edgeHighPt.x - edgeLowPt.x;
-        let edgeDy = edgeHighPt.y - edgeLowPt.y;
-        if (Math.abs(edgeDy) > Number.EPSILON) {
-          if (edgeDy < 0) {
-            edgeLowPt = inPolygon[q2];
-            edgeDx = -edgeDx;
-            edgeHighPt = inPolygon[p3];
-            edgeDy = -edgeDy;
-          }
-          if (inPt.y < edgeLowPt.y || inPt.y > edgeHighPt.y)
-            continue;
-          if (inPt.y === edgeLowPt.y) {
-            if (inPt.x === edgeLowPt.x)
-              return true;
-          } else {
-            const perpEdge = edgeDy * (inPt.x - edgeLowPt.x) - edgeDx * (inPt.y - edgeLowPt.y);
-            if (perpEdge === 0)
-              return true;
-            if (perpEdge < 0)
-              continue;
-            inside = !inside;
-          }
-        } else {
-          if (inPt.y !== edgeLowPt.y)
-            continue;
-          if (edgeHighPt.x <= inPt.x && inPt.x <= edgeLowPt.x || edgeLowPt.x <= inPt.x && inPt.x <= edgeHighPt.x)
-            return true;
-        }
-      }
-      return inside;
-    }
-    const isClockWise = ShapeUtils.isClockWise;
-    const subPaths = this.subPaths;
-    if (subPaths.length === 0)
-      return [];
-    if (noHoles === true)
-      return toShapesNoHoles(subPaths);
-    let solid, tmpPath, tmpShape;
-    const shapes = [];
-    if (subPaths.length === 1) {
-      tmpPath = subPaths[0];
-      tmpShape = new Shape();
-      tmpShape.curves = tmpPath.curves;
-      shapes.push(tmpShape);
-      return shapes;
-    }
-    let holesFirst = !isClockWise(subPaths[0].getPoints());
-    holesFirst = isCCW ? !holesFirst : holesFirst;
-    const betterShapeHoles = [];
-    const newShapes = [];
-    let newShapeHoles = [];
-    let mainIdx = 0;
-    let tmpPoints;
-    newShapes[mainIdx] = void 0;
-    newShapeHoles[mainIdx] = [];
-    for (let i2 = 0, l3 = subPaths.length; i2 < l3; i2++) {
-      tmpPath = subPaths[i2];
-      tmpPoints = tmpPath.getPoints();
-      solid = isClockWise(tmpPoints);
-      solid = isCCW ? !solid : solid;
-      if (solid) {
-        if (!holesFirst && newShapes[mainIdx])
-          mainIdx++;
-        newShapes[mainIdx] = { s: new Shape(), p: tmpPoints };
-        newShapes[mainIdx].s.curves = tmpPath.curves;
-        if (holesFirst)
-          mainIdx++;
-        newShapeHoles[mainIdx] = [];
-      } else {
-        newShapeHoles[mainIdx].push({ h: tmpPath, p: tmpPoints[0] });
-      }
-    }
-    if (!newShapes[0])
-      return toShapesNoHoles(subPaths);
-    if (newShapes.length > 1) {
-      let ambiguous = false;
-      const toChange = [];
-      for (let sIdx = 0, sLen = newShapes.length; sIdx < sLen; sIdx++) {
-        betterShapeHoles[sIdx] = [];
-      }
-      for (let sIdx = 0, sLen = newShapes.length; sIdx < sLen; sIdx++) {
-        const sho = newShapeHoles[sIdx];
-        for (let hIdx = 0; hIdx < sho.length; hIdx++) {
-          const ho = sho[hIdx];
-          let hole_unassigned = true;
-          for (let s2Idx = 0; s2Idx < newShapes.length; s2Idx++) {
-            if (isPointInsidePolygon(ho.p, newShapes[s2Idx].p)) {
-              if (sIdx !== s2Idx)
-                toChange.push({ froms: sIdx, tos: s2Idx, hole: hIdx });
-              if (hole_unassigned) {
-                hole_unassigned = false;
-                betterShapeHoles[s2Idx].push(ho);
-              } else {
-                ambiguous = true;
-              }
-            }
-          }
-          if (hole_unassigned) {
-            betterShapeHoles[sIdx].push(ho);
-          }
-        }
-      }
-      if (toChange.length > 0) {
-        if (!ambiguous)
-          newShapeHoles = betterShapeHoles;
-      }
-    }
-    let tmpHoles;
-    for (let i2 = 0, il = newShapes.length; i2 < il; i2++) {
-      tmpShape = newShapes[i2].s;
-      shapes.push(tmpShape);
-      tmpHoles = newShapeHoles[i2];
-      for (let j2 = 0, jl = tmpHoles.length; j2 < jl; j2++) {
-        tmpShape.holes.push(tmpHoles[j2].h);
-      }
-    }
-    return shapes;
-  }
-};
-var Font = class {
-  constructor(data) {
-    this.type = "Font";
-    this.data = data;
-  }
-  generateShapes(text, size2 = 100) {
-    const shapes = [];
-    const paths = createPaths(text, size2, this.data);
-    for (let p3 = 0, pl = paths.length; p3 < pl; p3++) {
-      Array.prototype.push.apply(shapes, paths[p3].toShapes());
-    }
-    return shapes;
-  }
-};
-function createPaths(text, size2, data) {
-  const chars = Array.from(text);
-  const scale3 = size2 / data.resolution;
-  const line_height = (data.boundingBox.yMax - data.boundingBox.yMin + data.underlineThickness) * scale3;
-  const paths = [];
-  let offsetX = 0, offsetY = 0;
-  for (let i2 = 0; i2 < chars.length; i2++) {
-    const char = chars[i2];
-    if (char === "\n") {
-      offsetX = 0;
-      offsetY -= line_height;
-    } else {
-      const ret = createPath(char, scale3, offsetX, offsetY, data);
-      offsetX += ret.offsetX;
-      paths.push(ret.path);
-    }
-  }
-  return paths;
-}
-function createPath(char, scale3, offsetX, offsetY, data) {
-  const glyph = data.glyphs[char] || data.glyphs["?"];
-  if (!glyph) {
-    console.error('THREE.Font: character "' + char + '" does not exists in font family ' + data.familyName + ".");
-    return;
-  }
-  const path = new ShapePath();
-  let x2, y2, cpx, cpy, cpx1, cpy1, cpx2, cpy2;
-  if (glyph.o) {
-    const outline = glyph._cachedOutline || (glyph._cachedOutline = glyph.o.split(" "));
-    for (let i2 = 0, l3 = outline.length; i2 < l3; ) {
-      const action = outline[i2++];
-      switch (action) {
-        case "m":
-          x2 = outline[i2++] * scale3 + offsetX;
-          y2 = outline[i2++] * scale3 + offsetY;
-          path.moveTo(x2, y2);
-          break;
-        case "l":
-          x2 = outline[i2++] * scale3 + offsetX;
-          y2 = outline[i2++] * scale3 + offsetY;
-          path.lineTo(x2, y2);
-          break;
-        case "q":
-          cpx = outline[i2++] * scale3 + offsetX;
-          cpy = outline[i2++] * scale3 + offsetY;
-          cpx1 = outline[i2++] * scale3 + offsetX;
-          cpy1 = outline[i2++] * scale3 + offsetY;
-          path.quadraticCurveTo(cpx1, cpy1, cpx, cpy);
-          break;
-        case "b":
-          cpx = outline[i2++] * scale3 + offsetX;
-          cpy = outline[i2++] * scale3 + offsetY;
-          cpx1 = outline[i2++] * scale3 + offsetX;
-          cpy1 = outline[i2++] * scale3 + offsetY;
-          cpx2 = outline[i2++] * scale3 + offsetX;
-          cpy2 = outline[i2++] * scale3 + offsetY;
-          path.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, cpx, cpy);
-          break;
-      }
-    }
-  }
-  return { offsetX: glyph.ha * scale3, path };
-}
-Font.prototype.isFont = true;
 var _context;
 var AudioContext = {
   getContext: function() {
@@ -23237,13 +23158,13 @@ var Spherical = class {
 };
 var _vector$4 = /* @__PURE__ */ new Vector2();
 var Box2 = class {
-  constructor(min6 = new Vector2(Infinity, Infinity), max6 = new Vector2(-Infinity, -Infinity)) {
-    this.min = min6;
-    this.max = max6;
+  constructor(min7 = new Vector2(Infinity, Infinity), max7 = new Vector2(-Infinity, -Infinity)) {
+    this.min = min7;
+    this.max = max7;
   }
-  set(min6, max6) {
-    this.min.copy(min6);
-    this.max.copy(max6);
+  set(min7, max7) {
+    this.min.copy(min7);
+    this.max.copy(max7);
     return this;
   }
   setFromPoints(points) {
@@ -23797,9 +23718,9 @@ Object3D.prototype.getChildByName = function(name) {
 Object3D.prototype.renderDepth = function() {
   console.warn("THREE.Object3D: .renderDepth has been removed. Use .renderOrder, instead.");
 };
-Object3D.prototype.translate = function(distance, axis) {
+Object3D.prototype.translate = function(distance2, axis) {
   console.warn("THREE.Object3D: .translate() has been removed. Use .translateOnAxis( axis, distance ) instead.");
-  return this.translateOnAxis(axis, distance);
+  return this.translateOnAxis(axis, distance2);
 };
 Object3D.prototype.getWorldRotation = function() {
   console.error("THREE.Object3D: .getWorldRotation() has been removed. Use THREE.Object3D.getWorldQuaternion( target ) instead.");
@@ -24447,7 +24368,7 @@ if (typeof window !== "undefined") {
   }
 }
 
-// node_modules/.pnpm/three@0.132.2/node_modules/three/examples/jsm/libs/stats.module.js
+// node_modules/.pnpm/three@0.133.1/node_modules/three/examples/jsm/libs/stats.module.js
 var Stats = function() {
   var mode = 0;
   var container = document.createElement("div");
@@ -24504,7 +24425,7 @@ var Stats = function() {
   };
 };
 Stats.Panel = function(name, fg, bg) {
-  var min6 = Infinity, max6 = 0, round5 = Math.round;
+  var min7 = Infinity, max7 = 0, round5 = Math.round;
   var PR = round5(window.devicePixelRatio || 1);
   var WIDTH = 80 * PR, HEIGHT = 48 * PR, TEXT_X = 3 * PR, TEXT_Y = 2 * PR, GRAPH_X = 3 * PR, GRAPH_Y = 15 * PR, GRAPH_WIDTH = 74 * PR, GRAPH_HEIGHT = 30 * PR;
   var canvas3 = document.createElement("canvas");
@@ -24525,13 +24446,13 @@ Stats.Panel = function(name, fg, bg) {
   return {
     dom: canvas3,
     update: function(value, maxValue) {
-      min6 = Math.min(min6, value);
-      max6 = Math.max(max6, value);
+      min7 = Math.min(min7, value);
+      max7 = Math.max(max7, value);
       context.fillStyle = bg;
       context.globalAlpha = 1;
       context.fillRect(0, 0, WIDTH, GRAPH_Y);
       context.fillStyle = fg;
-      context.fillText(round5(value) + " " + name + " (" + round5(min6) + "-" + round5(max6) + ")", TEXT_X, TEXT_Y);
+      context.fillText(round5(value) + " " + name + " (" + round5(min7) + "-" + round5(max7) + ")", TEXT_X, TEXT_Y);
       context.drawImage(canvas3, GRAPH_X + PR, GRAPH_Y, GRAPH_WIDTH - PR, GRAPH_HEIGHT, GRAPH_X, GRAPH_Y, GRAPH_WIDTH - PR, GRAPH_HEIGHT);
       context.fillRect(GRAPH_X + GRAPH_WIDTH - PR, GRAPH_Y, PR, GRAPH_HEIGHT);
       context.fillStyle = bg;
@@ -24542,7 +24463,7 @@ Stats.Panel = function(name, fg, bg) {
 };
 var stats_module_default = Stats;
 
-// node_modules/.pnpm/three@0.132.2/node_modules/three/examples/jsm/controls/OrbitControls.js
+// node_modules/.pnpm/three@0.133.1/node_modules/three/examples/jsm/controls/OrbitControls.js
 var _changeEvent = { type: "change" };
 var _startEvent = { type: "start" };
 var _endEvent = { type: "end" };
@@ -24634,21 +24555,21 @@ var OrbitControls = class extends EventDispatcher {
           spherical.theta += sphericalDelta.theta;
           spherical.phi += sphericalDelta.phi;
         }
-        let min6 = scope.minAzimuthAngle;
-        let max6 = scope.maxAzimuthAngle;
-        if (isFinite(min6) && isFinite(max6)) {
-          if (min6 < -Math.PI)
-            min6 += twoPI;
-          else if (min6 > Math.PI)
-            min6 -= twoPI;
-          if (max6 < -Math.PI)
-            max6 += twoPI;
-          else if (max6 > Math.PI)
-            max6 -= twoPI;
-          if (min6 <= max6) {
-            spherical.theta = Math.max(min6, Math.min(max6, spherical.theta));
+        let min7 = scope.minAzimuthAngle;
+        let max7 = scope.maxAzimuthAngle;
+        if (isFinite(min7) && isFinite(max7)) {
+          if (min7 < -Math.PI)
+            min7 += twoPI;
+          else if (min7 > Math.PI)
+            min7 -= twoPI;
+          if (max7 < -Math.PI)
+            max7 += twoPI;
+          else if (max7 > Math.PI)
+            max7 -= twoPI;
+          if (min7 <= max7) {
+            spherical.theta = Math.max(min7, Math.min(max7, spherical.theta));
           } else {
-            spherical.theta = spherical.theta > (min6 + max6) / 2 ? Math.max(min6, spherical.theta) : Math.min(max6, spherical.theta);
+            spherical.theta = spherical.theta > (min7 + max7) / 2 ? Math.max(min7, spherical.theta) : Math.min(max7, spherical.theta);
           }
         }
         spherical.phi = Math.max(scope.minPolarAngle, Math.min(scope.maxPolarAngle, spherical.phi));
@@ -24737,22 +24658,22 @@ var OrbitControls = class extends EventDispatcher {
     }
     const panLeft = function() {
       const v2 = new Vector3();
-      return function panLeft2(distance, objectMatrix) {
+      return function panLeft2(distance2, objectMatrix) {
         v2.setFromMatrixColumn(objectMatrix, 0);
-        v2.multiplyScalar(-distance);
+        v2.multiplyScalar(-distance2);
         panOffset.add(v2);
       };
     }();
     const panUp = function() {
       const v2 = new Vector3();
-      return function panUp2(distance, objectMatrix) {
+      return function panUp2(distance2, objectMatrix) {
         if (scope.screenSpacePanning === true) {
           v2.setFromMatrixColumn(objectMatrix, 1);
         } else {
           v2.setFromMatrixColumn(objectMatrix, 0);
           v2.crossVectors(scope.object.up, v2);
         }
-        v2.multiplyScalar(distance);
+        v2.multiplyScalar(distance2);
         panOffset.add(v2);
       };
     }();
@@ -24892,8 +24813,8 @@ var OrbitControls = class extends EventDispatcher {
     function handleTouchStartDolly() {
       const dx = pointers[0].pageX - pointers[1].pageX;
       const dy = pointers[0].pageY - pointers[1].pageY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      dollyStart.set(0, distance);
+      const distance2 = Math.sqrt(dx * dx + dy * dy);
+      dollyStart.set(0, distance2);
     }
     function handleTouchStartDollyPan() {
       if (scope.enableZoom)
@@ -24939,8 +24860,8 @@ var OrbitControls = class extends EventDispatcher {
       const position = getSecondPointerPosition(event);
       const dx = event.pageX - position.x;
       const dy = event.pageY - position.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      dollyEnd.set(0, distance);
+      const distance2 = Math.sqrt(dx * dx + dy * dy);
+      dollyEnd.set(0, distance2);
       dollyDelta.set(0, Math.pow(dollyEnd.y / dollyStart.y, scope.zoomSpeed));
       dollyOut(dollyDelta.y);
       dollyStart.copy(dollyEnd);
@@ -25214,7 +25135,7 @@ var OrbitControls = class extends EventDispatcher {
   }
 };
 
-// node_modules/.pnpm/three@0.132.2/node_modules/three/examples/jsm/loaders/GLTFLoader.js
+// node_modules/.pnpm/three@0.133.1/node_modules/three/examples/jsm/loaders/GLTFLoader.js
 var GLTFLoader = class extends Loader {
   constructor(manager) {
     super(manager);
@@ -25450,7 +25371,7 @@ var GLTFLightsExtension = class {
     const color = new Color(16777215);
     if (lightDef.color !== void 0)
       color.fromArray(lightDef.color);
-    const range6 = lightDef.range !== void 0 ? lightDef.range : 0;
+    const range7 = lightDef.range !== void 0 ? lightDef.range : 0;
     switch (lightDef.type) {
       case "directional":
         lightNode = new DirectionalLight(color);
@@ -25459,11 +25380,11 @@ var GLTFLightsExtension = class {
         break;
       case "point":
         lightNode = new PointLight(color);
-        lightNode.distance = range6;
+        lightNode.distance = range7;
         break;
       case "spot":
         lightNode = new SpotLight(color);
-        lightNode.distance = range6;
+        lightNode.distance = range7;
         lightDef.spot = lightDef.spot || {};
         lightDef.spot.innerConeAngle = lightDef.spot.innerConeAngle !== void 0 ? lightDef.spot.innerConeAngle : 0;
         lightDef.spot.outerConeAngle = lightDef.spot.outerConeAngle !== void 0 ? lightDef.spot.outerConeAngle : Math.PI / 4;
@@ -25559,7 +25480,7 @@ var GLTFMaterialsClearcoatExtension = class {
       pending.push(parser.assignTexture(materialParams, "clearcoatNormalMap", extension.clearcoatNormalTexture));
       if (extension.clearcoatNormalTexture.scale !== void 0) {
         const scale3 = extension.clearcoatNormalTexture.scale;
-        materialParams.clearcoatNormalScale = new Vector2(scale3, -scale3);
+        materialParams.clearcoatNormalScale = new Vector2(scale3, scale3);
       }
     }
     return Promise.all(pending);
@@ -25875,22 +25796,22 @@ var GLTFTextureTransformExtension = class {
   constructor() {
     this.name = EXTENSIONS.KHR_TEXTURE_TRANSFORM;
   }
-  extendTexture(texture, transform5) {
-    if (transform5.texCoord !== void 0) {
+  extendTexture(texture, transform6) {
+    if (transform6.texCoord !== void 0) {
       console.warn('THREE.GLTFLoader: Custom UV sets in "' + this.name + '" extension not yet supported.');
     }
-    if (transform5.offset === void 0 && transform5.rotation === void 0 && transform5.scale === void 0) {
+    if (transform6.offset === void 0 && transform6.rotation === void 0 && transform6.scale === void 0) {
       return texture;
     }
     texture = texture.clone();
-    if (transform5.offset !== void 0) {
-      texture.offset.fromArray(transform5.offset);
+    if (transform6.offset !== void 0) {
+      texture.offset.fromArray(transform6.offset);
     }
-    if (transform5.rotation !== void 0) {
-      texture.rotation = transform5.rotation;
+    if (transform6.rotation !== void 0) {
+      texture.rotation = transform6.rotation;
     }
-    if (transform5.scale !== void 0) {
-      texture.repeat.fromArray(transform5.scale);
+    if (transform6.scale !== void 0) {
+      texture.repeat.fromArray(transform6.scale);
     }
     texture.needsUpdate = true;
     return texture;
@@ -26248,9 +26169,9 @@ function resolveURL(url, path) {
     return url;
   return path + url;
 }
-function createDefaultMaterial(cache2) {
-  if (cache2["DefaultMaterial"] === void 0) {
-    cache2["DefaultMaterial"] = new MeshStandardMaterial({
+function createDefaultMaterial(cache5) {
+  if (cache5["DefaultMaterial"] === void 0) {
+    cache5["DefaultMaterial"] = new MeshStandardMaterial({
       color: 16777215,
       emissive: 0,
       metalness: 1,
@@ -26260,7 +26181,7 @@ function createDefaultMaterial(cache2) {
       side: FrontSide
     });
   }
-  return cache2["DefaultMaterial"];
+  return cache5["DefaultMaterial"];
 }
 function addUnknownExtensionsToUserData(knownExtensions, object2, objectDef) {
   for (const name in objectDef.extensions) {
@@ -26462,19 +26383,29 @@ var GLTFParser = class {
       }
     }
   }
-  _addNodeRef(cache2, index) {
+  _addNodeRef(cache5, index) {
     if (index === void 0)
       return;
-    if (cache2.refs[index] === void 0) {
-      cache2.refs[index] = cache2.uses[index] = 0;
+    if (cache5.refs[index] === void 0) {
+      cache5.refs[index] = cache5.uses[index] = 0;
     }
-    cache2.refs[index]++;
+    cache5.refs[index]++;
   }
-  _getNodeRef(cache2, index, object2) {
-    if (cache2.refs[index] <= 1)
+  _getNodeRef(cache5, index, object2) {
+    if (cache5.refs[index] <= 1)
       return object2;
     const ref = object2.clone();
-    ref.name += "_instance_" + cache2.uses[index]++;
+    const updateMappings = (original, clone2) => {
+      const mappings = this.associations.get(original);
+      if (mappings != null) {
+        this.associations.set(clone2, mappings);
+      }
+      for (const [i2, child] of original.children.entries()) {
+        updateMappings(child, clone2.children[i2]);
+      }
+    };
+    updateMappings(object2, ref);
+    ref.name += "_instance_" + cache5.uses[index]++;
     return ref;
   }
   _invokeOne(func2) {
@@ -26683,16 +26614,8 @@ var GLTFParser = class {
     const URL2 = self.URL || self.webkitURL;
     let sourceURI = source.uri || "";
     let isObjectURL = false;
-    let hasAlpha = true;
-    const isJPEG = sourceURI.search(/\.jpe?g($|\?)/i) > 0 || sourceURI.search(/^data\:image\/jpeg/) === 0;
-    if (source.mimeType === "image/jpeg" || isJPEG)
-      hasAlpha = false;
     if (source.bufferView !== void 0) {
       sourceURI = parser.getDependency("bufferView", source.bufferView).then(function(bufferView) {
-        if (source.mimeType === "image/png") {
-          const colorType = new DataView(bufferView, 25, 1).getUint8(0, false);
-          hasAlpha = colorType === 6 || colorType === 4 || colorType === 3;
-        }
         isObjectURL = true;
         const blob = new Blob([bufferView], { type: source.mimeType });
         sourceURI = URL2.createObjectURL(blob);
@@ -26720,18 +26643,13 @@ var GLTFParser = class {
       texture.flipY = false;
       if (textureDef.name)
         texture.name = textureDef.name;
-      if (!hasAlpha)
-        texture.format = RGBFormat;
       const samplers = json20.samplers || {};
       const sampler = samplers[textureDef.sampler] || {};
       texture.magFilter = WEBGL_FILTERS[sampler.magFilter] || LinearFilter;
       texture.minFilter = WEBGL_FILTERS[sampler.minFilter] || LinearMipmapLinearFilter;
       texture.wrapS = WEBGL_WRAPPINGS[sampler.wrapS] || RepeatWrapping;
       texture.wrapT = WEBGL_WRAPPINGS[sampler.wrapT] || RepeatWrapping;
-      parser.associations.set(texture, {
-        type: "textures",
-        index: textureIndex
-      });
+      parser.associations.set(texture, { textures: textureIndex });
       return texture;
     }).catch(function() {
       console.error("THREE.GLTFLoader: Couldn't load texture", sourceURI);
@@ -26747,10 +26665,10 @@ var GLTFParser = class {
         console.warn("THREE.GLTFLoader: Custom UV set " + mapDef.texCoord + " for texture " + mapName + " not yet supported.");
       }
       if (parser.extensions[EXTENSIONS.KHR_TEXTURE_TRANSFORM]) {
-        const transform5 = mapDef.extensions !== void 0 ? mapDef.extensions[EXTENSIONS.KHR_TEXTURE_TRANSFORM] : void 0;
-        if (transform5) {
+        const transform6 = mapDef.extensions !== void 0 ? mapDef.extensions[EXTENSIONS.KHR_TEXTURE_TRANSFORM] : void 0;
+        if (transform6) {
           const gltfReference = parser.associations.get(texture);
-          texture = parser.extensions[EXTENSIONS.KHR_TEXTURE_TRANSFORM].extendTexture(texture, transform5);
+          texture = parser.extensions[EXTENSIONS.KHR_TEXTURE_TRANSFORM].extendTexture(texture, transform6);
           parser.associations.set(texture, gltfReference);
         }
       }
@@ -26761,7 +26679,7 @@ var GLTFParser = class {
   assignFinalMaterial(mesh) {
     const geometry = mesh.geometry;
     let material = mesh.material;
-    const useVertexTangents = geometry.attributes.tangent !== void 0;
+    const useDerivativeTangents = geometry.attributes.tangent === void 0;
     const useVertexColors = geometry.attributes.color !== void 0;
     const useFlatShading = geometry.attributes.normal === void 0;
     if (mesh.isPoints) {
@@ -26787,12 +26705,12 @@ var GLTFParser = class {
       }
       material = lineMaterial;
     }
-    if (useVertexTangents || useVertexColors || useFlatShading) {
+    if (useDerivativeTangents || useVertexColors || useFlatShading) {
       let cacheKey = "ClonedMaterial:" + material.uuid + ":";
       if (material.isGLTFSpecularGlossinessMaterial)
         cacheKey += "specular-glossiness:";
-      if (useVertexTangents)
-        cacheKey += "vertex-tangents:";
+      if (useDerivativeTangents)
+        cacheKey += "derivative-tangents:";
       if (useVertexColors)
         cacheKey += "vertex-colors:";
       if (useFlatShading)
@@ -26804,7 +26722,7 @@ var GLTFParser = class {
           cachedMaterial.vertexColors = true;
         if (useFlatShading)
           cachedMaterial.flatShading = true;
-        if (useVertexTangents) {
+        if (useDerivativeTangents) {
           if (cachedMaterial.normalScale)
             cachedMaterial.normalScale.y *= -1;
           if (cachedMaterial.clearcoatNormalScale)
@@ -26881,9 +26799,10 @@ var GLTFParser = class {
     }
     if (materialDef.normalTexture !== void 0 && materialType !== MeshBasicMaterial) {
       pending.push(parser.assignTexture(materialParams, "normalMap", materialDef.normalTexture));
-      materialParams.normalScale = new Vector2(1, -1);
+      materialParams.normalScale = new Vector2(1, 1);
       if (materialDef.normalTexture.scale !== void 0) {
-        materialParams.normalScale.set(materialDef.normalTexture.scale, -materialDef.normalTexture.scale);
+        const scale3 = materialDef.normalTexture.scale;
+        materialParams.normalScale.set(scale3, scale3);
       }
     }
     if (materialDef.occlusionTexture !== void 0 && materialType !== MeshBasicMaterial) {
@@ -26912,7 +26831,7 @@ var GLTFParser = class {
       if (material.emissiveMap)
         material.emissiveMap.encoding = sRGBEncoding;
       assignExtrasToUserData(material, materialDef);
-      parser.associations.set(material, { type: "materials", index: materialIndex });
+      parser.associations.set(material, { materials: materialIndex });
       if (materialDef.extensions)
         addUnknownExtensionsToUserData(extensions2, material, materialDef);
       return material;
@@ -26930,7 +26849,7 @@ var GLTFParser = class {
   loadGeometries(primitives) {
     const parser = this;
     const extensions2 = this.extensions;
-    const cache2 = this.primitiveCache;
+    const cache5 = this.primitiveCache;
     function createDracoPrimitive(primitive) {
       return extensions2[EXTENSIONS.KHR_DRACO_MESH_COMPRESSION].decodePrimitive(primitive, parser).then(function(geometry) {
         return addPrimitiveAttributes(geometry, primitive, parser);
@@ -26940,7 +26859,7 @@ var GLTFParser = class {
     for (let i2 = 0, il = primitives.length; i2 < il; i2++) {
       const primitive = primitives[i2];
       const cacheKey = createPrimitiveKey(primitive);
-      const cached = cache2[cacheKey];
+      const cached = cache5[cacheKey];
       if (cached) {
         pending.push(cached.promise);
       } else {
@@ -26950,7 +26869,7 @@ var GLTFParser = class {
         } else {
           geometryPromise = addPrimitiveAttributes(new BufferGeometry(), primitive, parser);
         }
-        cache2[cacheKey] = { primitive, promise: geometryPromise };
+        cache5[cacheKey] = { primitive, promise: geometryPromise };
         pending.push(geometryPromise);
       }
     }
@@ -27008,10 +26927,17 @@ var GLTFParser = class {
         parser.assignFinalMaterial(mesh);
         meshes.push(mesh);
       }
+      for (let i2 = 0, il = meshes.length; i2 < il; i2++) {
+        parser.associations.set(meshes[i2], {
+          meshes: meshIndex,
+          primitives: i2
+        });
+      }
       if (meshes.length === 1) {
         return meshes[0];
       }
       const group = new Group();
+      parser.associations.set(group, { meshes: meshIndex });
       for (let i2 = 0, il = meshes.length; i2 < il; i2++) {
         group.add(meshes[i2]);
       }
@@ -27225,7 +27151,10 @@ var GLTFParser = class {
           node.scale.fromArray(nodeDef.scale);
         }
       }
-      parser.associations.set(node, { type: "nodes", index: nodeIndex });
+      if (!parser.associations.has(node)) {
+        parser.associations.set(node, {});
+      }
+      parser.associations.get(node).nodes = nodeIndex;
       return node;
     });
   }
@@ -27243,14 +27172,30 @@ var GLTFParser = class {
     const nodeIds = sceneDef.nodes || [];
     const pending = [];
     for (let i2 = 0, il = nodeIds.length; i2 < il; i2++) {
-      pending.push(buildNodeHierachy(nodeIds[i2], scene2, json20, parser));
+      pending.push(buildNodeHierarchy(nodeIds[i2], scene2, json20, parser));
     }
     return Promise.all(pending).then(function() {
+      const reduceAssociations = (node) => {
+        const reducedAssociations = new Map();
+        for (const [key, value] of parser.associations) {
+          if (key instanceof Material || key instanceof Texture) {
+            reducedAssociations.set(key, value);
+          }
+        }
+        node.traverse((node2) => {
+          const mappings = parser.associations.get(node2);
+          if (mappings != null) {
+            reducedAssociations.set(node2, mappings);
+          }
+        });
+        return reducedAssociations;
+      };
+      parser.associations = reduceAssociations(scene2);
       return scene2;
     });
   }
 };
-function buildNodeHierachy(nodeId, parentObject, json20, parser) {
+function buildNodeHierarchy(nodeId, parentObject, json20, parser) {
   const nodeDef = json20.nodes[nodeId];
   return parser.getDependency("node", nodeId).then(function(node) {
     if (nodeDef.skin === void 0)
@@ -27293,7 +27238,7 @@ function buildNodeHierachy(nodeId, parentObject, json20, parser) {
       const children = nodeDef.children;
       for (let i2 = 0, il = children.length; i2 < il; i2++) {
         const child = children[i2];
-        pending.push(buildNodeHierachy(child, node, json20, parser));
+        pending.push(buildNodeHierarchy(child, node, json20, parser));
       }
     }
     return Promise.all(pending);
@@ -27304,10 +27249,10 @@ function computeBounds(geometry, primitiveDef, parser) {
   const box = new Box3();
   if (attributes.POSITION !== void 0) {
     const accessor = parser.json.accessors[attributes.POSITION];
-    const min6 = accessor.min;
-    const max6 = accessor.max;
-    if (min6 !== void 0 && max6 !== void 0) {
-      box.set(new Vector3(min6[0], min6[1], min6[2]), new Vector3(max6[0], max6[1], max6[2]));
+    const min7 = accessor.min;
+    const max7 = accessor.max;
+    if (min7 !== void 0 && max7 !== void 0) {
+      box.set(new Vector3(min7[0], min7[1], min7[2]), new Vector3(max7[0], max7[1], max7[2]));
       if (accessor.normalized) {
         const boxScale = getNormalizedComponentScale(WEBGL_COMPONENT_TYPES[accessor.componentType]);
         box.min.multiplyScalar(boxScale);
@@ -27328,12 +27273,12 @@ function computeBounds(geometry, primitiveDef, parser) {
       const target = targets[i2];
       if (target.POSITION !== void 0) {
         const accessor = parser.json.accessors[target.POSITION];
-        const min6 = accessor.min;
-        const max6 = accessor.max;
-        if (min6 !== void 0 && max6 !== void 0) {
-          vector.setX(Math.max(Math.abs(min6[0]), Math.abs(max6[0])));
-          vector.setY(Math.max(Math.abs(min6[1]), Math.abs(max6[1])));
-          vector.setZ(Math.max(Math.abs(min6[2]), Math.abs(max6[2])));
+        const min7 = accessor.min;
+        const max7 = accessor.max;
+        if (min7 !== void 0 && max7 !== void 0) {
+          vector.setX(Math.max(Math.abs(min7[0]), Math.abs(max7[0])));
+          vector.setY(Math.max(Math.abs(min7[1]), Math.abs(max7[1])));
+          vector.setZ(Math.max(Math.abs(min7[2]), Math.abs(max7[2])));
           if (accessor.normalized) {
             const boxScale = getNormalizedComponentScale(WEBGL_COMPONENT_TYPES[accessor.componentType]);
             vector.multiplyScalar(boxScale);
@@ -27423,7 +27368,7 @@ function toTrianglesDrawMode(geometry, drawMode) {
   return newGeometry;
 }
 
-// node_modules/.pnpm/@pixiv+three-vrm@0.6.6_three@0.132.2/node_modules/@pixiv/three-vrm/lib/three-vrm.module.min.js
+// node_modules/.pnpm/@pixiv+three-vrm@0.6.7_three@0.133.1/node_modules/@pixiv/three-vrm/lib/three-vrm.module.min.js
 function t(e2, t2, n2, i2) {
   return new (n2 || (n2 = Promise))(function(r2, o2) {
     function s2(e3) {
@@ -27800,7 +27745,7 @@ var M = class {
   }
 };
 M._DEFAULT_FIRSTPERSON_ONLY_LAYER = 9, M._DEFAULT_THIRDPERSON_ONLY_LAYER = 10;
-var L = class {
+var E = class {
   import(n2, i2) {
     var r2;
     return t(this, void 0, void 0, function* () {
@@ -27822,7 +27767,7 @@ var L = class {
     });
   }
 };
-var E = class {
+var L = class {
   constructor(e2, t2) {
     this.node = e2, this.humanLimit = t2;
   }
@@ -27902,7 +27847,7 @@ var C = class {
         if (!i3.bone || i3.node == null)
           return;
         const t2 = yield n2.parser.getDependency("node", i3.node);
-        s2.push({ name: i3.bone, bone: new E(t2, { axisLength: i3.axisLength, center: i3.center && new Vector3(i3.center.x, i3.center.y, i3.center.z), max: i3.max && new Vector3(i3.max.x, i3.max.y, i3.max.z), min: i3.min && new Vector3(i3.min.x, i3.min.y, i3.min.z), useDefaultValues: i3.useDefaultValues }) });
+        s2.push({ name: i3.bone, bone: new L(t2, { axisLength: i3.axisLength, center: i3.center && new Vector3(i3.center.x, i3.center.y, i3.center.z), max: i3.max && new Vector3(i3.max.x, i3.max.y, i3.max.z), min: i3.min && new Vector3(i3.min.x, i3.min.y, i3.min.z), useDefaultValues: i3.useDefaultValues }) });
       }))));
       const a6 = { armStretch: o2.armStretch, legStretch: o2.legStretch, upperArmTwist: o2.upperArmTwist, lowerArmTwist: o2.lowerArmTwist, upperLegTwist: o2.upperLegTwist, lowerLegTwist: o2.lowerLegTwist, feetSpacing: o2.feetSpacing, hasTranslationDoF: o2.hasTranslationDoF };
       return new A(s2, a6);
@@ -27940,7 +27885,7 @@ var O = class {
 };
 var b = class {
 };
-var N = class extends b {
+var I = class extends b {
   constructor(e2, t2, n2, i2) {
     super(), this.type = h.FirstPersonLookAtTypeName.BlendShape, this._curveHorizontal = t2, this._curveVerticalDown = n2, this._curveVerticalUp = i2, this._blendShapeProxy = e2;
   }
@@ -27952,7 +27897,7 @@ var N = class extends b {
     t2 < 0 ? (this._blendShapeProxy.setValue(h.BlendShapePresetName.Lookup, 0), this._blendShapeProxy.setValue(h.BlendShapePresetName.Lookdown, this._curveVerticalDown.map(-t2))) : (this._blendShapeProxy.setValue(h.BlendShapePresetName.Lookdown, 0), this._blendShapeProxy.setValue(h.BlendShapePresetName.Lookup, this._curveVerticalUp.map(t2))), n2 < 0 ? (this._blendShapeProxy.setValue(h.BlendShapePresetName.Lookleft, 0), this._blendShapeProxy.setValue(h.BlendShapePresetName.Lookright, this._curveHorizontal.map(-n2))) : (this._blendShapeProxy.setValue(h.BlendShapePresetName.Lookright, 0), this._blendShapeProxy.setValue(h.BlendShapePresetName.Lookleft, this._curveHorizontal.map(n2)));
   }
 };
-var I = Object.freeze(new Vector3(0, 0, -1));
+var N = Object.freeze(new Vector3(0, 0, -1));
 var D = new Vector3();
 var U = new Vector3();
 var B = new Vector3();
@@ -27963,7 +27908,7 @@ var G = class {
   }
   getLookAtWorldDirection(e2) {
     const t2 = g(this.firstPerson.firstPersonBone, V);
-    return e2.copy(I).applyEuler(this._euler).applyQuaternion(t2);
+    return e2.copy(N).applyEuler(this._euler).applyQuaternion(t2);
   }
   lookAt(e2) {
     this._calcEuler(this._euler, e2), this.applyer && this.applyer.lookAt(this._euler);
@@ -28006,7 +27951,7 @@ var W = class {
       case h.FirstPersonLookAtTypeName.Bone:
         return i2 === void 0 || r2 === void 0 || o2 === void 0 || s2 === void 0 ? null : new k(n2, this._importCurveMapperBone(i2), this._importCurveMapperBone(r2), this._importCurveMapperBone(o2), this._importCurveMapperBone(s2));
       case h.FirstPersonLookAtTypeName.BlendShape:
-        return r2 === void 0 || o2 === void 0 || s2 === void 0 ? null : new N(t2, this._importCurveMapperBlendShape(r2), this._importCurveMapperBlendShape(o2), this._importCurveMapperBlendShape(s2));
+        return r2 === void 0 || o2 === void 0 || s2 === void 0 ? null : new I(t2, this._importCurveMapperBlendShape(r2), this._importCurveMapperBlendShape(o2), this._importCurveMapperBlendShape(s2));
       default:
         return null;
     }
@@ -28149,7 +28094,7 @@ var $ = class extends ShaderMaterial {
     const t2 = this.outlineWidthTexture !== null, n2 = this.map !== null || this.shadeTexture !== null || this.receiveShadowTexture !== null || this.shadingGradeTexture !== null || this.rimTexture !== null || this.uvAnimMaskTexture !== null;
     this.defines = { THREE_VRM_THREE_REVISION: parseInt(REVISION, 10), OUTLINE: this._isOutline, BLENDMODE_OPAQUE: this._blendMode === Z.Opaque, BLENDMODE_CUTOUT: this._blendMode === Z.Cutout, BLENDMODE_TRANSPARENT: this._blendMode === Z.Transparent || this._blendMode === Z.TransparentWithZWrite, MTOON_USE_UV: t2 || n2, MTOON_UVS_VERTEX_ONLY: t2 && !n2, USE_SHADETEXTURE: this.shadeTexture !== null, USE_RECEIVESHADOWTEXTURE: this.receiveShadowTexture !== null, USE_SHADINGGRADETEXTURE: this.shadingGradeTexture !== null, USE_RIMTEXTURE: this.rimTexture !== null, USE_SPHEREADD: this.sphereAdd !== null, USE_OUTLINEWIDTHTEXTURE: this.outlineWidthTexture !== null, USE_UVANIMMASKTEXTURE: this.uvAnimMaskTexture !== null, DEBUG_NORMAL: this._debugMode === X.Normal, DEBUG_LITSHADERATE: this._debugMode === X.LitShadeRate, DEBUG_UV: this._debugMode === X.UV, OUTLINE_WIDTH_WORLD: this._outlineWidthMode === Q.WorldCoordinates, OUTLINE_WIDTH_SCREEN: this._outlineWidthMode === Q.ScreenCoordinates, OUTLINE_COLOR_FIXED: this._outlineColorMode === q.FixedColor, OUTLINE_COLOR_MIXED: this._outlineColorMode === q.MixedLighting };
     const i2 = (this.shadeTexture !== null ? z("shadeTextureTexelToLinear", this.shadeTexture.encoding) + "\n" : "") + (this.sphereAdd !== null ? z("sphereAddTexelToLinear", this.sphereAdd.encoding) + "\n" : "") + (this.rimTexture !== null ? z("rimTextureTexelToLinear", this.rimTexture.encoding) + "\n" : "");
-    this.vertexShader = "// #define PHONG\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n  varying vec3 vNormal;\n#endif\n\n#include <common>\n\n// #include <uv_pars_vertex>\n#ifdef MTOON_USE_UV\n  #ifdef MTOON_UVS_VERTEX_ONLY\n    vec2 vUv;\n  #else\n    varying vec2 vUv;\n  #endif\n\n  uniform vec4 mainTex_ST;\n#endif\n\n#include <uv2_pars_vertex>\n// #include <displacementmap_pars_vertex>\n// #include <envmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\n\n#ifdef USE_OUTLINEWIDTHTEXTURE\n  uniform sampler2D outlineWidthTexture;\n#endif\n\nuniform float outlineWidth;\nuniform float outlineScaledMaxDistance;\n\nvoid main() {\n\n  // #include <uv_vertex>\n  #ifdef MTOON_USE_UV\n    vUv = uv;\n    vUv.y = 1.0 - vUv.y; // uv.y is opposite from UniVRM's\n    vUv = mainTex_ST.st + mainTex_ST.pq * vUv;\n    vUv.y = 1.0 - vUv.y; // reverting the previous flip\n  #endif\n\n  #include <uv2_vertex>\n  #include <color_vertex>\n\n  #include <beginnormal_vertex>\n  #include <morphnormal_vertex>\n  #include <skinbase_vertex>\n  #include <skinnormal_vertex>\n\n  // we need this to compute the outline properly\n  objectNormal = normalize( objectNormal );\n\n  #include <defaultnormal_vertex>\n\n  #ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED\n    vNormal = normalize( transformedNormal );\n  #endif\n\n  #include <begin_vertex>\n\n  #include <morphtarget_vertex>\n  #include <skinning_vertex>\n  // #include <displacementmap_vertex>\n  #include <project_vertex>\n  #include <logdepthbuf_vertex>\n  #include <clipping_planes_vertex>\n\n  vViewPosition = - mvPosition.xyz;\n\n  float outlineTex = 1.0;\n\n  #ifdef OUTLINE\n    #ifdef USE_OUTLINEWIDTHTEXTURE\n      outlineTex = texture2D( outlineWidthTexture, vUv ).r;\n    #endif\n\n    #ifdef OUTLINE_WIDTH_WORLD\n      float worldNormalLength = length( transformedNormal );\n      vec3 outlineOffset = 0.01 * outlineWidth * outlineTex * worldNormalLength * objectNormal;\n      gl_Position = projectionMatrix * modelViewMatrix * vec4( outlineOffset + transformed, 1.0 );\n    #endif\n\n    #ifdef OUTLINE_WIDTH_SCREEN\n      vec3 clipNormal = ( projectionMatrix * modelViewMatrix * vec4( objectNormal, 0.0 ) ).xyz;\n      vec2 projectedNormal = normalize( clipNormal.xy );\n      projectedNormal *= min( gl_Position.w, outlineScaledMaxDistance );\n      projectedNormal.x *= projectionMatrix[ 0 ].x / projectionMatrix[ 1 ].y;\n      gl_Position.xy += 0.01 * outlineWidth * outlineTex * projectedNormal.xy;\n    #endif\n\n    gl_Position.z += 1E-6 * gl_Position.w; // anti-artifact magic\n  #endif\n\n  #include <worldpos_vertex>\n  // #include <envmap_vertex>\n  #include <shadowmap_vertex>\n  #include <fog_vertex>\n\n}", this.fragmentShader = i2 + '// #define PHONG\n\n#ifdef BLENDMODE_CUTOUT\n  uniform float cutoff;\n#endif\n\nuniform vec3 color;\nuniform float colorAlpha;\nuniform vec3 shadeColor;\n#ifdef USE_SHADETEXTURE\n  uniform sampler2D shadeTexture;\n#endif\n\nuniform float receiveShadowRate;\n#ifdef USE_RECEIVESHADOWTEXTURE\n  uniform sampler2D receiveShadowTexture;\n#endif\n\nuniform float shadingGradeRate;\n#ifdef USE_SHADINGGRADETEXTURE\n  uniform sampler2D shadingGradeTexture;\n#endif\n\nuniform float shadeShift;\nuniform float shadeToony;\nuniform float lightColorAttenuation;\nuniform float indirectLightIntensity;\n\n#ifdef USE_RIMTEXTURE\n  uniform sampler2D rimTexture;\n#endif\nuniform vec3 rimColor;\nuniform float rimLightingMix;\nuniform float rimFresnelPower;\nuniform float rimLift;\n\n#ifdef USE_SPHEREADD\n  uniform sampler2D sphereAdd;\n#endif\n\nuniform vec3 emissionColor;\n\nuniform vec3 outlineColor;\nuniform float outlineLightingMix;\n\n#ifdef USE_UVANIMMASKTEXTURE\n  uniform sampler2D uvAnimMaskTexture;\n#endif\n\nuniform float uvAnimOffsetX;\nuniform float uvAnimOffsetY;\nuniform float uvAnimTheta;\n\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n\n// #include <uv_pars_fragment>\n#if ( defined( MTOON_USE_UV ) && !defined( MTOON_UVS_VERTEX_ONLY ) )\n  varying vec2 vUv;\n#endif\n\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n// #include <alphamap_pars_fragment>\n#include <aomap_pars_fragment>\n// #include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n// #include <envmap_common_pars_fragment>\n// #include <envmap_pars_fragment>\n// #include <cube_uv_reflection_fragment>\n#include <fog_pars_fragment>\n\n// #include <bsdfs>\nvec3 BRDF_Lambert( const in vec3 diffuseColor ) {\n    return RECIPROCAL_PI * diffuseColor;\n}\n\n#include <lights_pars_begin>\n\n// #include <lights_phong_pars_fragment>\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n  varying vec3 vNormal;\n#endif\n\nstruct MToonMaterial {\n  vec3 diffuseColor;\n  vec3 shadeColor;\n  float shadingGrade;\n  float receiveShadow;\n};\n\n#define Material_LightProbeLOD( material ) (0)\n\n#include <shadowmap_pars_fragment>\n// #include <bumpmap_pars_fragment>\n\n// #include <normalmap_pars_fragment>\n#ifdef USE_NORMALMAP\n\n  uniform sampler2D normalMap;\n  uniform vec2 normalScale;\n\n#endif\n\n#ifdef OBJECTSPACE_NORMALMAP\n\n  uniform mat3 normalMatrix;\n\n#endif\n\n#if ! defined ( USE_TANGENT ) && defined ( TANGENTSPACE_NORMALMAP )\n\n  // Per-Pixel Tangent Space Normal Mapping\n  // http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\n\n  // three-vrm specific change: it requires `uv` as an input in order to support uv scrolls\n\n  // Temporary compat against shader change @ Three.js r126\n  // See: #21205, #21307, #21299\n  #if THREE_VRM_THREE_REVISION >= 126\n\n    vec3 perturbNormal2Arb( vec2 uv, vec3 eye_pos, vec3 surf_norm, vec3 mapN, float faceDirection ) {\n\n      vec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );\n      vec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );\n      vec2 st0 = dFdx( uv.st );\n      vec2 st1 = dFdy( uv.st );\n\n      vec3 N = normalize( surf_norm );\n\n      vec3 q1perp = cross( q1, N );\n      vec3 q0perp = cross( N, q0 );\n\n      vec3 T = q1perp * st0.x + q0perp * st1.x;\n      vec3 B = q1perp * st0.y + q0perp * st1.y;\n\n      // three-vrm specific change: Workaround for the issue that happens when delta of uv = 0.0\n      // TODO: Is this still required? Or shall I make a PR about it?\n      if ( length( T ) == 0.0 || length( B ) == 0.0 ) {\n        return surf_norm;\n      }\n\n      float det = max( dot( T, T ), dot( B, B ) );\n      float scale = ( det == 0.0 ) ? 0.0 : faceDirection * inversesqrt( det );\n\n      return normalize( T * ( mapN.x * scale ) + B * ( mapN.y * scale ) + N * mapN.z );\n\n    }\n\n  #else\n\n    vec3 perturbNormal2Arb( vec2 uv, vec3 eye_pos, vec3 surf_norm, vec3 mapN ) {\n\n      // Workaround for Adreno 3XX dFd*( vec3 ) bug. See #9988\n\n      vec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );\n      vec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );\n      vec2 st0 = dFdx( uv.st );\n      vec2 st1 = dFdy( uv.st );\n\n      float scale = sign( st1.t * st0.s - st0.t * st1.s ); // we do not care about the magnitude\n\n      vec3 S = ( q0 * st1.t - q1 * st0.t ) * scale;\n      vec3 T = ( - q0 * st1.s + q1 * st0.s ) * scale;\n\n      // three-vrm specific change: Workaround for the issue that happens when delta of uv = 0.0\n      // TODO: Is this still required? Or shall I make a PR about it?\n\n      if ( length( S ) == 0.0 || length( T ) == 0.0 ) {\n        return surf_norm;\n      }\n\n      S = normalize( S );\n      T = normalize( T );\n      vec3 N = normalize( surf_norm );\n\n      #ifdef DOUBLE_SIDED\n\n        // Workaround for Adreno GPUs gl_FrontFacing bug. See #15850 and #10331\n\n        bool frontFacing = dot( cross( S, T ), N ) > 0.0;\n\n        mapN.xy *= ( float( frontFacing ) * 2.0 - 1.0 );\n\n      #else\n\n        mapN.xy *= ( float( gl_FrontFacing ) * 2.0 - 1.0 );\n\n      #endif\n\n      mat3 tsn = mat3( S, T, N );\n      return normalize( tsn * mapN );\n\n    }\n\n  #endif\n\n#endif\n\n// #include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\n// == lighting stuff ===========================================================\nfloat getLightIntensity(\n  const in IncidentLight directLight,\n  const in GeometricContext geometry,\n  const in float shadow,\n  const in float shadingGrade\n) {\n  float lightIntensity = dot( geometry.normal, directLight.direction );\n  lightIntensity = 0.5 + 0.5 * lightIntensity;\n  lightIntensity = lightIntensity * shadow;\n  lightIntensity = lightIntensity * shadingGrade;\n  lightIntensity = lightIntensity * 2.0 - 1.0;\n  return shadeToony == 1.0\n    ? step( shadeShift, lightIntensity )\n    : smoothstep( shadeShift, shadeShift + ( 1.0 - shadeToony ), lightIntensity );\n}\n\nvec3 getLighting( const in vec3 lightColor ) {\n  vec3 lighting = lightColor;\n  lighting = mix(\n    lighting,\n    vec3( max( 0.001, max( lighting.x, max( lighting.y, lighting.z ) ) ) ),\n    lightColorAttenuation\n  );\n\n  #ifndef PHYSICALLY_CORRECT_LIGHTS\n    lighting *= PI;\n  #endif\n\n  return lighting;\n}\n\nvec3 getDiffuse(\n  const in MToonMaterial material,\n  const in float lightIntensity,\n  const in vec3 lighting\n) {\n  #ifdef DEBUG_LITSHADERATE\n    return vec3( BRDF_Lambert( lightIntensity * lighting ) );\n  #endif\n\n  return lighting * BRDF_Lambert( mix( material.shadeColor, material.diffuseColor, lightIntensity ) );\n}\n\n// == post correction ==========================================================\nvoid postCorrection() {\n  #include <tonemapping_fragment>\n  #include <encodings_fragment>\n  #include <fog_fragment>\n  #include <premultiplied_alpha_fragment>\n  #include <dithering_fragment>\n}\n\n// == main procedure ===========================================================\nvoid main() {\n  #include <clipping_planes_fragment>\n\n  vec2 uv = vec2(0.5, 0.5);\n\n  #if ( defined( MTOON_USE_UV ) && !defined( MTOON_UVS_VERTEX_ONLY ) )\n    uv = vUv;\n\n    float uvAnimMask = 1.0;\n    #ifdef USE_UVANIMMASKTEXTURE\n      uvAnimMask = texture2D( uvAnimMaskTexture, uv ).x;\n    #endif\n\n    uv = uv + vec2( uvAnimOffsetX, uvAnimOffsetY ) * uvAnimMask;\n    float uvRotCos = cos( uvAnimTheta * uvAnimMask );\n    float uvRotSin = sin( uvAnimTheta * uvAnimMask );\n    uv = mat2( uvRotCos, uvRotSin, -uvRotSin, uvRotCos ) * ( uv - 0.5 ) + 0.5;\n  #endif\n\n  #ifdef DEBUG_UV\n    gl_FragColor = vec4( 0.0, 0.0, 0.0, 1.0 );\n    #if ( defined( MTOON_USE_UV ) && !defined( MTOON_UVS_VERTEX_ONLY ) )\n      gl_FragColor = vec4( uv, 0.0, 1.0 );\n    #endif\n    return;\n  #endif\n\n  vec4 diffuseColor = vec4( color, colorAlpha );\n  ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n  vec3 totalEmissiveRadiance = emissionColor;\n\n  #include <logdepthbuf_fragment>\n\n  // #include <map_fragment>\n  #ifdef USE_MAP\n    diffuseColor *= mapTexelToLinear( texture2D( map, uv ) );\n  #endif\n\n  #include <color_fragment>\n  // #include <alphamap_fragment>\n\n  // -- MToon: alpha -----------------------------------------------------------\n  // #include <alphatest_fragment>\n  #ifdef BLENDMODE_CUTOUT\n    if ( diffuseColor.a <= cutoff ) { discard; }\n    diffuseColor.a = 1.0;\n  #endif\n\n  #ifdef BLENDMODE_OPAQUE\n    diffuseColor.a = 1.0;\n  #endif\n\n  #if defined( OUTLINE ) && defined( OUTLINE_COLOR_FIXED ) // omitting DebugMode\n    gl_FragColor = vec4( outlineColor, diffuseColor.a );\n    postCorrection();\n    return;\n  #endif\n\n  // #include <specularmap_fragment>\n  #include <normal_fragment_begin>\n\n  #ifdef OUTLINE\n    normal *= -1.0;\n  #endif\n\n  // #include <normal_fragment_maps>\n\n  #ifdef OBJECTSPACE_NORMALMAP\n\n    normal = texture2D( normalMap, uv ).xyz * 2.0 - 1.0; // overrides both flatShading and attribute normals\n\n    #ifdef FLIP_SIDED\n\n      normal = - normal;\n\n    #endif\n\n    #ifdef DOUBLE_SIDED\n\n      // Temporary compat against shader change @ Three.js r126\n      // See: #21205, #21307, #21299\n      #if THREE_VRM_THREE_REVISION >= 126\n\n        normal = normal * faceDirection;\n\n      #else\n\n        normal = normal * ( float( gl_FrontFacing ) * 2.0 - 1.0 );\n\n      #endif\n\n    #endif\n\n    normal = normalize( normalMatrix * normal );\n\n  #elif defined( TANGENTSPACE_NORMALMAP )\n\n    vec3 mapN = texture2D( normalMap, uv ).xyz * 2.0 - 1.0;\n    mapN.xy *= normalScale;\n\n    #ifdef USE_TANGENT\n\n      normal = normalize( vTBN * mapN );\n\n    #else\n\n      // Temporary compat against shader change @ Three.js r126\n      // See: #21205, #21307, #21299\n      #if THREE_VRM_THREE_REVISION >= 126\n\n        normal = perturbNormal2Arb( uv, -vViewPosition, normal, mapN, faceDirection );\n\n      #else\n\n        normal = perturbNormal2Arb( uv, -vViewPosition, normal, mapN );\n\n      #endif\n\n    #endif\n\n  #endif\n\n  // #include <emissivemap_fragment>\n  #ifdef USE_EMISSIVEMAP\n    totalEmissiveRadiance *= emissiveMapTexelToLinear( texture2D( emissiveMap, uv ) ).rgb;\n  #endif\n\n  #ifdef DEBUG_NORMAL\n    gl_FragColor = vec4( 0.5 + 0.5 * normal, 1.0 );\n    return;\n  #endif\n\n  // -- MToon: lighting --------------------------------------------------------\n  // accumulation\n  // #include <lights_phong_fragment>\n  MToonMaterial material;\n\n  material.diffuseColor = diffuseColor.rgb;\n\n  material.shadeColor = shadeColor;\n  #ifdef USE_SHADETEXTURE\n    material.shadeColor *= shadeTextureTexelToLinear( texture2D( shadeTexture, uv ) ).rgb;\n  #endif\n\n  material.shadingGrade = 1.0;\n  #ifdef USE_SHADINGGRADETEXTURE\n    material.shadingGrade = 1.0 - shadingGradeRate * ( 1.0 - texture2D( shadingGradeTexture, uv ).r );\n  #endif\n\n  material.receiveShadow = receiveShadowRate;\n  #ifdef USE_RECEIVESHADOWTEXTURE\n    material.receiveShadow *= texture2D( receiveShadowTexture, uv ).a;\n  #endif\n\n  // #include <lights_fragment_begin>\n  GeometricContext geometry;\n\n  geometry.position = - vViewPosition;\n  geometry.normal = normal;\n  geometry.viewDir = ( isOrthographic ) ? vec3( 0, 0, 1 ) : normalize( vViewPosition );\n\n  IncidentLight directLight;\n  vec3 lightingSum = vec3( 0.0 );\n\n  // since these variables will be used in unrolled loop, we have to define in prior\n  float atten, shadow, lightIntensity;\n  vec3 lighting;\n\n  #if ( NUM_POINT_LIGHTS > 0 )\n    PointLight pointLight;\n\n    #if defined( USE_SHADOWMAP ) && NUM_POINT_LIGHT_SHADOWS > 0\n    PointLightShadow pointLightShadow;\n    #endif\n\n    #pragma unroll_loop_start\n    for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n      pointLight = pointLights[ i ];\n\n      #if THREE_VRM_THREE_REVISION >= 132\n        getPointLightInfo( pointLight, geometry, directLight );\n      #else\n        getPointDirectLightIrradiance( pointLight, geometry, directLight );\n      #endif\n\n      atten = 1.0;\n      #if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_POINT_LIGHT_SHADOWS )\n      pointLightShadow = pointLightShadows[ i ];\n      atten = all( bvec2( directLight.visible, receiveShadow ) ) ? getPointShadow( pointShadowMap[ i ], pointLightShadow.shadowMapSize, pointLightShadow.shadowBias, pointLightShadow.shadowRadius, vPointShadowCoord[ i ], pointLightShadow.shadowCameraNear, pointLightShadow.shadowCameraFar ) : 1.0;\n      #endif\n\n      shadow = 1.0 - material.receiveShadow * ( 1.0 - ( 0.5 + 0.5 * atten ) );\n      lightIntensity = getLightIntensity( directLight, geometry, shadow, material.shadingGrade );\n      lighting = getLighting( directLight.color );\n      reflectedLight.directDiffuse += getDiffuse( material, lightIntensity, lighting );\n      lightingSum += lighting;\n    }\n    #pragma unroll_loop_end\n  #endif\n\n  #if ( NUM_SPOT_LIGHTS > 0 )\n    SpotLight spotLight;\n\n    #if defined( USE_SHADOWMAP ) && NUM_SPOT_LIGHT_SHADOWS > 0\n    SpotLightShadow spotLightShadow;\n    #endif\n\n    #pragma unroll_loop_start\n    for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n      spotLight = spotLights[ i ];\n\n      #if THREE_VRM_THREE_REVISION >= 132\n        getSpotLightInfo( spotLight, geometry, directLight );\n      #else\n        getSpotDirectLightIrradiance( spotLight, geometry, directLight );\n      #endif\n\n      atten = 1.0;\n      #if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_SPOT_LIGHT_SHADOWS )\n      spotLightShadow = spotLightShadows[ i ];\n      atten = all( bvec2( directLight.visible, receiveShadow ) ) ? getShadow( spotShadowMap[ i ], spotLightShadow.shadowMapSize, spotLightShadow.shadowBias, spotLightShadow.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n      #endif\n\n      shadow = 1.0 - material.receiveShadow * ( 1.0 - ( 0.5 + 0.5 * atten ) );\n      lightIntensity = getLightIntensity( directLight, geometry, shadow, material.shadingGrade );\n      lighting = getLighting( directLight.color );\n      reflectedLight.directDiffuse += getDiffuse( material, lightIntensity, lighting );\n      lightingSum += lighting;\n    }\n    #pragma unroll_loop_end\n  #endif\n\n  #if ( NUM_DIR_LIGHTS > 0 )\n    DirectionalLight directionalLight;\n\n    #if defined( USE_SHADOWMAP ) && NUM_DIR_LIGHT_SHADOWS > 0\n    DirectionalLightShadow directionalLightShadow;\n    #endif\n\n    #pragma unroll_loop_start\n    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n      directionalLight = directionalLights[ i ];\n\n      #if THREE_VRM_THREE_REVISION >= 132\n        getDirectionalLightInfo( directionalLight, geometry, directLight );\n      #else\n        getDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n      #endif\n\n      atten = 1.0;\n      #if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_DIR_LIGHT_SHADOWS )\n      directionalLightShadow = directionalLightShadows[ i ];\n      atten = all( bvec2( directLight.visible, receiveShadow ) ) ? getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n      #endif\n\n      shadow = 1.0 - material.receiveShadow * ( 1.0 - ( 0.5 + 0.5 * atten ) );\n      lightIntensity = getLightIntensity( directLight, geometry, shadow, material.shadingGrade );\n      lighting = getLighting( directLight.color );\n      reflectedLight.directDiffuse += getDiffuse( material, lightIntensity, lighting );\n      lightingSum += lighting;\n    }\n    #pragma unroll_loop_end\n  #endif\n\n  // #if defined( RE_IndirectDiffuse )\n  vec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n  irradiance += getLightProbeIrradiance( lightProbe, geometry );\n  #if ( NUM_HEMI_LIGHTS > 0 )\n    #pragma unroll_loop_start\n    for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n      irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n    }\n    #pragma unroll_loop_end\n  #endif\n  // #endif\n\n  // #include <lights_fragment_maps>\n  #ifdef USE_LIGHTMAP\n    vec4 lightMapTexel = texture2D( lightMap, vUv2 );\n    vec3 lightMapIrradiance = lightMapTexelToLinear( lightMapTexel ).rgb * lightMapIntensity;\n    #ifndef PHYSICALLY_CORRECT_LIGHTS\n      lightMapIrradiance *= PI;\n    #endif\n    irradiance += lightMapIrradiance;\n  #endif\n\n  // #include <lights_fragment_end>\n  // RE_IndirectDiffuse here\n  reflectedLight.indirectDiffuse += indirectLightIntensity * irradiance * BRDF_Lambert( material.diffuseColor );\n\n  // modulation\n  #include <aomap_fragment>\n\n  vec3 col = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;\n\n  // The "comment out if you want to PBR absolutely" line\n  #ifndef DEBUG_LITSHADERATE\n    col = min(col, material.diffuseColor);\n  #endif\n\n  #if defined( OUTLINE ) && defined( OUTLINE_COLOR_MIXED )\n    gl_FragColor = vec4(\n      outlineColor.rgb * mix( vec3( 1.0 ), col, outlineLightingMix ),\n      diffuseColor.a\n    );\n    postCorrection();\n    return;\n  #endif\n\n  #ifdef DEBUG_LITSHADERATE\n    gl_FragColor = vec4( col, diffuseColor.a );\n    postCorrection();\n    return;\n  #endif\n\n  // -- MToon: parametric rim lighting -----------------------------------------\n  vec3 viewDir = normalize( vViewPosition );\n  vec3 rimMix = mix( vec3( 1.0 ), lightingSum + indirectLightIntensity * irradiance, rimLightingMix );\n  vec3 rim = rimColor * pow( saturate( 1.0 - dot( viewDir, normal ) + rimLift ), rimFresnelPower );\n  #ifdef USE_RIMTEXTURE\n    rim *= rimTextureTexelToLinear( texture2D( rimTexture, uv ) ).rgb;\n  #endif\n  col += rim;\n\n  // -- MToon: additive matcap -------------------------------------------------\n  #ifdef USE_SPHEREADD\n    {\n      vec3 x = normalize( vec3( viewDir.z, 0.0, -viewDir.x ) );\n      vec3 y = cross( viewDir, x ); // guaranteed to be normalized\n      vec2 sphereUv = 0.5 + 0.5 * vec2( dot( x, normal ), -dot( y, normal ) );\n      vec3 matcap = sphereAddTexelToLinear( texture2D( sphereAdd, sphereUv ) ).xyz;\n      col += matcap;\n    }\n  #endif\n\n  // -- MToon: Emission --------------------------------------------------------\n  col += totalEmissiveRadiance;\n\n  // #include <envmap_fragment>\n\n  // -- Almost done! -----------------------------------------------------------\n  gl_FragColor = vec4( col, diffuseColor.a );\n  postCorrection();\n}', this.needsUpdate = true;
+    this.vertexShader = "// #define PHONG\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n  varying vec3 vNormal;\n#endif\n\n#include <common>\n\n// #include <uv_pars_vertex>\n#ifdef MTOON_USE_UV\n  #ifdef MTOON_UVS_VERTEX_ONLY\n    vec2 vUv;\n  #else\n    varying vec2 vUv;\n  #endif\n\n  uniform vec4 mainTex_ST;\n#endif\n\n#include <uv2_pars_vertex>\n// #include <displacementmap_pars_vertex>\n// #include <envmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\n\n#ifdef USE_OUTLINEWIDTHTEXTURE\n  uniform sampler2D outlineWidthTexture;\n#endif\n\nuniform float outlineWidth;\nuniform float outlineScaledMaxDistance;\n\nvoid main() {\n\n  // #include <uv_vertex>\n  #ifdef MTOON_USE_UV\n    vUv = uv;\n    vUv.y = 1.0 - vUv.y; // uv.y is opposite from UniVRM's\n    vUv = mainTex_ST.st + mainTex_ST.pq * vUv;\n    vUv.y = 1.0 - vUv.y; // reverting the previous flip\n  #endif\n\n  #include <uv2_vertex>\n  #include <color_vertex>\n\n  #include <beginnormal_vertex>\n  #include <morphnormal_vertex>\n  #include <skinbase_vertex>\n  #include <skinnormal_vertex>\n\n  // we need this to compute the outline properly\n  objectNormal = normalize( objectNormal );\n\n  #include <defaultnormal_vertex>\n\n  #ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED\n    vNormal = normalize( transformedNormal );\n  #endif\n\n  #include <begin_vertex>\n\n  #include <morphtarget_vertex>\n  #include <skinning_vertex>\n  // #include <displacementmap_vertex>\n  #include <project_vertex>\n  #include <logdepthbuf_vertex>\n  #include <clipping_planes_vertex>\n\n  vViewPosition = - mvPosition.xyz;\n\n  float outlineTex = 1.0;\n\n  #ifdef OUTLINE\n    #ifdef USE_OUTLINEWIDTHTEXTURE\n      outlineTex = texture2D( outlineWidthTexture, vUv ).r;\n    #endif\n\n    #ifdef OUTLINE_WIDTH_WORLD\n      float worldNormalLength = length( transformedNormal );\n      vec3 outlineOffset = 0.01 * outlineWidth * outlineTex * worldNormalLength * objectNormal;\n      gl_Position = projectionMatrix * modelViewMatrix * vec4( outlineOffset + transformed, 1.0 );\n    #endif\n\n    #ifdef OUTLINE_WIDTH_SCREEN\n      vec3 clipNormal = ( projectionMatrix * modelViewMatrix * vec4( objectNormal, 0.0 ) ).xyz;\n      vec2 projectedNormal = normalize( clipNormal.xy );\n      projectedNormal *= min( gl_Position.w, outlineScaledMaxDistance );\n      projectedNormal.x *= projectionMatrix[ 0 ].x / projectionMatrix[ 1 ].y;\n      gl_Position.xy += 0.01 * outlineWidth * outlineTex * projectedNormal.xy;\n    #endif\n\n    gl_Position.z += 1E-6 * gl_Position.w; // anti-artifact magic\n  #endif\n\n  #include <worldpos_vertex>\n  // #include <envmap_vertex>\n  #include <shadowmap_vertex>\n  #include <fog_vertex>\n\n}", this.fragmentShader = i2 + '// #define PHONG\n\n#ifdef BLENDMODE_CUTOUT\n  uniform float cutoff;\n#endif\n\nuniform vec3 color;\nuniform float colorAlpha;\nuniform vec3 shadeColor;\n#ifdef USE_SHADETEXTURE\n  uniform sampler2D shadeTexture;\n#endif\n\nuniform float receiveShadowRate;\n#ifdef USE_RECEIVESHADOWTEXTURE\n  uniform sampler2D receiveShadowTexture;\n#endif\n\nuniform float shadingGradeRate;\n#ifdef USE_SHADINGGRADETEXTURE\n  uniform sampler2D shadingGradeTexture;\n#endif\n\nuniform float shadeShift;\nuniform float shadeToony;\nuniform float lightColorAttenuation;\nuniform float indirectLightIntensity;\n\n#ifdef USE_RIMTEXTURE\n  uniform sampler2D rimTexture;\n#endif\nuniform vec3 rimColor;\nuniform float rimLightingMix;\nuniform float rimFresnelPower;\nuniform float rimLift;\n\n#ifdef USE_SPHEREADD\n  uniform sampler2D sphereAdd;\n#endif\n\nuniform vec3 emissionColor;\n\nuniform vec3 outlineColor;\nuniform float outlineLightingMix;\n\n#ifdef USE_UVANIMMASKTEXTURE\n  uniform sampler2D uvAnimMaskTexture;\n#endif\n\nuniform float uvAnimOffsetX;\nuniform float uvAnimOffsetY;\nuniform float uvAnimTheta;\n\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n\n// #include <uv_pars_fragment>\n#if ( defined( MTOON_USE_UV ) && !defined( MTOON_UVS_VERTEX_ONLY ) )\n  varying vec2 vUv;\n#endif\n\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n// #include <alphamap_pars_fragment>\n#include <aomap_pars_fragment>\n// #include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n// #include <envmap_common_pars_fragment>\n// #include <envmap_pars_fragment>\n// #include <cube_uv_reflection_fragment>\n#include <fog_pars_fragment>\n\n// #include <bsdfs>\nvec3 BRDF_Lambert( const in vec3 diffuseColor ) {\n    return RECIPROCAL_PI * diffuseColor;\n}\n\n#include <lights_pars_begin>\n\n// #include <lights_phong_pars_fragment>\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n  varying vec3 vNormal;\n#endif\n\nstruct MToonMaterial {\n  vec3 diffuseColor;\n  vec3 shadeColor;\n  float shadingGrade;\n  float receiveShadow;\n};\n\n#define Material_LightProbeLOD( material ) (0)\n\n#include <shadowmap_pars_fragment>\n// #include <bumpmap_pars_fragment>\n\n// #include <normalmap_pars_fragment>\n#ifdef USE_NORMALMAP\n\n  uniform sampler2D normalMap;\n  uniform vec2 normalScale;\n\n#endif\n\n#ifdef OBJECTSPACE_NORMALMAP\n\n  uniform mat3 normalMatrix;\n\n#endif\n\n#if ! defined ( USE_TANGENT ) && defined ( TANGENTSPACE_NORMALMAP )\n\n  // Per-Pixel Tangent Space Normal Mapping\n  // http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html\n\n  // three-vrm specific change: it requires `uv` as an input in order to support uv scrolls\n\n  // Temporary compat against shader change @ Three.js r126\n  // See: #21205, #21307, #21299\n  #if THREE_VRM_THREE_REVISION >= 126\n\n    vec3 perturbNormal2Arb( vec2 uv, vec3 eye_pos, vec3 surf_norm, vec3 mapN, float faceDirection ) {\n\n      vec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );\n      vec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );\n      vec2 st0 = dFdx( uv.st );\n      vec2 st1 = dFdy( uv.st );\n\n      vec3 N = normalize( surf_norm );\n\n      vec3 q1perp = cross( q1, N );\n      vec3 q0perp = cross( N, q0 );\n\n      vec3 T = q1perp * st0.x + q0perp * st1.x;\n      vec3 B = q1perp * st0.y + q0perp * st1.y;\n\n      // three-vrm specific change: Workaround for the issue that happens when delta of uv = 0.0\n      // TODO: Is this still required? Or shall I make a PR about it?\n      if ( length( T ) == 0.0 || length( B ) == 0.0 ) {\n        return surf_norm;\n      }\n\n      float det = max( dot( T, T ), dot( B, B ) );\n      float scale = ( det == 0.0 ) ? 0.0 : faceDirection * inversesqrt( det );\n\n      return normalize( T * ( mapN.x * scale ) + B * ( mapN.y * scale ) + N * mapN.z );\n\n    }\n\n  #else\n\n    vec3 perturbNormal2Arb( vec2 uv, vec3 eye_pos, vec3 surf_norm, vec3 mapN ) {\n\n      // Workaround for Adreno 3XX dFd*( vec3 ) bug. See #9988\n\n      vec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );\n      vec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );\n      vec2 st0 = dFdx( uv.st );\n      vec2 st1 = dFdy( uv.st );\n\n      float scale = sign( st1.t * st0.s - st0.t * st1.s ); // we do not care about the magnitude\n\n      vec3 S = ( q0 * st1.t - q1 * st0.t ) * scale;\n      vec3 T = ( - q0 * st1.s + q1 * st0.s ) * scale;\n\n      // three-vrm specific change: Workaround for the issue that happens when delta of uv = 0.0\n      // TODO: Is this still required? Or shall I make a PR about it?\n\n      if ( length( S ) == 0.0 || length( T ) == 0.0 ) {\n        return surf_norm;\n      }\n\n      S = normalize( S );\n      T = normalize( T );\n      vec3 N = normalize( surf_norm );\n\n      #ifdef DOUBLE_SIDED\n\n        // Workaround for Adreno GPUs gl_FrontFacing bug. See #15850 and #10331\n\n        bool frontFacing = dot( cross( S, T ), N ) > 0.0;\n\n        mapN.xy *= ( float( frontFacing ) * 2.0 - 1.0 );\n\n      #else\n\n        mapN.xy *= ( float( gl_FrontFacing ) * 2.0 - 1.0 );\n\n      #endif\n\n      mat3 tsn = mat3( S, T, N );\n      return normalize( tsn * mapN );\n\n    }\n\n  #endif\n\n#endif\n\n// #include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\n// == lighting stuff ===========================================================\nfloat getLightIntensity(\n  const in IncidentLight directLight,\n  const in GeometricContext geometry,\n  const in float shadow,\n  const in float shadingGrade\n) {\n  float lightIntensity = dot( geometry.normal, directLight.direction );\n  lightIntensity = 0.5 + 0.5 * lightIntensity;\n  lightIntensity = lightIntensity * shadow;\n  lightIntensity = lightIntensity * shadingGrade;\n  lightIntensity = lightIntensity * 2.0 - 1.0;\n  return shadeToony == 1.0\n    ? step( shadeShift, lightIntensity )\n    : smoothstep( shadeShift, shadeShift + ( 1.0 - shadeToony ), lightIntensity );\n}\n\nvec3 getLighting( const in vec3 lightColor ) {\n  vec3 lighting = lightColor;\n  lighting = mix(\n    lighting,\n    vec3( max( 0.001, max( lighting.x, max( lighting.y, lighting.z ) ) ) ),\n    lightColorAttenuation\n  );\n\n  #ifndef PHYSICALLY_CORRECT_LIGHTS\n    lighting *= PI;\n  #endif\n\n  return lighting;\n}\n\nvec3 getDiffuse(\n  const in MToonMaterial material,\n  const in float lightIntensity,\n  const in vec3 lighting\n) {\n  #ifdef DEBUG_LITSHADERATE\n    return vec3( BRDF_Lambert( lightIntensity * lighting ) );\n  #endif\n\n  return lighting * BRDF_Lambert( mix( material.shadeColor, material.diffuseColor, lightIntensity ) );\n}\n\n// == post correction ==========================================================\nvoid postCorrection() {\n  #include <tonemapping_fragment>\n  #include <encodings_fragment>\n  #include <fog_fragment>\n  #include <premultiplied_alpha_fragment>\n  #include <dithering_fragment>\n}\n\n// == main procedure ===========================================================\nvoid main() {\n  #include <clipping_planes_fragment>\n\n  vec2 uv = vec2(0.5, 0.5);\n\n  #if ( defined( MTOON_USE_UV ) && !defined( MTOON_UVS_VERTEX_ONLY ) )\n    uv = vUv;\n\n    float uvAnimMask = 1.0;\n    #ifdef USE_UVANIMMASKTEXTURE\n      uvAnimMask = texture2D( uvAnimMaskTexture, uv ).x;\n    #endif\n\n    uv = uv + vec2( uvAnimOffsetX, uvAnimOffsetY ) * uvAnimMask;\n    float uvRotCos = cos( uvAnimTheta * uvAnimMask );\n    float uvRotSin = sin( uvAnimTheta * uvAnimMask );\n    uv = mat2( uvRotCos, uvRotSin, -uvRotSin, uvRotCos ) * ( uv - 0.5 ) + 0.5;\n  #endif\n\n  #ifdef DEBUG_UV\n    gl_FragColor = vec4( 0.0, 0.0, 0.0, 1.0 );\n    #if ( defined( MTOON_USE_UV ) && !defined( MTOON_UVS_VERTEX_ONLY ) )\n      gl_FragColor = vec4( uv, 0.0, 1.0 );\n    #endif\n    return;\n  #endif\n\n  vec4 diffuseColor = vec4( color, colorAlpha );\n  ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n  vec3 totalEmissiveRadiance = emissionColor;\n\n  #include <logdepthbuf_fragment>\n\n  // #include <map_fragment>\n  #ifdef USE_MAP\n    diffuseColor *= mapTexelToLinear( texture2D( map, uv ) );\n  #endif\n\n  #include <color_fragment>\n  // #include <alphamap_fragment>\n\n  // -- MToon: alpha -----------------------------------------------------------\n  // #include <alphatest_fragment>\n  #ifdef BLENDMODE_CUTOUT\n    if ( diffuseColor.a <= cutoff ) { discard; }\n    diffuseColor.a = 1.0;\n  #endif\n\n  #ifdef BLENDMODE_OPAQUE\n    diffuseColor.a = 1.0;\n  #endif\n\n  #if defined( OUTLINE ) && defined( OUTLINE_COLOR_FIXED ) // omitting DebugMode\n    gl_FragColor = vec4( outlineColor, diffuseColor.a );\n    postCorrection();\n    return;\n  #endif\n\n  // #include <specularmap_fragment>\n  #include <normal_fragment_begin>\n\n  #ifdef OUTLINE\n    normal *= -1.0;\n  #endif\n\n  // #include <normal_fragment_maps>\n\n  #ifdef OBJECTSPACE_NORMALMAP\n\n    normal = texture2D( normalMap, uv ).xyz * 2.0 - 1.0; // overrides both flatShading and attribute normals\n\n    #ifdef FLIP_SIDED\n\n      normal = - normal;\n\n    #endif\n\n    #ifdef DOUBLE_SIDED\n\n      // Temporary compat against shader change @ Three.js r126\n      // See: #21205, #21307, #21299\n      #if THREE_VRM_THREE_REVISION >= 126\n\n        normal = normal * faceDirection;\n\n      #else\n\n        normal = normal * ( float( gl_FrontFacing ) * 2.0 - 1.0 );\n\n      #endif\n\n    #endif\n\n    normal = normalize( normalMatrix * normal );\n\n  #elif defined( TANGENTSPACE_NORMALMAP )\n\n    vec3 mapN = texture2D( normalMap, uv ).xyz * 2.0 - 1.0;\n    mapN.xy *= normalScale;\n\n    #ifdef USE_TANGENT\n\n      normal = normalize( vTBN * mapN );\n\n    #else\n\n      // Temporary compat against shader change @ Three.js r126\n      // See: #21205, #21307, #21299\n      #if THREE_VRM_THREE_REVISION >= 126\n\n        normal = perturbNormal2Arb( uv, -vViewPosition, normal, mapN, faceDirection );\n\n      #else\n\n        normal = perturbNormal2Arb( uv, -vViewPosition, normal, mapN );\n\n      #endif\n\n    #endif\n\n  #endif\n\n  // #include <emissivemap_fragment>\n  #ifdef USE_EMISSIVEMAP\n    totalEmissiveRadiance *= emissiveMapTexelToLinear( texture2D( emissiveMap, uv ) ).rgb;\n  #endif\n\n  #ifdef DEBUG_NORMAL\n    gl_FragColor = vec4( 0.5 + 0.5 * normal, 1.0 );\n    return;\n  #endif\n\n  // -- MToon: lighting --------------------------------------------------------\n  // accumulation\n  // #include <lights_phong_fragment>\n  MToonMaterial material;\n\n  material.diffuseColor = diffuseColor.rgb;\n\n  material.shadeColor = shadeColor;\n  #ifdef USE_SHADETEXTURE\n    material.shadeColor *= shadeTextureTexelToLinear( texture2D( shadeTexture, uv ) ).rgb;\n  #endif\n\n  material.shadingGrade = 1.0;\n  #ifdef USE_SHADINGGRADETEXTURE\n    material.shadingGrade = 1.0 - shadingGradeRate * ( 1.0 - texture2D( shadingGradeTexture, uv ).r );\n  #endif\n\n  material.receiveShadow = receiveShadowRate;\n  #ifdef USE_RECEIVESHADOWTEXTURE\n    material.receiveShadow *= texture2D( receiveShadowTexture, uv ).a;\n  #endif\n\n  // #include <lights_fragment_begin>\n  GeometricContext geometry;\n\n  geometry.position = - vViewPosition;\n  geometry.normal = normal;\n  geometry.viewDir = ( isOrthographic ) ? vec3( 0, 0, 1 ) : normalize( vViewPosition );\n\n  IncidentLight directLight;\n  vec3 lightingSum = vec3( 0.0 );\n\n  // since these variables will be used in unrolled loop, we have to define in prior\n  float atten, shadow, lightIntensity;\n  vec3 lighting;\n\n  #if ( NUM_POINT_LIGHTS > 0 )\n    PointLight pointLight;\n\n    #if defined( USE_SHADOWMAP ) && NUM_POINT_LIGHT_SHADOWS > 0\n    PointLightShadow pointLightShadow;\n    #endif\n\n    #pragma unroll_loop_start\n    for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n      pointLight = pointLights[ i ];\n\n      #if THREE_VRM_THREE_REVISION >= 132\n        getPointLightInfo( pointLight, geometry, directLight );\n      #else\n        getPointDirectLightIrradiance( pointLight, geometry, directLight );\n      #endif\n\n      atten = 1.0;\n      #if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_POINT_LIGHT_SHADOWS )\n      pointLightShadow = pointLightShadows[ i ];\n      atten = all( bvec2( directLight.visible, receiveShadow ) ) ? getPointShadow( pointShadowMap[ i ], pointLightShadow.shadowMapSize, pointLightShadow.shadowBias, pointLightShadow.shadowRadius, vPointShadowCoord[ i ], pointLightShadow.shadowCameraNear, pointLightShadow.shadowCameraFar ) : 1.0;\n      #endif\n\n      shadow = 1.0 - material.receiveShadow * ( 1.0 - ( 0.5 + 0.5 * atten ) );\n      lightIntensity = getLightIntensity( directLight, geometry, shadow, material.shadingGrade );\n      lighting = getLighting( directLight.color );\n      reflectedLight.directDiffuse += getDiffuse( material, lightIntensity, lighting );\n      lightingSum += lighting;\n    }\n    #pragma unroll_loop_end\n  #endif\n\n  #if ( NUM_SPOT_LIGHTS > 0 )\n    SpotLight spotLight;\n\n    #if defined( USE_SHADOWMAP ) && NUM_SPOT_LIGHT_SHADOWS > 0\n    SpotLightShadow spotLightShadow;\n    #endif\n\n    #pragma unroll_loop_start\n    for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n      spotLight = spotLights[ i ];\n\n      #if THREE_VRM_THREE_REVISION >= 132\n        getSpotLightInfo( spotLight, geometry, directLight );\n      #else\n        getSpotDirectLightIrradiance( spotLight, geometry, directLight );\n      #endif\n\n      atten = 1.0;\n      #if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_SPOT_LIGHT_SHADOWS )\n      spotLightShadow = spotLightShadows[ i ];\n      atten = all( bvec2( directLight.visible, receiveShadow ) ) ? getShadow( spotShadowMap[ i ], spotLightShadow.shadowMapSize, spotLightShadow.shadowBias, spotLightShadow.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n      #endif\n\n      shadow = 1.0 - material.receiveShadow * ( 1.0 - ( 0.5 + 0.5 * atten ) );\n      lightIntensity = getLightIntensity( directLight, geometry, shadow, material.shadingGrade );\n      lighting = getLighting( directLight.color );\n      reflectedLight.directDiffuse += getDiffuse( material, lightIntensity, lighting );\n      lightingSum += lighting;\n    }\n    #pragma unroll_loop_end\n  #endif\n\n  #if ( NUM_DIR_LIGHTS > 0 )\n    DirectionalLight directionalLight;\n\n    #if defined( USE_SHADOWMAP ) && NUM_DIR_LIGHT_SHADOWS > 0\n    DirectionalLightShadow directionalLightShadow;\n    #endif\n\n    #pragma unroll_loop_start\n    for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n      directionalLight = directionalLights[ i ];\n\n      #if THREE_VRM_THREE_REVISION >= 132\n        getDirectionalLightInfo( directionalLight, geometry, directLight );\n      #else\n        getDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n      #endif\n\n      atten = 1.0;\n      #if defined( USE_SHADOWMAP ) && ( UNROLLED_LOOP_INDEX < NUM_DIR_LIGHT_SHADOWS )\n      directionalLightShadow = directionalLightShadows[ i ];\n      atten = all( bvec2( directLight.visible, receiveShadow ) ) ? getShadow( directionalShadowMap[ i ], directionalLightShadow.shadowMapSize, directionalLightShadow.shadowBias, directionalLightShadow.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n      #endif\n\n      shadow = 1.0 - material.receiveShadow * ( 1.0 - ( 0.5 + 0.5 * atten ) );\n      lightIntensity = getLightIntensity( directLight, geometry, shadow, material.shadingGrade );\n      lighting = getLighting( directLight.color );\n      reflectedLight.directDiffuse += getDiffuse( material, lightIntensity, lighting );\n      lightingSum += lighting;\n    }\n    #pragma unroll_loop_end\n  #endif\n\n  // #if defined( RE_IndirectDiffuse )\n  vec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n  #if THREE_VRM_THREE_REVISION >= 133\n    irradiance += getLightProbeIrradiance( lightProbe, geometry.normal );\n  #else\n    irradiance += getLightProbeIrradiance( lightProbe, geometry );\n  #endif\n  #if ( NUM_HEMI_LIGHTS > 0 )\n    #pragma unroll_loop_start\n    for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n      irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n    }\n    #pragma unroll_loop_end\n  #endif\n  // #endif\n\n  // #include <lights_fragment_maps>\n  #ifdef USE_LIGHTMAP\n    vec4 lightMapTexel = texture2D( lightMap, vUv2 );\n    vec3 lightMapIrradiance = lightMapTexelToLinear( lightMapTexel ).rgb * lightMapIntensity;\n    #ifndef PHYSICALLY_CORRECT_LIGHTS\n      lightMapIrradiance *= PI;\n    #endif\n    irradiance += lightMapIrradiance;\n  #endif\n\n  // #include <lights_fragment_end>\n  // RE_IndirectDiffuse here\n  reflectedLight.indirectDiffuse += indirectLightIntensity * irradiance * BRDF_Lambert( material.diffuseColor );\n\n  // modulation\n  #include <aomap_fragment>\n\n  vec3 col = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;\n\n  // The "comment out if you want to PBR absolutely" line\n  #ifndef DEBUG_LITSHADERATE\n    col = min(col, material.diffuseColor);\n  #endif\n\n  #if defined( OUTLINE ) && defined( OUTLINE_COLOR_MIXED )\n    gl_FragColor = vec4(\n      outlineColor.rgb * mix( vec3( 1.0 ), col, outlineLightingMix ),\n      diffuseColor.a\n    );\n    postCorrection();\n    return;\n  #endif\n\n  #ifdef DEBUG_LITSHADERATE\n    gl_FragColor = vec4( col, diffuseColor.a );\n    postCorrection();\n    return;\n  #endif\n\n  // -- MToon: parametric rim lighting -----------------------------------------\n  vec3 viewDir = normalize( vViewPosition );\n  vec3 rimMix = mix( vec3( 1.0 ), lightingSum + indirectLightIntensity * irradiance, rimLightingMix );\n  vec3 rim = rimColor * pow( saturate( 1.0 - dot( viewDir, normal ) + rimLift ), rimFresnelPower );\n  #ifdef USE_RIMTEXTURE\n    rim *= rimTextureTexelToLinear( texture2D( rimTexture, uv ) ).rgb;\n  #endif\n  col += rim;\n\n  // -- MToon: additive matcap -------------------------------------------------\n  #ifdef USE_SPHEREADD\n    {\n      vec3 x = normalize( vec3( viewDir.z, 0.0, -viewDir.x ) );\n      vec3 y = cross( viewDir, x ); // guaranteed to be normalized\n      vec2 sphereUv = 0.5 + 0.5 * vec2( dot( x, normal ), -dot( y, normal ) );\n      vec3 matcap = sphereAddTexelToLinear( texture2D( sphereAdd, sphereUv ) ).xyz;\n      col += matcap;\n    }\n  #endif\n\n  // -- MToon: Emission --------------------------------------------------------\n  col += totalEmissiveRadiance;\n\n  // #include <envmap_fragment>\n\n  // -- Almost done! -----------------------------------------------------------\n  gl_FragColor = vec4( col, diffuseColor.a );\n  postCorrection();\n}', this.needsUpdate = true;
   }
   _updateCullFace() {
     this.isOutline ? this.outlineCullMode === Y.Off ? this.side = DoubleSide : this.outlineCullMode === Y.Front ? this.side = BackSide : this.outlineCullMode === Y.Back && (this.side = FrontSide) : this.cullMode === Y.Off ? this.side = DoubleSide : this.cullMode === Y.Front ? this.side = BackSide : this.cullMode === Y.Back && (this.side = FrontSide);
@@ -28470,7 +28415,7 @@ var _e = class {
 };
 var ve = class {
   constructor(e2 = {}) {
-    this._metaImporter = e2.metaImporter || new te(), this._blendShapeImporter = e2.blendShapeImporter || new v(), this._lookAtImporter = e2.lookAtImporter || new W(), this._humanoidImporter = e2.humanoidImporter || new C(), this._firstPersonImporter = e2.firstPersonImporter || new L(), this._materialImporter = e2.materialImporter || new ee(), this._springBoneImporter = e2.springBoneImporter || new _e();
+    this._metaImporter = e2.metaImporter || new te(), this._blendShapeImporter = e2.blendShapeImporter || new v(), this._lookAtImporter = e2.lookAtImporter || new W(), this._humanoidImporter = e2.humanoidImporter || new C(), this._firstPersonImporter = e2.firstPersonImporter || new E(), this._materialImporter = e2.materialImporter || new ee(), this._springBoneImporter = e2.springBoneImporter || new _e();
   }
   import(e2) {
     return t(this, void 0, void 0, function* () {
@@ -28510,13 +28455,13 @@ var Te = new Vector2();
 var xe = new OrthographicCamera(-1, 1, -1, 1, -1, 1);
 var Se = new MeshBasicMaterial({ color: 16777215, side: DoubleSide });
 var Me = new Mesh(new PlaneGeometry(2, 2), Se);
-var Le = new Scene();
-Le.add(Me);
-var Ee = class {
+var Ee = new Scene();
+Ee.add(Me);
+var Le = class {
   constructor() {
   }
 };
-Ee.extractThumbnailBlob = function(e2, t2, n2 = 512) {
+Le.extractThumbnailBlob = function(e2, t2, n2 = 512) {
   var i2;
   const r2 = (i2 = t2.meta) === null || i2 === void 0 ? void 0 : i2.texture;
   if (!r2)
@@ -28524,14 +28469,14 @@ Ee.extractThumbnailBlob = function(e2, t2, n2 = 512) {
   const o2 = e2.getContext().canvas;
   e2.getSize(Te);
   const s2 = Te.x, a6 = Te.y;
-  return e2.setSize(n2, n2, false), Se.map = r2, e2.render(Le, xe), Se.map = null, o2 instanceof OffscreenCanvas ? o2.convertToBlob().finally(() => {
+  return e2.setSize(n2, n2, false), Se.map = r2, e2.render(Ee, xe), Se.map = null, o2 instanceof OffscreenCanvas ? o2.convertToBlob().finally(() => {
     e2.setSize(s2, a6, false);
   }) : new Promise((t3, n3) => {
     o2.toBlob((i3) => {
       e2.setSize(s2, a6, false), i3 == null ? n3("extractThumbnailBlob: Failed to create a blob") : t3(i3);
     });
   });
-}, Ee.removeUnnecessaryJoints = function(t2) {
+}, Le.removeUnnecessaryJoints = function(t2) {
   const n2 = new Map();
   t2.traverse((t3) => {
     if (t3.type !== "SkinnedMesh")
@@ -28553,7 +28498,7 @@ var we = new Vector3();
 var Ae = new MeshBasicMaterial({ color: 16711935, wireframe: true, transparent: true, depthTest: false });
 var Oe = new Vector3();
 
-// node_modules/.pnpm/github.com+vladmandic+human@533bbf9286056f46bfe8768264bda3e06693f31c/node_modules/@vladmandic/human/dist/human.esm.js
+// node_modules/.pnpm/github.com+vladmandic+human@7b61812dffb578a4ae49ee260184e16a94f5e642/node_modules/@vladmandic/human/dist/human.esm.js
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
@@ -28720,7 +28665,7 @@ var config = {
   hand: {
     enabled: true,
     rotation: true,
-    skipFrames: 14,
+    skipFrames: 2,
     minConfidence: 0.5,
     iouThreshold: 0.2,
     maxDetected: -1,
@@ -29229,6 +29174,7 @@ __export(tfjs_esm_exports, {
   version_webgl: () => version5,
   webgl: () => webgl,
   webgl_util: () => webgl_util_exports,
+  webgpu: () => webgpu_exports,
   where: () => where,
   whereAsync: () => whereAsync,
   zeros: () => zeros,
@@ -29576,27 +29522,27 @@ var require_long = __commonJS({
     var INT_CACHE = {};
     var UINT_CACHE = {};
     function fromInt(value, unsigned) {
-      var obj, cachedObj, cache2;
+      var obj, cachedObj, cache5;
       if (unsigned) {
         value >>>= 0;
-        if (cache2 = 0 <= value && value < 256) {
+        if (cache5 = 0 <= value && value < 256) {
           cachedObj = UINT_CACHE[value];
           if (cachedObj)
             return cachedObj;
         }
         obj = fromBits(value, (value | 0) < 0 ? -1 : 0, true);
-        if (cache2)
+        if (cache5)
           UINT_CACHE[value] = obj;
         return obj;
       } else {
         value |= 0;
-        if (cache2 = -128 <= value && value < 128) {
+        if (cache5 = -128 <= value && value < 128) {
           cachedObj = INT_CACHE[value];
           if (cachedObj)
             return cachedObj;
         }
         obj = fromBits(value, value < 0 ? -1 : 0, false);
-        if (cache2)
+        if (cache5)
           INT_CACHE[value] = obj;
         return obj;
       }
@@ -30123,7 +30069,7 @@ var require_alea = __commonJS({
         }
         mash = null;
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.c = f2.c;
         t2.s0 = f2.s0;
         t2.s1 = f2.s1;
@@ -30141,9 +30087,9 @@ var require_alea = __commonJS({
         prng.quick = prng;
         if (state) {
           if (typeof state == "object")
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -30204,7 +30150,7 @@ var require_xor128 = __commonJS({
           me2.next();
         }
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.x = f2.x;
         t2.y = f2.y;
         t2.z = f2.z;
@@ -30225,9 +30171,9 @@ var require_xor128 = __commonJS({
         prng.quick = prng;
         if (state) {
           if (typeof state == "object")
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -30275,7 +30221,7 @@ var require_xorwow = __commonJS({
           me2.next();
         }
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.x = f2.x;
         t2.y = f2.y;
         t2.z = f2.z;
@@ -30298,9 +30244,9 @@ var require_xorwow = __commonJS({
         prng.quick = prng;
         if (state) {
           if (typeof state == "object")
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -30366,7 +30312,7 @@ var require_xorshift7 = __commonJS({
         }
         init2(me2, seed);
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.x = f2.x.slice();
         t2.i = f2.i;
         return t2;
@@ -30387,9 +30333,9 @@ var require_xorshift7 = __commonJS({
         prng.quick = prng;
         if (state) {
           if (state.x)
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -30468,7 +30414,7 @@ var require_xor4096 = __commonJS({
         }
         init2(me2, seed);
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.i = f2.i;
         t2.w = f2.w;
         t2.X = f2.X.slice();
@@ -30491,9 +30437,9 @@ var require_xor4096 = __commonJS({
         prng.quick = prng;
         if (state) {
           if (state.X)
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -30541,7 +30487,7 @@ var require_tychei = __commonJS({
           me2.next();
         }
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.a = f2.a;
         t2.b = f2.b;
         t2.c = f2.c;
@@ -30563,9 +30509,9 @@ var require_tychei = __commonJS({
         prng.quick = prng;
         if (state) {
           if (typeof state == "object")
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -30620,10 +30566,10 @@ var require_seedrandom = __commonJS({
         return (options3.pass || callback || function(prng2, seed2, is_math_call, state) {
           if (state) {
             if (state.S) {
-              copy(state, arc4);
+              copy2(state, arc4);
             }
             prng2.state = function() {
-              return copy(arc4, {});
+              return copy2(arc4, {});
             };
           }
           if (is_math_call) {
@@ -30657,7 +30603,7 @@ var require_seedrandom = __commonJS({
           return r2;
         })(width);
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.i = f2.i;
         t2.j = f2.j;
         t2.S = f2.S.slice();
@@ -30763,7 +30709,7 @@ var require_alea2 = __commonJS({
         }
         mash = null;
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.c = f2.c;
         t2.s0 = f2.s0;
         t2.s1 = f2.s1;
@@ -30781,9 +30727,9 @@ var require_alea2 = __commonJS({
         prng.quick = prng;
         if (state) {
           if (typeof state == "object")
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -30844,7 +30790,7 @@ var require_xor1282 = __commonJS({
           me2.next();
         }
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.x = f2.x;
         t2.y = f2.y;
         t2.z = f2.z;
@@ -30865,9 +30811,9 @@ var require_xor1282 = __commonJS({
         prng.quick = prng;
         if (state) {
           if (typeof state == "object")
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -30915,7 +30861,7 @@ var require_xorwow2 = __commonJS({
           me2.next();
         }
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.x = f2.x;
         t2.y = f2.y;
         t2.z = f2.z;
@@ -30938,9 +30884,9 @@ var require_xorwow2 = __commonJS({
         prng.quick = prng;
         if (state) {
           if (typeof state == "object")
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -31006,7 +30952,7 @@ var require_xorshift72 = __commonJS({
         }
         init2(me2, seed);
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.x = f2.x.slice();
         t2.i = f2.i;
         return t2;
@@ -31027,9 +30973,9 @@ var require_xorshift72 = __commonJS({
         prng.quick = prng;
         if (state) {
           if (state.x)
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -31108,7 +31054,7 @@ var require_xor40962 = __commonJS({
         }
         init2(me2, seed);
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.i = f2.i;
         t2.w = f2.w;
         t2.X = f2.X.slice();
@@ -31131,9 +31077,9 @@ var require_xor40962 = __commonJS({
         prng.quick = prng;
         if (state) {
           if (state.X)
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -31181,7 +31127,7 @@ var require_tychei2 = __commonJS({
           me2.next();
         }
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.a = f2.a;
         t2.b = f2.b;
         t2.c = f2.c;
@@ -31203,9 +31149,9 @@ var require_tychei2 = __commonJS({
         prng.quick = prng;
         if (state) {
           if (typeof state == "object")
-            copy(state, xg);
+            copy2(state, xg);
           prng.state = function() {
-            return copy(xg, {});
+            return copy2(xg, {});
           };
         }
         return prng;
@@ -31256,10 +31202,10 @@ var require_seedrandom3 = __commonJS({
         return (options3.pass || callback || function(prng2, seed2, is_math_call, state) {
           if (state) {
             if (state.S) {
-              copy(state, arc4);
+              copy2(state, arc4);
             }
             prng2.state = function() {
-              return copy(arc4, {});
+              return copy2(arc4, {});
             };
           }
           if (is_math_call) {
@@ -31292,7 +31238,7 @@ var require_seedrandom3 = __commonJS({
           return r2;
         })(width);
       }
-      function copy(f2, t2) {
+      function copy2(f2, t2) {
         t2.i = f2.i;
         t2.j = f2.j;
         t2.S = f2.S.slice();
@@ -34840,8 +34786,8 @@ function shuffleCombo(array2, array22) {
     swap(array22, counter, index);
   }
 }
-function clamp2(min6, x2, max6) {
-  return Math.max(min6, Math.min(x2, max6));
+function clamp2(min7, x2, max7) {
+  return Math.max(min7, Math.min(x2, max7));
 }
 function nearestLargerEven(val) {
   return val % 2 === 0 ? val : val + 1;
@@ -34852,11 +34798,11 @@ function swap(object2, left, right) {
   object2[right] = temp;
 }
 function sum(arr) {
-  let sum6 = 0;
+  let sum7 = 0;
   for (let i2 = 0; i2 < arr.length; i2++) {
-    sum6 += arr[i2];
+    sum7 += arr[i2];
   }
-  return sum6;
+  return sum7;
 }
 function randUniform(a6, b2) {
   const r2 = Math.random();
@@ -36570,8 +36516,8 @@ var EngineState = class {
   }
 };
 var Engine = class {
-  constructor(ENV5) {
-    this.ENV = ENV5;
+  constructor(ENV6) {
+    this.ENV = ENV6;
     this.registry = {};
     this.registryFactory = {};
     this.pendingBackendInitId = 0;
@@ -37417,9 +37363,9 @@ function op(f2) {
   Object.defineProperty(f22, "name", { value: opName, configurable: true });
   return f22;
 }
-function complex_(real4, imag4) {
-  const $real = convertToTensor(real4, "real", "complex");
-  const $imag = convertToTensor(imag4, "imag", "complex");
+function complex_(real5, imag5) {
+  const $real = convertToTensor(real5, "real", "complex");
+  const $imag = convertToTensor(imag5, "imag", "complex");
   assertShapesMatch($real.shape, $imag.shape, `real and imag shapes, ${$real.shape} and ${$imag.shape}, must match in call to tf.complex().`);
   const inputs = { real: $real, imag: $imag };
   return ENGINE.runKernel(Complex, inputs);
@@ -37581,13 +37527,13 @@ function decodeWeights(buffer2, specs) {
         values = new Uint8Array(byteBuffer);
       } else if (dtype === "complex64") {
         values = new Float32Array(byteBuffer);
-        const real4 = new Float32Array(values.length / 2);
+        const real5 = new Float32Array(values.length / 2);
         const image32 = new Float32Array(values.length / 2);
-        for (let i2 = 0; i2 < real4.length; i2++) {
-          real4[i2] = values[i2 * 2];
+        for (let i2 = 0; i2 < real5.length; i2++) {
+          real5[i2] = values[i2 * 2];
           image32[i2] = values[i2 * 2 + 1];
         }
-        const realTensor = tensor(real4, shape, "float32");
+        const realTensor = tensor(real5, shape, "float32");
         const imageTensor = tensor(image32, shape, "float32");
         out[name] = complex(realTensor, imageTensor);
         realTensor.dispose();
@@ -39222,8 +39168,8 @@ function calculateShapes(updates, indices, shape) {
   const safeSliceDim = sliceRank < 1 ? 1 : sliceRank;
   const numUpdates = sizeFromShape(indices.shape) / safeSliceDim;
   const strides = [...computeStrides(shape.slice(0, sliceRank)), 1];
-  const outputSize3 = sizeFromShape(shape);
-  return { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize3 };
+  const outputSize2 = sizeFromShape(shape);
+  return { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 };
 }
 var slice_util_exports = {};
 __export2(slice_util_exports, {
@@ -39599,9 +39545,9 @@ function expectPromiseToFail(fn, done) {
   fn().then(() => done.fail(), () => done());
 }
 function expectArraysEqual(actual, expected) {
-  const exp4 = typeof expected === "string" || typeof expected === "number" || typeof expected === "boolean" ? [expected] : expected;
+  const exp5 = typeof expected === "string" || typeof expected === "number" || typeof expected === "boolean" ? [expected] : expected;
   if (isString(actual) || isString(actual[0]) || isString(expected) || isString(expected[0])) {
-    return expectArraysPredicate(actual, exp4, (a6, b2) => a6 == b2);
+    return expectArraysPredicate(actual, exp5, (a6, b2) => a6 == b2);
   }
   return expectArraysPredicate(actual, expected, (a6, b2) => areClose(a6, b2, 0));
 }
@@ -40264,10 +40210,10 @@ function basicLSTMCell_(forgetBias, lstmKernel, lstmBias, data, c2, h2) {
 var basicLSTMCell = op({ basicLSTMCell_ });
 function batchToSpaceND_(x2, blockShape, crops) {
   const $x = convertToTensor(x2, "x", "batchToSpaceND");
-  const prod5 = blockShape.reduce((a6, b2) => a6 * b2);
+  const prod6 = blockShape.reduce((a6, b2) => a6 * b2);
   assert($x.rank >= 1 + blockShape.length, () => `input rank is ${$x.rank} but should be > than blockShape.length ${blockShape.length}`);
   assert(crops.length === blockShape.length, () => `crops.length is ${crops.length} but should be equal to blockShape.length  ${blockShape.length}`);
-  assert($x.shape[0] % prod5 === 0, () => `input tensor batch is ${$x.shape[0]} but is not divisible by the product of the elements of blockShape ${blockShape.join(" * ")} === ${prod5}`);
+  assert($x.shape[0] % prod6 === 0, () => `input tensor batch is ${$x.shape[0]} but is not divisible by the product of the elements of blockShape ${blockShape.join(" * ")} === ${prod6}`);
   const inputs = { x: $x };
   const attrs = { blockShape, crops };
   return ENGINE.runKernel(BatchToSpaceND, inputs, attrs);
@@ -40286,12 +40232,12 @@ function xAs4D(x2) {
   }
   return x4D;
 }
-function batchNorm_(x2, mean4, variance, offset, scale22, varianceEpsilon) {
+function batchNorm_(x2, mean5, variance, offset, scale22, varianceEpsilon) {
   if (varianceEpsilon == null) {
     varianceEpsilon = 1e-3;
   }
   const $x = convertToTensor(x2, "x", "batchNorm");
-  const $mean = convertToTensor(mean4, "mean", "batchNorm");
+  const $mean = convertToTensor(mean5, "mean", "batchNorm");
   const $variance = convertToTensor(variance, "variance", "batchNorm");
   let $scale;
   if (scale22 != null) {
@@ -40317,9 +40263,9 @@ function batchNorm_(x2, mean4, variance, offset, scale22, varianceEpsilon) {
   return reshape(res2, $x.shape);
 }
 var batchNorm = op({ batchNorm_ });
-function batchNorm2d_(x2, mean4, variance, offset, scale22, varianceEpsilon) {
+function batchNorm2d_(x2, mean5, variance, offset, scale22, varianceEpsilon) {
   const $x = convertToTensor(x2, "x", "batchNorm");
-  const $mean = convertToTensor(mean4, "mean", "batchNorm");
+  const $mean = convertToTensor(mean5, "mean", "batchNorm");
   const $variance = convertToTensor(variance, "variance", "batchNorm");
   let $scale;
   if (scale22 != null) {
@@ -40341,9 +40287,9 @@ function batchNorm2d_(x2, mean4, variance, offset, scale22, varianceEpsilon) {
   return batchNorm($x, $mean, $variance, $offset, $scale, varianceEpsilon);
 }
 var batchNorm2d = op({ batchNorm2d_ });
-function batchNorm3d_(x2, mean4, variance, offset, scale22, varianceEpsilon) {
+function batchNorm3d_(x2, mean5, variance, offset, scale22, varianceEpsilon) {
   const $x = convertToTensor(x2, "x", "batchNorm");
-  const $mean = convertToTensor(mean4, "mean", "batchNorm");
+  const $mean = convertToTensor(mean5, "mean", "batchNorm");
   const $variance = convertToTensor(variance, "variance", "batchNorm");
   let $scale;
   if (scale22 != null) {
@@ -40365,9 +40311,9 @@ function batchNorm3d_(x2, mean4, variance, offset, scale22, varianceEpsilon) {
   return batchNorm($x, $mean, $variance, $offset, $scale, varianceEpsilon);
 }
 var batchNorm3d = op({ batchNorm3d_ });
-function batchNorm4d_(x2, mean4, variance, offset, scale22, varianceEpsilon) {
+function batchNorm4d_(x2, mean5, variance, offset, scale22, varianceEpsilon) {
   const $x = convertToTensor(x2, "x", "batchNorm");
-  const $mean = convertToTensor(mean4, "mean", "batchNorm");
+  const $mean = convertToTensor(mean5, "mean", "batchNorm");
   const $variance = convertToTensor(variance, "variance", "batchNorm");
   let $scale;
   if (scale22 != null) {
@@ -41206,8 +41152,8 @@ function logSoftmax_(logits, axis = -1) {
     const gradFunc = (dy, saved) => {
       const [value2] = saved;
       const keepDims2 = true;
-      const softmax6 = exp(value2);
-      return sub(dy, mul(sum2(dy, axis, keepDims2), softmax6));
+      const softmax7 = exp(value2);
+      return sub(dy, mul(sum2(dy, axis, keepDims2), softmax7));
     };
     return { value, gradFunc };
   });
@@ -41397,18 +41343,18 @@ function mean_(x2, axis = null, keepDims = false) {
 var mean = op({ mean_ });
 function zeros(shape, dtype = "float32") {
   if (dtype === "complex64") {
-    const real4 = zeros(shape, "float32");
-    const imag4 = zeros(shape, "float32");
-    return complex(real4, imag4);
+    const real5 = zeros(shape, "float32");
+    const imag5 = zeros(shape, "float32");
+    return complex(real5, imag5);
   }
   const values = makeZerosTypedArray(sizeFromShape(shape), dtype);
   return ENGINE.makeTensor(values, shape, dtype);
 }
 function ones2(shape, dtype = "float32") {
   if (dtype === "complex64") {
-    const real4 = ones2(shape, "float32");
-    const imag4 = zeros(shape, "float32");
-    return complex(real4, imag4);
+    const real5 = ones2(shape, "float32");
+    const imag5 = zeros(shape, "float32");
+    return complex(real5, imag5);
   }
   const values = makeOnesTypedArray(sizeFromShape(shape), dtype);
   return ENGINE.makeTensor(values, shape, dtype);
@@ -41674,9 +41620,9 @@ function withSpaceToBatchBasePaddings(filterShape, dilation) {
   });
 }
 var pool = op({ pool_ });
-function pow_(base2, exp4) {
+function pow_(base2, exp5) {
   let $base = convertToTensor(base2, "base", "pow");
-  let $exp = convertToTensor(exp4, "exp", "pow");
+  let $exp = convertToTensor(exp5, "exp", "pow");
   [$base, $exp] = makeTypesMatch($base, $exp);
   const inputs = { a: $base, b: $exp };
   return ENGINE.runKernel(Pow, inputs);
@@ -41719,8 +41665,8 @@ function rand_(shape, randFunction, dtype) {
 var rand = op({ rand_ });
 var seedrandom = __toModule(require_seedrandom2());
 var MPRandGauss = class {
-  constructor(mean4, stdDeviation, dtype, truncated, seed) {
-    this.mean = mean4;
+  constructor(mean5, stdDeviation, dtype, truncated, seed) {
+    this.mean = mean5;
     this.stdDev = stdDeviation;
     this.dtype = dtype;
     this.nextVal = NaN;
@@ -41814,10 +41760,10 @@ var RandGamma = class {
   }
 };
 var UniformRandom = class {
-  constructor(min6 = 0, max6 = 1, dtype, seed) {
+  constructor(min7 = 0, max7 = 1, dtype, seed) {
     this.canReturnFloat = () => this.dtype == null || this.dtype === "float32";
-    this.min = min6;
-    this.range = max6 - min6;
+    this.min = min7;
+    this.range = max7 - min7;
     this.dtype = dtype;
     if (seed == null) {
       seed = Math.random();
@@ -41826,7 +41772,7 @@ var UniformRandom = class {
       seed = seed.toString();
     }
     if (!this.canReturnFloat() && this.range <= 1) {
-      throw new Error(`The difference between ${min6} - ${max6} <= 1 and dtype is not float`);
+      throw new Error(`The difference between ${min7} - ${max7} <= 1 and dtype is not float`);
     }
     this.random = seedrandom.alea(seed);
   }
@@ -41858,11 +41804,11 @@ function randomGamma_(shape, alpha, beta = 1, dtype = "float32", seed) {
   return res2.toTensor();
 }
 var randomGamma = op({ randomGamma_ });
-function randomNormal_(shape, mean4 = 0, stdDev = 1, dtype, seed) {
+function randomNormal_(shape, mean5 = 0, stdDev = 1, dtype, seed) {
   if (dtype != null && dtype === "bool") {
     throw new Error(`Unsupported data type ${dtype}`);
   }
-  const randGauss = new MPRandGauss(mean4, stdDev, dtype, false, seed);
+  const randGauss = new MPRandGauss(mean5, stdDev, dtype, false, seed);
   const res2 = buffer(shape, dtype);
   for (let i2 = 0; i2 < res2.values.length; i2++) {
     res2.values[i2] = randGauss.nextValue();
@@ -42009,14 +41955,14 @@ async function setdiff1dAsync_(x2, y2) {
   const xVals = await $x.data();
   const yVals = await $y.data();
   const ySet = new Set(yVals);
-  let outputSize3 = 0;
+  let outputSize2 = 0;
   for (let i2 = 0; i2 < xVals.length; i2++) {
     if (!ySet.has(xVals[i2])) {
-      outputSize3++;
+      outputSize2++;
     }
   }
-  const buffer2 = new TensorBuffer([outputSize3], $x.dtype);
-  const indices = new TensorBuffer([outputSize3], "int32");
+  const buffer2 = new TensorBuffer([outputSize2], $x.dtype);
+  const indices = new TensorBuffer([outputSize2], "int32");
   for (let i2 = 0, p22 = 0; i2 < xVals.length; i2++) {
     if (!ySet.has(xVals[i2])) {
       buffer2.values[p22] = xVals[i2];
@@ -42306,11 +42252,11 @@ function topk_(x2, k3 = 1, sorted = true) {
   return { values, indices };
 }
 var topk = op({ topk_ });
-function truncatedNormal_(shape, mean4 = 0, stdDev = 1, dtype, seed) {
+function truncatedNormal_(shape, mean5 = 0, stdDev = 1, dtype, seed) {
   if (dtype != null && dtype === "bool") {
     throw new Error(`Unsupported data type $ { dtype }`);
   }
-  const randGauss = new MPRandGauss(mean4, stdDev, dtype, true, seed);
+  const randGauss = new MPRandGauss(mean5, stdDev, dtype, true, seed);
   const res2 = buffer(shape, dtype);
   for (let i2 = 0; i2 < res2.values.length; i2++) {
     res2.values[i2] = randGauss.nextValue();
@@ -44728,11 +44674,11 @@ function getImageCenter(center, imageHeight, imageWidth) {
   const centerY = imageHeight * (typeof center === "number" ? center : center[1]);
   return [centerX, centerY];
 }
-function getReshaped(inputShape, blockShape, prod5, batchToSpace = true) {
+function getReshaped(inputShape, blockShape, prod6, batchToSpace = true) {
   let reshaped = [];
   if (batchToSpace) {
     reshaped = reshaped.concat(blockShape.slice(0));
-    reshaped.push(inputShape[0] / prod5);
+    reshaped.push(inputShape[0] / prod6);
     reshaped = reshaped.concat(inputShape.slice(1));
   } else {
     reshaped = reshaped.concat(inputShape[0]);
@@ -44772,12 +44718,12 @@ function getPermuted(reshapedRank, blockShapeRank, batchToSpace = true) {
   }
   return permuted;
 }
-function getReshapedPermuted(inputShape, blockShape, prod5, batchToSpace = true) {
+function getReshapedPermuted(inputShape, blockShape, prod6, batchToSpace = true) {
   const reshapedPermuted = [];
   if (batchToSpace) {
-    reshapedPermuted.push(inputShape[0] / prod5);
+    reshapedPermuted.push(inputShape[0] / prod6);
   } else {
-    reshapedPermuted.push(inputShape[0] * prod5);
+    reshapedPermuted.push(inputShape[0] * prod6);
   }
   for (let i2 = 1; i2 < inputShape.length; ++i2) {
     if (i2 <= blockShape.length) {
@@ -44814,70 +44760,70 @@ var ERF_A2 = -0.284496736;
 var ERF_A3 = 1.421413741;
 var ERF_A4 = -1.453152027;
 var ERF_A5 = 1.061405429;
-function mergeRealAndImagArrays(real4, imag4) {
-  if (real4.length !== imag4.length) {
-    throw new Error(`Cannot merge real and imag arrays of different lengths. real:${real4.length}, imag: ${imag4.length}.`);
+function mergeRealAndImagArrays(real5, imag5) {
+  if (real5.length !== imag5.length) {
+    throw new Error(`Cannot merge real and imag arrays of different lengths. real:${real5.length}, imag: ${imag5.length}.`);
   }
-  const result = new Float32Array(real4.length * 2);
+  const result = new Float32Array(real5.length * 2);
   for (let i2 = 0; i2 < result.length; i2 += 2) {
-    result[i2] = real4[i2 / 2];
-    result[i2 + 1] = imag4[i2 / 2];
+    result[i2] = real5[i2 / 2];
+    result[i2 + 1] = imag5[i2 / 2];
   }
   return result;
 }
-function splitRealAndImagArrays(complex4) {
-  const real4 = new Float32Array(complex4.length / 2);
-  const imag4 = new Float32Array(complex4.length / 2);
-  for (let i2 = 0; i2 < complex4.length; i2 += 2) {
-    real4[i2 / 2] = complex4[i2];
-    imag4[i2 / 2] = complex4[i2 + 1];
+function splitRealAndImagArrays(complex5) {
+  const real5 = new Float32Array(complex5.length / 2);
+  const imag5 = new Float32Array(complex5.length / 2);
+  for (let i2 = 0; i2 < complex5.length; i2 += 2) {
+    real5[i2 / 2] = complex5[i2];
+    imag5[i2 / 2] = complex5[i2 + 1];
   }
-  return { real: real4, imag: imag4 };
+  return { real: real5, imag: imag5 };
 }
-function complexWithEvenIndex(complex4) {
-  const len = Math.ceil(complex4.length / 4);
-  const real4 = new Float32Array(len);
-  const imag4 = new Float32Array(len);
-  for (let i2 = 0; i2 < complex4.length; i2 += 4) {
-    real4[Math.floor(i2 / 4)] = complex4[i2];
-    imag4[Math.floor(i2 / 4)] = complex4[i2 + 1];
+function complexWithEvenIndex(complex5) {
+  const len = Math.ceil(complex5.length / 4);
+  const real5 = new Float32Array(len);
+  const imag5 = new Float32Array(len);
+  for (let i2 = 0; i2 < complex5.length; i2 += 4) {
+    real5[Math.floor(i2 / 4)] = complex5[i2];
+    imag5[Math.floor(i2 / 4)] = complex5[i2 + 1];
   }
-  return { real: real4, imag: imag4 };
+  return { real: real5, imag: imag5 };
 }
-function complexWithOddIndex(complex4) {
-  const len = Math.floor(complex4.length / 4);
-  const real4 = new Float32Array(len);
-  const imag4 = new Float32Array(len);
-  for (let i2 = 2; i2 < complex4.length; i2 += 4) {
-    real4[Math.floor(i2 / 4)] = complex4[i2];
-    imag4[Math.floor(i2 / 4)] = complex4[i2 + 1];
+function complexWithOddIndex(complex5) {
+  const len = Math.floor(complex5.length / 4);
+  const real5 = new Float32Array(len);
+  const imag5 = new Float32Array(len);
+  for (let i2 = 2; i2 < complex5.length; i2 += 4) {
+    real5[Math.floor(i2 / 4)] = complex5[i2];
+    imag5[Math.floor(i2 / 4)] = complex5[i2 + 1];
   }
-  return { real: real4, imag: imag4 };
+  return { real: real5, imag: imag5 };
 }
-function getComplexWithIndex(complex4, index) {
-  const real4 = complex4[index * 2];
-  const imag4 = complex4[index * 2 + 1];
-  return { real: real4, imag: imag4 };
+function getComplexWithIndex(complex5, index) {
+  const real5 = complex5[index * 2];
+  const imag5 = complex5[index * 2 + 1];
+  return { real: real5, imag: imag5 };
 }
-function assignToTypedArray(data, real4, imag4, index) {
-  data[index * 2] = real4;
-  data[index * 2 + 1] = imag4;
+function assignToTypedArray(data, real5, imag5, index) {
+  data[index * 2] = real5;
+  data[index * 2 + 1] = imag5;
 }
 function exponents(n2, inverse) {
-  const real4 = new Float32Array(n2 / 2);
-  const imag4 = new Float32Array(n2 / 2);
+  const real5 = new Float32Array(n2 / 2);
+  const imag5 = new Float32Array(n2 / 2);
   for (let i2 = 0; i2 < Math.ceil(n2 / 2); i2++) {
     const x2 = (inverse ? 2 : -2) * Math.PI * (i2 / n2);
-    real4[i2] = Math.cos(x2);
-    imag4[i2] = Math.sin(x2);
+    real5[i2] = Math.cos(x2);
+    imag5[i2] = Math.sin(x2);
   }
-  return { real: real4, imag: imag4 };
+  return { real: real5, imag: imag5 };
 }
 function exponent(k3, n2, inverse) {
   const x2 = (inverse ? 2 : -2) * Math.PI * (k3 / n2);
-  const real4 = Math.cos(x2);
-  const imag4 = Math.sin(x2);
-  return { real: real4, imag: imag4 };
+  const real5 = Math.cos(x2);
+  const imag5 = Math.sin(x2);
+  return { real: real5, imag: imag5 };
 }
 var ARROW = "->";
 var ARROW_REGEX = /->/g;
@@ -44941,14 +44887,14 @@ function getEinsumPermutation(nDims, idDims) {
   for (let i2 = 0; i2 < idDims.length; ++i2) {
     permutationIndices[idDims[i2]] = i2;
   }
-  const expandDims6 = [];
+  const expandDims7 = [];
   for (let i2 = 0; i2 < nDims; ++i2) {
     if (permutationIndices[i2] === -1) {
-      expandDims6.push(i2);
+      expandDims7.push(i2);
     }
   }
   permutationIndices = permutationIndices.filter((d2) => d2 !== -1);
-  return { permutationIndices, expandDims: expandDims6 };
+  return { permutationIndices, expandDims: expandDims7 };
 }
 function checkEinsumDimSizes(nDims, idDims, tensors) {
   const dimSizes = new Array(nDims);
@@ -45648,55 +45594,55 @@ var fusedBatchNormGradConfig = {
   inputsToSave: ["x", "mean", "variance", "scale"],
   gradFunc: (dy, saved, attrs) => {
     const { varianceEpsilon } = attrs;
-    const [x2, mean4, variance, scale22] = saved;
+    const [x2, mean5, variance, scale22] = saved;
     const scaleValue = scale22 == null ? scalar(1) : scale22;
-    const reductionAxes = getReductionAxes(mean4.shape, x2.shape);
+    const reductionAxes = getReductionAxes(mean5.shape, x2.shape);
     const tileShape = [];
-    if (mean4.rank === 1) {
+    if (mean5.rank === 1) {
       for (let i2 = 0; i2 < x2.shape.length - 1; ++i2) {
         tileShape.push(x2.shape[i2]);
       }
       tileShape.push(1);
     }
-    const xMinusMean = sub(x2, mean4);
+    const xMinusMean = sub(x2, mean5);
     const dyTimesScaleValue = mul(dy, scaleValue);
     const oneOverSqrtVariance = rsqrt(add2(variance, scalar(varianceEpsilon)));
     const minusHalfRCube = mul(mul(mul(oneOverSqrtVariance, oneOverSqrtVariance), oneOverSqrtVariance), scalar(-0.5));
     const derX = () => {
-      if (mean4.rank === 1) {
-        return reshape(mul(mul(dy, tile(reshape(oneOverSqrtVariance, [1, 1, 1, mean4.shape[0]]), tileShape)), scaleValue), x2.shape);
+      if (mean5.rank === 1) {
+        return reshape(mul(mul(dy, tile(reshape(oneOverSqrtVariance, [1, 1, 1, mean5.shape[0]]), tileShape)), scaleValue), x2.shape);
       } else {
         return reshape(mul(mul(dy, oneOverSqrtVariance), scaleValue), x2.shape);
       }
     };
     const derMean = () => {
       let meanDer = mul(mul(oneOverSqrtVariance, scalar(-1)), dyTimesScaleValue);
-      if (mean4.rank === 1) {
+      if (mean5.rank === 1) {
         meanDer = sum2(meanDer, reductionAxes);
       }
-      return reshape(meanDer, mean4.shape);
+      return reshape(meanDer, mean5.shape);
     };
     const derVariance = () => {
       let varianceDer = mul(mul(minusHalfRCube, xMinusMean), dyTimesScaleValue);
-      if (mean4.rank === 1) {
+      if (mean5.rank === 1) {
         varianceDer = sum2(varianceDer, reductionAxes);
       }
-      return reshape(varianceDer, mean4.shape);
+      return reshape(varianceDer, mean5.shape);
     };
     const derScale = () => {
       const xMinusMean2TimesRsqrt = mul(xMinusMean, oneOverSqrtVariance);
       let scaleDer = mul(dy, xMinusMean2TimesRsqrt);
-      if (mean4.rank === 1) {
+      if (mean5.rank === 1) {
         scaleDer = sum2(scaleDer, reductionAxes);
       }
-      return reshape(scaleDer, mean4.shape);
+      return reshape(scaleDer, mean5.shape);
     };
     const derOffset = () => {
       let offsetDer = dy;
-      if (mean4.rank === 1) {
+      if (mean5.rank === 1) {
         offsetDer = sum2(offsetDer, reductionAxes);
       }
-      return reshape(offsetDer, mean4.shape);
+      return reshape(offsetDer, mean5.shape);
     };
     return {
       x: derX,
@@ -45820,8 +45766,8 @@ var logSoftmaxGradConfig = {
     return {
       logits: () => {
         const keepDims = true;
-        const softmax6 = exp(value);
-        return sub(dy, mul(sum2(dy, axis, keepDims), softmax6));
+        const softmax7 = exp(value);
+        return sub(dy, mul(sum2(dy, axis, keepDims), softmax7));
       }
     };
   }
@@ -46120,10 +46066,10 @@ var powGradConfig = {
   gradFunc: (dy, saved) => {
     const [a6, b2, y2] = saved;
     const base2 = a6;
-    const exp4 = b2;
-    const outShape = assertAndGetBroadcastShape(base2.shape, exp4.shape);
+    const exp5 = b2;
+    const outShape = assertAndGetBroadcastShape(base2.shape, exp5.shape);
     const derBase = () => {
-      const expFloat = cast(exp4, "float32");
+      const expFloat = cast(exp5, "float32");
       let res2 = mul(dy, mul(expFloat, pow(base2, sub(expFloat, scalar(1)))));
       const reduceAxes = getReductionAxes(base2.shape, outShape);
       if (reduceAxes.length > 0) {
@@ -46135,11 +46081,11 @@ var powGradConfig = {
       const condition = greater(base2, 0);
       const logBase = where(condition, log5(base2), zerosLike(base2));
       let res2 = mul(dy, mul(y2, logBase));
-      const reduceAxes = getReductionAxes(exp4.shape, outShape);
+      const reduceAxes = getReductionAxes(exp5.shape, outShape);
       if (reduceAxes.length > 0) {
         res2 = sum2(res2, reduceAxes);
       }
-      return reshape(res2, exp4.shape);
+      return reshape(res2, exp5.shape);
     };
     return { a: derBase, b: derExp };
   }
@@ -46759,9 +46705,9 @@ getGlobalTensorClass().prototype.batchToSpaceND = function(blockShape, crops) {
   this.throwIfDisposed();
   return batchToSpaceND(this, blockShape, crops);
 };
-getGlobalTensorClass().prototype.batchNorm = function(mean4, variance, offset, scale22, varianceEpsilon) {
+getGlobalTensorClass().prototype.batchNorm = function(mean5, variance, offset, scale22, varianceEpsilon) {
   this.throwIfDisposed();
-  return batchNorm(this, mean4, variance, offset, scale22, varianceEpsilon);
+  return batchNorm(this, mean5, variance, offset, scale22, varianceEpsilon);
 };
 getGlobalTensorClass().prototype.broadcastTo = function(shape) {
   this.throwIfDisposed();
@@ -46775,9 +46721,9 @@ getGlobalTensorClass().prototype.ceil = function() {
   this.throwIfDisposed();
   return ceil(this);
 };
-getGlobalTensorClass().prototype.clipByValue = function(min6, max6) {
+getGlobalTensorClass().prototype.clipByValue = function(min7, max7) {
   this.throwIfDisposed();
-  return clipByValue(this, min6, max6);
+  return clipByValue(this, min7, max7);
 };
 getGlobalTensorClass().prototype.concat = function(x2, axis) {
   this.throwIfDisposed();
@@ -47022,13 +46968,13 @@ getGlobalTensorClass().prototype.pad = function(paddings, constantValue) {
   this.throwIfDisposed();
   return pad(this, paddings, constantValue);
 };
-getGlobalTensorClass().prototype.pool = function(windowShape, poolingType, padding, dilationRate, strides) {
+getGlobalTensorClass().prototype.pool = function(windowShape, poolingType, padding2, dilationRate, strides) {
   this.throwIfDisposed();
-  return pool(this, windowShape, poolingType, padding, dilationRate, strides);
+  return pool(this, windowShape, poolingType, padding2, dilationRate, strides);
 };
-getGlobalTensorClass().prototype.pow = function(exp4) {
+getGlobalTensorClass().prototype.pow = function(exp5) {
   this.throwIfDisposed();
-  return pow(this, exp4);
+  return pow(this, exp5);
 };
 getGlobalTensorClass().prototype.prelu = function(alpha) {
   this.throwIfDisposed();
@@ -47712,37 +47658,37 @@ function arrayProd(array2, begin, end) {
   if (end == null) {
     end = array2.length;
   }
-  let prod5 = 1;
+  let prod6 = 1;
   for (let i2 = begin; i2 < end; ++i2) {
-    prod5 *= array2[i2];
+    prod6 *= array2[i2];
   }
-  return prod5;
+  return prod6;
 }
 function min2(array2) {
   if (array2.length === 0) {
     return Number.NaN;
   }
-  let min6 = Number.POSITIVE_INFINITY;
+  let min7 = Number.POSITIVE_INFINITY;
   for (let i2 = 0; i2 < array2.length; i2++) {
     const value = array2[i2];
-    if (value < min6) {
-      min6 = value;
+    if (value < min7) {
+      min7 = value;
     }
   }
-  return min6;
+  return min7;
 }
 function max2(array2) {
   if (array2.length === 0) {
     return Number.NaN;
   }
-  let max6 = Number.NEGATIVE_INFINITY;
+  let max7 = Number.NEGATIVE_INFINITY;
   for (let i2 = 0; i2 < array2.length; i2++) {
     const value = array2[i2];
-    if (value > max6) {
-      max6 = value;
+    if (value > max7) {
+      max7 = value;
     }
   }
-  return max6;
+  return max7;
 }
 function range2(begin, end) {
   if (end < begin) {
@@ -47915,8 +47861,8 @@ function tile2(x2, n2) {
   }
   return tile(x2, n2);
 }
-function randomNormal2(shape, mean4 = 0, stddev = 1, dtype, seed) {
-  return randomNormal(shape, mean4, stddev, dtype, seed);
+function randomNormal2(shape, mean5 = 0, stddev = 1, dtype, seed) {
+  return randomNormal(shape, mean5, stddev, dtype, seed);
 }
 function dot2(a6, b2, activation2, bias) {
   if (a6.rank < 2 || b2.rank < 2) {
@@ -49555,8 +49501,8 @@ var BaseLogger = class extends BaseCallback {
           logs[key] = this.totals[key] / this.seen;
         } else {
           tidy(() => {
-            const log8 = mul(div(1, this.seen), this.totals[key]);
-            logs[key] = log8;
+            const log9 = mul(div(1, this.seen), this.totals[key]);
+            logs[key] = log9;
             this.totals[key].dispose();
             keep(logs[key]);
           });
@@ -49810,8 +49756,8 @@ function hinge(yTrue, yPred) {
 function categoricalHinge(yTrue, yPred) {
   return tidy(() => {
     const pos = sum2(mul(yTrue, yPred), -1);
-    const neg4 = max(mul(sub(1, yTrue), yPred), -1);
-    return maximum(0, add2(1, sub(neg4, pos)));
+    const neg5 = max(mul(sub(1, yTrue), yPred), -1);
+    return maximum(0, add2(1, sub(neg5, pos)));
   });
 }
 function logcosh(yTrue, yPred) {
@@ -53492,29 +53438,29 @@ function normalizeArray(value, n2, name) {
     return value;
   }
 }
-function convOutputLength(inputLength, filterSize, padding, stride, dilation = 1) {
+function convOutputLength(inputLength, filterSize, padding2, stride, dilation = 1) {
   if (inputLength == null) {
     return inputLength;
   }
   const dilatedFilterSize = filterSize + (filterSize - 1) * (dilation - 1);
   let outputLength;
-  if (padding === "same") {
+  if (padding2 === "same") {
     outputLength = inputLength;
   } else {
     outputLength = inputLength - dilatedFilterSize + 1;
   }
   return Math.floor((outputLength + stride - 1) / stride);
 }
-function deconvLength(dimSize, strideSize, kernelSize, padding) {
+function deconvLength(dimSize, strideSize, kernelSize, padding2) {
   if (dimSize == null) {
     return null;
   }
-  if (padding === "valid") {
+  if (padding2 === "valid") {
     dimSize = dimSize * strideSize + max2([kernelSize - strideSize, 0]);
-  } else if (padding === "same") {
+  } else if (padding2 === "same") {
     dimSize = dimSize * strideSize;
   } else {
-    throw new ValueError(`Unsupport padding mode: ${padding}.`);
+    throw new ValueError(`Unsupport padding mode: ${padding2}.`);
   }
   return dimSize;
 }
@@ -53538,7 +53484,7 @@ function preprocessConv3DInput(x2, dataFormat) {
     }
   });
 }
-function conv1dWithBias(x2, kernel, bias, strides = 1, padding = "valid", dataFormat, dilationRate = 1) {
+function conv1dWithBias(x2, kernel, bias, strides = 1, padding2 = "valid", dataFormat, dilationRate = 1) {
   return tidy(() => {
     if (dataFormat == null) {
       dataFormat = imageDataFormat();
@@ -53556,17 +53502,17 @@ function conv1dWithBias(x2, kernel, bias, strides = 1, padding = "valid", dataFo
     if (dataFormat === "channelsFirst") {
       x2 = transpose(x2, [0, 2, 1]);
     }
-    if (padding === "causal") {
+    if (padding2 === "causal") {
       throw new NotImplementedError("The support for CAUSAL padding mode in conv1dWithBias is not implemented yet.");
     }
-    let y2 = conv1d(x2, kernel, strides, padding === "same" ? "same" : "valid", "NWC", dilationRate);
+    let y2 = conv1d(x2, kernel, strides, padding2 === "same" ? "same" : "valid", "NWC", dilationRate);
     if (bias != null) {
       y2 = biasAdd(y2, bias);
     }
     return y2;
   });
 }
-function conv2dWithBiasActivation(x2, kernel, bias, strides = [1, 1], padding = "valid", dataFormat, dilationRate, activation2 = null) {
+function conv2dWithBiasActivation(x2, kernel, bias, strides = [1, 1], padding2 = "valid", dataFormat, dilationRate, activation2 = null) {
   return tidy(() => {
     if (dataFormat == null) {
       dataFormat = imageDataFormat();
@@ -53579,14 +53525,14 @@ function conv2dWithBiasActivation(x2, kernel, bias, strides = [1, 1], padding = 
       throw new ValueError(`conv2dWithBiasActivation expects kernel to be of rank 3 or 4, but received ${x2.rank}.`);
     }
     let y2 = preprocessConv2DInput(x2, dataFormat);
-    if (padding === "causal") {
+    if (padding2 === "causal") {
       throw new NotImplementedError("The support for CAUSAL padding mode in conv1dWithBias is not implemented yet.");
     }
     y2 = fused_ops_exports.conv2d({
       x: y2,
       filter: kernel,
       strides,
-      pad: padding === "same" ? "same" : "valid",
+      pad: padding2 === "same" ? "same" : "valid",
       dilations: dilationRate,
       dataFormat: "NHWC",
       bias,
@@ -53598,7 +53544,7 @@ function conv2dWithBiasActivation(x2, kernel, bias, strides = [1, 1], padding = 
     return y2;
   });
 }
-function conv3dWithBias(x2, kernel, bias, strides = [1, 1, 1], padding = "valid", dataFormat, dilationRate) {
+function conv3dWithBias(x2, kernel, bias, strides = [1, 1, 1], padding2 = "valid", dataFormat, dilationRate) {
   return tidy(() => {
     if (dataFormat == null) {
       dataFormat = imageDataFormat();
@@ -53611,10 +53557,10 @@ function conv3dWithBias(x2, kernel, bias, strides = [1, 1, 1], padding = "valid"
       throw new ValueError(`conv3dWithBias expects kernel to be of rank 4 or 5, but received ${x2.rank}.`);
     }
     let y2 = preprocessConv3DInput(x2, dataFormat);
-    if (padding === "causal") {
+    if (padding2 === "causal") {
       throw new NotImplementedError("The support for CAUSAL padding mode in conv3dWithBias is not implemented yet.");
     }
-    y2 = conv3d(y2, kernel, strides, padding === "same" ? "same" : "valid", "NDHWC", dilationRate);
+    y2 = conv3d(y2, kernel, strides, padding2 === "same" ? "same" : "valid", "NDHWC", dilationRate);
     if (bias != null) {
       y2 = biasAdd(y2, bias);
     }
@@ -54247,7 +54193,7 @@ var UpSampling2D = class extends Layer {
 };
 UpSampling2D.className = "UpSampling2D";
 serialization_exports.registerClass(UpSampling2D);
-function depthwiseConv2d3(x2, depthwiseKernel, strides = [1, 1], padding = "valid", dataFormat, dilationRate) {
+function depthwiseConv2d3(x2, depthwiseKernel, strides = [1, 1], padding2 = "valid", dataFormat, dilationRate) {
   return tidy(() => {
     if (dataFormat == null) {
       dataFormat = imageDataFormat();
@@ -54260,7 +54206,7 @@ function depthwiseConv2d3(x2, depthwiseKernel, strides = [1, 1], padding = "vali
     if (depthwiseKernel.rank !== 4) {
       throw new ValueError(`depthwiseKernel is required to be 4-D, but is instead ${depthwiseKernel.rank}-D`);
     }
-    y2 = depthwiseConv2d(y2, depthwiseKernel, strides, padding === "same" ? "same" : "valid", "NHWC", dilationRate);
+    y2 = depthwiseConv2d(y2, depthwiseKernel, strides, padding2 === "same" ? "same" : "valid", "NHWC", dilationRate);
     if (dataFormat === "channelsFirst") {
       y2 = transpose(y2, [0, 3, 1, 2]);
     }
@@ -55477,12 +55423,12 @@ var ConvRNN2D = class extends RNN {
     });
   }
   computeSingleOutputShape(inputShape) {
-    const { dataFormat, filters, kernelSize, padding, strides, dilationRate } = this.cell;
+    const { dataFormat, filters, kernelSize, padding: padding2, strides, dilationRate } = this.cell;
     const isChannelsFirst = dataFormat === "channelsFirst";
     const h2 = inputShape[isChannelsFirst ? 3 : 2];
     const w2 = inputShape[isChannelsFirst ? 4 : 3];
-    const hOut = convOutputLength(h2, kernelSize[0], padding, strides[0], dilationRate[0]);
-    const wOut = convOutputLength(w2, kernelSize[1], padding, strides[1], dilationRate[1]);
+    const hOut = convOutputLength(h2, kernelSize[0], padding2, strides[0], dilationRate[0]);
+    const wOut = convOutputLength(w2, kernelSize[1], padding2, strides[1], dilationRate[1]);
     const outShape = [
       ...inputShape.slice(0, 2),
       ...isChannelsFirst ? [filters, hOut, wOut] : [hOut, wOut, filters]
@@ -55493,7 +55439,7 @@ var ConvRNN2D = class extends RNN {
 ConvRNN2D.className = "ConvRNN2D";
 var ConvLSTM2DCell = class extends LSTMCell {
   constructor(args) {
-    const { filters, kernelSize, strides, padding, dataFormat, dilationRate } = args;
+    const { filters, kernelSize, strides, padding: padding2, dataFormat, dilationRate } = args;
     super(Object.assign({}, args, { units: filters }));
     this.filters = filters;
     assertPositiveInteger(this.filters, "filters");
@@ -55501,7 +55447,7 @@ var ConvLSTM2DCell = class extends LSTMCell {
     this.kernelSize.forEach((size2) => assertPositiveInteger(size2, "kernelSize"));
     this.strides = normalizeArray(strides || 1, 2, "strides");
     this.strides.forEach((stride) => assertPositiveInteger(stride, "strides"));
-    this.padding = padding || "valid";
+    this.padding = padding2 || "valid";
     checkPaddingMode(this.padding);
     this.dataFormat = dataFormat || "channelsLast";
     checkDataFormat(this.dataFormat);
@@ -55614,8 +55560,8 @@ var ConvLSTM2DCell = class extends LSTMCell {
     };
     return Object.assign({}, baseConfig, config3);
   }
-  inputConv(x2, w2, b2, padding) {
-    const out = conv2d(x2, w2, this.strides, padding || "valid", this.dataFormat === "channelsFirst" ? "NCHW" : "NHWC", this.dilationRate);
+  inputConv(x2, w2, b2, padding2) {
+    const out = conv2d(x2, w2, this.strides, padding2 || "valid", this.dataFormat === "channelsFirst" ? "NCHW" : "NHWC", this.dilationRate);
     if (b2) {
       return biasAdd(out, b2, this.dataFormat);
     }
@@ -56759,14 +56705,14 @@ var AlphaDropout = class extends Layer {
 };
 AlphaDropout.className = "AlphaDropout";
 serialization_exports.registerClass(AlphaDropout);
-function batchNormalization(x2, mean4, variance, beta, gamma, epsilon3 = 1e-3) {
+function batchNormalization(x2, mean5, variance, beta, gamma, epsilon3 = 1e-3) {
   let out;
   if (x2.rank === 2) {
-    out = batchNorm2d(x2, mean4, variance, beta, gamma, epsilon3);
+    out = batchNorm2d(x2, mean5, variance, beta, gamma, epsilon3);
   } else if (x2.rank === 3) {
-    out = batchNorm3d(x2, mean4, variance, beta, gamma, epsilon3);
+    out = batchNorm3d(x2, mean5, variance, beta, gamma, epsilon3);
   } else if (x2.rank === 4) {
-    out = batchNorm4d(x2, mean4, variance, beta, gamma, epsilon3);
+    out = batchNorm4d(x2, mean5, variance, beta, gamma, epsilon3);
   } else {
     throw new NotImplementedError(`batchNormalization is not implemented for array of rank ${x2.rank} yet`);
   }
@@ -56775,16 +56721,16 @@ function batchNormalization(x2, mean4, variance, beta, gamma, epsilon3 = 1e-3) {
 function regularNormalizeBatchInTraining(x2, gamma, beta, reductionAxes, epsilon3 = 1e-3) {
   return tidy(() => {
     const meanAndVariance = moments(x2, reductionAxes);
-    const mean4 = meanAndVariance.mean;
+    const mean5 = meanAndVariance.mean;
     const variance = meanAndVariance.variance;
-    const normed = batchNormalization(x2, mean4, variance, beta, gamma, epsilon3);
-    return [normed, mean4, variance];
+    const normed = batchNormalization(x2, mean5, variance, beta, gamma, epsilon3);
+    return [normed, mean5, variance];
   });
 }
 function broadcastNormalizeBatchInTraining(x2, gamma, beta, reductionAxes, epsilon3 = 1e-3) {
   return tidy(() => {
     const meanAndVariance = moments(x2, reductionAxes);
-    const mean4 = meanAndVariance.mean;
+    const mean5 = meanAndVariance.mean;
     const variance = meanAndVariance.variance;
     const targetShape = [];
     for (const axis of range2(0, x2.rank)) {
@@ -56794,12 +56740,12 @@ function broadcastNormalizeBatchInTraining(x2, gamma, beta, reductionAxes, epsil
         targetShape.push(x2.shape[axis]);
       }
     }
-    const broadcastMean = reshape(mean4, targetShape);
+    const broadcastMean = reshape(mean5, targetShape);
     const broadcastVariance = reshape(variance, targetShape);
     const broadcastGamma = gamma == null ? null : reshape(gamma, targetShape);
     const broadcastBeta = beta == null ? null : reshape(beta, targetShape);
     const normed = batchNormalization(x2, broadcastMean, broadcastVariance, broadcastBeta, broadcastGamma, epsilon3);
-    return [normed, mean4, variance];
+    return [normed, mean5, variance];
   });
 }
 function normalizeBatchInTraining(x2, gamma, beta, reductionAxes, epsilon3 = 1e-3) {
@@ -56877,7 +56823,7 @@ var BatchNormalization = class extends Layer {
       if (!training) {
         return normalizeInference();
       }
-      const [normedTraining, mean4, variance] = normalizeBatchInTraining(input2, this.gamma.read(), this.beta.read(), reductionAxes, this.epsilon);
+      const [normedTraining, mean5, variance] = normalizeBatchInTraining(input2, this.gamma.read(), this.beta.read(), reductionAxes, this.epsilon);
       const doMovingAverage = (variable2, value, momentum) => {
         tidy(() => {
           const decay = 1 - momentum;
@@ -56887,7 +56833,7 @@ var BatchNormalization = class extends Layer {
         });
       };
       const updateMovingMeanAndVariance = () => {
-        doMovingAverage(this.movingMean, mean4, this.momentum);
+        doMovingAverage(this.movingMean, mean5, this.momentum);
         doMovingAverage(this.movingVariance, variance, this.momentum);
       };
       updateMovingMeanAndVariance();
@@ -56985,7 +56931,7 @@ var LayerNormalization = class extends Layer {
     const nDims = inputShape.length;
     return tidy(() => {
       const keepDims = true;
-      let { mean: mean4, variance } = moments(input2, this.axis, keepDims);
+      let { mean: mean5, variance } = moments(input2, this.axis, keepDims);
       const broadcastShape = pyListRepeat(1, nDims);
       for (const dim of this.axis) {
         broadcastShape[dim] = inputShape[dim];
@@ -57010,11 +56956,11 @@ var LayerNormalization = class extends Layer {
           scaleOffsetTiling.push(inputShape[i2]);
         }
       }
-      mean4 = tile(mean4, momentsTiling);
+      mean5 = tile(mean5, momentsTiling);
       variance = tile(variance, momentsTiling);
       scale22 = tile(scale22, scaleOffsetTiling);
       offset = tile(offset, scaleOffsetTiling);
-      return batchNormalization(input2, mean4, variance, offset, scale22, this.epsilon);
+      return batchNormalization(input2, mean5, variance, offset, scale22, this.epsilon);
     });
   }
   getConfig() {
@@ -57035,15 +56981,15 @@ var LayerNormalization = class extends Layer {
 };
 LayerNormalization.className = "LayerNormalization";
 serialization_exports.registerClass(LayerNormalization);
-function spatial2dPadding(x2, padding, dataFormat) {
+function spatial2dPadding(x2, padding2, dataFormat) {
   return tidy(() => {
     if (x2.rank !== 4) {
       throw new ValueError(`temporalPadding expects input tensor to be 4-D, but received a ${x2.rank}-D tensor.`);
     }
-    if (padding == null) {
-      padding = [[1, 1], [1, 1]];
+    if (padding2 == null) {
+      padding2 = [[1, 1], [1, 1]];
     }
-    if (padding.length !== 2 || padding[0].length !== 2 || padding[1].length !== 2) {
+    if (padding2.length !== 2 || padding2[0].length !== 2 || padding2[1].length !== 2) {
       throw new ValueError("spatial2dPadding expects `padding` to be an Array of two Arrays, each of which is an Array of two integers.");
     }
     if (dataFormat == null) {
@@ -57054,9 +57000,9 @@ function spatial2dPadding(x2, padding, dataFormat) {
     }
     let pattern;
     if (dataFormat === "channelsFirst") {
-      pattern = [[0, 0], [0, 0], padding[0], padding[1]];
+      pattern = [[0, 0], [0, 0], padding2[0], padding2[1]];
     } else {
-      pattern = [[0, 0], padding[0], padding[1], [0, 0]];
+      pattern = [[0, 0], padding2[0], padding2[1], [0, 0]];
     }
     return pad(x2, pattern);
   });
@@ -57142,16 +57088,16 @@ var ZeroPadding2D = class extends Layer {
 };
 ZeroPadding2D.className = "ZeroPadding2D";
 serialization_exports.registerClass(ZeroPadding2D);
-function pool2d(x2, poolSize, strides, padding, dataFormat, poolMode) {
+function pool2d(x2, poolSize, strides, padding2, dataFormat, poolMode) {
   return tidy(() => {
     checkDataFormat(dataFormat);
     checkPoolMode(poolMode);
-    checkPaddingMode(padding);
+    checkPaddingMode(padding2);
     if (strides == null) {
       strides = [1, 1];
     }
-    if (padding == null) {
-      padding = "valid";
+    if (padding2 == null) {
+      padding2 = "valid";
     }
     if (dataFormat == null) {
       dataFormat = imageDataFormat();
@@ -57161,7 +57107,7 @@ function pool2d(x2, poolSize, strides, padding, dataFormat, poolMode) {
     }
     x2 = preprocessConv2DInput(x2, dataFormat);
     let y2;
-    const paddingString = padding === "same" ? "same" : "valid";
+    const paddingString = padding2 === "same" ? "same" : "valid";
     if (poolMode === "max") {
       y2 = maxPool(x2, poolSize, strides, paddingString);
     } else {
@@ -57173,16 +57119,16 @@ function pool2d(x2, poolSize, strides, padding, dataFormat, poolMode) {
     return y2;
   });
 }
-function pool3d(x2, poolSize, strides, padding, dataFormat, poolMode) {
+function pool3d(x2, poolSize, strides, padding2, dataFormat, poolMode) {
   return tidy(() => {
     checkDataFormat(dataFormat);
     checkPoolMode(poolMode);
-    checkPaddingMode(padding);
+    checkPaddingMode(padding2);
     if (strides == null) {
       strides = [1, 1, 1];
     }
-    if (padding == null) {
-      padding = "valid";
+    if (padding2 == null) {
+      padding2 = "valid";
     }
     if (dataFormat == null) {
       dataFormat = imageDataFormat();
@@ -57192,7 +57138,7 @@ function pool3d(x2, poolSize, strides, padding, dataFormat, poolMode) {
     }
     x2 = preprocessConv3DInput(x2, dataFormat);
     let y2;
-    const paddingString = padding === "same" ? "same" : "valid";
+    const paddingString = padding2 === "same" ? "same" : "valid";
     if (poolMode === "max") {
       y2 = maxPool3d(x2, poolSize, strides, paddingString);
     } else {
@@ -57262,10 +57208,10 @@ var MaxPooling1D = class extends Pooling1D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding, dataFormat) {
+  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
     checkDataFormat(dataFormat);
-    checkPaddingMode(padding);
-    return pool2d(inputs, poolSize, strides, padding, dataFormat, "max");
+    checkPaddingMode(padding2);
+    return pool2d(inputs, poolSize, strides, padding2, dataFormat, "max");
   }
 };
 MaxPooling1D.className = "MaxPooling1D";
@@ -57274,10 +57220,10 @@ var AveragePooling1D = class extends Pooling1D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding, dataFormat) {
+  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
     checkDataFormat(dataFormat);
-    checkPaddingMode(padding);
-    return pool2d(inputs, poolSize, strides, padding, dataFormat, "avg");
+    checkPaddingMode(padding2);
+    return pool2d(inputs, poolSize, strides, padding2, dataFormat, "avg");
   }
 };
 AveragePooling1D.className = "AveragePooling1D";
@@ -57341,10 +57287,10 @@ var MaxPooling2D = class extends Pooling2D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding, dataFormat) {
+  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
     checkDataFormat(dataFormat);
-    checkPaddingMode(padding);
-    return pool2d(inputs, poolSize, strides, padding, dataFormat, "max");
+    checkPaddingMode(padding2);
+    return pool2d(inputs, poolSize, strides, padding2, dataFormat, "max");
   }
 };
 MaxPooling2D.className = "MaxPooling2D";
@@ -57353,10 +57299,10 @@ var AveragePooling2D = class extends Pooling2D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding, dataFormat) {
+  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
     checkDataFormat(dataFormat);
-    checkPaddingMode(padding);
-    return pool2d(inputs, poolSize, strides, padding, dataFormat, "avg");
+    checkPaddingMode(padding2);
+    return pool2d(inputs, poolSize, strides, padding2, dataFormat, "avg");
   }
 };
 AveragePooling2D.className = "AveragePooling2D";
@@ -57422,10 +57368,10 @@ var MaxPooling3D = class extends Pooling3D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding, dataFormat) {
+  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
     checkDataFormat(dataFormat);
-    checkPaddingMode(padding);
-    return pool3d(inputs, poolSize, strides, padding, dataFormat, "max");
+    checkPaddingMode(padding2);
+    return pool3d(inputs, poolSize, strides, padding2, dataFormat, "max");
   }
 };
 MaxPooling3D.className = "MaxPooling3D";
@@ -57434,10 +57380,10 @@ var AveragePooling3D = class extends Pooling3D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding, dataFormat) {
+  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
     checkDataFormat(dataFormat);
-    checkPaddingMode(padding);
-    return pool3d(inputs, poolSize, strides, padding, dataFormat, "avg");
+    checkPaddingMode(padding2);
+    return pool3d(inputs, poolSize, strides, padding2, dataFormat, "avg");
   }
 };
 AveragePooling3D.className = "AveragePooling3D";
@@ -62845,10 +62791,10 @@ var executeOp5 = (node2, tensorMap, context) => {
     }
     case "TruncatedNormal": {
       const shape = getParamValue("shape", node2, tensorMap, context);
-      const mean4 = getParamValue("mean", node2, tensorMap, context);
+      const mean5 = getParamValue("mean", node2, tensorMap, context);
       const stdDev = getParamValue("stdDev", node2, tensorMap, context);
       const seed = getParamValue("seed", node2, tensorMap, context);
-      return [truncatedNormal(shape, mean4, stdDev, getParamValue("dtype", node2, tensorMap, context), seed)];
+      return [truncatedNormal(shape, mean5, stdDev, getParamValue("dtype", node2, tensorMap, context), seed)];
     }
     case "Zeros": {
       return [zeros(getParamValue("shape", node2, tensorMap, context), getParamValue("dtype", node2, tensorMap, context))];
@@ -64081,8 +64027,8 @@ var GraphExecutor = class {
       const node2 = this.graph.nodes[nodeName];
       if (node2.attrParams["shape"] && node2.attrParams["shape"].value) {
         const shape = node2.attrParams["shape"].value;
-        const match3 = shape.length === input2.shape.length && input2.shape.every((dim, index) => shape[index] === -1 || shape[index] === dim);
-        util_exports.assert(match3, () => `The shape of dict['${node2.name}'] provided in model.execute(dict) must be [${shape}], but was [${input2.shape}]`);
+        const match4 = shape.length === input2.shape.length && input2.shape.every((dim, index) => shape[index] === -1 || shape[index] === dim);
+        util_exports.assert(match4, () => `The shape of dict['${node2.name}'] provided in model.execute(dict) must be [${shape}], but was [${input2.shape}]`);
       }
       if (node2.attrParams["dtype"] && node2.attrParams["dtype"].value) {
         util_exports.assert(input2.dtype === node2.attrParams["dtype"].value, () => `The dtype of dict['${node2.name}'] provided in model.execute(dict) must be ${node2.attrParams["dtype"].value}, but was ${input2.dtype}`);
@@ -64628,17 +64574,17 @@ var LazyIterator = class {
   filter(predicate) {
     return new FilterIterator(this, predicate);
   }
-  map(transform5) {
-    return new MapIterator(this, transform5);
+  map(transform6) {
+    return new MapIterator(this, transform6);
   }
-  mapAsync(transform5) {
-    return new AsyncMapIterator(this, transform5);
+  mapAsync(transform6) {
+    return new AsyncMapIterator(this, transform6);
   }
-  serialMapAsync(transform5) {
-    return new AsyncMapIterator(this, transform5).serial();
+  serialMapAsync(transform6) {
+    return new AsyncMapIterator(this, transform6).serial();
   }
-  flatmap(transform5) {
-    return new FlatmapIterator(this, transform5);
+  flatmap(transform6) {
+    return new FlatmapIterator(this, transform6);
   }
   async forEachAsync(f2) {
     return this.map(f2).resolveFully();
@@ -64747,11 +64693,11 @@ var SkipIterator = class extends LazyIterator {
   }
   async serialNext() {
     while (this.count++ < this.maxCount) {
-      const skipped10 = await this.upstream.next();
-      if (skipped10.done) {
-        return skipped10;
+      const skipped11 = await this.upstream.next();
+      if (skipped11.done) {
+        return skipped11;
       }
-      dispose(skipped10.value);
+      dispose(skipped11.value);
     }
     return this.upstream.next();
   }
@@ -64828,10 +64774,10 @@ var FilterIterator = class extends LazyIterator {
   }
 };
 var MapIterator = class extends LazyIterator {
-  constructor(upstream, transform5) {
+  constructor(upstream, transform6) {
     super();
     this.upstream = upstream;
-    this.transform = transform5;
+    this.transform = transform6;
   }
   summary() {
     return `${this.upstream.summary()} -> Map`;
@@ -64880,10 +64826,10 @@ var ErrorHandlingLazyIterator = class extends LazyIterator {
   }
 };
 var AsyncMapIterator = class extends LazyIterator {
-  constructor(upstream, transform5) {
+  constructor(upstream, transform6) {
     super();
     this.upstream = upstream;
-    this.transform = transform5;
+    this.transform = transform6;
   }
   summary() {
     return `${this.upstream.summary()} -> AsyncMap`;
@@ -64924,10 +64870,10 @@ var OneToManyIterator = class extends LazyIterator {
   }
 };
 var FlatmapIterator = class extends OneToManyIterator {
-  constructor(upstream, transform5) {
+  constructor(upstream, transform6) {
     super();
     this.upstream = upstream;
-    this.transform = transform5;
+    this.transform = transform6;
   }
   summary() {
     return `${this.upstream.summary()} -> Flatmap`;
@@ -65080,8 +65026,8 @@ var ShuffleIterator = class extends PrefetchIterator {
     this.lastRead = this.lastRead.then(() => this.serialNext());
     return this.lastRead;
   }
-  randomInt(max6) {
-    return Math.floor(this.random() * max6);
+  randomInt(max7) {
+    return Math.floor(this.random() * max7);
   }
   chooseIndex() {
     return this.randomInt(this.buffer.length());
@@ -65150,16 +65096,16 @@ var Dataset = class {
   async forEachAsync(f2) {
     return (await this.iterator()).forEachAsync(f2);
   }
-  map(transform5) {
+  map(transform6) {
     const base2 = this;
     return datasetFromIteratorFn(async () => {
-      return (await base2.iterator()).map((x2) => tidy(() => transform5(x2)));
+      return (await base2.iterator()).map((x2) => tidy(() => transform6(x2)));
     }, this.size);
   }
-  mapAsync(transform5) {
+  mapAsync(transform6) {
     const base2 = this;
     return datasetFromIteratorFn(async () => {
-      return (await base2.iterator()).mapAsync(transform5);
+      return (await base2.iterator()).mapAsync(transform6);
     }, this.size);
   }
   prefetch(bufferSize) {
@@ -65958,8 +65904,8 @@ var FileChunkIterator = class extends ByteChunkIterator {
         fileReader.onerror = (event) => {
           return reject(new Error(event.type));
         };
-        const slice5 = this.file.slice(this.offset, end);
-        fileReader.readAsArrayBuffer(slice5);
+        const slice6 = this.file.slice(this.offset, end);
+        fileReader.readAsArrayBuffer(slice6);
       }
       this.offset = end;
     });
@@ -66287,14 +66233,14 @@ function createSimpleBinaryKernelImpl(op2) {
 }
 function complex2(args) {
   const { inputs, backend: backend22 } = args;
-  const { real: real4, imag: imag4 } = inputs;
-  const realVals = backend22.data.get(real4.dataId).values;
-  const imagVals = backend22.data.get(imag4.dataId).values;
-  const complexInfo = backend22.makeTensorInfo(real4.shape, "complex64");
-  const complex4 = backend22.data.get(complexInfo.dataId);
-  complex4.complexTensorInfos = {
-    real: backend22.makeTensorInfo(real4.shape, "float32", realVals),
-    imag: backend22.makeTensorInfo(imag4.shape, "float32", imagVals)
+  const { real: real5, imag: imag5 } = inputs;
+  const realVals = backend22.data.get(real5.dataId).values;
+  const imagVals = backend22.data.get(imag5.dataId).values;
+  const complexInfo = backend22.makeTensorInfo(real5.shape, "complex64");
+  const complex5 = backend22.data.get(complexInfo.dataId);
+  complex5.complexTensorInfos = {
+    real: backend22.makeTensorInfo(real5.shape, "float32", realVals),
+    imag: backend22.makeTensorInfo(imag5.shape, "float32", imagVals)
   };
   return complexInfo;
 }
@@ -66305,9 +66251,9 @@ var complexConfig = {
 };
 function zeros3(backend22, shape, dtype = "float32") {
   if (dtype === "complex64") {
-    const real4 = zeros3(backend22, shape, "float32");
-    const imag4 = zeros3(backend22, shape, "float32");
-    return complex2({ inputs: { real: real4, imag: imag4 }, backend: backend22 });
+    const real5 = zeros3(backend22, shape, "float32");
+    const imag5 = zeros3(backend22, shape, "float32");
+    return complex2({ inputs: { real: real5, imag: imag5 }, backend: backend22 });
   }
   const values = util_exports.makeZerosTypedArray(util_exports.sizeFromShape(shape), dtype);
   return backend22.makeTensorInfo(shape, dtype, values);
@@ -66326,9 +66272,9 @@ var identityConfig = {
 function real2(args) {
   const { inputs, backend: backend22 } = args;
   const { input: input2 } = inputs;
-  const real4 = backend22.data.get(input2.dataId).complexTensorInfos.real;
-  const realVal = backend22.data.get(real4.dataId).values;
-  return backend22.makeTensorInfo(real4.shape, real4.dtype, realVal);
+  const real5 = backend22.data.get(input2.dataId).complexTensorInfos.real;
+  const realVal = backend22.data.get(real5.dataId).values;
+  return backend22.makeTensorInfo(real5.shape, real5.dtype, realVal);
 }
 var realConfig = {
   kernelName: Real,
@@ -66705,14 +66651,14 @@ function maxImpl(aVals, reduceSize, outShape, dtype) {
   const vals = util_exports.getTypedArrayFromDType(dtype, util_exports.sizeFromShape(outShape));
   for (let i2 = 0; i2 < vals.length; ++i2) {
     const offset = i2 * reduceSize;
-    let max6 = aVals[offset];
+    let max7 = aVals[offset];
     for (let j2 = 0; j2 < reduceSize; ++j2) {
       const value = aVals[offset + j2];
-      if (Number.isNaN(value) || value > max6) {
-        max6 = value;
+      if (Number.isNaN(value) || value > max7) {
+        max7 = value;
       }
     }
-    vals[i2] = max6;
+    vals[i2] = max7;
   }
   return vals;
 }
@@ -66811,11 +66757,11 @@ function prodImpl(xShape, xDtype, xVals, reductionAxes) {
   const reduceSize = util_exports.sizeFromShape(reduceShape);
   for (let i2 = 0; i2 < outVals.length; ++i2) {
     const offset = i2 * reduceSize;
-    let prod5 = 1;
+    let prod6 = 1;
     for (let j2 = 0; j2 < reduceSize; ++j2) {
-      prod5 *= xVals[offset + j2];
+      prod6 *= xVals[offset + j2];
     }
-    outVals[i2] = prod5;
+    outVals[i2] = prod6;
   }
   return { outVals, outShape, outDtype };
 }
@@ -67050,9 +66996,9 @@ function sparseReshapeImpl(inputIndices, inputIndicesShape, inputDType, inputSha
     }
     outputShape[unknownIndex] = missing;
   }
-  const outputSize3 = util_exports.sizeFromShape(outputShape);
-  if (outputSize3 !== denseSize) {
-    throw new Error(`Input to reshape is a tensor with ${denseSize} dense values, but the requested shape has ${outputSize3}. inputShape=${inputShape} outputShape=${outputShape}`);
+  const outputSize2 = util_exports.sizeFromShape(outputShape);
+  if (outputSize2 !== denseSize) {
+    throw new Error(`Input to reshape is a tensor with ${denseSize} dense values, but the requested shape has ${outputSize2}. inputShape=${inputShape} outputShape=${outputShape}`);
   }
   const inputRank = inputShape.length;
   const inputStrides = [];
@@ -67349,7 +67295,7 @@ function split3(str, delimiters, skipEmpty, result) {
 function stringSplitImpl(input2, delimiter, skipEmpty) {
   const batchSize = input2.length;
   const tokens = [];
-  let outputSize3 = 0;
+  let outputSize2 = 0;
   let maxNumEntries = 0;
   const numIndices = new Array(batchSize);
   for (let i2 = 0; i2 < batchSize; ++i2) {
@@ -67357,11 +67303,11 @@ function stringSplitImpl(input2, delimiter, skipEmpty) {
     split3(input2[i2], delimiter, skipEmpty, tokens);
     const nEntries = tokens.length - prevTokensLength;
     numIndices[i2] = nEntries;
-    outputSize3 += nEntries;
+    outputSize2 += nEntries;
     maxNumEntries = Math.max(maxNumEntries, nEntries);
   }
-  const indices = util_exports.getArrayFromDType("int32", outputSize3 * 2);
-  const values = new Array(outputSize3);
+  const indices = util_exports.getArrayFromDType("int32", outputSize2 * 2);
+  const values = new Array(outputSize2);
   const shape = [batchSize, maxNumEntries];
   let c2 = 0;
   for (let i2 = 0; i2 < batchSize; ++i2) {
@@ -67624,10 +67570,10 @@ function reshape3(args) {
   backend22.incRef(x2.dataId);
   const xData = backend22.data.get(x2.dataId);
   if (xData.complexTensorInfos != null) {
-    const real4 = xData.complexTensorInfos.real;
-    const imag4 = xData.complexTensorInfos.imag;
-    real4.shape = $shape;
-    imag4.shape = $shape;
+    const real5 = xData.complexTensorInfos.real;
+    const imag5 = xData.complexTensorInfos.imag;
+    real5.shape = $shape;
+    imag5.shape = $shape;
   }
   return { dataId: x2.dataId, shape: $shape, dtype: x2.dtype };
 }
@@ -67683,15 +67629,15 @@ function batchMatMul(args) {
           const kBlock = Math.min(k02 + blockSize, sharedDim);
           for (let i2 = i0; i2 < iBlock; i2++) {
             for (let j2 = j0; j2 < jBlock; j2++) {
-              let sum6 = 0;
+              let sum7 = 0;
               for (let k3 = k02; k3 < kBlock; k3++) {
                 const batchOffsetA = Math.min(bi, batchDimA - 1) * aBatch;
                 const batchOffsetB = Math.min(bi, batchDimB - 1) * bBatch;
                 const aVal = a3dValues[batchOffsetA + i2 * aOuterStep + k3 * aInnerStep];
                 const bVal = b3dValues[k3 * bInnerStep + j2 * bOuterStep + batchOffsetB];
-                sum6 += aVal * bVal;
+                sum7 += aVal * bVal;
               }
-              resVals[bi * size2 + (i2 * rightDim + j2)] += sum6;
+              resVals[bi * size2 + (i2 * rightDim + j2)] += sum7;
             }
           }
         }
@@ -67880,12 +67826,12 @@ function argMax2(args) {
   const aVals = backend22.data.get($x.dataId).values;
   for (let i2 = 0; i2 < vals.length; ++i2) {
     const offset = i2 * reduceSize;
-    let max6 = aVals[offset];
+    let max7 = aVals[offset];
     let maxIndex = 0;
     for (let j2 = 0; j2 < reduceSize; ++j2) {
       const value = aVals[offset + j2];
-      if (value > max6) {
-        max6 = value;
+      if (value > max7) {
+        max7 = value;
         maxIndex = j2;
       }
     }
@@ -67922,12 +67868,12 @@ function argMin2(args) {
   const aVals = backend22.data.get($x.dataId).values;
   for (let i2 = 0; i2 < vals.length; ++i2) {
     const offset = i2 * reduceSize;
-    let min6 = aVals[offset];
+    let min7 = aVals[offset];
     let minIndex = 0;
     for (let j2 = 0; j2 < reduceSize; ++j2) {
       const value = aVals[offset + j2];
-      if (value < min6) {
-        min6 = value;
+      if (value < min7) {
+        min7 = value;
         minIndex = j2;
       }
     }
@@ -68385,17 +68331,17 @@ var avgPoolGradConfig2 = {
 };
 function batchNorm2(args) {
   const { inputs, backend: backend22, attrs } = args;
-  const { x: x2, scale: scale22, offset, mean: mean4, variance } = inputs;
-  util_exports.assert(mean4.shape.length === variance.shape.length, () => "Batch normalization gradient requires mean and variance to have equal ranks.");
-  util_exports.assert(offset == null || mean4.shape.length === offset.shape.length, () => "Batch normalization gradient requires mean and offset to have equal ranks.");
-  util_exports.assert(scale22 == null || mean4.shape.length === scale22.shape.length, () => "Batch normalization gradient requires mean and scale to have equal ranks.");
-  assertNotComplex([x2, mean4, variance, scale22, offset], "batchNorm");
+  const { x: x2, scale: scale22, offset, mean: mean5, variance } = inputs;
+  util_exports.assert(mean5.shape.length === variance.shape.length, () => "Batch normalization gradient requires mean and variance to have equal ranks.");
+  util_exports.assert(offset == null || mean5.shape.length === offset.shape.length, () => "Batch normalization gradient requires mean and offset to have equal ranks.");
+  util_exports.assert(scale22 == null || mean5.shape.length === scale22.shape.length, () => "Batch normalization gradient requires mean and scale to have equal ranks.");
+  assertNotComplex([x2, mean5, variance, scale22, offset], "batchNorm");
   let { varianceEpsilon } = attrs;
   if (varianceEpsilon == null) {
     varianceEpsilon = 1e-3;
   }
   const xVals = backend22.data.get(x2.dataId).values;
-  const mVals = backend22.data.get(mean4.dataId).values;
+  const mVals = backend22.data.get(mean5.dataId).values;
   const varVals = backend22.data.get(variance.dataId).values;
   const sVals = scale22 ? backend22.data.get(scale22.dataId).values : new Float32Array([1]);
   const offVals = offset ? backend22.data.get(offset.dataId).values : new Float32Array([0]);
@@ -68435,10 +68381,10 @@ function batchToSpaceND2(args) {
   const { x: x2 } = inputs;
   const { blockShape, crops } = attrs;
   assertNotComplex([x2], "batchToSpaceND");
-  const prod5 = blockShape.reduce((a6, b2) => a6 * b2);
-  const reshaped = backend_util_exports.getReshaped(x2.shape, blockShape, prod5);
+  const prod6 = blockShape.reduce((a6, b2) => a6 * b2);
+  const reshaped = backend_util_exports.getReshaped(x2.shape, blockShape, prod6);
   const permuted = backend_util_exports.getPermuted(reshaped.length, blockShape.length);
-  const reshapedPermuted = backend_util_exports.getReshapedPermuted(x2.shape, blockShape, prod5);
+  const reshapedPermuted = backend_util_exports.getReshapedPermuted(x2.shape, blockShape, prod6);
   const sliceBeginCoords = backend_util_exports.getSliceBeginCoords(crops, blockShape.length);
   const sliceSize = backend_util_exports.getSliceSize(reshapedPermuted, crops, blockShape.length);
   const xReshaped = reshape3({ inputs: { x: x2 }, backend: backend22, attrs: { shape: reshaped } });
@@ -68503,14 +68449,14 @@ var complexAbs = (args) => {
   const cpuBackend = args.backend;
   const resultValues = new Float32Array(util_exports.sizeFromShape(x2.shape));
   const complexVals = cpuBackend.data.get(x2.dataId);
-  const real4 = complexVals.complexTensorInfos.real;
-  const imag4 = complexVals.complexTensorInfos.imag;
-  const realVals = cpuBackend.data.get(real4.dataId).values;
-  const imagVals = cpuBackend.data.get(imag4.dataId).values;
+  const real5 = complexVals.complexTensorInfos.real;
+  const imag5 = complexVals.complexTensorInfos.imag;
+  const realVals = cpuBackend.data.get(real5.dataId).values;
+  const imagVals = cpuBackend.data.get(imag5.dataId).values;
   for (let i2 = 0; i2 < realVals.length; i2++) {
-    const real5 = realVals[i2];
-    const imag5 = imagVals[i2];
-    resultValues[i2] = Math.hypot(real5, imag5);
+    const real6 = realVals[i2];
+    const imag6 = imagVals[i2];
+    resultValues[i2] = Math.hypot(real6, imag6);
   }
   return cpuBackend.makeOutput(resultValues, x2.shape, "float32");
 };
@@ -68522,9 +68468,9 @@ var complexAbsConfig = {
 function imag2(args) {
   const { inputs, backend: backend22 } = args;
   const { input: input2 } = inputs;
-  const imag4 = backend22.data.get(input2.dataId).complexTensorInfos.imag;
-  const imagVal = backend22.data.get(imag4.dataId).values;
-  return backend22.makeTensorInfo(imag4.shape, imag4.dtype, imagVal);
+  const imag5 = backend22.data.get(input2.dataId).complexTensorInfos.imag;
+  const imagVal = backend22.data.get(imag5.dataId).values;
+  return backend22.makeTensorInfo(imag5.shape, imag5.dtype, imagVal);
 }
 var imagConfig = {
   kernelName: Imag,
@@ -69539,11 +69485,11 @@ function sum3(args) {
   const aVals = backend22.data.get(permutedX.dataId).values;
   for (let i2 = 0; i2 < vals.length; ++i2) {
     const offset = i2 * reduceSize;
-    let sum6 = 0;
+    let sum7 = 0;
     for (let j2 = 0; j2 < reduceSize; ++j2) {
-      sum6 += aVals[offset + j2];
+      sum7 += aVals[offset + j2];
     }
-    vals[i2] = sum6;
+    vals[i2] = sum7;
   }
   if (keepDims) {
     const newShape = backend_util_exports.expandShapeToKeepDim(result.shape, axes);
@@ -69714,8 +69660,8 @@ function fftBatch(input2, inverse, cpuBackend) {
       attrs: { begin: [b2, 0], size: [1, innerDim] }
     });
     const input3 = complex2({ inputs: { real: r2, imag: i2 }, backend: cpuBackend });
-    const { real: real4, imag: imag4 } = fftImpl(input3, inverse, cpuBackend);
-    const res2 = backend_util_exports.mergeRealAndImagArrays(real4, imag4);
+    const { real: real5, imag: imag5 } = fftImpl(input3, inverse, cpuBackend);
+    const res2 = backend_util_exports.mergeRealAndImagArrays(real5, imag5);
     for (let d2 = 0; d2 < innerDim; d2++) {
       const c2 = backend_util_exports.getComplexWithIndex(res2, d2);
       resultReal[b2 * innerDim + d2] = c2.real;
@@ -69863,19 +69809,19 @@ function fftRadix2(realVals, imagVals, size2, inverse, cpuBackend) {
 function fourierTransformByMatmul(data, size2, inverse) {
   const ret = new Float32Array(size2 * 2);
   for (let r2 = 0; r2 < size2; r2++) {
-    let real4 = 0;
-    let imag4 = 0;
+    let real5 = 0;
+    let imag5 = 0;
     for (let c2 = 0; c2 < size2; c2++) {
       const e2 = backend_util_exports.exponent(r2 * c2, size2, inverse);
       const term = backend_util_exports.getComplexWithIndex(data, c2);
-      real4 += term.real * e2.real - term.imag * e2.imag;
-      imag4 += term.real * e2.imag + term.imag * e2.real;
+      real5 += term.real * e2.real - term.imag * e2.imag;
+      imag5 += term.real * e2.imag + term.imag * e2.real;
     }
     if (inverse) {
-      real4 /= size2;
-      imag4 /= size2;
+      real5 /= size2;
+      imag5 /= size2;
     }
-    backend_util_exports.assignToTypedArray(ret, real4, imag4, r2);
+    backend_util_exports.assignToTypedArray(ret, real5, imag5, r2);
   }
   return ret;
 }
@@ -70171,16 +70117,16 @@ function lRN(args) {
     const currentChannel = offset % channels;
     let beginSumOffset = offset - currentChannel + Math.max(0, currentChannel - depthRadius);
     const endSumOffset = offset - currentChannel + Math.min(currentChannel + depthRadius, maxD);
-    let sum6 = 0;
+    let sum7 = 0;
     for (; beginSumOffset <= endSumOffset; beginSumOffset++) {
       const z2 = xValues[beginSumOffset];
-      sum6 += z2 * z2;
+      sum7 += z2 * z2;
     }
-    return sum6;
+    return sum7;
   }
   for (let offset = 0; offset < size2; offset++) {
-    const sum6 = sumAcrossChannels(offset);
-    const val = xValues[offset] * Math.pow(bias + alpha * sum6, -beta);
+    const sum7 = sumAcrossChannels(offset);
+    const val = xValues[offset] * Math.pow(bias + alpha * sum7, -beta);
     result[offset] = val;
   }
   return backend22.makeTensorInfo(x2.shape, x2.dtype, result);
@@ -70502,14 +70448,14 @@ function min3(args) {
   const aVals = backend22.data.get($x.dataId).values;
   for (let i2 = 0; i2 < vals.length; ++i2) {
     const offset = i2 * reduceSize;
-    let min6 = aVals[offset];
+    let min7 = aVals[offset];
     for (let j2 = 0; j2 < reduceSize; ++j2) {
       const value = aVals[offset + j2];
-      if (Number.isNaN(value) || value < min6) {
-        min6 = value;
+      if (Number.isNaN(value) || value < min7) {
+        min7 = value;
       }
     }
-    vals[i2] = min6;
+    vals[i2] = min7;
   }
   if (permutedAxes != null) {
     backend22.disposeIntermediateTensorInfo($x);
@@ -70545,16 +70491,16 @@ function mirrorPad2(args) {
   const resultStrides = util_exports.computeStrides(outShape);
   const resVals = util_exports.getTypedArrayFromDType(x2.dtype, resultSize);
   for (let i2 = 0; i2 < resultSize; i2++) {
-    let coords22 = util_exports.indexToLoc(i2, resultRank, resultStrides);
+    let coords32 = util_exports.indexToLoc(i2, resultRank, resultStrides);
     for (let i22 = 0; i22 < resultRank; i22++) {
-      if (coords22[i22] < start[i22]) {
-        coords22[i22] = start[i22] * 2 - coords22[i22] - offset;
-      } else if (coords22[i22] >= end[i22]) {
-        coords22[i22] = (end[i22] - 1) * 2 - coords22[i22] + offset;
+      if (coords32[i22] < start[i22]) {
+        coords32[i22] = start[i22] * 2 - coords32[i22] - offset;
+      } else if (coords32[i22] >= end[i22]) {
+        coords32[i22] = (end[i22] - 1) * 2 - coords32[i22] + offset;
       }
     }
-    coords22 = coords22.map((c2, i22) => c2 - start[i22]);
-    const inIndex = util_exports.locToIndex(coords22, xRank, xStrides);
+    coords32 = coords32.map((c2, i22) => c2 - start[i22]);
+    const inIndex = util_exports.locToIndex(coords32, xRank, xStrides);
     resVals[i2] = xVals[inIndex];
   }
   const outId = backend22.write(resVals, outShape, x2.dtype);
@@ -70834,8 +70780,8 @@ function padV2(args) {
     resVals.fill(constantValue);
   }
   for (let i2 = 0; i2 < xSize; i2++) {
-    const coords22 = util_exports.indexToLoc(i2, xRank, xStrides);
-    const outCoords = coords22.map((c2, i22) => c2 + start[i22]);
+    const coords32 = util_exports.indexToLoc(i2, xRank, xStrides);
+    const outCoords = coords32.map((c2, i22) => c2 + start[i22]);
     const outIndex = util_exports.locToIndex(outCoords, resultRank, resultStrides);
     resVals[outIndex] = xVals[i2];
   }
@@ -71171,9 +71117,9 @@ var rotateWithOffsetConfig = {
         for (let col = 0; col < imageWidth; col++) {
           const colOffset = col * numChannels;
           for (let channel = 0; channel < numChannels; channel++) {
-            const coords22 = [batch, row, col, channel];
-            const x2 = coords22[2];
-            const y2 = coords22[1];
+            const coords32 = [batch, row, col, channel];
+            const x2 = coords32[2];
+            const y2 = coords32[1];
             let coordX = (x2 - centerX) * cosFactor - (y2 - centerY) * sinFactor;
             let coordY = (x2 - centerX) * sinFactor + (y2 - centerY) * cosFactor;
             coordX = Math.round(coordX + centerX);
@@ -71221,11 +71167,11 @@ var roundConfig = {
   backendName: "cpu",
   kernelFunc: round3
 };
-function scatterImpl(indices, updates, shape, outputSize3, sliceSize, numUpdates, sliceRank, strides, defaultValue, sumDupeIndices) {
-  const flattenShape = [outputSize3 / sliceSize, sliceSize];
+function scatterImpl(indices, updates, shape, outputSize2, sliceSize, numUpdates, sliceRank, strides, defaultValue, sumDupeIndices) {
+  const flattenShape = [outputSize2 / sliceSize, sliceSize];
   const indicesData = indices.values;
   const updatesData = updates.values;
-  if (outputSize3 === 0) {
+  if (outputSize2 === 0) {
     return buffer(shape, updates.dtype);
   }
   const outBuf = buffer(flattenShape, updates.dtype);
@@ -71238,7 +71184,7 @@ function scatterImpl(indices, updates, shape, outputSize3, sliceSize, numUpdates
       index.push(dim);
       flattenIndex += dim * strides[j2];
     }
-    if (flattenIndex < 0 || flattenIndex >= outputSize3 / sliceSize) {
+    if (flattenIndex < 0 || flattenIndex >= outputSize2 / sliceSize) {
       throw new Error(`Invalid indices: ${index} does not index into ${shape}`);
     }
     for (let k3 = 0; k3 < sliceSize; k3++) {
@@ -71255,11 +71201,11 @@ function scatterNd(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { indices, updates } = inputs;
   const { shape } = attrs;
-  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize3 } = backend_util_exports.calculateShapes(updates, indices, shape);
+  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(updates, indices, shape);
   const sumDupeIndices = true;
   const indicesBuf = backend22.bufferSync(indices);
   const updatesBuf = backend22.bufferSync(updates);
-  const outBuf = scatterImpl(indicesBuf, updatesBuf, shape, outputSize3, sliceSize, numUpdates, sliceRank, strides, 0, sumDupeIndices);
+  const outBuf = scatterImpl(indicesBuf, updatesBuf, shape, outputSize2, sliceSize, numUpdates, sliceRank, strides, 0, sumDupeIndices);
   return backend22.makeTensorInfo(shape, outBuf.dtype, outBuf.values);
 }
 var scatterNdConfig = {
@@ -71361,7 +71307,7 @@ function spaceToBatchND2(args) {
   const { x: x2 } = inputs;
   const { blockShape, paddings } = attrs;
   assertNotComplex([x2], "spaceToBatchND");
-  const prod5 = util_exports.sizeFromShape(blockShape);
+  const prod6 = util_exports.sizeFromShape(blockShape);
   const completePaddings = [[0, 0]];
   completePaddings.push(...paddings);
   for (let i2 = 1 + blockShape.length; i2 < x2.shape.length; ++i2) {
@@ -71372,9 +71318,9 @@ function spaceToBatchND2(args) {
     backend: backend22,
     attrs: { paddings: completePaddings, constantValue: 0 }
   });
-  const reshapedPaddedShape = backend_util_exports.getReshaped(paddedX.shape, blockShape, prod5, false);
+  const reshapedPaddedShape = backend_util_exports.getReshaped(paddedX.shape, blockShape, prod6, false);
   const permutedReshapedPaddedPermutation = backend_util_exports.getPermuted(reshapedPaddedShape.length, blockShape.length, false);
-  const flattenShape = backend_util_exports.getReshapedPermuted(paddedX.shape, blockShape, prod5, false);
+  const flattenShape = backend_util_exports.getReshapedPermuted(paddedX.shape, blockShape, prod6, false);
   const reshapeInputs = { x: paddedX };
   const reshapeAttrs = { shape: reshapedPaddedShape };
   const paddedXReshaped = reshape3({ inputs: reshapeInputs, backend: backend22, attrs: reshapeAttrs });
@@ -71512,12 +71458,12 @@ function sparseToDense2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { sparseIndices, sparseValues, defaultValue } = inputs;
   const { outputShape } = attrs;
-  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize3 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
+  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
   const sumDupeIndices = false;
   const indicesBuf = backend22.bufferSync(sparseIndices);
   const updatesBuf = backend22.bufferSync(sparseValues);
   const $defaultValue = backend22.data.get(defaultValue.dataId).values[0];
-  const outBuf = scatterImpl(indicesBuf, updatesBuf, outputShape, outputSize3, sliceSize, numUpdates, sliceRank, strides, $defaultValue, sumDupeIndices);
+  const outBuf = scatterImpl(indicesBuf, updatesBuf, outputShape, outputSize2, sliceSize, numUpdates, sliceRank, strides, $defaultValue, sumDupeIndices);
   return backend22.makeTensorInfo(outputShape, outBuf.dtype, outBuf.values);
 }
 var sparseToDenseConfig = {
@@ -71638,10 +71584,10 @@ function stringSplit2(args) {
   const $input = backend22.data.get(input2.dataId).values;
   const $delimiter = backend22.data.get(delimiter.dataId).values[0];
   const [indices, values, shape] = stringSplitImpl($input, $delimiter, skipEmpty);
-  const outputSize3 = values.length;
+  const outputSize2 = values.length;
   return [
-    backend22.makeTensorInfo([outputSize3, 2], "int32", indices),
-    backend22.makeTensorInfo([outputSize3], "string", values),
+    backend22.makeTensorInfo([outputSize2, 2], "int32", indices),
+    backend22.makeTensorInfo([outputSize2], "string", values),
     backend22.makeTensorInfo([2], "int32", new Int32Array(shape))
   ];
 }
@@ -71727,17 +71673,17 @@ function transform2(args) {
   const imageVals = backend22.data.get(image32.dataId).values;
   const transformVals = backend22.data.get(transforms.dataId).values;
   for (let b2 = 0; b2 < batch; ++b2) {
-    const transform5 = transforms.shape[0] === 1 ? transformVals : transformVals.subarray(b2 * 8, b2 * 8 + 8);
+    const transform6 = transforms.shape[0] === 1 ? transformVals : transformVals.subarray(b2 * 8, b2 * 8 + 8);
     for (let outY = 0; outY < outHeight; ++outY) {
       for (let outX = 0; outX < outWidth; ++outX) {
         for (let channel = 0; channel < numChannels; ++channel) {
           let val;
-          const projection = transform5[6] * outX + transform5[7] * outY + 1;
+          const projection = transform6[6] * outX + transform6[7] * outY + 1;
           if (projection === 0) {
             continue;
           }
-          const inX = (transform5[0] * outX + transform5[1] * outY + transform5[2]) / projection;
-          const inY = (transform5[3] * outX + transform5[4] * outY + transform5[5]) / projection;
+          const inX = (transform6[0] * outX + transform6[1] * outY + transform6[2]) / projection;
+          const inY = (transform6[3] * outX + transform6[4] * outY + transform6[5]) / projection;
           const x2 = mapCoord(inX, imageWidth, fillMode);
           const y2 = mapCoord(inY, imageHeight, fillMode);
           switch (interpolation) {
@@ -72436,8 +72382,8 @@ function validateTextureSize(width, height) {
   }
   if (width > maxTextureSize || height > maxTextureSize) {
     const requested = `[${width}x${height}]`;
-    const max6 = `[${maxTextureSize}x${maxTextureSize}]`;
-    throw new Error("Requested texture size " + requested + " greater than WebGL maximum on this browser / GPU " + max6 + ".");
+    const max7 = `[${maxTextureSize}x${maxTextureSize}]`;
+    throw new Error("Requested texture size " + requested + " greater than WebGL maximum on this browser / GPU " + max7 + ".");
   }
 }
 function createFramebuffer(gl) {
@@ -72910,19 +72856,19 @@ function getGlslDifferences() {
     defineRound
   };
 }
-function getLogicalCoordinatesFromFlatIndex(coords22, shape, index = "index") {
+function getLogicalCoordinatesFromFlatIndex(coords32, shape, index = "index") {
   const strides = util_exports.computeStrides(shape);
   return strides.map((stride, i2) => {
-    const line1 = `int ${coords22[i2]} = ${index} / ${stride}`;
-    const line2 = i2 === strides.length - 1 ? `int ${coords22[i2 + 1]} = ${index} - ${coords22[i2]} * ${stride}` : `index -= ${coords22[i2]} * ${stride}`;
+    const line1 = `int ${coords32[i2]} = ${index} / ${stride}`;
+    const line2 = i2 === strides.length - 1 ? `int ${coords32[i2 + 1]} = ${index} - ${coords32[i2]} * ${stride}` : `index -= ${coords32[i2]} * ${stride}`;
     return `${line1}; ${line2};`;
   }).join("");
 }
-function getOutputLogicalCoordinatesFromFlatIndexByUniform(coords22, shape, index = "index") {
+function getOutputLogicalCoordinatesFromFlatIndexByUniform(coords32, shape, index = "index") {
   const strides = util_exports.computeStrides(shape);
   return strides.map((_2, i2) => {
-    const line1 = `int ${coords22[i2]} = ${index} / outShapeStrides[${i2}]`;
-    const line2 = i2 === strides.length - 1 ? `int ${coords22[i2 + 1]} = ${index} - ${coords22[i2]} * outShapeStrides[${i2}]` : `index -= ${coords22[i2]} * outShapeStrides[${i2}]`;
+    const line1 = `int ${coords32[i2]} = ${index} / outShapeStrides[${i2}]`;
+    const line2 = i2 === strides.length - 1 ? `int ${coords32[i2 + 1]} = ${index} - ${coords32[i2]} * outShapeStrides[${i2}]` : `index -= ${coords32[i2]} * outShapeStrides[${i2}]`;
     return `${line1}; ${line2};`;
   }).join("");
 }
@@ -72936,12 +72882,12 @@ function symbolicallyComputeStrides(indicesArr, variableName) {
   }
   return strides;
 }
-function getLogicalCoordinatesFromFlatIndexByUniform(coords22, variableName, index = "index") {
-  const indicesArray = coords22.map((_2, i2) => i2);
+function getLogicalCoordinatesFromFlatIndexByUniform(coords32, variableName, index = "index") {
+  const indicesArray = coords32.map((_2, i2) => i2);
   const strides = symbolicallyComputeStrides(indicesArray, variableName);
   return strides.map((_2, i2) => {
-    const line1 = `int ${coords22[i2]} = ${index} / ${strides[i2]}`;
-    const line2 = i2 === strides.length - 1 ? `int ${coords22[i2 + 1]} = ${index} - ${coords22[i2]} * ${strides[i2]}` : `index -= ${coords22[i2]} * ${strides[i2]}`;
+    const line1 = `int ${coords32[i2]} = ${index} / ${strides[i2]}`;
+    const line2 = i2 === strides.length - 1 ? `int ${coords32[i2 + 1]} = ${index} - ${coords32[i2]} * ${strides[i2]}` : `index -= ${coords32[i2]} * ${strides[i2]}`;
     return `${line1}; ${line2};`;
   }).join("");
 }
@@ -73198,7 +73144,7 @@ function getFloatTextureSetRGBASnippet(glsl) {
   `;
 }
 function getShaderPrefix(glsl) {
-  const SHADER_PREFIX = `${glsl.version}
+  const SHADER_PREFIX2 = `${glsl.version}
     precision highp float;
     precision highp int;
     precision highp sampler2D;
@@ -73257,7 +73203,7 @@ function getShaderPrefix(glsl) {
     ${SAMPLE_2D_SNIPPET}
     ${SAMPLE_3D_SNIPPET}
   `;
-  return SHADER_PREFIX;
+  return SHADER_PREFIX2;
 }
 var SAMPLE_1D_SNIPPET = `
 vec2 uvFromFlat(int texNumR, int texNumC, int index) {
@@ -73499,14 +73445,14 @@ function getOutputPackedNDCoords(shape, texShape, enableShapeUniforms) {
   const texelsInBatch = texelsInLogicalRow * Math.ceil(shape[shape.length - 2] / 2);
   let texelsInBatchN = texelsInBatch;
   let batches = ``;
-  let coords22 = "b, r, c";
+  let coords32 = "b, r, c";
   for (let b2 = 2; b2 < shape.length - 1; b2++) {
     texelsInBatchN *= shape[shape.length - b2 - 1];
     batches = `
       int b${b2} = index / ${texelsInBatchN};
       index -= b${b2} * ${texelsInBatchN};
     ` + batches;
-    coords22 = `b${b2}, ` + coords22;
+    coords32 = `b${b2}, ` + coords32;
   }
   return `
     ivec${shape.length} getOutputCoords() {
@@ -73522,7 +73468,7 @@ function getOutputPackedNDCoords(shape, texShape, enableShapeUniforms) {
       int r = 2 * (index / ${texelsInLogicalRow});
       int c = imod(index, ${texelsInLogicalRow}) * 2;
 
-      return ivec${shape.length}(${coords22});
+      return ivec${shape.length}(${coords32});
     }
   `;
 }
@@ -75637,14 +75583,14 @@ function getSourceCoords(rank, dims) {
   if (rank === 1) {
     return "rc";
   }
-  let coords22 = "";
+  let coords32 = "";
   for (let i2 = 0; i2 < rank; i2++) {
-    coords22 += dims[i2];
+    coords32 += dims[i2];
     if (i2 < rank - 1) {
-      coords22 += ",";
+      coords32 += ",";
     }
   }
-  return coords22;
+  return coords32;
 }
 var PackProgram = class {
   constructor(outputShape) {
@@ -75682,17 +75628,17 @@ var PackProgram = class {
   }
 };
 function getSourceCoordsArr(rank, dims) {
-  const coords22 = [];
+  const coords32 = [];
   for (let row = 0; row <= 1; row++) {
     for (let col = 0; col <= 1; col++) {
       let coord = `${row === 0 ? "r" : "rp1"}, ${col === 0 ? "c" : "cp1"}`;
       for (let d2 = 2; d2 < rank; d2++) {
         coord = `${dims[dims.length - 1 - d2]},` + coord;
       }
-      coords22.push(coord);
+      coords32.push(coord);
     }
   }
-  return coords22;
+  return coords32;
 }
 function getOutOfBoundsCondition(rank, shape, dims) {
   if (rank === 1) {
@@ -76080,13 +76026,13 @@ var UnpackProgram = class {
     const dtype = getCoordsDataType(rank);
     const sourceCoords = getSourceCoords(rank, channels);
     const innerDims = channels.slice(-2);
-    const coords22 = rank <= 1 ? "rc" : `vec2(${innerDims.join(",")})`;
+    const coords32 = rank <= 1 ? "rc" : `vec2(${innerDims.join(",")})`;
     this.userCode = `
       void main() {
         ${dtype} rc = getOutputCoords();
         vec4 packedInput = getA(${sourceCoords});
 
-        setOutput(getChannel(packedInput, ${coords22}));
+        setOutput(getChannel(packedInput, ${coords32}));
       }
     `;
   }
@@ -76190,8 +76136,8 @@ var MathBackendWebGL = class extends KernelBackend {
   }
   readSync(dataId) {
     const texData = this.texData.get(dataId);
-    const { values, dtype, complexTensorInfos, slice: slice5, shape, isPacked } = texData;
-    if (slice5 != null) {
+    const { values, dtype, complexTensorInfos, slice: slice6, shape, isPacked } = texData;
+    if (slice6 != null) {
       let program;
       if (isPacked) {
         program = new UnaryOpPackedProgram(shape, CLONE);
@@ -76233,8 +76179,8 @@ var MathBackendWebGL = class extends KernelBackend {
       return new Promise((resolve) => subscribers2.push(resolve));
     }
     const texData = this.texData.get(dataId);
-    const { values, shape, slice: slice5, dtype, complexTensorInfos, isPacked } = texData;
-    if (slice5 != null) {
+    const { values, shape, slice: slice6, dtype, complexTensorInfos, isPacked } = texData;
+    if (slice6 != null) {
       let program;
       if (isPacked) {
         program = new UnaryOpPackedProgram(shape, CLONE);
@@ -76442,8 +76388,8 @@ var MathBackendWebGL = class extends KernelBackend {
     return true;
   }
   releaseGPUData(dataId) {
-    const { texture, dtype, texShape, usage, isPacked, slice: slice5 } = this.texData.get(dataId);
-    const key = slice5 && slice5.origDataId || dataId;
+    const { texture, dtype, texShape, usage, isPacked, slice: slice6 } = this.texData.get(dataId);
+    const key = slice6 && slice6.origDataId || dataId;
     const refCount = this.dataRefCount.get(key);
     if (refCount > 1) {
       this.dataRefCount.set(key, refCount - 1);
@@ -76913,12 +76859,12 @@ var identityConfig2 = {
 };
 function complex3(args) {
   const { inputs, backend: backend22 } = args;
-  const { real: real4, imag: imag4 } = inputs;
-  const complexInfo = backend22.makeTensorInfo(real4.shape, "complex64");
-  const complex4 = backend22.texData.get(complexInfo.dataId);
-  const realTensorInfo = identity3({ inputs: { x: real4 }, backend: backend22 });
-  const imagTensorInfo = identity3({ inputs: { x: imag4 }, backend: backend22 });
-  complex4.complexTensorInfos = { real: realTensorInfo, imag: imagTensorInfo };
+  const { real: real5, imag: imag5 } = inputs;
+  const complexInfo = backend22.makeTensorInfo(real5.shape, "complex64");
+  const complex5 = backend22.texData.get(complexInfo.dataId);
+  const realTensorInfo = identity3({ inputs: { x: real5 }, backend: backend22 });
+  const imagTensorInfo = identity3({ inputs: { x: imag5 }, backend: backend22 });
+  complex5.complexTensorInfos = { real: realTensorInfo, imag: imagTensorInfo };
   return complexInfo;
 }
 var complexConfig2 = {
@@ -77000,7 +76946,7 @@ function binaryKernelFunc2({ opSnippet, packedOpSnippet, checkOutOfBounds = fals
     if (supportsComplex && a6.dtype === "complex64") {
       const aData = webglBackend.texData.get(a6.dataId);
       const bData = webglBackend.texData.get(b2.dataId);
-      const [real4, imag4] = [
+      const [real5, imag5] = [
         [aData.complexTensorInfos.real, bData.complexTensorInfos.real],
         [aData.complexTensorInfos.imag, bData.complexTensorInfos.imag]
       ].map((complexParts) => {
@@ -77018,9 +76964,9 @@ function binaryKernelFunc2({ opSnippet, packedOpSnippet, checkOutOfBounds = fals
         const program2 = new BinaryOpProgram(opSnippet, a6.shape, b2.shape);
         return webglBackend.runWebGLProgram(program2, [aHandle, bHandle], upcastType(aPart.dtype, bPart.dtype));
       });
-      const complexOutput = complex3({ inputs: { real: real4, imag: imag4 }, backend: webglBackend });
-      webglBackend.disposeIntermediateTensorInfo(real4);
-      webglBackend.disposeIntermediateTensorInfo(imag4);
+      const complexOutput = complex3({ inputs: { real: real5, imag: imag5 }, backend: webglBackend });
+      webglBackend.disposeIntermediateTensorInfo(real5);
+      webglBackend.disposeIntermediateTensorInfo(imag5);
       return complexOutput;
     }
     const $dtype = dtype || upcastType(a6.dtype, b2.dtype);
@@ -78044,32 +77990,32 @@ var ArgMinMaxPackedProgram = class {
     const outShape = this.outputShape;
     const rank = outShape.length;
     const dtype = getCoordsDataType(rank);
-    const coords22 = getChannels("coords", rank);
+    const coords32 = getChannels("coords", rank);
     let sourceLocSetup;
     let sourceRank;
     if (outSize === 1) {
       sourceRank = rank + 1;
       const sourceLocDType = getCoordsDataType(sourceRank);
       sourceLocSetup = `
-        ${sourceLocDType} sourceLocR = ${sourceLocDType}(${coords22.join()}, 0);
-        ++${coords22[rank - 1]};
-        ${sourceLocDType} sourceLocG = ${sourceLocDType}(${coords22.join()}, 0);
-        ++${coords22[rank - 2]};
-        ${sourceLocDType} sourceLocA = ${sourceLocDType}(${coords22.join()}, 0);
-        --${coords22[rank - 1]};
-        ${sourceLocDType} sourceLocB = ${sourceLocDType}(${coords22.join()}, 0);
-        --${coords22[rank - 2]};`;
+        ${sourceLocDType} sourceLocR = ${sourceLocDType}(${coords32.join()}, 0);
+        ++${coords32[rank - 1]};
+        ${sourceLocDType} sourceLocG = ${sourceLocDType}(${coords32.join()}, 0);
+        ++${coords32[rank - 2]};
+        ${sourceLocDType} sourceLocA = ${sourceLocDType}(${coords32.join()}, 0);
+        --${coords32[rank - 1]};
+        ${sourceLocDType} sourceLocB = ${sourceLocDType}(${coords32.join()}, 0);
+        --${coords32[rank - 2]};`;
     } else {
       sourceRank = rank;
       sourceLocSetup = `
         ${dtype} sourceLocR = coords;
-        ++${coords22[rank - 1]};
+        ++${coords32[rank - 1]};
         ${dtype} sourceLocG = coords;
-        ++${coords22[rank - 2]};
+        ++${coords32[rank - 2]};
         ${dtype} sourceLocA = coords;
-        --${coords22[rank - 1]};
+        --${coords32[rank - 1]};
         ${dtype} sourceLocB = coords;
-        --${coords22[rank - 2]};`;
+        --${coords32[rank - 2]};`;
     }
     const channels = ["x", "y", "z", "w", "u", "v"].slice(0, sourceRank);
     const inChannel = "." + channels[sourceRank - 1];
@@ -78102,8 +78048,8 @@ var ArgMinMaxPackedProgram = class {
       ${getBestIndicesAChannelSnippet}
       void main() {
         ${dtype} coords = getOutputCoords();
-        bool hasNextCol = ${coords22[rank - 1]} < ${outShape[rank - 1] - 1};
-        bool hasNextRow = ${coords22[rank - 2]} < ${outShape[rank - 2] - 1};
+        bool hasNextCol = ${coords32[rank - 1]} < ${outShape[rank - 1] - 1};
+        bool hasNextRow = ${coords32[rank - 2]} < ${outShape[rank - 2] - 1};
         ${sourceLocSetup}
         ivec4 srcIdx = ivec4(sourceLocR${inChannel}, sourceLocG${inChannel},
           sourceLocB${inChannel}, sourceLocA${inChannel}) * ${windowSize};
@@ -78955,15 +78901,15 @@ var BatchNormPackedProgram = class {
   }
 };
 var batchNorm3 = ({ inputs, backend: backend22, attrs }) => {
-  const { x: x2, mean: mean4, variance, offset, scale: scale22 } = inputs;
-  util_exports.assert(mean4.shape.length === variance.shape.length, () => "Batch normalization gradient requires mean and variance to have equal ranks.");
-  util_exports.assert(offset == null || mean4.shape.length === offset.shape.length, () => "Batch normalization gradient requires mean and offset to have equal ranks.");
-  util_exports.assert(scale22 == null || mean4.shape.length === scale22.shape.length, () => "Batch normalization gradient requires mean and scale to have equal ranks.");
+  const { x: x2, mean: mean5, variance, offset, scale: scale22 } = inputs;
+  util_exports.assert(mean5.shape.length === variance.shape.length, () => "Batch normalization gradient requires mean and variance to have equal ranks.");
+  util_exports.assert(offset == null || mean5.shape.length === offset.shape.length, () => "Batch normalization gradient requires mean and offset to have equal ranks.");
+  util_exports.assert(scale22 == null || mean5.shape.length === scale22.shape.length, () => "Batch normalization gradient requires mean and scale to have equal ranks.");
   let { varianceEpsilon } = attrs;
   if (varianceEpsilon == null) {
     varianceEpsilon = 1e-3;
   }
-  const finalInputs = [x2, mean4, variance];
+  const finalInputs = [x2, mean5, variance];
   let offsetShape = null;
   if (offset != null) {
     offsetShape = offset.shape;
@@ -78974,7 +78920,7 @@ var batchNorm3 = ({ inputs, backend: backend22, attrs }) => {
     scaleShape = scale22.shape;
     finalInputs.push(scale22);
   }
-  const program = env().getBool("WEBGL_PACK_NORMALIZATION") ? new BatchNormPackedProgram(x2.shape, mean4.shape, variance.shape, offsetShape, scaleShape, varianceEpsilon) : new BatchNormProgram(x2.shape, mean4.shape, variance.shape, offsetShape, scaleShape, varianceEpsilon);
+  const program = env().getBool("WEBGL_PACK_NORMALIZATION") ? new BatchNormPackedProgram(x2.shape, mean5.shape, variance.shape, offsetShape, scaleShape, varianceEpsilon) : new BatchNormProgram(x2.shape, mean5.shape, variance.shape, offsetShape, scaleShape, varianceEpsilon);
   const output = backend22.runWebGLProgram(program, finalInputs, finalInputs[0].dtype);
   return output;
 };
@@ -79027,31 +78973,31 @@ var SlicePackedProgram = class {
     this.rank = destSize.length;
     this.customUniforms = [{ name: "start", arrayIndex: this.rank, type: "int" }];
     const dtype = getCoordsDataType(this.rank);
-    const coords22 = getChannels("coords", this.rank);
+    const coords32 = getChannels("coords", this.rank);
     const sourceLoc = getChannels("sourceLoc", this.rank);
     const innerDims = this.rank === 1 ? "sourceLoc" : `vec2(${sourceLoc.slice(-2).join()})`;
     const getChannel = `getChannel(getSource(${sourceLoc.join()}), ${innerDims})`;
     const upperRow = `
       result.x = ${getChannel};
-      if (++${coords22[this.rank - 1]} < ${destSize[this.rank - 1]}) {
+      if (++${coords32[this.rank - 1]} < ${destSize[this.rank - 1]}) {
         ++${sourceLoc[this.rank - 1]};
         result.y = ${getChannel};
         --${sourceLoc[this.rank - 1]};
       }
     `;
     const lowerRow = this.rank === 1 ? "" : `
-      --${coords22[this.rank - 1]};
-      if (++${coords22[this.rank - 2]} < ${destSize[this.rank - 2]}) {
+      --${coords32[this.rank - 1]};
+      if (++${coords32[this.rank - 2]} < ${destSize[this.rank - 2]}) {
         ++${sourceLoc[this.rank - 2]};
         result.z = ${getChannel};
-        if (++${coords22[this.rank - 1]} < ${destSize[this.rank - 1]}) {
+        if (++${coords32[this.rank - 1]} < ${destSize[this.rank - 1]}) {
           ++${sourceLoc[this.rank - 1]};
           result.w = ${getChannel};
         }
       }
     `;
     const sourceLocSetup = this.rank <= 4 ? `sourceLoc = coords +
-            ${dtype}(${destSize.map((_2, i2) => `start[${i2}]`).join()});` : destSize.map((_2, i2) => `${sourceLoc[i2]} = ${coords22[i2]} + start[${i2}];`).join("\n");
+            ${dtype}(${destSize.map((_2, i2) => `start[${i2}]`).join()});` : destSize.map((_2, i2) => `${sourceLoc[i2]} = ${coords32[i2]} + start[${i2}];`).join("\n");
     this.userCode = `
       void main() {
         ${dtype} coords = getOutputCoords();
@@ -79119,10 +79065,10 @@ var batchToSpaceND3 = (args) => {
   const { x: x2 } = inputs;
   const { blockShape, crops } = attrs;
   util_exports.assert(x2.shape.length <= 4, () => "batchToSpaceND for rank > 4 with a WebGL backend not implemented yet");
-  const prod5 = blockShape.reduce((a6, b2) => a6 * b2);
-  const reshaped = backend_util_exports.getReshaped(x2.shape, blockShape, prod5);
+  const prod6 = blockShape.reduce((a6, b2) => a6 * b2);
+  const reshaped = backend_util_exports.getReshaped(x2.shape, blockShape, prod6);
   const permuted = backend_util_exports.getPermuted(reshaped.length, blockShape.length);
-  const reshapedPermuted = backend_util_exports.getReshapedPermuted(x2.shape, blockShape, prod5);
+  const reshapedPermuted = backend_util_exports.getReshapedPermuted(x2.shape, blockShape, prod6);
   const sliceBeginCoords = backend_util_exports.getSliceBeginCoords(crops, blockShape.length);
   const sliceSize = backend_util_exports.getSliceSize(reshapedPermuted, crops, blockShape.length);
   const toDispose = [];
@@ -79381,7 +79327,7 @@ var ConcatPackedProgram = class {
     const shape = this.outputShape;
     const rank = shape.length;
     const dtype = getCoordsDataType(rank);
-    const coords22 = getChannels("coords", rank);
+    const coords32 = getChannels("coords", rank);
     const channels = ["x", "y", "z", "w", "u", "v"].slice(0, rank);
     this.variableNames = shapes.map((_2, i2) => `T${i2}`);
     const offsets = new Array(shapes.length - 1);
@@ -79418,22 +79364,22 @@ var ConcatPackedProgram = class {
 
       void main() {
         ${dtype} coords = getOutputCoords();
-        vec4 result = vec4(getValue(${coords22}), 0., 0., 0.);
+        vec4 result = vec4(getValue(${coords32}), 0., 0., 0.);
 
-        ${coords22[rank - 1]} = ${coords22[rank - 1]} + 1;
-        if (${coords22[rank - 1]} < ${shape[rank - 1]}) {
-          result.g = getValue(${coords22});
+        ${coords32[rank - 1]} = ${coords32[rank - 1]} + 1;
+        if (${coords32[rank - 1]} < ${shape[rank - 1]}) {
+          result.g = getValue(${coords32});
         }
 
-        ${coords22[rank - 2]} = ${coords22[rank - 2]} + 1;
-        if (${coords22[rank - 2]} < ${shape[rank - 2]}) {
-          result.a = getValue(${coords22});
+        ${coords32[rank - 2]} = ${coords32[rank - 2]} + 1;
+        if (${coords32[rank - 2]} < ${shape[rank - 2]}) {
+          result.a = getValue(${coords32});
         }
 
-        ${coords22[rank - 1]} = ${coords22[rank - 1]} - 1;
-        if (${coords22[rank - 2]} < ${shape[rank - 2]} &&
-            ${coords22[rank - 1]} < ${shape[rank - 1]}) {
-          result.b = getValue(${coords22});
+        ${coords32[rank - 1]} = ${coords32[rank - 1]} - 1;
+        if (${coords32[rank - 2]} < ${shape[rank - 2]} &&
+            ${coords32[rank - 1]} < ${shape[rank - 1]}) {
+          result.b = getValue(${coords32});
         }
         setOutput(result);
       }
@@ -82963,9 +82909,9 @@ var MirrorPadPackedProgram = class {
     const dtype = getCoordsDataType(rank);
     const start = paddings.map((p22) => p22[0]).join(",");
     const end = paddings.map((p22, i2) => p22[0] + xShape[i2]).join(",");
-    const coords22 = getChannels("rc", rank);
+    const coords32 = getChannels("rc", rank);
     const source = getChannels("source", rank);
-    const cLimit = `${coords22[rank - 1]} < ${this.outputShape[rank - 1]}`;
+    const cLimit = `${coords32[rank - 1]} < ${this.outputShape[rank - 1]}`;
     const innerDims = rank === 1 ? "source" : `vec2(${source.slice(-2).join()})`;
     const offset = mode === "reflect" ? 0 : 1;
     let mainLoop = "";
@@ -82983,7 +82929,7 @@ var MirrorPadPackedProgram = class {
         ${dtype} rc = outputLoc;
         ${padSetup}
         result[0] = getChannel(getX(${source.join()}), ${innerDims});
-        ${coords22[rank - 1]} += 1;
+        ${coords32[rank - 1]} += 1;
         if(${cLimit}) {
           ${padSetup}
           result[1] = getChannel(getX(${source.join()}), ${innerDims});
@@ -83004,17 +82950,17 @@ var MirrorPadPackedProgram = class {
         ${dtype} rc = outputLoc;
         ${padSetup}
         result[0] = getChannel(getX(${source.join()}), ${innerDims});
-        ${coords22[rank - 1]} += 1;
+        ${coords32[rank - 1]} += 1;
         if(${cLimit}) {
           ${padSetup}
           result[1] = getChannel(getX(${source.join()}), ${innerDims});
         }
         rc = outputLoc;
-        ${coords22[rank - 2]} += 1;
-        if(${coords22[rank - 2]} < ${this.outputShape[rank - 2]}) {
+        ${coords32[rank - 2]} += 1;
+        if(${coords32[rank - 2]} < ${this.outputShape[rank - 2]}) {
           ${padSetup}
           result[2] = getChannel(getX(${source.join()}), ${innerDims});
-          ${coords22[rank - 1]} += 1;
+          ${coords32[rank - 1]} += 1;
           if(${cLimit}) {
             ${padSetup}
             result[3] = getChannel(getX(${source.join()}), ${innerDims});
@@ -83432,20 +83378,20 @@ var PadPackedProgram = class {
     const dtype = getCoordsDataType(rank);
     const start = paddings.map((p22) => p22[0]).join(",");
     const end = paddings.map((p22, i2) => p22[0] + xShape[i2]).join(",");
-    const coords22 = getChannels("rc", rank);
+    const coords32 = getChannels("rc", rank);
     const source = getChannels("source", rank);
-    const cLimit = `${coords22[rank - 1]} < ${this.outputShape[rank - 1]}`;
+    const cLimit = `${coords32[rank - 1]} < ${this.outputShape[rank - 1]}`;
     const innerDims = rank === 1 ? "source" : `vec2(${source.slice(-2).join()})`;
     const componentSetup = [
       `${dtype} rc = outputLoc;`,
-      `${coords22[rank - 1]} += 1;
+      `${coords32[rank - 1]} += 1;
        if(${cLimit}) {
       `,
       rank === 1 ? "" : `}
        rc = outputLoc;
-       ${coords22[rank - 2]} += 1;
-       if(${coords22[rank - 2]} < ${this.outputShape[rank - 2]}) {`,
-      rank === 1 ? "" : `  ${coords22[rank - 1]} += 1;
+       ${coords32[rank - 2]} += 1;
+       if(${coords32[rank - 2]} < ${this.outputShape[rank - 2]}) {`,
+      rank === 1 ? "" : `  ${coords32[rank - 1]} += 1;
          if(${cLimit}) {`
     ];
     const paddingArea = rank === 1 ? "rc < start || rc >= end" : "any(lessThan(rc, start)) || any(greaterThanEqual(rc, end))";
@@ -84405,9 +84351,9 @@ function scatterNd2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { indices, updates } = inputs;
   const { shape } = attrs;
-  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize3 } = backend_util_exports.calculateShapes(updates, indices, shape);
-  const flattenShape = [outputSize3 / sliceSize, sliceSize];
-  if (outputSize3 === 0) {
+  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(updates, indices, shape);
+  const flattenShape = [outputSize2 / sliceSize, sliceSize];
+  if (outputSize2 === 0) {
     return backend22.makeTensorInfo(shape, indices.dtype);
   }
   const flattenIndices = reshape4({ inputs: { x: indices }, backend: backend22, attrs: { shape: [numUpdates, sliceRank] } });
@@ -84562,7 +84508,7 @@ var spaceToBatchND3 = (args) => {
   const { x: x2 } = inputs;
   const { blockShape, paddings } = attrs;
   util_exports.assert(x2.shape.length <= 4, () => "spaceToBatchND for rank > 4 with a WebGL backend not implemented yet");
-  const prod5 = blockShape.reduce((a6, b2) => a6 * b2);
+  const prod6 = blockShape.reduce((a6, b2) => a6 * b2);
   const completePaddings = [[0, 0]];
   completePaddings.push(...paddings);
   for (let i2 = 1 + blockShape.length; i2 < x2.shape.length; ++i2) {
@@ -84574,9 +84520,9 @@ var spaceToBatchND3 = (args) => {
     backend: backend22,
     attrs: { paddings: completePaddings, constantValue: 0 }
   });
-  const reshapedPaddedShape = backend_util_exports.getReshaped(paddedX.shape, blockShape, prod5, false);
+  const reshapedPaddedShape = backend_util_exports.getReshaped(paddedX.shape, blockShape, prod6, false);
   const permutedReshapedPaddedPermutation = backend_util_exports.getPermuted(reshapedPaddedShape.length, blockShape.length, false);
-  const flattenShape = backend_util_exports.getReshapedPermuted(paddedX.shape, blockShape, prod5, false);
+  const flattenShape = backend_util_exports.getReshapedPermuted(paddedX.shape, blockShape, prod6, false);
   const reshapedPaddedX = reshape4({ inputs: { x: paddedX }, backend: backend22, attrs: { shape: reshapedPaddedShape } });
   const paddedXT = transpose3({
     inputs: { x: reshapedPaddedX },
@@ -84711,9 +84657,9 @@ function sparseToDense3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { sparseIndices, sparseValues, defaultValue } = inputs;
   const { outputShape } = attrs;
-  const { sliceRank, numUpdates, strides, outputSize: outputSize3 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
+  const { sliceRank, numUpdates, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
   const sumDupeIndices = false;
-  const program = new ScatterProgram(numUpdates, sliceRank, sparseIndices.shape.length, sparseValues.shape.length, strides, [outputSize3, 1], sumDupeIndices);
+  const program = new ScatterProgram(numUpdates, sliceRank, sparseIndices.shape.length, sparseValues.shape.length, strides, [outputSize2, 1], sumDupeIndices);
   const res2 = backend22.runWebGLProgram(program, [sparseValues, sparseIndices, defaultValue], sparseValues.dtype);
   const reshaped = reshape4({ inputs: { x: res2 }, backend: backend22, attrs: { shape: outputShape } });
   backend22.disposeIntermediateTensorInfo(res2);
@@ -84877,10 +84823,10 @@ function stringSplit3(args) {
   const $input = backend22.readSync(input2.dataId);
   const $delimiter = backend22.readSync(delimiter.dataId)[0];
   const [indices, values, shape] = stringSplitImplCPU($input, $delimiter, skipEmpty);
-  const outputSize3 = values.length;
+  const outputSize2 = values.length;
   return [
-    backend22.makeTensorInfo([outputSize3, 2], "int32", indices),
-    backend22.makeTensorInfo([outputSize3], "string", values),
+    backend22.makeTensorInfo([outputSize2, 2], "int32", indices),
+    backend22.makeTensorInfo([outputSize2], "string", values),
     backend22.makeTensorInfo([2], "int32", new Int32Array(shape))
   ];
 }
@@ -86373,10 +86319,10 @@ function batchToSpaceND4(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
   const { blockShape, crops } = attrs;
-  const prod5 = blockShape.reduce((a6, b2) => a6 * b2);
-  const reshaped = backend_util_exports.getReshaped(x2.shape, blockShape, prod5);
+  const prod6 = blockShape.reduce((a6, b2) => a6 * b2);
+  const reshaped = backend_util_exports.getReshaped(x2.shape, blockShape, prod6);
   const permuted = backend_util_exports.getPermuted(reshaped.length, blockShape.length);
-  const reshapedPermuted = backend_util_exports.getReshapedPermuted(x2.shape, blockShape, prod5);
+  const reshapedPermuted = backend_util_exports.getReshapedPermuted(x2.shape, blockShape, prod6);
   const sliceBeginCoords = backend_util_exports.getSliceBeginCoords(crops, blockShape.length);
   const sliceSize = backend_util_exports.getSliceSize(reshapedPermuted, crops, blockShape.length);
   const xReshaped = reshape5({ inputs: { x: x2 }, backend: backend22, attrs: { shape: reshaped } });
@@ -86893,9 +86839,9 @@ function setup16(backend22) {
 function fusedBatchNorm(args) {
   const { backend: backend22, inputs, attrs } = args;
   const { varianceEpsilon } = attrs;
-  const { x: x2, mean: mean4, variance, offset, scale: scale22 } = inputs;
+  const { x: x2, mean: mean5, variance, offset, scale: scale22 } = inputs;
   const xId = backend22.dataIdMap.get(x2.dataId).id;
-  const meanId = backend22.dataIdMap.get(mean4.dataId).id;
+  const meanId = backend22.dataIdMap.get(mean5.dataId).id;
   const varianceId = backend22.dataIdMap.get(variance.dataId).id;
   const offsetId = offset != null ? backend22.dataIdMap.get(offset.dataId).id : 0;
   const scaleId = scale22 != null ? backend22.dataIdMap.get(scale22.dataId).id : 0;
@@ -87892,14 +87838,14 @@ function scatterNd3(args) {
   if (util_exports.sizeFromShape(shape) === 0) {
     return out;
   }
-  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize3 } = scatter_nd_util_exports.calculateShapes(updates, indices, shape);
+  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 } = scatter_nd_util_exports.calculateShapes(updates, indices, shape);
   const indicesData = backend22.dataIdMap.get(indices.dataId);
   const indicesId = indicesData.id;
   const updatesData = backend22.dataIdMap.get(updates.dataId);
   const updatesId = updatesData.id;
   const stridesBytes = new Uint8Array(new Int32Array(strides).buffer);
   const outId = backend22.dataIdMap.get(out.dataId).id;
-  wasmScatterNd(indicesId, updatesId, CppDType[updates.dtype], sliceRank, numUpdates, sliceSize, stridesBytes, outputSize3, outId);
+  wasmScatterNd(indicesId, updatesId, CppDType[updates.dtype], sliceRank, numUpdates, sliceSize, stridesBytes, outputSize2, outId);
   return out;
 }
 var scatterNdConfig3 = {
@@ -87992,7 +87938,7 @@ function spaceToBatchND4(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
   const { blockShape, paddings } = attrs;
-  const prod5 = util_exports.sizeFromShape(blockShape);
+  const prod6 = util_exports.sizeFromShape(blockShape);
   const completePaddings = [[0, 0]];
   completePaddings.push(...paddings);
   for (let i2 = 1 + blockShape.length; i2 < x2.shape.length; ++i2) {
@@ -88003,9 +87949,9 @@ function spaceToBatchND4(args) {
     backend: backend22,
     attrs: { paddings: completePaddings, constantValue: 0 }
   });
-  const reshapedPaddedShape = backend_util_exports.getReshaped(paddedX.shape, blockShape, prod5, false);
+  const reshapedPaddedShape = backend_util_exports.getReshaped(paddedX.shape, blockShape, prod6, false);
   const permutedReshapedPaddedPermutation = backend_util_exports.getPermuted(reshapedPaddedShape.length, blockShape.length, false);
-  const flattenShape = backend_util_exports.getReshapedPermuted(paddedX.shape, blockShape, prod5, false);
+  const flattenShape = backend_util_exports.getReshapedPermuted(paddedX.shape, blockShape, prod6, false);
   const reshapeInputs = { x: paddedX };
   const reshapeAttrs = { shape: reshapedPaddedShape };
   const paddedXReshaped = reshape5({ inputs: reshapeInputs, backend: backend22, attrs: reshapeAttrs });
@@ -88828,6 +88774,7428 @@ registerBackend("wasm", async () => {
   const { wasm } = await init();
   return new BackendWasm(wasm);
 }, WASM_PRIORITY);
+var ENV5 = env();
+ENV5.registerFlag("WEBGPU_DEFERRED_SUBMIT_BATCH_SIZE", () => 15);
+ENV5.registerFlag("WEBGPU_CPU_FORWARD", () => true);
+ENV5.registerFlag("WEBGPU_MATMUL_WORK_PER_THREAD", () => 4);
+ENV5.registerFlag("WEBGPU_USE_NAIVE_CONV2D", () => false);
+ENV5.registerFlag("WEBGPU_USE_NAIVE_CONV2D_TRANSPOSE", () => false);
+ENV5.registerFlag("WEBGPU_CONV_SEPARATE_IM2COL_SHADER", () => false);
+ENV5.registerFlag("WEBGPU_USE_LOW_POWER_GPU", () => false);
+ENV5.registerFlag("WEBGPU_CPU_HANDOFF_SIZE_THRESHOLD", () => 1e3);
+ENV5.registerFlag("WEBGPU_USE_PROFILE_TOOL", () => false);
+ENV5.registerFlag("WEBGPU_USE_IMPORT", () => false);
+function symbolicallyComputeStrides2(indicesArr, variableName) {
+  if (Math.max(...indicesArr) > 3) {
+    throw new Error("Cannot symbolically compute strides for rank > 4 tensor.");
+  }
+  const numCoords = indicesArr.length;
+  const shape = indicesArr.map((d2) => `${variableName}[${d2}]`);
+  const strides = new Array(numCoords - 1);
+  strides[numCoords - 2] = shape[numCoords - 1];
+  for (let i2 = numCoords - 3; i2 >= 0; --i2) {
+    strides[i2] = `(${strides[i2 + 1]} * ${shape[i2 + 1]})`;
+  }
+  return strides;
+}
+function getCoordsDataType2(rank) {
+  if (rank <= 1) {
+    return "i32";
+  } else if (rank === 2) {
+    return `vec2<i32>`;
+  } else if (rank === 3) {
+    return `vec3<i32>`;
+  } else if (rank === 4) {
+    return `vec4<i32>`;
+  } else {
+    throw Error(`GPU for rank ${rank} is not yet supported`);
+  }
+}
+function mapToWgslTypes(type, isVec4) {
+  if (type === "float32") {
+    return isVec4 ? "vec4<f32>" : "f32";
+  } else if (type === "int32") {
+    return isVec4 ? "vec4<i32>" : "i32";
+  } else if (type === "bool") {
+    return isVec4 ? "vec4<i32>" : "i32";
+  }
+  return type;
+}
+function getGlobalIndexString() {
+  return `
+  let index = getGlobalIndex(globalId, localId);
+`;
+}
+function getMainHeaderString() {
+  return `
+  [[stage(compute), workgroup_size(workGroupSizeX, workGroupSizeY, workGroupSizeZ)]]
+  fn main([[builtin(local_invocation_id)]] localId : vec3<u32>, [[builtin(global_invocation_id)]] globalId : vec3<u32>)
+`;
+}
+function makeShader2(inputInfo, outputData, program, isFromPixel = false) {
+  const workGroupSizeSnippet = `
+    let workGroupSizeX = ${program.workGroupSize[0]}u;
+    let workGroupSizeY = ${program.workGroupSize[1]}u;
+    let workGroupSizeZ = ${program.workGroupSize[2]}u;`;
+  if (isFromPixel === true) {
+    const getCoords5 = generateGetCoordsFromFlatIndex(outputData.shape);
+    const outputBufferStr = `
+      [[block]] struct Matrix0 {
+        numbers: array<${mapToWgslTypes(outputData.dtype, program.isVec4)}>;
+      };
+      [[block]] struct Uniform {
+        size            : i32;
+        numChannels     : i32;
+        outShapeStrides : vec2<i32>;
+        dispatchSize    : vec3<u32>;
+      };
+
+      [[group(0), binding(0)]] var<storage, write> result : Matrix0;
+      [[group(0), binding(2)]] var<uniform> uniforms: Uniform;
+    `;
+    return [
+      SHADER_PREFIX,
+      outputBufferStr,
+      workGroupSizeSnippet,
+      SAMPLING_SNIPPETS,
+      getCoords5,
+      program.getUserCode()
+    ].join("\n");
+  }
+  const prefixSnippets = [];
+  let uniformDeclaration = "[[block]] struct Uniforms { NAN : f32; ";
+  program.variableNames.forEach((x2, i2) => {
+    uniformDeclaration += `${x2.charAt(0).toLowerCase() + x2.slice(1)}Shape : ${getCoordsDataType2(inputInfo[i2].shape.length)}; `;
+  });
+  uniformDeclaration += `outShape : ${getCoordsDataType2(outputData.shape.length)} ; `;
+  const stridesLength = outputData.shape.length - 1;
+  uniformDeclaration += `
+       outShapeStrides: ${getCoordsDataType2(stridesLength)}; `;
+  if (program.size != null) {
+    uniformDeclaration += "size : i32; ";
+  }
+  uniformDeclaration += "dispatchSize : vec3<u32>; ";
+  if (program.uniforms) {
+    uniformDeclaration += program.uniforms;
+  }
+  uniformDeclaration += "};";
+  prefixSnippets.push(uniformDeclaration);
+  prefixSnippets.push(`
+    [[block]] struct Matrix0 {
+        numbers: array<${mapToWgslTypes(outputData.dtype, program.isVec4)}>;
+    };
+
+    [[group(0), binding(0)]] var<storage, write> result : Matrix0;
+  `);
+  program.variableNames.forEach((x2, i2) => {
+    prefixSnippets.push(`
+    [[block]] struct Matrix${1 + i2} {
+      numbers: array<${mapToWgslTypes(inputInfo[i2].dtype, program.isVec4)}>;
+    };
+    [[group(0), binding(${1 + i2})]] var<storage, read> ${x2} : Matrix${1 + i2};
+    `);
+  });
+  if (uniformDeclaration !== "") {
+    prefixSnippets.push(`
+    [[group(0), binding(${1 + program.variableNames.length})]] var<uniform> uniforms : Uniforms;
+    `);
+  }
+  prefixSnippets.push(workGroupSizeSnippet);
+  const [getOutputCoords, dispatchLayoutRank] = generateGetOutputCoords(outputData.shape, program.dispatchLayout);
+  const getCoords4 = generateGetCoordsFromFlatIndex(outputData.shape);
+  const sources = [
+    SHADER_PREFIX,
+    prefixSnippets.join("\n"),
+    SAMPLING_SNIPPETS,
+    getCoords4,
+    getOutputCoords,
+    getSetOutputSnippet(outputData.shape, outputData.dtype, program.isVec4)
+  ];
+  if (dispatchLayoutRank === outputData.shape.length) {
+    const inputSamplingSnippet = inputInfo.map((x2) => getInputSamplingSnippet2(x2, outputData.shape, program.isVec4, program.dispatchLayout.x.length === outputData.shape.length)).join("\n");
+    sources.push(inputSamplingSnippet);
+  }
+  sources.push(program.getUserCode());
+  const source = sources.join("\n");
+  return source;
+}
+var SHADER_PREFIX = `
+  fn idiv(a: i32, b: i32, sign: f32) -> i32 {
+    var res: i32 = a / b;
+    let mod: i32 = a % b;
+    if (sign < 0. && mod != 0) {
+      res = res - 1;
+    }
+    return res;
+  }
+
+  fn isNanCustom(val : f32) -> bool {
+    if (val > 0.0) {
+      return false;
+    }
+    if (val < 0.0) {
+      return false;
+    }
+    if (val == 0.0) {
+      return false;
+    }
+    return true;
+  }
+
+  fn isNanCustomVec4F32(val : vec4<f32>) -> vec4<f32> {
+    var res = vec4<f32> (0.0);
+    for (var i = 0u; i < 4u; i = i + 1u) {
+      if (isNanCustom(val[i])) {
+        res[i] = 1.0;
+      } else {
+        res[i] = 0.0;
+      }
+    }
+    return res;
+  }
+
+  // Checks whether coordinates lie within the bounds of the shape.
+  fn coordsInBounds4D(coord : vec4<i32>, shape : vec4<i32>) -> bool {
+    return all(coord >= vec4<i32>(0)) &&
+        all(coord < shape);
+  }
+
+  fn coordsInBounds3D(coord : vec3<i32>, shape : vec3<i32>) -> bool {
+    return all(coord >= vec3<i32>(0)) &&
+        all(coord < shape);
+  }
+
+  fn coordsInBounds2D(coord : vec2<i32>, shape : vec2<i32>) -> bool {
+    return all(coord >= vec2<i32>(0)) &&
+        all(coord < shape);
+  }
+  `;
+var SAMPLING_SNIPPETS = `
+  fn getFlatIndex1D(coord : i32, shape : i32) -> i32 {
+    return coord;
+  }
+
+  fn getFlatIndex2D(coords : vec2<i32>, shape : vec2<i32>) -> i32 {
+    return i32(dot(vec2<f32>(coords), vec2<f32>(f32(shape.y), 1.0)));
+  }
+
+  fn getFlatIndex3D(coords : vec3<i32>, shape : vec3<i32>) -> i32 {
+    return i32(dot(vec3<f32>(coords), vec3<f32>(f32(shape.y) * f32(shape.z), f32(shape.z), 1.0)));
+  }
+
+  fn getFlatIndex4D(coords : vec4<i32>, shape : vec4<i32>) -> i32 {
+    return i32(dot(vec4<f32>(coords), vec4<f32>(
+        f32(shape.y) * f32(shape.z) * f32(shape.w), f32(shape.z) * f32(shape.w), f32(shape.w), 1.0)));
+  }
+
+  // Only used when the y/z dimension of workgroup size is 1.
+  fn getGlobalIndex(globalId : vec3<u32>, localId : vec3<u32>) -> i32 {
+    if (uniforms.dispatchSize.y == 1u && uniforms.dispatchSize.z == 1u) {
+      return i32(globalId.x);
+    }
+    let localInvocationIndex = localId.z * workGroupSizeX * workGroupSizeY +
+      localId.y * workGroupSizeX + localId.x;
+    let workGroupID = (globalId - localId)/vec3<u32>(
+      workGroupSizeX, workGroupSizeY, workGroupSizeZ);
+    return i32((workGroupID.z * uniforms.dispatchSize.x * uniforms.dispatchSize.y +
+      workGroupID.y * uniforms.dispatchSize.x + workGroupID.x) *
+      (workGroupSizeX * workGroupSizeY * workGroupSizeZ) +
+      localInvocationIndex);
+  }
+`;
+function getSetOutputSnippet(outShape, outBufferType, isVec4) {
+  const outRank = outShape.length;
+  const wgslType = mapToWgslTypes(outBufferType, isVec4);
+  let snippet;
+  if (isVec4) {
+    snippet = `fn setOutputFlat(flatIndex : i32, value : vec4<f32>) {
+      result.numbers[flatIndex] = ${wgslType}(value);
+    }
+    fn setOutputFlatI32(flatIndex : i32, value : vec4<i32>) {
+      result.numbers[flatIndex] = ${wgslType}(value);
+    }`;
+  } else {
+    snippet = `fn setOutputFlat(flatIndex : i32, value : f32) {
+      result.numbers[flatIndex] = ${wgslType}(value);
+    }
+    fn setOutputFlatI32(flatIndex : i32, value : i32) {
+      result.numbers[flatIndex] = ${wgslType}(value);
+    }`;
+  }
+  if (outRank >= 2) {
+    switch (outRank) {
+      case 2:
+        snippet += `
+        fn getOutputFlatIndex(coords : vec2<i32>) -> i32 {
+          return i32(dot(vec2<f32>(coords), vec2<f32>(f32(uniforms.outShapeStrides), 1.0)));
+        }
+        `;
+        break;
+      case 3:
+        snippet += `
+        fn getOutputFlatIndex(coords : vec3<i32>) -> i32 {
+          return i32(dot(vec3<f32>(coords), vec3<f32>(f32(uniforms.outShapeStrides.x), f32(uniforms.outShapeStrides.y), 1.0)));
+        }
+        `;
+        break;
+      case 4:
+        snippet += `
+        fn getOutputFlatIndex(coords : vec4<i32>) -> i32 {
+          return i32(dot(vec4<f32>(coords), vec4<f32>(
+            f32(uniforms.outShapeStrides.x), f32(uniforms.outShapeStrides.y), f32(uniforms.outShapeStrides.z), 1.0)));
+        }
+        `;
+        break;
+      default:
+        util_exports.assert(false, () => `Unsupported ${outRank}D shape`);
+        break;
+    }
+    const dims = ["d0", "d1", "d2", "d3"].slice(0, outRank);
+    const type = getCoordsDataType2(outRank);
+    if (isVec4) {
+      snippet += `
+      fn setOutput(${dims.map((d2) => `${d2} : i32`).join(", ")}, value : vec4<f32>) {
+        let flatIndex = getOutputFlatIndex(${type}(${dims.join(", ")}));
+        setOutputFlat(flatIndex / 4, value);
+      }
+      fn setOutputI32(${dims.map((d2) => `${d2} : i32`).join(", ")}, value : vec4<i32>) {
+        let flatIndex = getOutputFlatIndex(${type}(${dims.join(", ")}));
+        setOutputFlatI32(flatIndex / 4, value);
+      }
+    `;
+    } else {
+      snippet += `
+      fn setOutput(${dims.map((d2) => `${d2} : i32`).join(", ")}, value : f32) {
+        let flatIndex = getOutputFlatIndex(${type}(${dims.join(", ")}));
+        setOutputFlat(flatIndex, value);
+      }
+      fn setOutputI32(${dims.map((d2) => `${d2} : i32`).join(", ")}, value : i32) {
+        let flatIndex = getOutputFlatIndex(${type}(${dims.join(", ")}));
+        setOutputFlatI32(flatIndex, value);
+      }
+    `;
+    }
+  }
+  return snippet;
+}
+function getInputSamplingSnippet2(inInfo, outShape, isVec4, isFlatDispatchLayout) {
+  let res2 = getSamplerFromInInfo2(inInfo, isVec4);
+  const inShape = inInfo.shape;
+  if (inShape.length <= outShape.length) {
+    res2 += getSamplerAtOutputCoords2(inInfo, outShape, isVec4, isFlatDispatchLayout);
+  }
+  return res2;
+}
+function getSamplerFromInInfo2(inInfo, isVec4) {
+  const texName = inInfo.name;
+  const rank = inInfo.shape.length;
+  const type = getCoordsDataType2(rank);
+  const funcName = "get" + texName.charAt(0).toUpperCase() + texName.slice(1);
+  const dims = ["d0", "d1", "d2", "d3"].slice(0, rank);
+  const inputs = dims.map((d2) => `${d2} : i32`).join(", ");
+  if (rank < 1) {
+    if (isVec4) {
+      return `
+        fn ${funcName}() -> vec4<f32> {
+          return vec4<f32>(${texName}.numbers[0]);
+        }
+      `;
+    }
+    return `
+      fn ${funcName}() ->f32 {
+        return f32(${texName}.numbers[0]);
+      }
+    `;
+  }
+  const shapeStr = `uniforms.${texName.charAt(0).toLowerCase() + texName.slice(1)}Shape`;
+  let rankStr = `${rank}D`;
+  if (rank === 0) {
+    rankStr = "1D";
+  }
+  if (isVec4) {
+    return `
+      fn ${funcName}(${inputs}) -> vec4<f32> {
+        return vec4<f32>(${texName}.numbers[getFlatIndex${rankStr}(${type}(${dims.join(",")}),
+          ${shapeStr}) / 4]);
+      }
+      `;
+  }
+  return `
+    fn ${funcName}(${inputs}) -> f32 {
+      return f32(${texName}.numbers[getFlatIndex${rankStr}(${type}(${dims.join(",")}),
+        ${shapeStr})]);
+    }
+   `;
+}
+function getSamplerAtOutputCoords2(inInfo, outShape, isVec4, isFlatDispatchLayout) {
+  const texName = inInfo.name;
+  const texFuncSnippet = texName.charAt(0).toUpperCase() + texName.slice(1);
+  const funcName = "get" + texFuncSnippet + "AtOutCoords";
+  const inRank = inInfo.shape.length;
+  const outRank = outShape.length;
+  const type = getCoordsDataType2(outRank);
+  if (util_exports.arraysEqual(inInfo.shape, outShape) && isFlatDispatchLayout) {
+    if (isVec4) {
+      return `
+        fn ${funcName}ByGlobalId(globalId : vec3<u32>, globalIndex : i32) -> vec4<f32> {
+          return vec4<f32>(${texName}.numbers[globalIndex]);
+        }
+
+        fn ${funcName}ByCoords(coords : ${type}) -> vec4<f32> {
+          return vec4<f32>(${texName}.numbers[${outRank > 1 ? "getOutputFlatIndex(coords)" : "coords"} / 4]);
+        }
+        `;
+    } else {
+      return `
+      fn ${funcName}ByGlobalId(globalId : vec3<u32>, globalIndex : i32) -> f32 {
+        return f32(${texName}.numbers[globalIndex]);
+      }
+
+      fn ${funcName}ByCoords(coords : ${type}) -> f32 {
+        return f32(${texName}.numbers[${outRank > 1 ? "getOutputFlatIndex(coords)" : "coords"}]);
+      }
+      `;
+    }
+  }
+  const broadcastDims = backend_util_exports.getBroadcastDims(inInfo.shape, outShape);
+  const rankDiff = outRank - inRank;
+  let coordsSnippet = "";
+  if (inRank === 0) {
+    if (isVec4) {
+      return `
+      fn ${funcName}ByGlobalId(globalId : vec3<u32>, globalIndex : i32) -> vec4<f32> {
+        return get${texFuncSnippet}();
+      }
+
+      fn ${funcName}ByCoords(coords : ${type}) -> vec4<f32> {
+        return get${texFuncSnippet}();
+      }
+    `;
+    }
+    return `
+      fn ${funcName}ByGlobalId(globalId : vec3<u32>, globalIndex : i32) -> f32{
+        return get${texFuncSnippet}();
+      }
+
+      fn ${funcName}ByCoords(coords : ${type}) -> f32{
+        return get${texFuncSnippet}();
+      }
+    `;
+  } else {
+    if (outRank < 2 && broadcastDims.length >= 1) {
+      coordsSnippet = "coords = 0;";
+    } else {
+      coordsSnippet = broadcastDims.map((d2) => `coords[${d2 + rankDiff}] = 0;`).join("\n");
+    }
+  }
+  let unpackedCoordsSnippet = "";
+  if (outRank < 2 && inRank > 0) {
+    unpackedCoordsSnippet = "coords";
+  } else {
+    if (outRank > 1) {
+      const coordsType = getCoordsDataType2(inRank);
+      const coordsValues = inInfo.shape.map((s2, i2) => `coords[${i2 + rankDiff}]`).join(", ");
+      unpackedCoordsSnippet = `${coordsType}(${coordsValues})`;
+    } else {
+      unpackedCoordsSnippet = "coords";
+    }
+  }
+  const shapeStr = `uniforms.${texName.charAt(0).toLowerCase() + texName.slice(1)}Shape`;
+  const rankStr = `${inRank}D`;
+  if (isVec4) {
+    return `
+      fn ${funcName}ByGlobalId(globalId : vec3<u32>, globalIndex : i32) -> vec4<f32> {
+        var coords = getOutputCoords(globalId, globalIndex);
+        ${coordsSnippet}
+        return ${texName}.numbers[getFlatIndex${rankStr}(${unpackedCoordsSnippet}, ${shapeStr}) / 4];
+      }
+
+      fn ${funcName}ByCoords(coordsIn : ${type}) -> vec4<f32> {
+        var coords = coordsIn;
+        ${coordsSnippet}
+        return ${texName}.numbers[getFlatIndex${rankStr}(${unpackedCoordsSnippet}, ${shapeStr}) / 4];
+      }
+    `;
+  }
+  return `
+    fn ${funcName}ByGlobalId(globalId : vec3<u32>, globalIndex : i32) -> f32 {
+      var coords = getOutputCoords(globalId, globalIndex);
+      ${coordsSnippet}
+      return f32(${texName}.numbers[getFlatIndex${rankStr}(${unpackedCoordsSnippet}, ${shapeStr})]);
+    }
+
+    fn ${funcName}ByCoords(coordsIn : ${type}) -> f32 {
+      var coords = coordsIn;
+      ${coordsSnippet}
+      return f32(${texName}.numbers[getFlatIndex${rankStr}(${unpackedCoordsSnippet}, ${shapeStr})]);
+    }
+  `;
+}
+function generateGetOutputCoords(outShape, dispatchLayout) {
+  const { x: x2, y: y2 = [], z: z2 = [] } = dispatchLayout;
+  const outRank = outShape.length;
+  if (x2.length === outRank) {
+    const dtype2 = getCoordsDataType2(outRank);
+    const snippet2 = `fn getOutputCoords(globalId : vec3<u32>, globalIndex : i32) -> ${dtype2}{
+      return getCoordsFromFlatIndex(i32(globalIndex));
+    }
+    `;
+    return [snippet2, outRank];
+  }
+  let gatherDimensionsStr = "";
+  const dims = [x2, y2, z2];
+  let rank = 0;
+  for (let i2 = 0; i2 < dims.length; i2++) {
+    const arr = dims[i2];
+    if (arr.length === 0) {
+      continue;
+    }
+    rank += arr.length;
+    if (arr.length === 1) {
+      gatherDimensionsStr += `let d${arr[0]} = i32(globalId[${i2}]);`;
+    } else {
+      const strides = symbolicallyComputeStrides2(arr, "uniforms.outShape");
+      gatherDimensionsStr += `var index${i2} = i32(globalId[${i2}]);`;
+      for (let j2 = 0; j2 < strides.length; j2++) {
+        gatherDimensionsStr += `let d${arr[j2]} = index${i2} / ${strides[j2]};`;
+        if (j2 === strides.length - 1) {
+          gatherDimensionsStr += `let d${arr[j2 + 1]} = index${i2} - d${arr[j2]} * ${strides[j2]};`;
+        } else {
+          gatherDimensionsStr += `index${i2} = index${i2} - d${arr[j2]} * ${strides[j2]};`;
+        }
+      }
+    }
+  }
+  const dimensions = [];
+  for (let i2 = 0; i2 < rank; i2++) {
+    dimensions.push(`d${i2}`);
+  }
+  const dtype = getCoordsDataType2(rank);
+  let snippet = `fn getOutputCoords(globalId : vec3<u32>, globalIndex : i32) -> ${dtype} {
+    ${gatherDimensionsStr}
+  `;
+  if (dimensions.length === 0) {
+    snippet += `return ${dtype}(0); }`;
+  } else {
+    snippet += `return ${dtype}(${dimensions.join(",")}); }`;
+  }
+  return [snippet, rank];
+}
+function generateGetCoordsFromFlatIndex(shape) {
+  const rank = shape.length;
+  if (rank <= 1) {
+    return `fn getCoordsFromFlatIndex(index : i32) -> i32 { return index; }`;
+  }
+  const strides = util_exports.computeStrides(shape);
+  const dtype = getCoordsDataType2(rank);
+  const coords32 = [];
+  for (let i2 = 0; i2 < rank; i2++) {
+    coords32.push(`d${i2}`);
+  }
+  if (strides.length === 1) {
+    return `    fn getCoordsFromFlatIndex(index : i32) -> vec2<i32> {
+      let d0 = index / uniforms.outShapeStrides; let d1 = index - d0 * uniforms.outShapeStrides;
+      return vec2<i32>(d0, d1);
+    }`;
+  }
+  const snippet = "var index2 = index;" + strides.map((_2, i2) => {
+    const line1 = `let ${coords32[i2]} = index2 / uniforms.outShapeStrides[${i2}]`;
+    const line2 = i2 === strides.length - 1 ? `let ${coords32[i2 + 1]} = index2 - ${coords32[i2]} * uniforms.outShapeStrides[${i2}]` : `index2 = index2 - ${coords32[i2]} * uniforms.outShapeStrides[${i2}]`;
+    return `${line1}; ${line2};`;
+  }).join("");
+  return `
+    fn getCoordsFromFlatIndex(index : i32) -> ${dtype} {
+      ${snippet}
+      return ${dtype}(${coords32.join(",")});
+    }
+  `;
+}
+var webgpu_util_exports = {};
+__export2(webgpu_util_exports, {
+  ArrayBufferToTypedArray: () => ArrayBufferToTypedArray,
+  GPUBytesPerElement: () => GPUBytesPerElement,
+  computeDispatch: () => computeDispatch,
+  computeWorkGroupSizeForConv2d: () => computeWorkGroupSizeForConv2d,
+  computeWorkGroupSizeForMatMul: () => computeWorkGroupSizeForMatMul,
+  computeWorkPerThreadForConv2d: () => computeWorkPerThreadForConv2d,
+  flatDispatchLayout: () => flatDispatchLayout,
+  isWebGPUSupported: () => isWebGPUSupported,
+  tilesFitEvenlyIntoShape: () => tilesFitEvenlyIntoShape
+});
+var MAX_COMPUTE_PER_DIMENSION_DISPATCH_SIZE = 65535;
+var arrayProduct = (arr) => {
+  let product = 1;
+  for (let i2 = 0; i2 < arr.length; i2++) {
+    product *= arr[i2];
+  }
+  return product;
+};
+function tilesFitEvenlyIntoShape(tileSize, shape) {
+  if (tileSize.length !== shape.length) {
+    throw new Error(`Cannot compute whether rank ${tileSize.length} tiles fit evenly into rank ${shape.length} shape - ranks must match.`);
+  }
+  return shape.every((dim, dimIdx) => dim % tileSize[dimIdx] === 0);
+}
+function computeDispatch(layout, outputShape, workGroupSize = [1, 1, 1], elementsPerThread = [1, 1, 1]) {
+  const [dispatchX, dispatchY, dispatchZ] = [
+    Math.ceil(arrayProduct(layout.x.map((d2) => outputShape[d2])) / (workGroupSize[0] * elementsPerThread[0])),
+    layout.y ? Math.ceil(arrayProduct(layout.y.map((d2) => outputShape[d2])) / (workGroupSize[1] * elementsPerThread[1])) : 1,
+    layout.z ? Math.ceil(arrayProduct(layout.z.map((d2) => outputShape[d2])) / (workGroupSize[2] * elementsPerThread[2])) : 1
+  ];
+  if (dispatchX <= MAX_COMPUTE_PER_DIMENSION_DISPATCH_SIZE && dispatchY <= MAX_COMPUTE_PER_DIMENSION_DISPATCH_SIZE && dispatchZ <= MAX_COMPUTE_PER_DIMENSION_DISPATCH_SIZE) {
+    return [dispatchX, dispatchY, dispatchZ];
+  }
+  util_exports.assert(dispatchX > MAX_COMPUTE_PER_DIMENSION_DISPATCH_SIZE && layout.y === void 0 && layout.z === void 0, () => "Dispatch size exceeds WebGPU limits in Y or Z dimension.");
+  let dispatchAverage = Math.ceil(Math.sqrt(dispatchX));
+  if (dispatchAverage > MAX_COMPUTE_PER_DIMENSION_DISPATCH_SIZE) {
+    dispatchAverage = Math.ceil(Math.cbrt(dispatchX));
+    util_exports.assert(dispatchAverage <= MAX_COMPUTE_PER_DIMENSION_DISPATCH_SIZE, () => "Total dispatch size exceeds WebGPU maximum.");
+    return [dispatchAverage, dispatchAverage, dispatchAverage];
+  } else {
+    return [dispatchAverage, dispatchAverage, 1];
+  }
+}
+function computeWorkGroupSizeForConv2d(layout, outputShape) {
+  const dim0 = arrayProduct(layout.x.map((d2) => outputShape[d2]));
+  const dim1 = arrayProduct(layout.y.map((d2) => outputShape[d2]));
+  if (dim0 <= 4) {
+    return [4, 16, 1];
+  }
+  if (dim1 <= 4) {
+    return [16, 4, 1];
+  }
+  return [16, 16, 1];
+}
+function computeWorkGroupSizeForMatMul(dimAOuter, dimInner, dimBOuter) {
+  if (dimAOuter === 1) {
+    return [32, 1, 1];
+  } else if (dimBOuter === 1) {
+    return [1, 32, 1];
+  }
+  return [8, 8, 1];
+}
+function computeWorkPerThreadForConv2d(layout, outputShape) {
+  const dim0 = arrayProduct(layout.x.map((d2) => outputShape[d2]));
+  const dim1 = arrayProduct(layout.y.map((d2) => outputShape[d2]));
+  if (dim0 <= 4) {
+    return [1, 2, 1];
+  }
+  if (dim1 <= 4) {
+    return [2, 1, 1];
+  }
+  return [2, 2, 1];
+}
+function flatDispatchLayout(shape) {
+  return { x: shape.map((d2, i2) => i2) };
+}
+function GPUBytesPerElement(dtype) {
+  if (dtype === "float32" || dtype === "int32" || dtype === "bool" || dtype === "string") {
+    return 4;
+  } else if (dtype === "complex64") {
+    return 8;
+  } else {
+    throw new Error(`Unknown dtype ${dtype}`);
+  }
+}
+function ArrayBufferToTypedArray(data, dtype) {
+  if (dtype === "float32") {
+    return new Float32Array(data);
+  } else if (dtype === "int32") {
+    return new Int32Array(data);
+  } else if (dtype === "bool" || dtype === "string") {
+    const dataAsInt32Array = new Int32Array(data);
+    const boolData = new ArrayBuffer(dataAsInt32Array.length);
+    const dataAsTypedArray = new Uint8Array(boolData);
+    for (let i2 = 0; i2 < dataAsInt32Array.length; i2++) {
+      dataAsTypedArray[i2] = dataAsInt32Array[i2];
+    }
+    return dataAsTypedArray;
+  } else {
+    throw new Error(`Unknown dtype ${dtype}`);
+  }
+}
+function isWebGPUSupported() {
+  if (!navigator.gpu) {
+    return false;
+  }
+  return true;
+}
+var BinaryOpType;
+(function(BinaryOpType2) {
+  BinaryOpType2[BinaryOpType2["MUL"] = 0] = "MUL";
+  BinaryOpType2[BinaryOpType2["ADD"] = 1] = "ADD";
+  BinaryOpType2[BinaryOpType2["SUB"] = 2] = "SUB";
+  BinaryOpType2[BinaryOpType2["DIV"] = 3] = "DIV";
+  BinaryOpType2[BinaryOpType2["EQUAL"] = 4] = "EQUAL";
+  BinaryOpType2[BinaryOpType2["GREATER"] = 5] = "GREATER";
+  BinaryOpType2[BinaryOpType2["GREATER_EQUAL"] = 6] = "GREATER_EQUAL";
+  BinaryOpType2[BinaryOpType2["LESS"] = 7] = "LESS";
+  BinaryOpType2[BinaryOpType2["LESS_EQUAL"] = 8] = "LESS_EQUAL";
+  BinaryOpType2[BinaryOpType2["LOGICAL_AND"] = 9] = "LOGICAL_AND";
+  BinaryOpType2[BinaryOpType2["NOT_EQUAL"] = 10] = "NOT_EQUAL";
+  BinaryOpType2[BinaryOpType2["SQUARED_DIFFERENCE"] = 11] = "SQUARED_DIFFERENCE";
+  BinaryOpType2[BinaryOpType2["INT_DIV"] = 12] = "INT_DIV";
+  BinaryOpType2[BinaryOpType2["POW"] = 13] = "POW";
+  BinaryOpType2[BinaryOpType2["PRELU"] = 14] = "PRELU";
+  BinaryOpType2[BinaryOpType2["MAX"] = 15] = "MAX";
+  BinaryOpType2[BinaryOpType2["MIN"] = 16] = "MIN";
+  BinaryOpType2[BinaryOpType2["COMPLEX_MULTIPLY_REAL"] = 17] = "COMPLEX_MULTIPLY_REAL";
+  BinaryOpType2[BinaryOpType2["COMPLEX_MULTIPLY_IMAG"] = 18] = "COMPLEX_MULTIPLY_IMAG";
+})(BinaryOpType || (BinaryOpType = {}));
+var ADD2 = "return a + b;";
+var COMPLEX_MULTIPLY_REAL = "return areal * breal - aimag * bimag;";
+var COMPLEX_MULTIPLY_IMAG = "return areal * bimag + aimag * breal;";
+var DIV2 = "return a / b;";
+var MUL2 = "return a * b;";
+var SQUARED_DIFFERENCE2 = "return (a - b) * (a - b);";
+var SUB2 = "return a - b;";
+var EQUAL2 = "return f32(a == b);";
+var EQUAL_VEC4 = "return vec4<f32>(a == b);";
+var GREATER2 = "return f32(a > b);";
+var GREATER_VEC4 = "return vec4<f32>(a > b);";
+var GREATER_EQUAL2 = "return f32(a >= b);";
+var GREATER_EQUAL_VEC4 = "return vec4<f32>(a >= b);";
+var LESS2 = "return f32(a < b);";
+var LESS_VEC4 = "return vec4<f32>(a < b);";
+var LESS_EQUAL2 = "return f32(a <= b);";
+var LESS_EQUAL_VEC4 = "return vec4<f32>(a <= b);";
+var LOGICAL_AND2 = "return f32(f32(a) >= 1.0 && f32(b) >= 1.0);";
+var LOGICAL_AND_VEC4 = `return (vec4<f32>(a >= vec4<f32>(1.0)) *
+  vec4<f32>(b >= vec4<f32>(1.0)));`;
+var CHECK_NAN_SNIPPET4 = `
+  if (isNanCustom(a)) { return a; }
+  if (isNanCustom(b)) { return b; }
+  `;
+var CHECK_NAN_SNIPPET_VEC4 = `
+  if (isNaN.r > 0.) {
+    resultTemp.r = uniforms.NAN;
+  }
+  if (isNaN.g > 0.) {
+    resultTemp.g = uniforms.NAN;
+  }
+  if (isNaN.b > 0.) {
+    resultTemp.b = uniforms.NAN;
+  }
+  if (isNaN.a > 0.) {
+    resultTemp.a = uniforms.NAN;
+  }
+  `;
+var INT_DIV2 = `
+  let s = sign(a) * sign(b);
+  let ia = i32(round(a));
+  let ib = i32(round(b));
+  return f32(idiv(ia, ib, s));
+  `;
+var INT_DIV_VEC4 = `
+  let ia = vec4<i32>(round(a));
+  let ib = vec4<i32>(round(b));
+  let cond = ib != vec4<i32>(0);
+  var resultTemp = vec4<i32>(0);
+  let s = sign(a) * sign(b);
+
+  // Windows (D3D) wants guaranteed non-zero int division at compile-time.
+  if (cond[0]) {
+    resultTemp[0] = idiv(ia[0], ib[0], s[0]);
+  }
+  if (cond[1]) {
+    resultTemp[1] = idiv(ia[1], ib[1], s[1]);
+  }
+  if (cond[2]) {
+    resultTemp[2] = idiv(ia[2], ib[2], s[2]);
+  }
+  if (cond[3]) {
+    resultTemp[3] = idiv(ia[3], ib[3], s[3]);
+  }
+  return vec4<f32>(resultTemp);
+  `;
+var NOT_EQUAL2 = "return f32(a != b);";
+var NOT_EQUAL_VEC4 = "return vec4<f32>(a != b);";
+var POW2 = `
+  if(a < 0.0 && floor(b) < b) {
+    return uniforms.NAN;
+  }
+  if (b == 0.0) {
+    return 1.0;
+  }
+  if (round(abs(b) % 2.0) != 1.0) {
+    return pow(abs(a), b);
+  }
+  return sign(a) * pow(abs(a), b);
+  `;
+var POW_VEC4 = `
+  let isModRound1Bool = vec4<i32>(round(abs(b) % vec4<f32>(2.0))) == vec4<i32>(1);
+  let isModRound1 = vec4<f32>(isModRound1Bool);
+  let multiplier = sign(a) * isModRound1 + (vec4<f32>(1.0) - isModRound1);
+  var resultTemp = multiplier * pow(abs(a), b);
+
+  // Ensure that a^0 = 1, including 0^0 = 1 as this correspond to TF and JS
+  let isExpZero = b == vec4<f32>(0.0);
+  if (isExpZero.r) {
+    resultTemp.r = 1.0;
+  }
+  if (isExpZero.g) {
+    resultTemp.g = 1.0;
+  }
+  if (isExpZero.b) {
+    resultTemp.b = 1.0;
+  }
+  if (isExpZero.a) {
+    resultTemp.a = 1.0;
+  }
+  let isNaN = vec4<f32>(a < vec4<f32>(0.0)) * vec4<f32>(floor(b) < b);
+  ${CHECK_NAN_SNIPPET_VEC4}
+  return resultTemp;
+  `;
+var PRELU2 = `if (a < 0.0) { return b * a; }  return a;`;
+var PRELU_VEC4 = `
+  let aLessThanZero = vec4<f32>(a < vec4<f32>(0.0));
+  return (aLessThanZero * (b * a)) + ((vec4<f32>(1.0) - aLessThanZero) * a);
+  `;
+function getMinMaxString(op2, useVec4) {
+  const checkNanSnippet = useVec4 ? CHECK_NAN_SNIPPET_VEC4 : CHECK_NAN_SNIPPET4;
+  return useVec4 ? `
+    var resultTemp = vec4<f32>(${op2}(a, b));
+    let isNaN = min(vec4<f32>(isNanCustomVec4F32(a)) + vec4<f32>(isNanCustomVec4F32(b)), vec4<f32>(1.0));
+    ` + checkNanSnippet + `
+    return resultTemp;
+  ` : checkNanSnippet + `
+    return ${op2}(a, b);
+  `;
+}
+function getBinaryOpString(type, useVec4) {
+  switch (type) {
+    case BinaryOpType.MUL:
+      return MUL2;
+    case BinaryOpType.ADD:
+      return ADD2;
+    case BinaryOpType.SUB:
+      return SUB2;
+    case BinaryOpType.DIV:
+      return DIV2;
+    case BinaryOpType.EQUAL:
+      return useVec4 ? EQUAL_VEC4 : EQUAL2;
+    case BinaryOpType.GREATER:
+      return useVec4 ? GREATER_VEC4 : GREATER2;
+    case BinaryOpType.GREATER_EQUAL:
+      return useVec4 ? GREATER_EQUAL_VEC4 : GREATER_EQUAL2;
+    case BinaryOpType.LESS:
+      return useVec4 ? LESS_VEC4 : LESS2;
+    case BinaryOpType.LESS_EQUAL:
+      return useVec4 ? LESS_EQUAL_VEC4 : LESS_EQUAL2;
+    case BinaryOpType.LOGICAL_AND:
+      return useVec4 ? LOGICAL_AND_VEC4 : LOGICAL_AND2;
+    case BinaryOpType.NOT_EQUAL:
+      return useVec4 ? NOT_EQUAL_VEC4 : NOT_EQUAL2;
+    case BinaryOpType.SQUARED_DIFFERENCE:
+      return SQUARED_DIFFERENCE2;
+    case BinaryOpType.INT_DIV:
+      return useVec4 ? INT_DIV_VEC4 : INT_DIV2;
+    case BinaryOpType.PRELU:
+      return useVec4 ? PRELU_VEC4 : PRELU2;
+    case BinaryOpType.MAX:
+      return getMinMaxString("max", useVec4);
+    case BinaryOpType.MIN:
+      return getMinMaxString("min", useVec4);
+    case BinaryOpType.POW:
+      return useVec4 ? POW_VEC4 : POW2;
+    case BinaryOpType.COMPLEX_MULTIPLY_REAL:
+      return COMPLEX_MULTIPLY_REAL;
+    case BinaryOpType.COMPLEX_MULTIPLY_IMAG:
+      return COMPLEX_MULTIPLY_IMAG;
+    default:
+      throw new Error(`BinaryType ${type} is not implemented!`);
+  }
+}
+var UnaryOpType;
+(function(UnaryOpType2) {
+  UnaryOpType2[UnaryOpType2["ABS"] = 0] = "ABS";
+  UnaryOpType2[UnaryOpType2["CEIL"] = 1] = "CEIL";
+  UnaryOpType2[UnaryOpType2["COS"] = 2] = "COS";
+  UnaryOpType2[UnaryOpType2["COSH"] = 3] = "COSH";
+  UnaryOpType2[UnaryOpType2["ELU"] = 4] = "ELU";
+  UnaryOpType2[UnaryOpType2["EXP"] = 5] = "EXP";
+  UnaryOpType2[UnaryOpType2["EXPM1"] = 6] = "EXPM1";
+  UnaryOpType2[UnaryOpType2["FLOOR"] = 7] = "FLOOR";
+  UnaryOpType2[UnaryOpType2["LINEAR"] = 8] = "LINEAR";
+  UnaryOpType2[UnaryOpType2["LOG"] = 9] = "LOG";
+  UnaryOpType2[UnaryOpType2["LOGICAL_NOT"] = 10] = "LOGICAL_NOT";
+  UnaryOpType2[UnaryOpType2["NEG"] = 11] = "NEG";
+  UnaryOpType2[UnaryOpType2["PRELU"] = 12] = "PRELU";
+  UnaryOpType2[UnaryOpType2["RELU"] = 13] = "RELU";
+  UnaryOpType2[UnaryOpType2["RELU6"] = 14] = "RELU6";
+  UnaryOpType2[UnaryOpType2["RSQRT"] = 15] = "RSQRT";
+  UnaryOpType2[UnaryOpType2["SIN"] = 16] = "SIN";
+  UnaryOpType2[UnaryOpType2["SINH"] = 17] = "SINH";
+  UnaryOpType2[UnaryOpType2["SIGMOID"] = 18] = "SIGMOID";
+  UnaryOpType2[UnaryOpType2["SQRT"] = 19] = "SQRT";
+  UnaryOpType2[UnaryOpType2["SQUARE"] = 20] = "SQUARE";
+  UnaryOpType2[UnaryOpType2["TANH"] = 21] = "TANH";
+  UnaryOpType2[UnaryOpType2["TO_INT"] = 22] = "TO_INT";
+})(UnaryOpType || (UnaryOpType = {}));
+var ABS3 = `return abs(a);`;
+var CEIL2 = `return ceil(a);`;
+var COS2 = `return cos(a);`;
+var COSH2 = `
+  let e2x = exp(-a);
+  return (e2x + 1.0 / e2x) / 2.0;
+`;
+var EXPM12 = `return exp(a) - 1.0;`;
+var ELU5 = `if (a >= 0.0) { return a; }  return (exp(a) - 1.0);`;
+var ELU_VEC4 = `
+  var resFloat = exp(a) - vec4<f32>(1.0);
+  if (a.r >= 0.0) {
+    resFloat.r = a.r;
+  }
+  if (a.g >= 0.0) {
+    resFloat.g = a.g;
+  }
+  if (a.b >= 0.0) {
+    resFloat.b = a.b;
+  }
+  if (a.a >= 0.0) {
+    resFloat.a = a.a;
+  }
+  return resFloat;
+`;
+var EXP2 = `return exp(a);`;
+var FLOOR2 = `return floor(a);`;
+var LINEAR3 = `return a;`;
+var LOG2 = `if (a < 0.0) { return 1.0/0.0; }
+  return log(a);`;
+var LOGICAL_NOT2 = `return f32(!(a >= 1.0));`;
+var NEG2 = `return -a;`;
+var PRELU3 = `return (a < 0.0) ? b * a : a;`;
+var RELU4 = "return max(a, 0.0);";
+var RELU64 = "return clamp(a, 0.0, 6.0);";
+var RELU6_VEC4 = "return clamp(a, vec4<f32>(0.0, 0.0, 0.0, 0.0), vec4<f32>(6.0, 6.0, 6.0, 6.0));";
+var RELU_VEC4 = `
+  var resFloat = a * vec4<f32>(a >= vec4<f32>(0.0));
+  let isNaN = isNan(a);
+
+  if (isNaN.r) {
+    resFloat.r = a.r;
+  }
+  if (isNaN.g) {
+    resFloat.g = a.g;
+  }
+  if (isNaN.b) {
+    resFloat.b = a.b;
+  }
+  if (isNaN.a) {
+    resFloat.a = a.a;
+  }
+  return resFloat;
+`;
+var RSQRT2 = `return 1.0/sqrt(a);`;
+var SIGMOID4 = `return 1.0 / (1.0 + exp(-1.0 * a));`;
+var SIN2 = `return sin(a);`;
+var SINH2 = `
+  let e2x = exp(a);
+  return (e2x - 1.0 / e2x) / 2.0;
+`;
+var SQRT2 = `return sqrt(a);`;
+var SQUARE2 = `return a * a;`;
+var TANH2 = `
+  let e2x = exp(-2.0 * abs(a));
+  return sign(a) * (1.0 - e2x) / (1.0 + e2x);
+`;
+var TO_INT2 = `return f32(i32((a)));`;
+function getUnaryOpString(type, useVec4) {
+  switch (type) {
+    case UnaryOpType.ABS:
+      return ABS3;
+    case UnaryOpType.COS:
+      return COS2;
+    case UnaryOpType.COSH:
+      return COSH2;
+    case UnaryOpType.CEIL:
+      return CEIL2;
+    case UnaryOpType.ELU:
+      return useVec4 ? ELU_VEC4 : ELU5;
+    case UnaryOpType.EXP:
+      return EXP2;
+    case UnaryOpType.EXPM1:
+      return EXPM12;
+    case UnaryOpType.FLOOR:
+      return FLOOR2;
+    case UnaryOpType.LINEAR:
+      return LINEAR3;
+    case UnaryOpType.LOG:
+      return LOG2;
+    case UnaryOpType.LOGICAL_NOT:
+      return LOGICAL_NOT2;
+    case UnaryOpType.NEG:
+      return NEG2;
+    case UnaryOpType.PRELU:
+      return PRELU3;
+    case UnaryOpType.RELU:
+      return useVec4 ? RELU_VEC4 : RELU4;
+    case UnaryOpType.RELU6:
+      return useVec4 ? RELU6_VEC4 : RELU64;
+    case UnaryOpType.RSQRT:
+      return RSQRT2;
+    case UnaryOpType.SIGMOID:
+      return SIGMOID4;
+    case UnaryOpType.SIN:
+      return SIN2;
+    case UnaryOpType.SINH:
+      return SINH2;
+    case UnaryOpType.SQRT:
+      return SQRT2;
+    case UnaryOpType.SQUARE:
+      return SQUARE2;
+    case UnaryOpType.TANH:
+      return TANH2;
+    case UnaryOpType.TO_INT:
+      return TO_INT2;
+    default:
+      throw new Error(`BinaryType ${type} is not implemented!`);
+  }
+}
+function mapActivationToShaderProgram2(activation2, packed = false) {
+  if (activation2 === null) {
+    return null;
+  } else if (activation2 === "linear") {
+    return getUnaryOpString(UnaryOpType.LINEAR);
+  } else if (activation2 === "relu") {
+    return getUnaryOpString(UnaryOpType.RELU, packed);
+  } else if (activation2 === "elu") {
+    return getUnaryOpString(UnaryOpType.ELU, packed);
+  } else if (activation2 === "relu6") {
+    return getUnaryOpString(UnaryOpType.RELU6, packed);
+  } else if (activation2 === "prelu") {
+    return getBinaryOpString(BinaryOpType.PRELU, packed);
+  } else if (activation2 === "sigmoid") {
+    return getUnaryOpString(UnaryOpType.SIGMOID);
+  }
+  throw new Error(`Activation ${activation2} has not been implemented for the WebGPU backend.`);
+}
+function makeMatMulPackedVec4Source(workPerThread, workGroupSize) {
+  const tileInfo = {
+    RowPerThread: workPerThread[1],
+    ColPerThread: workPerThread[0],
+    TileAOuter: workGroupSize[1] * workPerThread[1],
+    TileBOuter: workGroupSize[0] * workPerThread[0],
+    TileInner: workGroupSize[0] * workPerThread[0]
+  };
+  return `
+  var<workgroup> mm_Asub : array<array<vec4<f32>, ${tileInfo.TileInner / tileInfo.ColPerThread}>, ${tileInfo.TileAOuter}>;
+  var<workgroup> mm_Bsub : array<array<vec4<f32>, ${tileInfo.TileBOuter / tileInfo.ColPerThread}>, ${tileInfo.TileInner}>;
+
+  let RowPerThread = ${tileInfo.RowPerThread};
+  let ColPerThread = ${tileInfo.ColPerThread}; // only support ColPerThread = 4
+  let TileAOuter = ${tileInfo.TileAOuter};
+  let TileBOuter = ${tileInfo.TileBOuter};
+  let TileInner = ${tileInfo.TileInner};
+
+  ${getMainHeaderString()} {
+
+    let tileRow = i32(localId.y) * RowPerThread;
+    let tileCol = i32(localId.x);
+
+    let globalRow = i32(globalId.y) * RowPerThread;
+    let globalCol = i32(globalId.x);
+    let numTiles = (uniforms.dimInner - 1) / TileInner + 1;
+
+    var acc: array<vec4<f32>, ${tileInfo.RowPerThread}>;
+    var ACached : vec4<f32>;
+    var BCached : array<vec4<f32>, 4>;
+
+    // Loop over shared dimension.
+    var globalColA = tileCol;
+    let RowPerThreadB = TileInner / ${workGroupSize[1]};
+    let tileRowB = i32(localId.y) * RowPerThreadB;
+    for (var t = 0; t < numTiles; t = t + 1) {
+        // Load one tile of A into local memory.
+        for (var innerRow = 0; innerRow < RowPerThread; innerRow = innerRow + 1) {
+            let inputRow = tileRow + innerRow;
+            let inputCol = tileCol;
+            mm_Asub[inputRow][inputCol] = mm_readA(globalRow + innerRow, globalColA, globalId);
+        }
+        globalColA = globalColA + TileInner / ColPerThread;
+
+        // Load one tile of B into local memory.
+        for (var innerRow = 0; innerRow < RowPerThreadB; innerRow = innerRow + 1) {
+            let inputRow = tileRowB + innerRow;
+            let inputCol = tileCol;
+            mm_Bsub[inputRow][inputCol] = mm_readB(t * TileInner + inputRow, globalCol, globalId);
+        }
+
+        workgroupBarrier();
+
+        // Compute acc values for a single thread.
+        for (var k = 0; k < TileInner / ColPerThread; k = k + 1) {
+            BCached[0] = mm_Bsub[k * ColPerThread][tileCol];
+            BCached[1] = mm_Bsub[k * ColPerThread + 1][tileCol];
+            BCached[2] = mm_Bsub[k * ColPerThread + 2][tileCol];
+            BCached[3] = mm_Bsub[k * ColPerThread + 3][tileCol];
+
+            for (var i = 0; i < RowPerThread; i = i + 1) {
+                ACached = mm_Asub[tileRow + i][k];
+                acc[i] = BCached[0] * ACached.x + acc[i];
+                acc[i] = BCached[1] * ACached.y + acc[i];
+                acc[i] = BCached[2] * ACached.z + acc[i];
+                acc[i] = BCached[3] * ACached.w + acc[i];
+            }
+        }
+
+        workgroupBarrier();
+    }
+
+    for (var innerRow = 0; innerRow < RowPerThread; innerRow = innerRow + 1) {
+        mm_write(globalRow + innerRow,
+                 globalCol,
+                 acc[innerRow], globalId);
+    }
+}`;
+}
+function makeMatMulVectorVec4Source(workGroupSize) {
+  return `
+  var<workgroup> mm_Asub : array<vec4<f32>, ${workGroupSize[0]}>;
+  let tileSize = ${workGroupSize[0] * 4};
+  ${getMainHeaderString()} {
+    let tileCol = i32(localId.x);
+    let globalCol = i32(globalId.x);
+    let globalRow = i32(globalId.y);
+
+    let numTiles = (uniforms.dimInner - 1) / tileSize + 1;
+
+    // Without this initialization strange values show up in acc.
+    var acc = vec4<f32>(0.0);
+
+    // Loop over shared dimension.
+    for (var t = 0; t < numTiles; t = t + 1) {
+      // Load one tile of A into local memory.
+      let colA = t * tileSize / 4 + tileCol;
+      mm_Asub[tileCol] = mm_readA(globalRow, colA, globalId);
+
+      workgroupBarrier();
+
+      // Compute acc values for a single thread.
+      for (var k = 0; k < tileSize / 4; k = k + 1) {
+        let rowB = t * tileSize + k * 4;
+        let BCached0 = mm_readB(rowB, globalCol, globalId);
+        let BCached1 = mm_readB(rowB + 1, globalCol, globalId);
+        let BCached2 = mm_readB(rowB + 2, globalCol, globalId);
+        let BCached3 = mm_readB(rowB + 3, globalCol, globalId);
+
+        let ACached = mm_Asub[k];
+        acc = acc + BCached0 * ACached.x;
+        acc = acc + BCached1 * ACached.y;
+        acc = acc + BCached2 * ACached.z;
+        acc = acc + BCached3 * ACached.w;
+      }
+
+      workgroupBarrier();
+    }
+
+    if (globalRow < uniforms.dimAOuter && globalCol < uniforms.dimBOuter) {
+      mm_write(globalRow, globalCol, acc, globalId);
+    }
+  }
+`;
+}
+var MatMulPackedVec4Program = class {
+  constructor(aShape, outputShape, rowPerThread, bias = null, activation2 = null, preluActivationWeights = null) {
+    this.variableNames = ["A", "B"];
+    this.uniforms = `dimAOuter : i32; dimBOuter : i32; dimInner : i32;`;
+    this.workGroupSize = [16, 16, 1];
+    this.isVec4 = true;
+    this.vecSize = 4;
+    this.outputShape = outputShape;
+    this.workGroupSize = computeWorkGroupSizeForMatMul(outputShape[1], aShape[2], outputShape[2]);
+    this.dispatchLayout = { x: [2], y: [1], z: [0] };
+    if (outputShape[1] === 1) {
+      rowPerThread = 1;
+    }
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.vecSize, rowPerThread, 1]);
+    const addBias = bias != null;
+    const hasPreluActivationWeights = preluActivationWeights != null;
+    if (addBias) {
+      this.variableNames.push("bias");
+    }
+    if (hasPreluActivationWeights) {
+      this.variableNames.push("preluActivationWeights");
+    }
+    this.workPerThread = rowPerThread;
+    this.aShape = aShape;
+    this.addBias = addBias;
+    this.activation = activation2;
+    this.hasPreluActivationWeights = hasPreluActivationWeights;
+    [this.fitA, this.fitB] = this.getShapeFit();
+    this.shaderKey = `matMulPackedVec4_${rowPerThread}_${this.activation}_${this.fitA}_${this.fitB}_${this.outputShape[1] > 1}`;
+  }
+  getShapeFit() {
+    const dimInner = this.aShape[2];
+    const dimBOuter = this.outputShape[2];
+    const bShape = [this.outputShape[0], dimInner, dimBOuter];
+    const tileAOuter = this.workGroupSize[1] * this.workPerThread;
+    const tileBOuter = this.workGroupSize[0] * this.vecSize;
+    const tileInner = tileBOuter;
+    const tileSizeA = [tileAOuter, tileInner];
+    const tileSizeB = [tileInner, tileBOuter];
+    return [
+      tilesFitEvenlyIntoShape(tileSizeA, this.aShape.slice(1)),
+      tilesFitEvenlyIntoShape(tileSizeB, bShape.slice(1))
+    ];
+  }
+  getUserCode() {
+    const sampleA = this.fitA ? `return A.numbers[batch * batchASize + row * uniforms.dimInner / 4 + col]` : `if (coordsInBounds2D(vec2<i32>(row, col * 4), vec2<i32>(uniforms.dimAOuter, uniforms.dimInner))) {
+            return A.numbers[batch * batchASize + row * uniforms.dimInner / 4 + col];
+        }
+        return vec4<f32>(0.0)`;
+    const sampleB = this.fitB ? `return B.numbers[batch * batchBSize + row * uniforms.dimBOuter / 4 + col]` : `if(coordsInBounds2D(vec2<i32>(row, col * 4), vec2<i32>(uniforms.dimInner, uniforms.dimBOuter))) {
+             return B.numbers[batch * batchBSize + row * uniforms.dimBOuter / 4 + col];
+        }
+        return vec4<f32>(0.0)`;
+    let activationSnippet = "", applyActivationSnippet = "";
+    if (this.activation) {
+      const activationOp = mapActivationToShaderProgram2(this.activation, this.isVec4);
+      if (this.hasPreluActivationWeights) {
+        activationSnippet = `fn activation(a : vec4<f32>, outCoord : vec3<i32>) -> vec4<f32> {
+                  let b = getPreluActivationWeightsAtOutCoordsByCoords(outCoord);
+                  ${activationOp}
+                }`;
+      } else {
+        activationSnippet = `
+            fn activation(a : vec4<f32>, outCoord : vec3<i32>) -> vec4<f32> {
+              ${activationOp}
+            }`;
+      }
+      applyActivationSnippet = "value = activation(value, outCoord);";
+    }
+    const addBiasSnippet = this.addBias ? "value = value + getBiasAtOutCoordsByCoords(outCoord);" : "";
+    const userCode = `
+      ${activationSnippet}
+      fn mm_readA(row : i32, col : i32,  globalId : vec3<u32>) -> vec4<f32> {
+        let batchASize = uniforms.aShape[1] * uniforms.aShape[2] / ${this.vecSize};
+        let batch = i32(globalId.z);
+        ${sampleA};
+      }
+
+      fn mm_readB(row : i32, col : i32,  globalId : vec3<u32>) -> vec4<f32> {
+        let batchBSize = uniforms.bShape[1] * uniforms.bShape[2] / ${this.vecSize};
+        let batch = i32(globalId.z);
+        ${sampleB};
+      }
+
+      fn mm_write(row : i32, col : i32, valueIn : vec4<f32>, globalId : vec3<u32>) {
+        if (row < uniforms.aShape[1] && col * 4 < uniforms.bShape[2])
+        {
+          var value = valueIn;
+          let batch = i32(globalId.z);
+          let outCoord = vec3<i32>(batch, row, col * 4);
+          ${addBiasSnippet}
+          ${applyActivationSnippet}
+          setOutput(outCoord[0], outCoord[1], outCoord[2], value);
+        }
+      }
+      ${this.outputShape[1] > 1 ? makeMatMulPackedVec4Source([this.vecSize, this.workPerThread, 1], this.workGroupSize) : makeMatMulVectorVec4Source(this.workGroupSize)}
+
+    `;
+    return userCode;
+  }
+};
+function makeMatMulPackedSource(workPerThread, workGroupSize) {
+  const tileAOuter = workGroupSize[1] * workPerThread[1];
+  const tileBOuter = workGroupSize[0] * workPerThread[0];
+  const tileInner = tileAOuter > tileBOuter ? tileAOuter : tileBOuter;
+  return `
+    var<workgroup> mm_Asub : array<array<f32, ${tileInner}>, ${tileAOuter}>;
+    var<workgroup> mm_Bsub : array<array<f32, ${tileBOuter}>, ${tileInner}>;
+    ${getMainHeaderString()} {
+      let tileRow = i32(localId.y) * ${workPerThread[1]};
+      let tileCol = i32(localId.x) * ${workPerThread[0]};
+
+      let globalRow = i32(globalId.y) * ${workPerThread[1]};
+      let globalCol = i32(globalId.x) * ${workPerThread[0]};
+
+      let numTiles = (uniforms.dimInner - 1) / ${tileInner} + 1;
+
+      var acc : array<array<f32, ${workPerThread[0]}>, ${workPerThread[1]}>;
+      var ACached : f32;
+      var BCached : array<f32, ${workPerThread[0]}>;
+
+      // Without this initialization strange values show up in acc.
+      for (var innerRow = 0; innerRow < ${workPerThread[1]}; innerRow = innerRow + 1) {
+        for (var innerCol = 0; innerCol < ${workPerThread[0]}; innerCol = innerCol + 1) {
+          acc[innerRow][innerCol] = 0.0;
+        }
+      }
+
+      let ColPerThreadA = ${tileInner} / ${workGroupSize[0]};
+      let tileColA = i32(localId.x) * ColPerThreadA;
+      let RowPerThreadB = ${tileInner} / ${workGroupSize[1]};
+      let tileRowB = i32(localId.y) * RowPerThreadB;
+
+      // Loop over shared dimension.
+      for (var t = 0; t < numTiles; t = t + 1) {
+        // Load one tile of A into local memory.
+        for (var innerRow = 0; innerRow < ${workPerThread[1]}; innerRow = innerRow + 1) {
+          for (var innerCol = 0; innerCol < ColPerThreadA; innerCol = innerCol + 1) {
+            let inputRow = tileRow + innerRow;
+            let inputCol = tileColA + innerCol;
+
+            mm_Asub[inputRow][inputCol] = mm_readA(
+                globalRow + innerRow,
+                t * ${tileInner} + inputCol, globalId);
+          }
+        }
+        // Load one tile of B into local memory.
+        for (var innerRow = 0; innerRow < RowPerThreadB; innerRow = innerRow + 1) {
+          for (var innerCol = 0; innerCol < ${workPerThread[0]}; innerCol = innerCol + 1) {
+            let inputRow = tileRowB + innerRow;
+            let inputCol = tileCol + innerCol;
+
+            mm_Bsub[inputRow][inputCol] = mm_readB(
+              t * ${tileInner} + inputRow,
+              globalCol + innerCol, globalId);
+          }
+        }
+
+        workgroupBarrier();
+
+        // Compute acc values for a single thread.
+        for (var k = 0; k < ${tileInner}; k = k + 1) {
+          for (var inner = 0; inner < ${workPerThread[0]}; inner = inner + 1) {
+            BCached[inner] = mm_Bsub[k][tileCol + inner];
+          }
+
+          for (var innerRow = 0; innerRow < ${workPerThread[1]}; innerRow = innerRow + 1) {
+            ACached = mm_Asub[tileRow + innerRow][k];
+            for (var innerCol = 0; innerCol < ${workPerThread[0]}; innerCol = innerCol + 1) {
+              acc[innerRow][innerCol] = acc[innerRow][innerCol] + ACached * BCached[innerCol];
+            }
+          }
+        }
+
+        workgroupBarrier();
+      }
+
+      for (var innerRow = 0; innerRow < ${workPerThread[1]}; innerRow = innerRow + 1) {
+        for (var innerCol = 0; innerCol < ${workPerThread[0]}; innerCol = innerCol + 1) {
+
+          if ((globalCol + innerCol) < uniforms.dimBOuter &&
+              (globalRow + innerRow) < uniforms.dimAOuter) {
+            mm_write(globalRow + innerRow,
+                     globalCol + innerCol,
+                     acc[innerRow][innerCol], globalId);
+          }
+        }
+      }
+    }
+  `;
+}
+function makeMatMulVectorSource(workGroupSize) {
+  return `
+    let TileSize = ${workGroupSize[0] * 4};
+    var<workgroup> mm_Asub : array<vec4<f32>, ${workGroupSize[0]}>;
+
+    ${getMainHeaderString()} {
+      let tileCol = i32(localId.x);
+      let globalCol = i32(globalId.x);
+      let globalRow = i32(globalId.y);
+
+      let numTiles = (uniforms.dimInner - 1) / TileSize + 1;
+
+      // Without this initialization strange values show up in acc.
+      var acc = 0.0;
+
+      // Loop over shared dimension.
+      for (var t = 0; t < numTiles; t = t + 1) {
+        // Load one tile of A into local memory.
+        let colA = t * TileSize + tileCol * 4;
+        mm_Asub[tileCol] = vec4<f32>(mm_readA(globalRow, colA, globalId),
+                                mm_readA(globalRow, colA + 1, globalId),
+                                mm_readA(globalRow, colA + 2, globalId),
+                                mm_readA(globalRow, colA + 3, globalId));
+        workgroupBarrier();
+
+        // Compute acc values for a single thread.
+        for (var k = 0; k < TileSize / 4; k = k + 1) {
+          let rowB = t * TileSize + k * 4;
+          let BCached = vec4<f32>(mm_readB(rowB, globalCol, globalId),
+                              mm_readB(rowB + 1, globalCol, globalId),
+                              mm_readB(rowB + 2, globalCol, globalId),
+                              mm_readB(rowB + 3, globalCol, globalId));
+
+          let ACached = mm_Asub[k];
+          acc = acc + dot(ACached, BCached);
+        }
+
+        workgroupBarrier();
+      }
+
+      if (globalRow < uniforms.dimAOuter && globalCol < uniforms.dimBOuter) {
+        mm_write(globalRow, globalCol, acc, globalId);
+      }
+    }
+  `;
+}
+var MatMulPackedProgram2 = class {
+  constructor(aShape, outputShape, workPerThread, transposeA = false, transposeB = false, bias = null, activation2 = null, preluActivationWeights = null) {
+    this.variableNames = ["A", "B"];
+    this.uniforms = `dimAOuter : i32; dimBOuter : i32; dimInner : i32;`;
+    this.workGroupSize = [16, 16, 1];
+    this.outputShape = outputShape;
+    this.dispatchLayout = { x: [2], y: [1], z: [0] };
+    const dimInner = transposeA ? aShape[1] : aShape[2];
+    this.workGroupSize = computeWorkGroupSizeForMatMul(outputShape[1], dimInner, outputShape[2]);
+    if (outputShape[1] === 1 || outputShape[2] === 1) {
+      workPerThread = 1;
+    }
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [workPerThread, workPerThread, 1]);
+    if (util_exports.arraysEqual(this.dispatch, [1, 1, 1])) {
+      workPerThread = 1;
+      this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [workPerThread, workPerThread, 1]);
+    }
+    const addBias = bias != null;
+    const hasPreluActivationWeights = preluActivationWeights != null;
+    if (addBias) {
+      this.variableNames.push("bias");
+    }
+    if (hasPreluActivationWeights) {
+      this.variableNames.push("preluActivationWeights");
+    }
+    this.workPerThread = workPerThread;
+    this.aShape = aShape;
+    this.transposeA = transposeA;
+    this.transposeB = transposeB;
+    this.addBias = addBias;
+    this.activation = activation2;
+    this.hasPreluActivationWeights = hasPreluActivationWeights;
+    const dimBOuter = this.outputShape[2];
+    const bShape = this.transposeB ? [this.outputShape[0], dimBOuter, dimInner] : [this.outputShape[0], dimInner, dimBOuter];
+    [this.fitA, this.fitB] = this.getShapeFit(bShape);
+    this.shaderKey = `matMulPacked_${this.workPerThread}_${transposeA}_${transposeB}_${this.activation}_${this.fitA}_${this.fitB}_${this.outputShape[1] > 1}`;
+  }
+  getShapeFit(bShape) {
+    const tileAOuter = this.workGroupSize[1] * this.workPerThread;
+    const tileBOuter = this.workGroupSize[0] * this.workPerThread;
+    let tileInner = tileAOuter > tileBOuter ? tileAOuter : tileBOuter;
+    if (this.outputShape[1] === 1) {
+      tileInner *= 4;
+    }
+    util_exports.assert(tileInner % this.workGroupSize[0] === 0 && tileInner % this.workGroupSize[1] === 0, () => `tileInner must be multiple of workgroupsize.x and workgroupsize.y`);
+    const tileSizeA = [tileAOuter, tileInner];
+    const tileSizeB = [tileInner, tileBOuter];
+    return [
+      tilesFitEvenlyIntoShape(tileSizeA, this.aShape.slice(1)),
+      tilesFitEvenlyIntoShape(tileSizeB, bShape.slice(1))
+    ];
+  }
+  getUserCode() {
+    let sampleA;
+    if (this.transposeA === false) {
+      sampleA = this.fitA ? `return A.numbers[batch * batchASize + row * uniforms.dimInner + col];` : `if(coordsInBounds2D(vec2<i32>(row, col), vec2<i32>(uniforms.dimAOuter, uniforms.dimInner))) {
+             return A.numbers[batch * batchASize + row * uniforms.dimInner + col];
+           }
+           return 0.0;`;
+    } else {
+      sampleA = this.fitA ? `return A.numbers[batch * batchASize + col * uniforms.dimAOuter + row];` : `if(coordsInBounds2D(vec2<i32>(row, col), vec2<i32>(uniforms.dimAOuter, uniforms.dimInner))) {
+             return A.numbers[batch* batchASize + col * uniforms.dimAOuter + row];
+           }
+           return 0.0;`;
+    }
+    let sampleB;
+    if (this.transposeB === false) {
+      sampleB = this.fitB ? `return B.numbers[batch * batchBSize + row * uniforms.dimBOuter + col];` : `if(coordsInBounds2D(vec2<i32>(row, col), vec2<i32>(uniforms.dimInner, uniforms.dimBOuter))) {
+             return B.numbers[batch * batchBSize + row * uniforms.dimBOuter + col];
+           }
+           return 0.0;`;
+    } else {
+      sampleB = this.fitB ? `return B.numbers[batch * batchBSize + col * uniforms.dimInner + row];` : `if(coordsInBounds2D(vec2<i32>(row, col), vec2<i32>(uniforms.dimInner, uniforms.dimBOuter))) {
+             return B.numbers[batch * batchBSize + col * uniforms.dimInner + row];
+           }
+           return 0.0;`;
+    }
+    let activationSnippet = "", applyActivationSnippet = "";
+    if (this.activation) {
+      const activationOp = mapActivationToShaderProgram2(this.activation, false);
+      if (this.hasPreluActivationWeights) {
+        activationSnippet = `fn activation(a : f32, outCoord : vec3<i32>) -> f32 {
+               let b = getPreluActivationWeightsAtOutCoordsByCoords(outCoord);
+               ${activationOp}
+            }`;
+      } else {
+        activationSnippet = `
+              fn activation(a : f32, outCoord : vec3<i32>) -> f32 {
+                ${activationOp}
+              }
+            `;
+      }
+      applyActivationSnippet = "value = activation(value, outCoord);";
+    }
+    const addBiasSnippet = this.addBias ? "value = value + getBiasAtOutCoordsByCoords(outCoord);" : "";
+    const userCode = `
+      ${activationSnippet}
+
+      fn mm_readA(row : i32, col : i32,  globalId : vec3<u32>) -> f32 {
+        let batchASize = uniforms.aShape[1] * uniforms.aShape[2];
+        let batch = i32(globalId.z);
+        ${sampleA}
+      }
+
+      fn mm_readB(row : i32, col : i32,  globalId : vec3<u32>) -> f32 {
+        let batch = i32(globalId.z);
+        let batchBSize = uniforms.bShape[1] * uniforms.bShape[2];
+        ${sampleB}
+      }
+
+      fn mm_write(row : i32, col : i32, valueIn : f32, globalId : vec3<u32>) {
+        var value = valueIn;
+        let batch = i32(globalId.z);
+        let outCoord = vec3<i32>(batch, row, col);
+        ${addBiasSnippet}
+        ${applyActivationSnippet}
+        setOutput(batch, row, col, value);
+      }
+      ${this.outputShape[1] > 1 ? makeMatMulPackedSource([this.workPerThread, this.workPerThread, 1], this.workGroupSize) : makeMatMulVectorSource(this.workGroupSize)}
+    `;
+    return userCode;
+  }
+};
+function makeMatMulSmallOutputSizeSource(workGroupSize) {
+  const tileAOuter = workGroupSize[1] / 2;
+  const tileBOuter = workGroupSize[0];
+  const tileInner = tileAOuter > tileBOuter ? tileAOuter : tileBOuter;
+  return `
+  var<workgroup> mm_Asub1 : array<array<f32, ${tileInner}>, ${tileAOuter}>;
+  var<workgroup> mm_Bsub1 : array<array<f32, ${tileBOuter}>, ${tileInner}>;
+  var<workgroup> mm_Asub2 : array<array<f32, ${tileInner}>, ${tileAOuter}>;
+  var<workgroup> mm_Bsub2 : array<array<f32, ${tileBOuter}>, ${tileInner}>;
+
+  // If the output size is small for matrix multiplication, avoid to use vec4
+  // and handle some elements per thread to optimally utilize the ALU.
+  // Introduces two shared memory buffers, some logical threads could handle
+  // arithmetic operations and others handle IO operations between barrier api,
+  // makes ALUs and load/store units work simultaneously, could improves
+  // the performance.
+  ${getMainHeaderString()} {
+    let tileRow = i32(localId.y);
+    let tileCol = i32(localId.x);
+    let globalRow = i32(globalId.y);
+    let globalCol = i32(globalId.x);
+
+    // uniforms.dimInner should be greater than 0.
+    let numTiles = (uniforms.dimInner - 1) / ${tileInner} + 1;
+    var acc = 0.0;
+
+    var globalColA = tileCol;
+    var globalRowB = tileRow;
+    for (var t = 0; t < numTiles; t = t + 1) {
+      if (t == 0) {
+        if (tileRow < ${tileAOuter}) {
+          // Load one tile of A and B into local memory.
+          // globalRow is always greater than or equal tileRow.
+          mm_Asub1[tileRow][tileCol] =
+              mm_readA((globalRow - tileRow) / 2 + tileRow, globalColA, globalId);
+          globalColA = globalColA + ${tileInner};
+          mm_Bsub1[tileRow][tileCol] = mm_readB(globalRowB, globalCol, globalId);
+          globalRowB = globalRowB + ${tileInner};
+        }
+      } else {
+        if (tileRow < ${tileAOuter}) {
+          // Load one tile of A and B into local memory.
+          // globalRow is always greater than or equal tileRow.
+          mm_Asub1[tileRow][tileCol] =
+              mm_readA((globalRow - tileRow) / 2 + tileRow, globalColA, globalId);
+          globalColA = globalColA + ${tileInner};
+          mm_Bsub1[tileRow][tileCol] = mm_readB(globalRowB, globalCol, globalId);
+          globalRowB = globalRowB + ${tileInner};
+        } else {
+          // Compute acc values for a single thread.
+          for (var k = 0; k < ${tileInner}; k = k + 1) {
+            let subRow = tileRow - ${tileAOuter};
+            if (subRow < 0) {
+              continue;
+            }
+            acc = acc + mm_Asub2[subRow][k] * mm_Bsub2[k][tileCol];
+          }
+        }
+      }
+      workgroupBarrier();
+      if (t != 0) {
+        t = t + 1;
+      }
+
+      if (t < numTiles) {
+        if (tileRow < ${tileAOuter}) {
+          // Load one tile of A and B into local memory.
+          // globalRow is always greater than or equal tileRow.
+          mm_Asub2[tileRow][tileCol] =
+              mm_readA((globalRow - tileRow) / 2 + tileRow, globalColA, globalId);
+          globalColA = globalColA + ${tileInner};
+          mm_Bsub2[tileRow][tileCol] = mm_readB(globalRowB, globalCol, globalId);
+          globalRowB = globalRowB + ${tileInner};
+        } else {
+          // Compute acc values for a single thread.
+          for (var k = 0; k < ${tileInner}; k = k + 1) {
+            let subRow = tileRow - ${tileAOuter};
+            if (subRow < 0) {
+              continue;
+            }
+            acc = acc + mm_Asub1[subRow][k] * mm_Bsub1[k][tileCol];
+          }
+        }
+      }
+      workgroupBarrier();
+    }
+    let writeCol = (globalRow - tileRow) / 2 + tileRow - ${tileAOuter};
+    if (tileRow >= ${tileAOuter} && writeCol >= 0) {
+      mm_write(writeCol, globalCol, acc, globalId);
+    }
+  }
+  `;
+}
+var MatMulSmallOutputSizeProgram = class {
+  constructor(aShape, bShape, outputShape, bias = null, activation2 = null, preluActivationWeights = null) {
+    this.variableNames = ["A", "B"];
+    this.uniforms = `dimAOuter : i32; dimBOuter : i32; dimInner : i32;`;
+    this.workGroupSize = [8, 16, 1];
+    util_exports.assert(aShape[1] <= 16 || bShape[2] <= 16, () => "This program can be only used when A width or B Height are small");
+    this.outputShape = outputShape;
+    this.dispatchLayout = { x: [2], y: [1], z: [0] };
+    this.dispatch = [
+      Math.ceil(outputShape[2] / this.workGroupSize[0]),
+      Math.ceil(outputShape[1] * 2 / this.workGroupSize[1]),
+      outputShape[0]
+    ];
+    const addBias = bias != null;
+    if (addBias) {
+      this.variableNames.push("bias");
+    }
+    const hasPreluActivationWeights = preluActivationWeights != null;
+    if (hasPreluActivationWeights) {
+      this.variableNames.push("preluActivationWeights");
+    }
+    this.addBias = addBias;
+    this.activation = activation2;
+    this.hasPreluActivationWeights = hasPreluActivationWeights;
+    this.shaderKey = `matMulSmallOutputSize_${this.activation}`;
+  }
+  getUserCode() {
+    const sampleA = `if (coordsInBounds2D(vec2<i32>(row, col), vec2<i32>(uniforms.dimAOuter, uniforms.dimInner))) {
+          return A.numbers[batch * batchASize + row * uniforms.dimInner + col];
+        }
+        return 0.0;`;
+    const sampleB = `if (coordsInBounds2D(vec2<i32>(row, col), vec2<i32>(uniforms.dimInner, uniforms.dimBOuter))) {
+           return B.numbers[batch * batchBSize + row * uniforms.dimBOuter + col];
+         }
+         return 0.0;`;
+    let activationSnippet = "", applyActivationSnippet = "";
+    if (this.activation) {
+      const activationOp = mapActivationToShaderProgram2(this.activation, false);
+      if (this.hasPreluActivationWeights) {
+        activationSnippet = `fn activation(a : f32, outCoord : vec3<i32>) -> f32 {
+            let b = getPreluActivationWeightsAtOutCoordsByCoords(outCoord);
+            ${activationOp}
+            }`;
+      } else {
+        activationSnippet = `fn activation(a : f32, outCoord : vec3<i32>) -> f32 {
+            ${activationOp}
+        }`;
+      }
+      applyActivationSnippet = "value = activation(value, outCoord);";
+    }
+    const addBiasSnippet = this.addBias ? "value = value + getBiasAtOutCoordsByCoords(outCoord);" : "";
+    const userCode = `
+      ${activationSnippet}
+
+      fn mm_readA(row : i32, col : i32,  globalId : vec3<u32>) -> f32 {
+        let batchASize = uniforms.aShape[1] * uniforms.aShape[2];
+        let batch = i32(globalId.z);
+        ${sampleA}
+      }
+      fn mm_readB(row : i32, col : i32,  globalId : vec3<u32>) -> f32 {
+        let batch = i32(globalId.z);
+        let batchBSize = uniforms.bShape[1] * uniforms.bShape[2];
+        ${sampleB}
+      }
+      fn mm_write(row : i32, col : i32, valueIn : f32, globalId : vec3<u32>) {
+        if (coordsInBounds2D(vec2<i32>(row, col), vec2<i32>(uniforms.dimAOuter, uniforms.dimBOuter))) {
+          let batch = i32(globalId.z);
+          let outCoord = vec3<i32>(batch, row, col);
+          var value = valueIn;
+          ${addBiasSnippet}
+          ${applyActivationSnippet}
+          setOutput(batch, row, col, value);
+        }
+      }
+      ${makeMatMulSmallOutputSizeSource(this.workGroupSize)}
+    `;
+    return userCode;
+  }
+};
+function reshape6(args) {
+  const { inputs, attrs } = args;
+  const { x: x2 } = inputs;
+  const { shape } = attrs;
+  const xSize = util_exports.sizeFromShape(x2.shape);
+  const $shape = util_exports.inferFromImplicitShape(shape, xSize);
+  const $xSize = util_exports.sizeFromShape($shape);
+  util_exports.assert(xSize === $xSize, () => `The new shape (${$shape}) has ${$xSize} elements and the old shape (${x2.shape}) has ${xSize} elements. The new shape and old shape must have the same number of elements.`);
+  args.backend.incRef(x2.dataId);
+  return { dataId: x2.dataId, shape: $shape, dtype: x2.dtype };
+}
+var reshapeConfig4 = {
+  kernelName: Reshape,
+  backendName: "webgpu",
+  kernelFunc: reshape6
+};
+function batchMatMulImpl2({ a: a6, b: b2, transposeA, transposeB, backend: backend22, bias = null, preluActivationWeights = null, leakyreluAlpha = 0, activation: activation2 = null }) {
+  const aRank = a6.shape.length;
+  const bRank = b2.shape.length;
+  const innerShapeA = transposeA ? a6.shape[aRank - 2] : a6.shape[aRank - 1];
+  const innerShapeB = transposeB ? b2.shape[bRank - 1] : b2.shape[bRank - 2];
+  const outerShapeA = transposeA ? a6.shape[aRank - 1] : a6.shape[aRank - 2];
+  const outerShapeB = transposeB ? b2.shape[bRank - 2] : b2.shape[bRank - 1];
+  const outerDimsA = a6.shape.slice(0, -2);
+  const outerDimsB = b2.shape.slice(0, -2);
+  const batchDimA = util_exports.sizeFromShape(outerDimsA);
+  const batchDimB = util_exports.sizeFromShape(outerDimsB);
+  const batchDimsCompatible = batchDimA === batchDimB || batchDimA === 1 || batchDimB === 1;
+  util_exports.assert(aRank >= 2 && bRank >= 2 && batchDimsCompatible, () => `Error in matMul: the input batch dimensions must either be the same or at least one input batch dimension must be 1. Got input batch dimensions of (${outerDimsA}) and (${outerDimsB}).`);
+  const outShapeOuterDims = batchDimA > batchDimB ? a6.shape.slice(0, -2) : b2.shape.slice(0, -2);
+  const outShape = outShapeOuterDims.concat([outerShapeA, outerShapeB]);
+  util_exports.assert(innerShapeA === innerShapeB, () => `Error in matMul: inner shapes (${innerShapeA}) and (${innerShapeB}) of Tensors with shapes ${a6.shape} and ${b2.shape} and transposeA=${transposeA} and transposeB=${transposeB} must match.`);
+  const a3dShape = transposeA ? [batchDimA, innerShapeA, outerShapeA] : [batchDimA, outerShapeA, innerShapeA];
+  const b3dShape = transposeB ? [batchDimB, outerShapeB, innerShapeB] : [batchDimB, innerShapeB, outerShapeB];
+  const a3d = reshape6({ inputs: { x: a6 }, backend: backend22, attrs: { shape: a3dShape } });
+  const b3d = reshape6({ inputs: { x: b2 }, backend: backend22, attrs: { shape: b3dShape } });
+  const intermediates = [a3d, b3d];
+  const batchDim = Math.max(batchDimA, batchDimB);
+  const useVec4 = innerShapeA % 4 === 0 && outerShapeB % 4 === 0 && !transposeA && !transposeB && outerShapeB >= 32;
+  let program;
+  if (!transposeA && !transposeB && (outerShapeA <= 16 && (outerShapeB <= 512 || innerShapeB >= 2 * outerShapeB) || outerShapeB <= 16 && (outerShapeA <= 512 || innerShapeA >= 2 * outerShapeA))) {
+    program = new MatMulSmallOutputSizeProgram(a3dShape, b3dShape, [batchDim, outerShapeA, outerShapeB], bias, activation2, preluActivationWeights);
+  } else if (useVec4) {
+    program = new MatMulPackedVec4Program(a3dShape, [batchDim, outerShapeA, outerShapeB], env().get("WEBGPU_MATMUL_WORK_PER_THREAD"), bias, activation2, preluActivationWeights);
+  } else {
+    program = new MatMulPackedProgram2(a3dShape, [batchDim, outerShapeA, outerShapeB], env().get("WEBGPU_MATMUL_WORK_PER_THREAD"), transposeA, transposeB, bias, activation2, preluActivationWeights);
+  }
+  const inputs = [a3d, b3d];
+  if (bias) {
+    inputs.push(bias);
+  }
+  if (preluActivationWeights) {
+    inputs.push(preluActivationWeights);
+  }
+  const dimensions = [
+    { type: "int32", data: [outerShapeA] },
+    { type: "int32", data: [outerShapeB] },
+    { type: "int32", data: [innerShapeA] }
+  ];
+  const out = backend22.runWebGPUProgram(program, inputs, a6.dtype, dimensions);
+  const outReshaped = reshape6({ inputs: { x: out }, backend: backend22, attrs: { shape: outShape } });
+  intermediates.push(out);
+  for (const i2 of intermediates) {
+    backend22.disposeData(i2.dataId);
+  }
+  return outReshaped;
+}
+function _fusedMatMul3(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { a: a6, b: b2, bias, preluActivationWeights } = inputs;
+  const { transposeA, transposeB, activation: activation2, leakyreluAlpha } = attrs;
+  return batchMatMulImpl2({
+    a: a6,
+    b: b2,
+    transposeA,
+    transposeB,
+    backend: backend22,
+    bias,
+    preluActivationWeights,
+    leakyreluAlpha,
+    activation: activation2
+  });
+}
+var _fusedMatMulConfig3 = {
+  kernelName: _FusedMatMul,
+  backendName: "webgpu",
+  kernelFunc: _fusedMatMul3
+};
+var BinaryOpComplexProgram2 = class {
+  constructor(op2, aShape, bShape) {
+    this.variableNames = ["AReal", "AImag", "BReal", "BImag"];
+    this.workGroupSize = [128, 1, 1];
+    this.outputShape = backend_util_exports.assertAndGetBroadcastShape(aShape, bShape);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.shaderKey = `binaryOpComplex_${op2}`;
+    this.op = op2;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const opStr = getBinaryOpString(this.op, false);
+    const userCode = `
+      fn binaryOpComplex(
+          areal : f32, aimag : f32, breal : f32, bimag : f32) -> f32 {
+        ${opStr}
+      }
+
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        if(index < uniforms.size) {
+          let areal = getARealAtOutCoordsByGlobalId(globalId, index);
+          let aimag = getAImagAtOutCoordsByGlobalId(globalId, index);
+          let breal = getBRealAtOutCoordsByGlobalId(globalId, index);
+          let bimag = getBImagAtOutCoordsByGlobalId(globalId, index);
+          setOutputFlat(index, binaryOpComplex(areal, aimag, breal, bimag));
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+var BinaryOpSharedProgram = class {
+  constructor(op2, aShape, bShape, useSharedMemoryWithB) {
+    this.variableNames = ["A", "B"];
+    const workGroupSizeX = 256;
+    this.workGroupSize = [workGroupSizeX, 1, 1];
+    this.outputShape = backend_util_exports.assertAndGetBroadcastShape(aShape, bShape);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.lastDimensionSize = useSharedMemoryWithB ? bShape[0] : aShape[0];
+    if (this.lastDimensionSize < 256) {
+      this.workPerThread = 1;
+    } else if (this.lastDimensionSize < 512) {
+      this.workPerThread = 2;
+    } else {
+      this.workPerThread = 4;
+    }
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    this.useSharedMemoryWithB = useSharedMemoryWithB;
+    this.op = op2;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+    this.sizeFit = this.size % (this.workGroupSize[0] * this.workPerThread) === 0;
+    this.shaderKey = `binaryShared_${op2}_${this.lastDimensionSize}_${this.useSharedMemoryWithB}_${this.sizeFit}`;
+  }
+  getUserCode() {
+    const sharedIndexSnippet = this.lastDimensionSize > 1 ? `coords[${this.outputShape.length - 1}]` : "0";
+    const accessDataSnippet = this.useSharedMemoryWithB ? `let a = getAAtOutCoordsByCoords(coords);
+         let b = sharedBuf[${sharedIndexSnippet}];` : `let a = sharedBuf[${sharedIndexSnippet}];
+         let b = getBAtOutCoordsByCoords(coords);`;
+    const writeDataSnippet = this.sizeFit ? `let coords = getCoordsFromFlatIndex(flatIndex);
+
+         ${accessDataSnippet}
+         setOutputFlat(flatIndex, binaryOperation(a, b));` : `if(flatIndex < uniforms.size) {
+            let coords = getCoordsFromFlatIndex(flatIndex);
+
+            ${accessDataSnippet}
+            setOutputFlat(flatIndex, binaryOperation(a, b));
+          }`;
+    const opStr = getBinaryOpString(this.op, false);
+    const userCode = `
+        fn binaryOperation(a : f32, b : f32) -> f32 {
+          ${opStr}
+        }
+        var<workgroup> sharedBuf : array<f32, ${this.lastDimensionSize}>;
+        ${getMainHeaderString()} {
+          ${getGlobalIndexString()}
+
+          // Fill in the shared memory buffer. Here we need a loop to make sure
+          // that all data in A|B are uploaded when |sharedMemorySize| is larger
+          // than work group size.
+          for(var localIndex = i32(localId.x); localIndex < ${this.lastDimensionSize}; localIndex = localIndex + ${this.workGroupSize[0]}) {
+            sharedBuf[localIndex] = f32(${this.useSharedMemoryWithB ? "B" : "A"}.numbers[localIndex]);
+          }
+          workgroupBarrier();
+
+          for(var i = 0; i < ${this.workPerThread}; i = i + 1) {
+            let flatIndex = index * ${this.workPerThread} + i;
+
+            ${writeDataSnippet}
+          }
+        }
+        `;
+    return userCode;
+  }
+};
+var BinaryOpVec4Program = class {
+  constructor(op2, aShape, bShape) {
+    this.variableNames = ["A", "B"];
+    this.workPerThread = 4;
+    this.isVec4 = true;
+    const workGroupSizeX = 128;
+    this.workGroupSize = [workGroupSizeX, 1, 1];
+    this.outputShape = backend_util_exports.assertAndGetBroadcastShape(aShape, bShape);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    this.op = op2;
+    this.fitShape = this.size % this.workGroupSize[0] === 0;
+    this.shaderKey = `binaryVec4_${op2}_${this.fitShape}`;
+    this.size = util_exports.sizeFromShape(this.outputShape) / this.workPerThread;
+  }
+  getUserCode() {
+    let userCode;
+    const opStr = getBinaryOpString(this.op, this.isVec4);
+    const miscStr = `fn binaryOperation(a : vec4<f32>, b : vec4<f32>) -> vec4<f32> {
+          ${opStr}
+        }`;
+    if (this.fitShape) {
+      userCode = `
+      ${miscStr}
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let a = vec4<f32>(A.numbers[index]);
+        let b = vec4<f32>(B.numbers[index]);
+        setOutputFlat(index, binaryOperation(a, b));
+      }
+    `;
+    } else {
+      userCode = `
+      ${miscStr}
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        if (index < uniforms.size) {
+          let a = vec4<f32>(A.numbers[index]);
+          let b = vec4<f32>(B.numbers[index]);
+          setOutputFlat(index, binaryOperation(a, b));
+        }
+      }
+    `;
+    }
+    return userCode;
+  }
+};
+var BinaryOpProgram2 = class {
+  constructor(op2, aShape, bShape) {
+    this.variableNames = ["A", "B"];
+    const workGroupSizeX = 128;
+    this.workGroupSize = [workGroupSizeX, 1, 1];
+    this.outputShape = backend_util_exports.assertAndGetBroadcastShape(aShape, bShape);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.size = util_exports.sizeFromShape(this.outputShape);
+    this.sizeFit = this.size % workGroupSizeX === 0;
+    this.shapesFit = util_exports.arraysEqual(aShape, bShape) && this.sizeFit;
+    this.workPerThread = this.sizeFit || this.shapesFit ? 1 : 2;
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    this.shaderKey = `binary_${op2}_${this.sizeFit}_${this.shapesFit}`;
+    this.op = op2;
+  }
+  getUserCode() {
+    let userCode;
+    const opStr = getBinaryOpString(this.op, false);
+    const miscStr = `          fn binaryOperation(a : f32, b : f32) -> f32 {
+      ${opStr}
+    }`;
+    if (this.shapesFit) {
+      userCode = `
+          ${miscStr}
+          ${getMainHeaderString()} {
+            ${getGlobalIndexString()}
+
+            let a = f32(A[index]);
+            let b = f32(B[index]);
+            setOutputFlat(index, binaryOperation(a, b));
+          }
+        `;
+    } else if (this.sizeFit) {
+      userCode = `
+      ${miscStr}
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+
+        let coords = getCoordsFromFlatIndex(index);
+
+        let a = getAAtOutCoordsByCoords(coords);
+        let b = getBAtOutCoordsByCoords(coords);
+        setOutputFlat(index, binaryOperation(a, b));
+      }
+      `;
+    } else {
+      userCode = `
+      ${miscStr}
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        for (var i = 0; i < ${this.workPerThread}; i = i + 1 ) {
+          let flatIndex = index * ${this.workPerThread} + i;
+
+          if(flatIndex < uniforms.size) {
+            let coords = getCoordsFromFlatIndex(flatIndex);
+
+            let a = getAAtOutCoordsByCoords(coords);
+            let b = getBAtOutCoordsByCoords(coords);
+            setOutputFlat(flatIndex, binaryOperation(a, b));
+          }
+        }
+      }
+      `;
+    }
+    return userCode;
+  }
+};
+function getBinaryProgram(op2, aShape, bShape) {
+  const useVec4 = util_exports.arraysEqual(aShape, bShape) && util_exports.sizeFromShape(aShape) % 4 === 0;
+  if (useVec4) {
+    return new BinaryOpVec4Program(op2, aShape, bShape);
+  }
+  const useSharedMemoryWithA = aShape.length === 1 && bShape.length > 1 && aShape[0] < 1024;
+  const useSharedMemoryWithB = bShape.length === 1 && aShape.length > 1 && bShape[0] < 1024;
+  if (useSharedMemoryWithA || useSharedMemoryWithB) {
+    return new BinaryOpSharedProgram(op2, aShape, bShape, useSharedMemoryWithB);
+  } else {
+    return new BinaryOpProgram2(op2, aShape, bShape);
+  }
+}
+function identity5(args) {
+  const { inputs } = args;
+  const { x: x2 } = inputs;
+  args.backend.incRef(x2.dataId);
+  return { dataId: x2.dataId, shape: x2.shape, dtype: x2.dtype };
+}
+var identityConfig4 = {
+  kernelName: Identity,
+  backendName: "webgpu",
+  kernelFunc: identity5
+};
+function complex4(args) {
+  const { inputs, backend: backend22 } = args;
+  const { real: real5, imag: imag5 } = inputs;
+  const complexInfo = backend22.makeTensorInfo(real5.shape, "complex64");
+  const complex5 = backend22.tensorMap.get(complexInfo.dataId);
+  const realTensorInfo = identity5({ inputs: { x: real5 }, backend: backend22 });
+  const imagTensorInfo = identity5({ inputs: { x: imag5 }, backend: backend22 });
+  complex5.complexTensorInfos = { real: realTensorInfo, imag: imagTensorInfo };
+  return complexInfo;
+}
+var complexConfig3 = {
+  kernelName: Complex,
+  backendName: "webgpu",
+  kernelFunc: complex4
+};
+var UnaryOpProgram2 = class {
+  constructor(outputShape, op2) {
+    this.variableNames = ["A"];
+    const workGroupSizeX = 128;
+    this.workGroupSize = [workGroupSizeX, 1, 1];
+    this.outputShape = outputShape;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.op = op2;
+    this.shaderKey = `unary_${op2}`;
+  }
+  getUserCode() {
+    return `
+      fn unaryOperation(a : f32) -> f32 {
+        ${getUnaryOpString(this.op, false)}
+      }
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        if (index < uniforms.size) {
+          let a = getAAtOutCoordsByGlobalId(globalId, index);
+          setOutputFlat(index, unaryOperation(a));
+        }
+      }
+      `;
+  }
+};
+function unaryKernelFunc3({ opType, cpuKernelImpl, dtype }) {
+  return ({ inputs, backend: backend22 }) => {
+    const { x: x2 } = inputs;
+    const webgpuBackend = backend22;
+    const $dtype = dtype || x2.dtype;
+    if (webgpuBackend.shouldExecuteOnCPU([x2]) && cpuKernelImpl != null) {
+      const xData = webgpuBackend.tensorMap.get(x2.dataId);
+      const outValues = cpuKernelImpl(xData.values, $dtype);
+      return webgpuBackend.makeTensorInfo(x2.shape, $dtype, outValues);
+    }
+    const program = new UnaryOpProgram2(x2.shape, opType);
+    return webgpuBackend.runWebGPUProgram(program, [x2], $dtype);
+  };
+}
+function binaryKernelFunc3({ opSnippet, cpuKernelImpl, supportsComplex = false, dtype }) {
+  return ({ inputs, backend: backend22 }) => {
+    const { a: a6, b: b2 } = inputs;
+    const webgpuBackend = backend22;
+    if (supportsComplex && a6.dtype === "complex64") {
+      const aData = webgpuBackend.tensorMap.get(a6.dataId);
+      const bData = webgpuBackend.tensorMap.get(b2.dataId);
+      let real5, imag5;
+      if (opSnippet !== BinaryOpType.MUL) {
+        [real5, imag5] = [
+          [aData.complexTensorInfos.real, bData.complexTensorInfos.real],
+          [aData.complexTensorInfos.imag, bData.complexTensorInfos.imag]
+        ].map((complexParts) => {
+          const [aPart, bPart] = complexParts;
+          const aHandle = {
+            dataId: aPart.dataId,
+            dtype: aPart.dtype,
+            shape: a6.shape
+          };
+          const bHandle = {
+            dataId: bPart.dataId,
+            dtype: bPart.dtype,
+            shape: b2.shape
+          };
+          const program2 = getBinaryProgram(opSnippet, a6.shape, b2.shape);
+          return webgpuBackend.runWebGPUProgram(program2, [aHandle, bHandle], upcastType(aPart.dtype, bPart.dtype));
+        });
+      } else {
+        const realProgram = new BinaryOpComplexProgram2(BinaryOpType.COMPLEX_MULTIPLY_REAL, a6.shape, b2.shape);
+        const imagProgram = new BinaryOpComplexProgram2(BinaryOpType.COMPLEX_MULTIPLY_IMAG, a6.shape, b2.shape);
+        const inputs2 = [
+          {
+            dataId: aData.complexTensorInfos.real.dataId,
+            dtype: aData.complexTensorInfos.real.dtype,
+            shape: a6.shape
+          },
+          {
+            dataId: aData.complexTensorInfos.imag.dataId,
+            dtype: aData.complexTensorInfos.imag.dtype,
+            shape: a6.shape
+          },
+          {
+            dataId: bData.complexTensorInfos.real.dataId,
+            dtype: bData.complexTensorInfos.real.dtype,
+            shape: b2.shape
+          },
+          {
+            dataId: bData.complexTensorInfos.imag.dataId,
+            dtype: bData.complexTensorInfos.imag.dtype,
+            shape: b2.shape
+          }
+        ];
+        real5 = webgpuBackend.runWebGPUProgram(realProgram, inputs2, "float32");
+        imag5 = webgpuBackend.runWebGPUProgram(imagProgram, inputs2, "float32");
+      }
+      const complexOutput = complex4({ inputs: { real: real5, imag: imag5 }, backend: webgpuBackend });
+      webgpuBackend.disposeData(real5.dataId);
+      webgpuBackend.disposeData(imag5.dataId);
+      return complexOutput;
+    }
+    const $dtype = dtype || upcastType(a6.dtype, b2.dtype);
+    if ((a6.dtype === "string" || b2.dtype === "string" || webgpuBackend.shouldExecuteOnCPU([a6, b2])) && cpuKernelImpl != null) {
+      const aData = webgpuBackend.tensorMap.get(a6.dataId).values;
+      const bData = webgpuBackend.tensorMap.get(b2.dataId).values;
+      const decodedAVals = a6.dtype === "string" ? backend_util_exports.fromUint8ToStringArray(aData) : aData;
+      const decodedBVals = a6.dtype === "string" ? backend_util_exports.fromUint8ToStringArray(bData) : bData;
+      const [outValues, outShape] = cpuKernelImpl(a6.shape, b2.shape, decodedAVals, decodedBVals, $dtype);
+      return webgpuBackend.makeTensorInfo(outShape, $dtype, outValues);
+    }
+    const program = getBinaryProgram(opSnippet, a6.shape, b2.shape);
+    return webgpuBackend.runWebGPUProgram(program, [a6, b2], $dtype);
+  };
+}
+var { addImpl: addImplCPU2, ceilImpl: ceilImplCPU2, concatImpl: concatImplCPU2, equalImpl: equalImplCPU2, expImpl: expImplCPU2, expm1Impl: expm1ImplCPU2, floorImpl: floorImplCPU2, gatherNdImpl: gatherNdImplCPU2, gatherV2Impl: gatherV2ImplCPU2, greaterEqualImpl: greaterEqualImplCPU2, greaterImpl: greaterImplCPU2, lessEqualImpl: lessEqualImplCPU2, lessImpl: lessImplCPU2, logImpl: logImplCPU2, maxImpl: maxImplCPU2, maximumImpl: maximumImplCPU2, minimumImpl: minimumImplCPU2, multiplyImpl: multiplyImplCPU2, negImpl: negImplCPU2, notEqualImpl: notEqualImplCPU2, prodImpl: prodImplCPU2, rangeImpl: rangeImplCPU2, rsqrtImpl: rsqrtImplCPU2, simpleAbsImpl: simpleAbsImplCPU2, sliceImpl: sliceImplCPU2, stridedSliceImpl: stridedSliceImplCPU2, stringNGramsImpl: stringNGramsImplCPU2, subImpl: subImplCPU2, tileImpl: tileImplCPU2, transposeImpl: transposeImplCPU2, uniqueImpl: uniqueImplCPU2 } = shared_exports;
+var abs4 = unaryKernelFunc3({ opType: UnaryOpType.ABS, cpuKernelImpl: simpleAbsImplCPU2 });
+var absConfig4 = {
+  kernelName: Abs,
+  backendName: "webgpu",
+  kernelFunc: abs4
+};
+var addKernelFunc2 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.ADD,
+  cpuKernelImpl: addImplCPU2,
+  supportsComplex: true
+});
+var addConfig4 = {
+  kernelName: Add,
+  backendName: "webgpu",
+  kernelFunc: addKernelFunc2
+};
+var AddNPackedProgram2 = class {
+  constructor(shapes) {
+    this.workPerThread = 4;
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = shapes[0];
+    this.variableNames = shapes.map((_2, i2) => `T${i2}`);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    this.shaderKey = "addN";
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const snippets = [];
+    this.variableNames.forEach((variable2) => {
+      snippets.push(`let v${variable2} = get${variable2}AtOutCoordsByCoords(coords);`);
+    });
+    const operation = this.variableNames.map((variable2) => {
+      return `v${variable2}`;
+    }).join(" + ");
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        for (var i = 0; i < ${this.workPerThread}; i = i + 1) {
+          let flatIndex = index * ${this.workPerThread} + i;
+          if (flatIndex < uniforms.size) {
+            let coords = getCoordsFromFlatIndex(flatIndex);
+            ${snippets.join("\n        ")}
+            setOutputFlat(flatIndex, ${operation});
+          }
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+function addN4(args) {
+  const { inputs, backend: backend22 } = args;
+  const tensors = inputs;
+  if (tensors.length === 1) {
+    return identity5({ inputs: { x: tensors[0] }, backend: backend22 });
+  }
+  const dtype = tensors.map((t2) => t2.dtype).reduce((d1, d2) => upcastType(d1, d2));
+  const shapes = tensors.map((t2) => t2.shape);
+  const program = new AddNPackedProgram2(shapes);
+  return backend22.runWebGPUProgram(program, tensors, dtype);
+}
+var addNConfig4 = {
+  kernelName: AddN,
+  backendName: "webgpu",
+  kernelFunc: addN4
+};
+var ArgMinMaxProgram2 = class {
+  constructor(inputShape, axis, reduceType) {
+    this.variableNames = ["x"];
+    this.uniforms = "axis : i32;";
+    const axes = [axis];
+    backend_util_exports.assertAxesAreInnerMostDims("arg" + reduceType.charAt(0).toUpperCase() + reduceType.slice(1), axes, inputShape.length);
+    this.op = reduceType === "min" ? "<" : ">";
+    const [outputShape, reduceShape] = backend_util_exports.computeOutAndReduceShapes(inputShape, axes);
+    this.outputShape = outputShape.length === 0 ? [1] : outputShape;
+    const reduceSize = util_exports.sizeFromShape(reduceShape);
+    this.reductionFactor = 2;
+    const xMaxThreads = 256;
+    const xThreads = Math.min(Math.ceil(reduceSize / this.reductionFactor), xMaxThreads);
+    this.workGroupSize = [xThreads, 1, 1];
+    this.dispatchLayout = { x: [], y: this.outputShape.map((d2, i2) => i2) };
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.inputShape = inputShape;
+    this.shaderKey = `argMinMax${this.op}`;
+  }
+  getUserCode() {
+    const reduceInSharedMemory = this.workGroupSize[0] > 1;
+    const sharedMemorySnippet = `
+      var<workgroup> xBestIndices : array<i32, ${this.workGroupSize[0]}>;
+      var<workgroup> xBestValues : array<f32, ${this.workGroupSize[0]}>;
+    `;
+    const sharedMemoryReduceSnippet = `
+      xBestIndices[localId.x] = bestIndex;
+      xBestValues[localId.x] = bestValue;
+
+      for(var currentSize = WorkGroupSize; currentSize > 1; currentSize = DIV_CEIL(currentSize, ${this.reductionFactor})) {
+        workgroupBarrier();
+
+        for (var w = 0; w < ${this.reductionFactor}; w = w + 1) {
+          let i = i32(localId.x) * ${this.reductionFactor} + w;
+          if (i < currentSize) {
+            let candidateIndex = xBestIndices[i];
+            let candidate = xBestValues[i];
+            if(candidate ${this.op} bestValue && !isNanCustom(candidate)) {
+              bestValue = candidate;
+              bestIndex = candidateIndex;
+            }
+          }
+        }
+
+        xBestIndices[localId.x] = bestIndex;
+        xBestValues[localId.x] = bestValue;
+      }
+
+      if (localId.x == 0u) {
+        setOutputFlatI32(flatOutputIndex, i32(bestIndex));
+      }
+    `;
+    const outputCoordsType = getCoordsDataType2(this.outputShape.length);
+    const indexOutputCoords = (outputCoords, index) => {
+      if (this.outputShape.length === 1) {
+        return outputCoords;
+      } else {
+        return `${outputCoords}[${index}]`;
+      }
+    };
+    const indexInputShape = (index) => {
+      if (this.inputShape.length === 1) {
+        return "uniforms.xShape";
+      } else {
+        return `uniforms.xShape[${index}]`;
+      }
+    };
+    const userCode = `
+      fn DIV_CEIL(a : i32, b : i32) -> i32 {
+        return ((a - 1) / b + 1);
+      }
+
+      let WorkGroupSize = ${this.workGroupSize[0]};
+
+      ${reduceInSharedMemory ? sharedMemorySnippet : ""}
+
+      // In order to get a flattened index into the input tensor, we need to
+      // add back the index along the reduced dimension to |outputCoords|.
+      // This function outputs the offset to the first value along
+      // |axis| and the stride to get the next value of the input along |axis|.
+      fn getInputCoordInfo(globalId : vec3<u32>, globalIndex : i32) -> vec2<i32>{
+        let outputCoords : ${outputCoordsType} = getOutputCoords(globalId, globalIndex);
+        var i = ${this.outputShape.length - 1};
+
+        var stride = 1;
+        var inputStride = 1;
+        var offset = 0;
+
+        for (var r = 1; r <= ${this.inputShape.length}; r = r + 1) {
+          let length = ${indexInputShape(`${this.inputShape.length} - r`)};
+          if (${this.inputShape.length} - r == uniforms.axis) {
+            inputStride = stride;
+          } else {
+            offset = offset + ${indexOutputCoords("outputCoords", "i")} * stride;
+            i = i - 1;
+          }
+          stride = stride * length;
+        }
+
+        return vec2<i32>(offset, inputStride);
+      }
+
+      fn getInputIndex(coordInfo : vec2<i32>, index : i32) -> i32{
+        return coordInfo[0] + coordInfo[1] * index;
+      }
+
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let coordInfo = getInputCoordInfo(globalId, index);
+
+        var bestIndex = 0;
+        var bestValue = x.numbers[getInputIndex(coordInfo, bestIndex)];
+
+        let Length = ${indexInputShape("uniforms.axis")};
+        let WorkPerThread = DIV_CEIL(Length, WorkGroupSize);
+
+        for (var w = 0; w < WorkPerThread; w = w + 1) {
+          let i = i32(globalId.x) * WorkPerThread + w;
+          if (i < Length) {
+            let candidate = x.numbers[getInputIndex(coordInfo, i)];
+            if (candidate ${this.op} bestValue && !isNanCustom(f32(candidate))) {
+              bestValue = candidate;
+              bestIndex = i;
+            }
+          }
+        }
+
+        let flatOutputIndex = i32(globalId.y);
+        ${reduceInSharedMemory ? sharedMemoryReduceSnippet : "setOutputFlatI32(flatOutputIndex, bestIndex);"}
+      }
+    `;
+    return userCode;
+  }
+};
+var TransposeSharedProgram = class {
+  constructor(aShape, newDim) {
+    this.variableNames = ["A"];
+    this.workGroupSize = [16, 16, 1];
+    const outputShape = new Array(aShape.length);
+    for (let i2 = 0; i2 < outputShape.length; i2++) {
+      outputShape[i2] = aShape[newDim[i2]];
+    }
+    this.outputShape = outputShape;
+    this.dispatchLayout = { x: [0], y: [1] };
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [1, 1, 1]);
+    this.shaderKey = "transposeShared";
+  }
+  getUserCode() {
+    const userCode = `
+      let TILE_DIM = ${this.workGroupSize[0]};
+      var<workgroup> tile : array<array<f32, ${this.workGroupSize[0] + 1}>, ${this.workGroupSize[0]}>;
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let workGroupID = (globalId - localId)/vec3<u32>(${this.workGroupSize[0]}u, ${this.workGroupSize[1]}u, ${this.workGroupSize[2]}u);
+        var x = i32(workGroupID.x) * TILE_DIM + i32(localId.x);
+        var y = i32(workGroupID.y) * TILE_DIM + i32(localId.y);
+        let width = uniforms.outShape[0];
+        let height = uniforms.outShape[1];
+        if (x < width && y < height) {
+          tile[localId.y][localId.x] =
+              A.numbers[y * width + x];
+        }
+        workgroupBarrier();
+
+        x = i32(workGroupID.y) * TILE_DIM + i32(localId.x);
+        y = i32(workGroupID.x) * TILE_DIM + i32(localId.y);
+        if (x < height && y < width) {
+          setOutputFlat((y * height + x), tile[localId.x]
+            [localId.y]);
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+var TransposeProgram2 = class {
+  constructor(aShape, newDim) {
+    this.variableNames = ["A"];
+    this.workPerThread = 4;
+    this.workGroupSize = [64, 1, 1];
+    const outputShape = new Array(aShape.length);
+    for (let i2 = 0; i2 < outputShape.length; i2++) {
+      outputShape[i2] = aShape[newDim[i2]];
+    }
+    this.outputShape = outputShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    this.newDim = newDim;
+    this.shaderKey = `transpose_${newDim}`;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const dtype = getCoordsDataType2(this.outputShape.length);
+    const switched = getSwitchedCoords2(this.newDim);
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+
+        for(var i = 0; i < ${this.workPerThread}; i = i + 1) {
+          let flatIndex = index * ${this.workPerThread} + i;
+          if(flatIndex < uniforms.size) {
+            let resRC = getCoordsFromFlatIndex(flatIndex);
+            setOutputFlat(flatIndex, A.numbers[getFlatIndex${this.outputShape.length}D(
+              ${dtype}(${switched}), uniforms.aShape)]);
+          }
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+function getSwitchedCoords2(newDim) {
+  const rank = newDim.length;
+  if (rank > 4) {
+    throw Error(`Transpose for rank ${rank} is not yet supported`);
+  }
+  const switchedCoords = new Array(rank);
+  for (let i2 = 0; i2 < newDim.length; i2++) {
+    switchedCoords[newDim[i2]] = `resRC[${i2}]`;
+  }
+  return switchedCoords.join();
+}
+function transpose5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { perm } = attrs;
+  const webgpuBackend = backend22;
+  const xRank = x2.shape.length;
+  const newShape = new Array(xRank);
+  for (let i2 = 0; i2 < newShape.length; i2++) {
+    newShape[i2] = x2.shape[perm[i2]];
+  }
+  if (backend22.shouldExecuteOnCPU([x2])) {
+    const xData = webgpuBackend.tensorMap.get(x2.dataId);
+    const values = xData.values;
+    const outValues = transposeImplCPU2(values, x2.shape, x2.dtype, perm, newShape);
+    return backend22.makeTensorInfo(newShape, x2.dtype, outValues);
+  }
+  if (x2.shape.length === 2 && util_exports.arraysEqual(perm, [1, 0])) {
+    const program2 = new TransposeSharedProgram(x2.shape, perm);
+    return webgpuBackend.runWebGPUProgram(program2, [x2], x2.dtype);
+  }
+  const program = new TransposeProgram2(x2.shape, perm);
+  return webgpuBackend.runWebGPUProgram(program, [x2], x2.dtype);
+}
+var transposeConfig4 = {
+  kernelName: Transpose,
+  backendName: "webgpu",
+  kernelFunc: transpose5
+};
+function argMax4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { axis } = attrs;
+  let axes = util_exports.parseAxisParam(axis, x2.shape);
+  const permutedAxes = backend_util_exports.getAxesPermutation(axes, x2.shape.length);
+  let $x = x2;
+  const intermediateTensorInfos = [];
+  if (permutedAxes != null) {
+    $x = transpose5({ inputs: { x: x2 }, backend: backend22, attrs: { perm: permutedAxes } });
+    intermediateTensorInfos.push($x);
+    axes = backend_util_exports.getInnerMostAxes(axes.length, $x.shape.length);
+  }
+  backend_util_exports.assertAxesAreInnerMostDims("argMax", [axes[0]], $x.shape.length);
+  const program = new ArgMinMaxProgram2($x.shape, axes[0], "max");
+  const uniformData = [{ type: "int32", data: [axes[0]] }];
+  const out = backend22.runWebGPUProgram(program, [$x], "int32", uniformData);
+  intermediateTensorInfos.forEach((t2) => backend22.disposeData(t2.dataId));
+  return out;
+}
+var argMaxConfig4 = {
+  kernelName: ArgMax,
+  backendName: "webgpu",
+  kernelFunc: argMax4
+};
+function argMin4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { axis } = attrs;
+  let axes = util_exports.parseAxisParam(axis, x2.shape);
+  const permutedAxes = backend_util_exports.getAxesPermutation(axes, x2.shape.length);
+  let $x = x2;
+  const intermediateTensorInfos = [];
+  if (permutedAxes != null) {
+    $x = transpose5({ inputs: { x: x2 }, backend: backend22, attrs: { perm: permutedAxes } });
+    intermediateTensorInfos.push($x);
+    axes = backend_util_exports.getInnerMostAxes(axes.length, $x.shape.length);
+  }
+  backend_util_exports.assertAxesAreInnerMostDims("argMin", [axes[0]], $x.shape.length);
+  const program = new ArgMinMaxProgram2($x.shape, axes[0], "min");
+  const uniformData = [{ type: "int32", data: [axes[0]] }];
+  const out = backend22.runWebGPUProgram(program, [$x], "int32", uniformData);
+  intermediateTensorInfos.forEach((t2) => backend22.disposeData(t2.dataId));
+  return out;
+}
+var argMinConfig3 = {
+  kernelName: ArgMin,
+  backendName: "webgpu",
+  kernelFunc: argMin4
+};
+var Pool2DProgram2 = class {
+  constructor(convInfo, poolType) {
+    this.variableNames = ["x"];
+    this.uniforms = `stride : vec2<i32>; pad : vec2<i32>; dilation : vec2<i32>; convDims : vec2<i32>; filterDims : vec2<i32>;`;
+    this.workGroupSize = [128, 1, 1];
+    this.outputShape = convInfo.outShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.shaderKey = `pool2D_${poolType}`;
+    this.poolType = poolType;
+  }
+  getUserCode() {
+    let updateSnippet = `resultValue = max(value, resultValue);`;
+    if (this.poolType === "avg") {
+      updateSnippet = `resultValue = resultValue + value; count = count + 1.0;`;
+    }
+    let returnValue = `resultValue`;
+    if (this.poolType === "avg") {
+      returnValue = `resultValue / count`;
+    }
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let coords = getOutputCoords(globalId, index);
+        if (coordsInBounds4D(coords, uniforms.outShape)) {
+          let batch = coords[0];
+          let xRCCorner = vec2<i32>(coords.yz) * uniforms.stride - uniforms.pad;
+          let xRCorner = xRCCorner.x;
+          let xCCorner = xRCCorner.y;
+
+          var resultValue = ${this.poolType === "avg" ? "0.0" : "-1.0 / pow(10.0, -20.0)"};
+          var count = 0.0;
+
+          for (var wR = 0; wR < uniforms.filterDims.x; wR = wR + uniforms.dilation.x) {
+            let xR = xRCorner + wR;
+
+            if (xR < 0 || xR >= uniforms.convDims.x) {
+              continue;
+            }
+
+            for (var wC = 0; wC < uniforms.filterDims.y; wC = wC + uniforms.dilation.y) {
+              let xC = xCCorner + wC;
+              if (xC < 0 || xC >= uniforms.convDims.y) {
+                continue;
+              }
+
+              let value = getX(batch, xR, xC, coords[3]);
+              ${updateSnippet}
+            }
+          }
+
+          setOutput(batch, coords[1], coords[2], coords[3], ${returnValue});
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+var PoolWithFilterSizeEqualsOneProgram = class {
+  constructor(convInfo) {
+    this.variableNames = ["x"];
+    this.uniforms = `stride : vec2<i32>;`;
+    this.workGroupSize = [256, 1, 1];
+    this.outputShape = convInfo.outShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.shaderKey = "poolWithFilterSizeEqualsOne";
+  }
+  getUserCode() {
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let coords = getOutputCoords(globalId, index);
+        let batch = coords[0];
+        let d = coords[3];
+
+        if (all(coords < uniforms.outShape)) {
+          let xRCCorner = coords.yz * uniforms.stride;
+          let xRCorner = xRCCorner.x;
+          let xCCorner = xRCCorner.y;
+
+          let value = getX(batch, xRCorner, xCCorner, d);
+          setOutput(batch, coords[1], coords[2], d, value);
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+function avgPool5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const dilations = 1;
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode);
+  if (convInfo.filterWidth === 1 && convInfo.filterHeight === 1 && util_exports.arraysEqual(convInfo.inShape, convInfo.outShape)) {
+    return identity5({ inputs: { x: x2 }, backend: backend22 });
+  }
+  let program;
+  const dimensions = [{ type: "int32", data: [convInfo.strideHeight, convInfo.strideWidth] }];
+  if (convInfo.filterHeight === 1 && convInfo.filterWidth === 1) {
+    program = new PoolWithFilterSizeEqualsOneProgram(convInfo);
+  } else {
+    program = new Pool2DProgram2(convInfo, "avg");
+    dimensions.push({ type: "int32", data: [convInfo.padInfo.top, convInfo.padInfo.left] }, {
+      type: "int32",
+      data: [convInfo.dilationHeight, convInfo.dilationWidth]
+    }, { type: "int32", data: [convInfo.inHeight, convInfo.inWidth] }, {
+      type: "int32",
+      data: [convInfo.effectiveFilterHeight, convInfo.effectiveFilterWidth]
+    });
+  }
+  return backend22.runWebGPUProgram(program, [x2], x2.dtype, dimensions);
+}
+var avgPoolConfig4 = {
+  kernelName: AvgPool,
+  backendName: "webgpu",
+  kernelFunc: avgPool5
+};
+function batchMatMul4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { a: a6, b: b2 } = inputs;
+  const { transposeA, transposeB } = attrs;
+  return batchMatMulImpl2({ a: a6, b: b2, transposeA, transposeB, backend: backend22 });
+}
+var batchMatMulConfig4 = {
+  kernelName: BatchMatMul,
+  backendName: "webgpu",
+  kernelFunc: batchMatMul4
+};
+var SliceProgram2 = class {
+  constructor(start, destSize) {
+    this.variableNames = ["source"];
+    this.workPerThread = 1;
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = destSize;
+    this.rank = destSize.length;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    this.start = start;
+    this.uniforms = `start : ${getCoordsDataType2(start.length)}; `;
+    this.shaderKey = "slice";
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const dtype = getCoordsDataType2(this.rank);
+    const sourceCoords = getCoords3(this.rank);
+    let coordSum;
+    if (this.start.length === 1) {
+      coordSum = this.outputShape.map((_2, i2) => {
+        return `sourceLoc = uniforms.start + coords;`;
+      });
+    } else {
+      coordSum = this.outputShape.map((_2, i2) => {
+        return `sourceLoc.${coords2[i2]} = uniforms.start[${i2}] + coords.${coords2[i2]};`;
+      });
+    }
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        if (index < uniforms.size) {
+          var sourceLoc : ${dtype};
+          let coords = getOutputCoords(globalId, index);
+          ${coordSum.join("\n")}
+          setOutputFlat(index, getSource(${sourceCoords}));
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+var coords2 = ["x", "y", "z", "w", "u", "v"];
+function getCoords3(rank) {
+  if (rank === 1) {
+    return "sourceLoc";
+  } else if (rank <= 6) {
+    return coords2.slice(0, rank).map((coord) => `sourceLoc.${coord}`).join(",");
+  } else {
+    throw Error(`Slicing for rank ${rank} is not yet supported`);
+  }
+}
+function slice5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { begin, size: size2 } = attrs;
+  const [$begin, $size] = slice_util_exports.parseSliceParams(x2, begin, size2);
+  slice_util_exports.assertParamsValid(x2, $begin, $size);
+  if (backend22.shouldExecuteOnCPU([x2]) || x2.dtype === "string") {
+    const xBufferInfo = backend22.tensorMap.get(x2.dataId);
+    const outValues = sliceImplCPU2(xBufferInfo.values, $begin, $size, x2.shape, x2.dtype);
+    return backend22.makeTensorInfo($size, x2.dtype, outValues);
+  }
+  if (util_exports.sizeFromShape($size) === 0) {
+    return backend22.makeTensorInfo($size, x2.dtype, []);
+  }
+  const program = new SliceProgram2($begin, $size);
+  const uniformData = [{ type: "int32", data: $begin }];
+  return backend22.runWebGPUProgram(program, [x2], x2.dtype, uniformData);
+}
+var sliceConfig4 = {
+  kernelName: Slice,
+  backendName: "webgpu",
+  kernelFunc: slice5
+};
+var batchToSpaceND5 = (args) => {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { blockShape, crops } = attrs;
+  util_exports.assert(x2.shape.length <= 4, () => "batchToSpaceND for rank > 4 with a WebGPU backend not implemented yet");
+  const prod6 = blockShape.reduce((a6, b2) => a6 * b2);
+  const reshaped = backend_util_exports.getReshaped(x2.shape, blockShape, prod6);
+  const permuted = backend_util_exports.getPermuted(reshaped.length, blockShape.length);
+  const reshapedPermuted = backend_util_exports.getReshapedPermuted(x2.shape, blockShape, prod6);
+  const sliceBeginCoords = backend_util_exports.getSliceBeginCoords(crops, blockShape.length);
+  const sliceSize = backend_util_exports.getSliceSize(reshapedPermuted, crops, blockShape.length);
+  const toDispose = [];
+  const reshapedIntermediate = reshape6({ inputs: { x: x2 }, backend: backend22, attrs: { shape: reshaped } });
+  const transposedIntermediate = transpose5({ inputs: { x: reshapedIntermediate }, backend: backend22, attrs: { perm: permuted } });
+  const reshapedIntermediate2 = reshape6({
+    inputs: { x: transposedIntermediate },
+    backend: backend22,
+    attrs: { shape: reshapedPermuted }
+  });
+  const sliced = slice5({
+    inputs: { x: reshapedIntermediate2 },
+    backend: backend22,
+    attrs: { begin: sliceBeginCoords, size: sliceSize }
+  });
+  toDispose.push(reshapedIntermediate);
+  toDispose.push(transposedIntermediate);
+  toDispose.push(reshapedIntermediate2);
+  toDispose.forEach((t2) => backend22.disposeData(t2.dataId));
+  return sliced;
+};
+var batchToSpaceNDConfig4 = {
+  kernelName: BatchToSpaceND,
+  backendName: "webgpu",
+  kernelFunc: batchToSpaceND5
+};
+var notEqual4 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.NOT_EQUAL,
+  dtype: "bool",
+  cpuKernelImpl: notEqualImplCPU2
+});
+var notEqualConfig4 = {
+  kernelName: NotEqual,
+  backendName: "webgpu",
+  kernelFunc: notEqual4
+};
+function real4(args) {
+  const { inputs, backend: backend22 } = args;
+  const { input: input2 } = inputs;
+  const inputData = backend22.tensorMap.get(input2.dataId);
+  return identity5({ inputs: { x: inputData.complexTensorInfos.real }, backend: backend22 });
+}
+var realConfig3 = {
+  kernelName: Real,
+  backendName: "webgpu",
+  kernelFunc: real4
+};
+function int2(input2, backend22) {
+  const program = new UnaryOpProgram2(input2.shape, UnaryOpType.TO_INT);
+  const output = backend22.runWebGPUProgram(program, [input2], "int32");
+  return { dataId: output.dataId, shape: output.shape, dtype: output.dtype };
+}
+function cast6(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { dtype } = attrs;
+  if (dtype === "complex64") {
+    if (x2.dtype === "complex64") {
+      return identity5({ inputs: { x: x2 }, backend: backend22 });
+    }
+    const zerosTensor = zeros(x2.shape);
+    const floatX = cast6({ inputs: { x: x2 }, backend: backend22, attrs: { dtype: "float32" } });
+    const result = complex4({ inputs: { real: floatX, imag: zerosTensor }, backend: backend22 });
+    zerosTensor.dispose();
+    backend22.disposeData(floatX.dataId);
+    return result;
+  }
+  if (x2.dtype === "complex64") {
+    const realPart = real4({ inputs: { input: x2 }, backend: backend22 });
+    const result = cast6({ inputs: { x: realPart }, backend: backend22, attrs: { dtype } });
+    backend22.disposeData(realPart.dataId);
+    return result;
+  }
+  if (!util_exports.hasEncodingLoss(x2.dtype, dtype)) {
+    const result = identity5({ inputs: { x: x2 }, backend: backend22 });
+    return { dataId: result.dataId, shape: result.shape, dtype };
+  }
+  if (dtype === "int32") {
+    return int2(x2, backend22);
+  }
+  if (dtype === "bool") {
+    const zerosTensorInfo = backend22.makeTensorInfo([], "bool", util_exports.getTypedArrayFromDType("bool", 1));
+    const binaryInputs = { a: x2, b: zerosTensorInfo };
+    const result = notEqual4({ inputs: binaryInputs, backend: backend22 });
+    backend22.disposeData(zerosTensorInfo.dataId);
+    return result;
+  }
+  throw new Error(`Error in Cast: failed to cast ${x2.dtype} to ${dtype}`);
+}
+var castConfig4 = {
+  kernelName: Cast,
+  backendName: "webgpu",
+  kernelFunc: cast6
+};
+var ceil4 = unaryKernelFunc3({ opType: UnaryOpType.CEIL, cpuKernelImpl: ceilImplCPU2 });
+var ceilConfig4 = {
+  kernelName: Ceil,
+  backendName: "webgpu",
+  kernelFunc: ceil4
+};
+var ClipVec4Program = class {
+  constructor(outputShape) {
+    this.variableNames = ["A"];
+    this.uniforms = "minVal : f32; maxVal : f32;";
+    this.workPerThread = 4;
+    this.workGroupSize = [64, 1, 1];
+    this.isVec4 = true;
+    this.outputShape = outputShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    this.shaderKey = "clipVec4";
+    this.size = util_exports.sizeFromShape(this.outputShape) / 4;
+  }
+  getUserCode() {
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        if(index < uniforms.size) {
+          let value = getAAtOutCoordsByGlobalId(globalId, index);
+          var clampedValue : vec4<f32>;
+          for (var i = 0; i < 4; i = i + 1) {
+            if (isNanCustom(value[i])) {
+              clampedValue[i] = value[i];
+            } else {
+              clampedValue[i] = clamp(value[i], uniforms.minVal, uniforms.maxVal);
+            }
+          }
+
+          setOutputFlat(index, clampedValue);
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+var ClipProgram2 = class {
+  constructor(outputShape) {
+    this.variableNames = ["A"];
+    this.uniforms = "minVal : f32; maxVal : f32;";
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = outputShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.shaderKey = "clip";
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        if(index < uniforms.size) {
+          let value = getAAtOutCoordsByGlobalId(globalId, index);
+          if (isNanCustom(value)) {
+            setOutputFlat(index, value);
+            return;
+          }
+          setOutputFlat(index, clamp(value, uniforms.minVal, uniforms.maxVal));
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+function clipByValue3(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { clipValueMin, clipValueMax } = attrs;
+  let program;
+  const uniformData = [
+    { type: "float32", data: [clipValueMin] },
+    { type: "float32", data: [clipValueMax] }
+  ];
+  if (util_exports.sizeFromShape(x2.shape) % 4 === 0) {
+    program = new ClipVec4Program(x2.shape);
+  } else {
+    program = new ClipProgram2(x2.shape);
+  }
+  return backend22.runWebGPUProgram(program, [x2], x2.dtype, uniformData);
+}
+var clipByValueConfig3 = {
+  kernelName: ClipByValue,
+  backendName: "webgpu",
+  kernelFunc: clipByValue3
+};
+var ConcatProgram2 = class {
+  constructor(shapes) {
+    this.workPerThread = 4;
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = backend_util_exports.computeOutShape(shapes, 1);
+    this.variableNames = shapes.map((_2, i2) => `T${i2}`);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    this.shapes = shapes;
+    this.shaderKey = `concat${shapes}`;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const offsets = new Array(this.shapes.length - 1);
+    const snippets = [];
+    if (offsets.length > 0) {
+      offsets[0] = this.shapes[0][1];
+      for (let i2 = 1; i2 < offsets.length; i2++) {
+        offsets[i2] = offsets[i2 - 1] + this.shapes[i2][1];
+      }
+      snippets.push(`if (yC < ${offsets[0]}){ setOutput(coords.x, coords.y, getT0(yR, yC)); }`);
+      for (let i2 = 1; i2 < offsets.length; i2++) {
+        const shift = offsets[i2 - 1];
+        snippets.push(`elseif (yC < ${offsets[i2]}){ setOutput(coords.x, coords.y, getT${i2}(yR, yC - ${shift})); }`);
+      }
+      const lastIndex = offsets.length;
+      const lastShift = offsets[offsets.length - 1];
+      snippets.push(`else { setOutput(coords.x, coords.y, getT${lastIndex}(yR, yC - ${lastShift})); }`);
+    } else {
+      snippets.push(`setOutput(coords.x, coords.y, getT0(yR, yC));`);
+    }
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        for(var i = 0; i < ${this.workPerThread}; i = i + 1) {
+          let flatIndex = index * ${this.workPerThread} + i;
+          if(flatIndex < uniforms.size) {
+            let coords = getCoordsFromFlatIndex(flatIndex);
+            let yR = coords.x;
+            let yC = coords.y;
+
+            ${snippets.join("\n        ")}
+          }
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+function imag4(args) {
+  const { inputs, backend: backend22 } = args;
+  const { input: input2 } = inputs;
+  const inputData = backend22.tensorMap.get(input2.dataId);
+  return identity5({ inputs: { x: inputData.complexTensorInfos.imag }, backend: backend22 });
+}
+var imagConfig3 = {
+  kernelName: Imag,
+  backendName: "webgpu",
+  kernelFunc: imag4
+};
+function concatImpl3(inputs, axis, backend22) {
+  const dtype = inputs[0].dtype;
+  if (dtype === "complex64") {
+    const reals = inputs.map((t2) => real4({ inputs: { input: t2 }, backend: backend22 }));
+    const imags = inputs.map((t2) => imag4({ inputs: { input: t2 }, backend: backend22 }));
+    const realConcated = concatImpl3(reals, axis, backend22);
+    const imagConcated = concatImpl3(imags, axis, backend22);
+    const result = complex4({ inputs: { real: realConcated, imag: imagConcated }, backend: backend22 });
+    reals.forEach((r2) => backend22.disposeData(r2.dataId));
+    imags.forEach((i2) => backend22.disposeData(i2.dataId));
+    backend22.disposeData(realConcated.dataId);
+    backend22.disposeData(imagConcated.dataId);
+    return result;
+  }
+  let runOnCpu = backend22.shouldExecuteOnCPU(inputs);
+  if (dtype === "string") {
+    runOnCpu = true;
+  }
+  if (runOnCpu) {
+    const tensors2D2 = inputs.map((t2) => {
+      const innerSize = util_exports.sizeFromShape(t2.shape.slice(axis));
+      const shape = [-1, innerSize];
+      return reshape6({ inputs: { x: t2 }, backend: backend22, attrs: { shape } });
+    });
+    const inputsValShapes = tensors2D2.map((t2) => {
+      return { vals: backend22.readSync(t2.dataId), shape: t2.shape };
+    });
+    const outShape2 = backend_util_exports.computeOutShape(tensors2D2.map((t2) => t2.shape), 1);
+    const simplyConcat = tensors2D2[0].shape[0] === 1;
+    const outVals = concatImplCPU2(inputsValShapes, outShape2, dtype, simplyConcat);
+    const finalOutShape = backend_util_exports.computeOutShape(inputs.map((t2) => t2.shape), axis);
+    const outInfo = backend22.makeTensorInfo(finalOutShape, dtype, outVals);
+    tensors2D2.forEach((t2) => backend22.disposeData(t2.dataId));
+    return outInfo;
+  }
+  const { tensors2D, outShape } = computeTensors2D2(inputs, axis, backend22);
+  const program = new ConcatProgram2(tensors2D.map((t2) => t2.shape));
+  const res2 = backend22.runWebGPUProgram(program, tensors2D, tensors2D[0].dtype);
+  tensors2D.forEach((r2) => backend22.disposeData(r2.dataId));
+  const reshapedResult = reshape6({ inputs: { x: res2 }, backend: backend22, attrs: { shape: outShape } });
+  backend22.disposeData(res2.dataId);
+  return reshapedResult;
+}
+function computeTensors2D2(inputs, axis, backend22) {
+  const outShape = backend_util_exports.computeOutShape(inputs.map((t2) => t2.shape), axis);
+  const tensors2D = inputs.map((t2) => reshape6({
+    inputs: { x: t2 },
+    backend: backend22,
+    attrs: {
+      shape: [
+        util_exports.sizeFromShape(t2.shape.slice(0, axis)),
+        util_exports.sizeFromShape(t2.shape.slice(axis))
+      ]
+    }
+  }));
+  return { tensors2D, outShape };
+}
+function concat5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { axis } = attrs;
+  const $axis = util_exports.parseAxisParam(axis, inputs[0].shape)[0];
+  const outShape = backend_util_exports.computeOutShape(inputs.map((t2) => t2.shape), $axis);
+  if (util_exports.sizeFromShape(outShape) === 0) {
+    return backend22.makeTensorInfo(outShape, inputs[0].dtype, []);
+  }
+  const $inputs = inputs.filter((t2) => util_exports.sizeFromShape(t2.shape) > 0);
+  if ($inputs.length === 1) {
+    return identity5({ inputs: { x: $inputs[0] }, backend: backend22 });
+  }
+  const shapes = $inputs.map((t2) => t2.shape);
+  backend_util_exports.assertParamsConsistent(shapes, $axis);
+  return concatImpl3($inputs, $axis, backend22);
+}
+var concatConfig4 = {
+  kernelName: Concat,
+  backendName: "webgpu",
+  kernelFunc: concat5
+};
+var Im2ColProgram = class {
+  constructor(outputShape, isChannelsLast) {
+    this.variableNames = ["A"];
+    this.uniforms = `pad : vec2<i32>; stride : vec2<i32>; dilation : vec2<i32>; outWidth : i32; itemsPerBlockRow : i32;
+      inChannels : i32;`;
+    this.workPerThread = 4;
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = outputShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    this.isChannelsLast = isChannelsLast;
+    this.shaderKey = `im2col_${this.isChannelsLast}`;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const rowDim = this.isChannelsLast ? 0 : 1;
+    const colDim = this.isChannelsLast ? 1 : 2;
+    const userCode = `
+    ${getMainHeaderString()} {
+      ${getGlobalIndexString()}
+
+      for(var i = 0; i<${this.workPerThread}; i = i + 1) {
+        let flatIndex = index * ${this.workPerThread} + i;
+
+        let rc = getCoordsFromFlatIndex(flatIndex);
+
+        if(flatIndex < uniforms.size) {
+          let blockIndex = rc[0];
+          let pos = rc[1];
+
+          let offsetY = blockIndex / uniforms.outWidth * uniforms.stride[1] - uniforms.pad[1];
+          let d0 = offsetY + uniforms.dilation[1] * pos / uniforms.itemsPerBlockRow;
+          var value = 0.0;
+          if(d0 < uniforms.aShape[${rowDim}] && d0 >= 0) {
+            let offsetX = (blockIndex % uniforms.outWidth) * uniforms.stride[0] -
+              uniforms.pad[0];
+            let d1 = offsetX + uniforms.dilation[0] * ((pos %
+              uniforms.itemsPerBlockRow) / uniforms.inChannels);
+            let ch = pos % uniforms.inChannels;
+            if(d1 < uniforms.aShape[${colDim}] && d1 >= 0) {
+              value = getA(d0, d1, ch);
+            }
+          }
+          setOutputFlat(flatIndex, value);
+        }
+      }
+    }
+  `;
+    return userCode;
+  }
+};
+function conv2dByMatMul2({ x: x2, filter, convInfo, backend: backend22, bias = null, preluActivationWeights = null, leakyreluAlpha = 0, activation: activation2 = null }) {
+  const xShape = x2.shape;
+  const isChannelsLast = convInfo.dataFormat === "channelsLast";
+  const transposeA = false;
+  const transposeB = false;
+  const targetShape = isChannelsLast ? xShape[0] * xShape[1] * xShape[2] : xShape[0] * xShape[2] * xShape[3];
+  const xReshaped = reshape6({
+    inputs: { x: x2 },
+    backend: backend22,
+    attrs: { shape: [1, targetShape, convInfo.inChannels] }
+  });
+  const filterReshaped = reshape6({
+    inputs: { x: filter },
+    backend: backend22,
+    attrs: { shape: [1, convInfo.inChannels, convInfo.outChannels] }
+  });
+  const result = batchMatMulImpl2({
+    a: xReshaped,
+    b: filterReshaped,
+    transposeA,
+    transposeB,
+    backend: backend22,
+    bias,
+    activation: activation2,
+    preluActivationWeights,
+    leakyreluAlpha
+  });
+  const out = reshape6({ inputs: { x: result }, backend: backend22, attrs: { shape: convInfo.outShape } });
+  backend22.disposeData(xReshaped.dataId);
+  backend22.disposeData(filterReshaped.dataId);
+  backend22.disposeData(result.dataId);
+  return out;
+}
+function conv2dWithIm2Col({ x: x2, filter, convInfo, backend: backend22, bias = null, preluActivationWeights = null, leakyreluAlpha = 0, activation: activation2 = null }) {
+  const { filterWidth, filterHeight, inChannels, strideWidth, strideHeight, padInfo, outWidth, outHeight, dilationWidth, dilationHeight, dataFormat } = convInfo;
+  const isChannelsLast = dataFormat === "channelsLast";
+  const sharedDim = filterWidth * filterHeight * inChannels;
+  const numCols = outHeight * outWidth;
+  const x2ColShape = [numCols, sharedDim];
+  const transposeA = false;
+  const transposeB = false;
+  const intermediates = [];
+  const xSqueezed = reshape6({ inputs: { x: x2 }, backend: backend22, attrs: { shape: x2.shape.slice(1) } });
+  const w2Row = reshape6({ inputs: { x: filter }, backend: backend22, attrs: { shape: [1, sharedDim, -1] } });
+  intermediates.push(xSqueezed);
+  intermediates.push(w2Row);
+  const im2ColProgram = new Im2ColProgram(x2ColShape, isChannelsLast);
+  const dimensions = [
+    { type: "int32", data: [padInfo.left, padInfo.top] },
+    { type: "int32", data: [strideWidth, strideHeight] },
+    { type: "int32", data: [dilationWidth, dilationHeight] },
+    { type: "int32", data: [outWidth] },
+    { type: "int32", data: [inChannels * filterWidth] },
+    { type: "int32", data: [inChannels] }
+  ];
+  const im2Col = backend22.runWebGPUProgram(im2ColProgram, [xSqueezed], xSqueezed.dtype, dimensions);
+  const im2Col3D = reshape6({
+    inputs: { x: im2Col },
+    backend: backend22,
+    attrs: { shape: [1, x2ColShape[0], x2ColShape[1]] }
+  });
+  intermediates.push(im2Col);
+  intermediates.push(im2Col3D);
+  const a3dShape = [1, x2ColShape[0], x2ColShape[1]];
+  const matMulProgram = new MatMulPackedProgram2(a3dShape, [1, numCols, convInfo.outChannels], env().get("WEBGPU_MATMUL_WORK_PER_THREAD"), transposeA, transposeB);
+  const dimAOuter = a3dShape[1];
+  const dimInner = a3dShape[2];
+  const dimBOuter = convInfo.outChannels;
+  const matmulDimensions = [
+    { type: "int32", data: [dimAOuter] },
+    { type: "int32", data: [dimBOuter] },
+    { type: "int32", data: [dimInner] }
+  ];
+  const result = backend22.runWebGPUProgram(matMulProgram, [im2Col3D, w2Row], im2Col3D.dtype, matmulDimensions);
+  const outShape = isChannelsLast ? [1, outHeight, outWidth, convInfo.outChannels] : [1, convInfo.outChannels, outHeight, outWidth];
+  const out = reshape6({ inputs: { x: result }, backend: backend22, attrs: { shape: outShape } });
+  intermediates.push(result);
+  for (const i2 of intermediates) {
+    backend22.disposeData(i2.dataId);
+  }
+  return out;
+}
+var Conv2DMMVec4Program = class {
+  constructor(convInfo, addBias = false, activation2 = null, hasPreluActivationWeights = false, hasLeakyreluAlpha = false) {
+    this.variableNames = ["x", "W"];
+    this.uniforms = `filterDims : vec2<i32>; pad : vec2<i32>; stride : vec2<i32>; dilation : vec2<i32>;
+      dimAOuter : i32; dimBOuter : i32; dimInner : i32;`;
+    this.isVec4 = true;
+    this.outputShape = convInfo.outShape;
+    util_exports.assert(convInfo.dataFormat === "channelsLast", () => "TODO: NCHW is unimplemented");
+    this.dispatchLayout = { x: [3], y: [1, 2], z: [0] };
+    this.workGroupSize = [8, 8, 1];
+    const elementsPerThread = [4, 4, 1];
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, elementsPerThread);
+    this.convInfo = convInfo;
+    this.addBias = addBias;
+    this.activation = activation2;
+    this.hasPreluActivationWeights = hasPreluActivationWeights;
+    this.hasLeakyreluAlpha = hasLeakyreluAlpha;
+    if (this.addBias) {
+      this.variableNames.push("bias");
+    }
+    if (this.hasPreluActivationWeights) {
+      this.variableNames.push("preluActivationWeights");
+    }
+    if (this.hasLeakyreluAlpha) {
+      this.variableNames.push("leakyreluAlpha");
+    }
+    [this.fitA, this.fitB] = this.getShapeFit(elementsPerThread);
+    this.shaderKey = `conv2DMMVec4_${this.activation}_${this.fitA}_${this.fitB}`;
+  }
+  getShapeFit(elementsPerThread) {
+    const tileAOuter = this.workGroupSize[1] * elementsPerThread[1];
+    const tileBOuter = this.workGroupSize[0] * elementsPerThread[0];
+    const tileInner = tileBOuter;
+    const tileSizeA = [tileAOuter, tileInner];
+    const tileSizeB = [tileInner, tileBOuter];
+    const dimAOuter = this.outputShape[1] * this.outputShape[2];
+    const dimBOuter = this.outputShape[3];
+    const dimInner = this.convInfo.filterHeight * this.convInfo.filterWidth * this.convInfo.inChannels;
+    return [
+      tilesFitEvenlyIntoShape(tileSizeA, [dimAOuter, dimInner]),
+      tilesFitEvenlyIntoShape(tileSizeB, [dimInner, dimBOuter])
+    ];
+  }
+  getSampleAWithRemainder(index) {
+    return `let flatIndex${index} = getFlatIndex4D(coord, uniforms.xShape);
+    let divBy4Remainder${index} = flatIndex${index} % 4;
+    let divBy4Index${index} = flatIndex${index} / 4;
+    let curData${index} = x.numbers[divBy4Index${index}];
+    if (divBy4Remainder${index} == 0) {
+      temp = curData${index};
+    } else {
+      // TODO: This could end up being a redundant load with another one in
+      // the same shader invocation. Perhaps there's an opportunity for
+      // optimization
+      let nextData${index} = x.numbers[divBy4Index${index} + 1];
+      if (divBy4Remainder${index} == 1) {
+        temp = vec4<f32>(curData${index}.yzw, nextData${index}.x);
+      } elseif (divBy4Remainder${index} == 2) {
+        temp = vec4<f32>(curData${index}.zw, nextData${index}.xy);
+      } elseif (divBy4Remainder${index} == 3) {
+        temp = vec4<f32>(curData${index}.w, nextData${index}.xyz);
+      }
+    }
+    `;
+  }
+  getUserCode() {
+    const elementsPerThread = [4, 4, 1];
+    const matMulSource = makeMatMulPackedVec4Source(elementsPerThread, this.workGroupSize);
+    const remainder = this.convInfo.inChannels % 4;
+    const remainderSnippet = remainder === 0 ? `// The bounds checking is always needed since we use it to pad zero for
+          // the 'same' padding type.
+          if (coordsInBounds4D(coord, uniforms.xShape)) {
+            resData = x.numbers[getFlatIndex4D(coord, uniforms.xShape) / 4];
+          } else {
+            resData = vec4<f32>(0.0); }` : `var temp = vec4<f32>(0.0);
+          ${this.getSampleAWithRemainder(1)}
+          resData = temp;
+          if (WCol == (uniforms.filterDims[1] - 1)) {
+            coord = vec4<i32>(
+              coord.x, coord.y + 1, coord.z + 1 - uniforms.filterDims[1], 0);
+              ${this.getSampleAWithRemainder(2)}
+            if (inChCoord == 0) {
+              resData = vec4<f32>(resData.xyz, temp.x);
+            } elseif (inChCoord == 1) {
+              resData = vec4<f32>(resData.xy, temp.xy);
+            } else {
+              resData = vec4<f32>(resData.x, temp.xyz);
+            }
+          }
+          `;
+    const readASnippet = `let outRow = r / uniforms.outShape[2];
+        let outCol = r % uniforms.outShape[2];
+        let WRow = c / (uniforms.filterDims[1] * uniforms.xShape[3]);
+        let WCol = c / uniforms.xShape[3] % uniforms.filterDims[1];
+        let inChCoord = c % uniforms.xShape[3];
+        var coord = vec4<i32>(
+            batch,
+            outRow * uniforms.stride[0] + uniforms.dilation[0] * WRow - uniforms.pad[0],
+            outCol * uniforms.stride[1] + uniforms.dilation[1] * WCol - uniforms.pad[1],
+            inChCoord);
+        var resData = vec4<f32>(0.0);
+        ${remainderSnippet}
+        return resData;`;
+    const sampleA = this.fitA ? `${readASnippet}` : `if (r < uniforms.dimAOuter && c < uniforms.dimInner) {
+          ${readASnippet}
+         }
+         return vec4<f32>(0.0);
+        `;
+    const sampleB = this.fitB ? `return W.numbers[row * uniforms.dimBOuter / 4 + col];` : `if(coordsInBounds2D(vec2<i32>(row, col * 4), vec2<i32>(uniforms.dimInner, uniforms.dimBOuter))) {
+           return W.numbers[row * uniforms.dimBOuter / 4 + col];
+         }
+         return vec4<f32>(0.0);
+        `;
+    let activationSnippet = "", applyActivationSnippet = "";
+    if (this.activation) {
+      const activationOp = mapActivationToShaderProgram2(this.activation, this.isVec4);
+      if (this.hasPreluActivationWeights) {
+        activationSnippet = `fn activation(a : vec4<f32>, outCoord : vec4<i32>) -> vec4<f32> {
+          let b = getPreluActivationWeightsAtOutCoordsByCoords(outCoord);
+          ${activationOp}
+        }`;
+      } else if (this.hasLeakyreluAlpha) {
+        activationSnippet = `fn activation(a: vec4<f32>) -> vec4<f32> {
+          let b = getLeakyreluAlphaAtOutCoords();
+          ${activationOp}
+        }`;
+        throw new Error("Leakyrelu is not supported.");
+      } else {
+        activationSnippet = `
+        fn activation(a : vec4<f32>, outCoord : vec4<i32>) -> vec4<f32> {
+          ${activationOp}
+        }`;
+      }
+      applyActivationSnippet = `value = activation(value, outCoord);`;
+    }
+    const addBiasSnippet = this.addBias ? "value = value + getBiasAtOutCoordsByCoords(outCoord);" : "";
+    const userCode = `
+        ${activationSnippet}
+        fn mm_readA(row : i32, col : i32, globalId : vec3<u32>) -> vec4<f32> {
+          let r = row;
+          let c = col * 4;
+          var batch = i32(globalId.z);
+          ${sampleA}
+        }
+
+        fn mm_readB(row : i32, col : i32, globalId : vec3<u32>) -> vec4<f32> {
+          ${sampleB}
+        }
+
+        fn mm_write(row : i32, col : i32, valueInput : vec4<f32>, globalId : vec3<u32>) {
+          var batch = i32(globalId.z);
+          var value = valueInput;
+          if (row < uniforms.dimAOuter && col * 4 < uniforms.dimBOuter)
+          {
+            let outCoord = vec4<i32>(
+              batch,
+              row / uniforms.outShape[2],
+              row % uniforms.outShape[2],
+              col * 4);
+            ${addBiasSnippet}
+            ${applyActivationSnippet}
+            setOutput(outCoord[0], outCoord[1], outCoord[2], outCoord[3],
+              value);
+          }
+        }
+        ${matMulSource}
+      `;
+    return userCode;
+  }
+};
+var Conv2DMMProgram = class {
+  constructor(convInfo, addBias = false, activation2 = null, hasPreluActivationWeights = false) {
+    this.variableNames = ["x", "W"];
+    this.uniforms = `filterDims : vec2<i32>; pad : vec2<i32>; stride : vec2<i32>; dilation : vec2<i32>; dimAOuter : i32; dimBOuter : i32; dimInner : i32;`;
+    this.outputShape = convInfo.outShape;
+    util_exports.assert(convInfo.dataFormat === "channelsLast", () => "TODO: NCHW is unimplemented");
+    this.dispatchLayout = { x: [3], y: [1, 2], z: [0] };
+    this.workGroupSize = computeWorkGroupSizeForConv2d(this.dispatchLayout, this.outputShape);
+    this.elementsPerThread = computeWorkPerThreadForConv2d(this.dispatchLayout, this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, this.elementsPerThread);
+    if (addBias) {
+      this.variableNames.push("bias");
+    }
+    if (hasPreluActivationWeights) {
+      this.variableNames.push("preluActivationWeights");
+    }
+    this.convInfo = convInfo;
+    this.addBias = addBias;
+    this.activation = activation2;
+    this.hasPreluActivationWeights = hasPreluActivationWeights;
+    [this.fitA, this.fitB] = this.getShapeFit();
+    this.shaderKey = `conv2DMM_${this.elementsPerThread}_${this.activation}_${this.fitA}_${this.fitB}`;
+  }
+  getShapeFit() {
+    const tileAOuter = this.workGroupSize[1] * this.elementsPerThread[1];
+    const tileBOuter = this.workGroupSize[0] * this.elementsPerThread[0];
+    const tileInner = tileAOuter > tileBOuter ? tileAOuter : tileBOuter;
+    util_exports.assert(tileInner % this.workGroupSize[0] === 0 && tileInner % this.workGroupSize[1] === 0, () => "tileInner must be multiple of workgroupsize.x and workgroupsize.y");
+    const tileSizeA = [tileAOuter, tileInner];
+    const tileSizeB = [tileInner, tileBOuter];
+    const dimAOuter = this.outputShape[1] * this.outputShape[2];
+    const dimBOuter = this.outputShape[3];
+    const dimInner = this.convInfo.filterHeight * this.convInfo.filterWidth * this.convInfo.inChannels;
+    return [
+      tilesFitEvenlyIntoShape(tileSizeA, [dimAOuter, dimInner]),
+      tilesFitEvenlyIntoShape(tileSizeB, [dimInner, dimBOuter])
+    ];
+  }
+  getUserCode() {
+    const matMulSource = makeMatMulPackedSource(this.elementsPerThread, this.workGroupSize);
+    const readASnippet = `
+    let outRow = row / uniforms.outShape[2];
+    let outCol = row % uniforms.outShape[2];
+
+    let WRow = col / (uniforms.filterDims[1] * uniforms.xShape[3]);
+    let WCol = col / uniforms.xShape[3] % uniforms.filterDims[1];
+    let coord = vec4<i32>(
+        batch,
+        outRow * uniforms.stride[0] + uniforms.dilation[0] * WRow - uniforms.pad[0],
+        outCol * uniforms.stride[1] + uniforms.dilation[1] * WCol - uniforms.pad[1],
+        col % uniforms.xShape[3]);
+    // The bounds checking is always needed since we use it to pad zero for the
+    // 'same' padding type.
+    if(coordsInBounds4D(coord, uniforms.xShape)) {
+      return x.numbers[getFlatIndex4D(coord, uniforms.xShape)];
+    }
+    return 0.0;`;
+    const sampleA = this.fitA ? `${readASnippet}` : `if (row < uniforms.dimAOuter && col < uniforms.dimInner) {
+      ${readASnippet}
+    }
+    return 0.0;
+    `;
+    const sampleB = this.fitB ? `return W.numbers[row * uniforms.dimBOuter + col];` : `if(coordsInBounds2D(vec2<i32>(row, col), vec2<i32>(uniforms.dimInner, uniforms.dimBOuter))) {
+           return W.numbers[row * uniforms.dimBOuter + col];
+	 }
+	 return 0.0;
+	 `;
+    let activationSnippet = "", applyActivationSnippet = "";
+    if (this.activation) {
+      const activationOp = mapActivationToShaderProgram2(this.activation, false);
+      if (this.hasPreluActivationWeights) {
+        activationSnippet = `fn activation(a: f32, outCoord : vec4<i32>) -> f32 {
+                  let b = getPreluActivationWeightsAtOutCoordsByCoords(outCoord);
+                  ${activationOp}
+                }`;
+      } else {
+        activationSnippet = `
+                  fn activation(a : f32, outCoord : vec4<i32>) -> f32 {
+                    ${activationOp}
+                  }
+                `;
+      }
+      applyActivationSnippet = `value = activation(value, outCoord);`;
+    }
+    const addBiasSnippet = this.addBias ? "value = value + getBiasAtOutCoordsByCoords(outCoord);" : "";
+    const userCode = `
+    ${activationSnippet}
+    fn mm_readA(row : i32, col : i32, globalId : vec3<u32>) -> f32 {
+      var batch = i32(globalId.z);
+      ${sampleA}
+    }
+
+    fn mm_readB(row : i32, col : i32, globalId : vec3<u32>) -> f32 {
+      ${sampleB}
+    }
+
+    fn mm_write(row : i32, col : i32, valueInput : f32, globalId : vec3<u32>) {
+      var batch = i32(globalId.z);
+      var value = valueInput;
+      let outCoord = vec4<i32>(
+          batch,
+          row / uniforms.outShape[2],
+          row % uniforms.outShape[2],
+          col);
+      ${addBiasSnippet}
+      ${applyActivationSnippet}
+      result.numbers[getFlatIndex4D(outCoord, uniforms.outShape)] = value;
+    }
+    ${matMulSource}
+  `;
+    return userCode;
+  }
+};
+var Conv2DNaiveProgram = class {
+  constructor(convInfo, addBias = false, activation2 = null, hasPreluActivationWeights = false) {
+    this.variableNames = ["x", "W"];
+    this.uniforms = `filterDims : vec2<i32>; pad : vec2<i32>; stride : vec2<i32>; dilation : vec2<i32>;`;
+    this.workGroupSize = [128, 1, 1];
+    this.outputShape = convInfo.outShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    util_exports.assert(convInfo.dataFormat === "channelsLast", () => "TODO: NCHW is unimplemented");
+    if (addBias) {
+      this.variableNames.push("bias");
+    }
+    if (hasPreluActivationWeights) {
+      this.variableNames.push("preluActivationWeights");
+    }
+    this.convInfo = convInfo;
+    this.addBias = addBias;
+    this.activation = activation2;
+    this.hasPreluActivationWeights = hasPreluActivationWeights;
+    this.shaderKey = `conv2DNaive_${this.activation}`;
+  }
+  getUserCode() {
+    let activationSnippet = "", applyActivationSnippet = "";
+    if (this.activation) {
+      const activationOp = mapActivationToShaderProgram2(this.activation);
+      if (this.hasPreluActivationWeights) {
+        activationSnippet = `fn activation(a : f32, outCoord : vec4<i32>) -> f32{
+               let b = getPreluActivationWeightsAtOutCoordsByCoords(outCoord);
+               ${activationOp}
+             }`;
+      } else {
+        activationSnippet = `
+                  fn activation(a : f32, outCoord : vec4<i32>) -> f32{
+                    ${activationOp}
+                  }
+                `;
+      }
+      applyActivationSnippet = `value = activation(value, outCoord);`;
+    }
+    const addBiasSnippet = this.addBias ? "value = value + getBiasAtOutCoordsByCoords(outCoord);" : "";
+    const userCode = `
+      ${activationSnippet}
+      fn readInp(batch : i32, row : i32, col : i32, chan : i32) -> f32 {
+        let coord = vec4<i32>(batch, row, col, chan);
+        if(coordsInBounds4D(coord, uniforms.xShape)) {
+          return getX(batch, row, col, chan);
+        }
+        return 0.0;
+      }
+
+      fn readFilt(row : i32, col : i32, xChannel : i32, outChannel : i32) -> f32{
+        let coord = vec4<i32>(row, col, xChannel, outChannel);
+        if(coordsInBounds4D(coord, uniforms.wShape)) {
+          return getW(row, col, xChannel, outChannel);
+        }
+        return 0.0;
+      }
+
+      fn writeResult(batch : i32, row : i32, col : i32, chan : i32, value : f32) {
+        let coord = vec4<i32>(batch, row, col, chan);
+        if (coordsInBounds4D(coord, uniforms.outShape)) {
+          ${addBiasSnippet}
+          ${applyActivationSnippet}
+          setOutput(batch, row, col, chan, value);
+        }
+      }
+
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let coords = getOutputCoords(globalId, index);
+        let batch = coords[0];
+        let outChannel = coords[3];
+
+        var acc = 0.0;
+
+        for (var row = 0; row < uniforms.filterDims[0]; row = row + 1) {
+          for (var col = 0; col < uniforms.filterDims[1]; col = col + 1) {
+            for (var xChannel = 0; xChannel < uniforms.xShape[3]; xChannel = xChannel + 1) {
+              let coordRow = coords[1] * uniforms.stride[0] + uniforms.dilation[0] * row - uniforms.pad[0];
+              let coordCol = coords[2] * uniforms.stride[1] + uniforms.dilation[1] * col - uniforms.pad[1];
+              let v = readInp(batch, coordRow, coordCol, xChannel);
+              let f = readFilt(row, col, xChannel, outChannel);
+              acc = acc + v * f;
+            }
+          }
+        }
+
+        writeResult(batch, coords[1], coords[2], outChannel, acc);
+      }
+    `;
+    return userCode;
+  }
+};
+function conv2d6(args) {
+  const { inputs, attrs, backend: backend22 } = args;
+  const { x: x2, filter } = inputs;
+  const { strides, pad: pad3, dataFormat, dilations, dimRoundingMode } = attrs;
+  const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, dilations, pad3, dimRoundingMode, false, $dataFormat);
+  if (convInfo.filterHeight === 1 && convInfo.filterWidth === 1 && convInfo.dilationHeight === 1 && convInfo.dilationWidth === 1 && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && (convInfo.padInfo.type === "SAME" || convInfo.padInfo.type === "VALID")) {
+    return conv2dByMatMul2({ x: x2, filter, convInfo, backend: backend22 });
+  }
+  if (env().getBool("WEBGPU_CONV_SEPARATE_IM2COL_SHADER") && x2.shape[0] === 1) {
+    return conv2dWithIm2Col({ x: x2, filter, convInfo, backend: backend22 });
+  }
+  let program;
+  const padInfo = [convInfo.padInfo.top, convInfo.padInfo.left];
+  const dimensions = [
+    { type: "int32", data: [convInfo.filterHeight, convInfo.filterWidth] },
+    { type: "int32", data: [...padInfo] },
+    { type: "int32", data: [convInfo.strideHeight, convInfo.strideWidth] },
+    { type: "int32", data: [convInfo.dilationHeight, convInfo.dilationWidth] }
+  ];
+  const useNaive = env().getBool("WEBGPU_USE_NAIVE_CONV2D");
+  if (useNaive) {
+    program = new Conv2DNaiveProgram(convInfo);
+  } else if ((convInfo.inChannels % 4 === 0 || convInfo.inChannels === 3 && convInfo.padInfo.type === "VALID") && convInfo.outChannels % 4 === 0 && convInfo.outChannels >= 64) {
+    program = new Conv2DMMVec4Program(convInfo);
+  } else {
+    program = new Conv2DMMProgram(convInfo);
+  }
+  if (!useNaive) {
+    const dimAOuter = convInfo.outShape[1] * convInfo.outShape[2];
+    const dimBOuter = convInfo.outShape[3];
+    const dimInner = convInfo.filterHeight * convInfo.filterWidth * convInfo.inShape[3];
+    dimensions.push({ type: "int32", data: [dimAOuter] }, { type: "int32", data: [dimBOuter] }, { type: "int32", data: [dimInner] });
+  }
+  return backend22.runWebGPUProgram(program, [x2, filter], x2.dtype, dimensions);
+}
+var conv2DConfig4 = {
+  kernelName: Conv2D,
+  backendName: "webgpu",
+  kernelFunc: conv2d6
+};
+var Conv2DDerInputMMProgram = class {
+  constructor(convInfo) {
+    this.variableNames = ["x", "W"];
+    this.uniforms = "filterDims : vec2<i32>; pads : vec2<i32>; stride : vec2<i32>; outBackprop : vec4<i32>; dimAOuter : i32; dimBOuter : i32; dimInner : i32;";
+    this.outputShape = convInfo.inShape;
+    util_exports.assert(convInfo.dataFormat === "channelsLast", () => "TODO: NCHW is unimplemented");
+    this.dispatchLayout = { x: [3], y: [1, 2], z: [0] };
+    this.workGroupSize = computeWorkGroupSizeForConv2d(this.dispatchLayout, this.outputShape);
+    this.elementsPerThread = computeWorkPerThreadForConv2d(this.dispatchLayout, this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, this.elementsPerThread);
+    this.shaderKey = `conv2DDerInputMM_${this.elementsPerThread}`;
+  }
+  getUserCode() {
+    const matMulSource = makeMatMulPackedSource(this.elementsPerThread, this.workGroupSize);
+    const readASnippet = `
+    let outRow = row / uniforms.outShape[2];
+    let outCol = row % uniforms.outShape[2];
+
+    let WRow = col / (uniforms.filterDims[1] * uniforms.outBackprop[3]);
+    let WCol = col / uniforms.outBackprop[3] % uniforms.filterDims[1];
+    let xR = f32(outRow - uniforms.pads[0] + WRow) / f32(uniforms.stride[0]);
+    let xC = f32(outCol - uniforms.pads[1] + WCol) / f32(uniforms.stride[1]);
+    if (xR < 0.0 || xR >= f32(uniforms.outBackprop[1]) || fract(xR) > 0.0) {
+      return 0.0;
+    }
+    if (xC < 0.0 || xC >= f32(uniforms.outBackprop[2]) || fract(xC) > 0.0) {
+      return 0.0;
+    }
+    let coord = vec4<i32>(
+        batch,
+        i32(xR),
+        i32(xC),
+        col % uniforms.outBackprop[3]);
+    return x.numbers[getFlatIndex4D(coord, uniforms.xShape)];`;
+    const sampleA = `if (row < uniforms.dimAOuter && col < uniforms.dimInner) {
+      ${readASnippet}
+    }
+    return 0.0;`;
+    const userCode = `
+    fn mm_readA(row : i32, col : i32, globalId : vec3<u32>) -> f32 {
+      var batch = i32(globalId.z);
+      ${sampleA}
+    }
+
+    fn mm_readB(row : i32, col : i32, globalId : vec3<u32>) -> f32 {
+      let coordX = uniforms.filterDims.x - 1 -
+          row / (uniforms.filterDims[1] * uniforms.outBackprop[3]);
+      let coordY = uniforms.filterDims.y - 1 -
+          (row / uniforms.outBackprop[3]) % uniforms.filterDims[1];
+      if (row < uniforms.dimInner && col < uniforms.dimBOuter &&
+          coordX >= 0 && coordY >= 0) {
+        let coord = vec4<i32>(coordX, coordY, col,
+            row % uniforms.outBackprop[3]);
+        return W.numbers[getFlatIndex4D(coord, uniforms.wShape)];
+      }
+      return 0.0;
+    }
+
+    fn mm_write(row : i32, col : i32, valueInput : f32, globalId : vec3<u32>) {
+      var batch = i32(globalId.z);
+      var value = valueInput;
+      let outCoord = vec4<i32>(
+          batch,
+          row / uniforms.outShape[2],
+          row % uniforms.outShape[2],
+          col);
+      result.numbers[getFlatIndex4D(outCoord, uniforms.outShape)] = value;
+    }
+
+    ${matMulSource}
+  `;
+    return userCode;
+  }
+};
+var Conv2DDerInputProgram2 = class {
+  constructor(convInfo) {
+    this.variableNames = ["dy", "W"];
+    this.uniforms = "filterDims : vec2<i32>; pads : vec2<i32>; stride : vec2<i32>; outBackprop : vec4<i32>;";
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = convInfo.inShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.isChannelsLast = convInfo.dataFormat === "channelsLast";
+    this.shaderKey = `conv2DDerInput_${this.isChannelsLast}`;
+  }
+  getUserCode() {
+    const rowDim = this.isChannelsLast ? 1 : 2;
+    const colDim = this.isChannelsLast ? 2 : 3;
+    const channelDim = this.isChannelsLast ? 3 : 1;
+    return `
+    ${getMainHeaderString()} {
+      ${getGlobalIndexString()}
+      let coords = getOutputCoords(globalId, index);
+      if (coordsInBounds4D(coords, uniforms.outShape)) {
+        let batch = coords[0];
+        let d1 = coords[${channelDim}];
+
+        let dyCorner = vec2<i32>(coords[${rowDim}]), coords[${colDim}]) - uniforms.pads;
+        let dyRCorner = dyCorner.x;
+        let dyCCorner = dyCorner.y;
+
+        // Convolve dy(?, ?, d2) with w(:, :, d1, d2) to compute dx(xR, xC, d1).
+        // ? = to be determined. : = across all values in that axis.
+        var dotProd = 0.0;
+        for (var wR = 0; wR < uniforms.filterDims.x; wR = wR + 1) {
+          let dyR = (f32(dyRCorner) + f32(wR)) / f32(uniforms.stride.x);
+          let wRPerm = uniforms.filterDims.x - 1 - wR;
+          if (dyR < 0.0 || dyR >= f32(uniforms.outBackprop[1]) || fract(dyR) > 0.0 ||
+              wRPerm < 0) {
+            continue;
+          }
+          let idyR = dyR;
+
+          for (var wC = 0; wC < uniforms.filterDims.y; wC = wC + 1) {
+            let dyC = (f32(dyCCorner) + f32(wC)) / f32(uniforms.stride.y);
+            let wCPerm = uniforms.filterDims.y - 1 - wC;
+            if (dyC < 0.0 || dyC >= f32(uniforms.outBackprop[2]) ||
+                fract(dyC) > 0.0 || wCPerm < 0) {
+              continue;
+            }
+            let idyC = dyC;
+
+            for (var d2 = 0; d2 < uniforms.outBackprop[3]; d2 = d2 + 1) {
+              if (${this.isChannelsLast}) {
+                let xValue = getDy(batch, idyR, idyC, d2);
+                let wValue = getW(wRPerm, wCPerm, d1, d2);
+                dotProd = dotProd + xValue * wValue;
+              } else {
+                let xValue = getDy(batch, d2, idyR, idyC);
+                let wValue = getW(wRPerm, wCPerm, d1, d2);
+                dotProd = dotProd + xValue * wValue;
+              }
+
+            }
+          }
+        }
+        setOutput(coords[0], coords[1], coords[2], coords[3], dotProd);
+      }
+    }
+  `;
+  }
+};
+function conv2DBackpropInput5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { dy, filter } = inputs;
+  const { inputShape, strides, pad: pad3, dataFormat, dimRoundingMode } = attrs;
+  const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides, 1, pad3, dimRoundingMode, false, $dataFormat);
+  const dimensions = [
+    { type: "int32", data: [convInfo.filterHeight, convInfo.filterWidth] },
+    {
+      type: "int32",
+      data: [
+        convInfo.filterHeight - 1 - convInfo.padInfo.top,
+        convInfo.filterWidth - 1 - convInfo.padInfo.left
+      ]
+    },
+    { type: "int32", data: [convInfo.strideHeight, convInfo.strideWidth] },
+    {
+      type: "int32",
+      data: [
+        convInfo.batchSize,
+        convInfo.outHeight,
+        convInfo.outWidth,
+        convInfo.outChannels
+      ]
+    }
+  ];
+  let program;
+  if (env().getBool("WEBGPU_USE_NAIVE_CONV2D_TRANSPOSE")) {
+    program = new Conv2DDerInputProgram2(convInfo);
+  } else {
+    program = new Conv2DDerInputMMProgram(convInfo);
+    const dimAOuter = convInfo.inShape[1] * convInfo.inShape[2];
+    const dimBOuter = convInfo.inShape[3];
+    const dimInner = convInfo.filterHeight * convInfo.filterWidth * convInfo.outChannels;
+    dimensions.push({ type: "uint32", data: [dimAOuter] }, { type: "uint32", data: [dimBOuter] }, { type: "uint32", data: [dimInner] });
+  }
+  return backend22.runWebGPUProgram(program, [dy, filter], "float32", dimensions);
+}
+var conv2DBackpropInputConfig4 = {
+  kernelName: Conv2DBackpropInput,
+  backendName: "webgpu",
+  kernelFunc: conv2DBackpropInput5
+};
+var cos4 = unaryKernelFunc3({ opType: UnaryOpType.COS });
+var cosConfig4 = {
+  kernelName: Cos,
+  backendName: "webgpu",
+  kernelFunc: cos4
+};
+var cosh4 = unaryKernelFunc3({ opType: UnaryOpType.COSH });
+var coshConfig4 = {
+  kernelName: Cosh,
+  backendName: "webgpu",
+  kernelFunc: cosh4
+};
+var CropAndResizeProgram2 = class {
+  constructor(channnel, boxShape, cropSize, method) {
+    this.variableNames = ["Image", "Boxes", "BoxInd"];
+    this.uniforms = "extrapolationValue : f32;";
+    this.workGroupSize = [64, 1, 1];
+    const [numBoxes] = boxShape;
+    this.outputShape = [numBoxes, cropSize[0], cropSize[1], channnel];
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.methodId = method === "bilinear" ? 1 : 0;
+    this.cropHeightBiggerThan1 = this.outputShape[1] > 1;
+    this.cropWidthBiggerThan1 = this.outputShape[2] > 1;
+    this.shaderKey = `cropAndResize_${this.methodId}_${this.cropHeightBiggerThan1}_${this.cropWidthBiggerThan1}`;
+  }
+  getUserCode() {
+    const [inputHeightFloat, inputWidthFloat] = [`f32(uniforms.imageShape[1] - 1)`, `f32(uniforms.imageShape[2] - 1)`];
+    const [heightRatio, heightScale, inY] = this.cropHeightBiggerThan1 ? [
+      `(${inputHeightFloat} / f32(uniforms.outShape[1] - 1))`,
+      "(y2-y1) * height_ratio",
+      `y1*${inputHeightFloat} + f32(y)*(height_scale)`
+    ] : [
+      "0.0",
+      "0.0",
+      `0.5 * (y1+y2) * ${inputHeightFloat}`
+    ];
+    const [widthRatio, widthScale, inX] = this.cropWidthBiggerThan1 ? [
+      `(${inputWidthFloat} / f32(uniforms.outShape[2] - 1))`,
+      "(x2-x1) * width_ratio",
+      `x1*${inputWidthFloat} + f32(x)*(width_scale)`
+    ] : [
+      "0.0",
+      "0.0",
+      `0.5 * (x1+x2) * ${inputWidthFloat}`
+    ];
+    const userCode = `
+      fn writeResult(coords : vec4<i32>, value : f32) {
+        if (coordsInBounds4D(coords, uniforms.outShape)) {
+          setOutput(coords[0], coords[1], coords[2], coords[3], value);
+        }
+      }
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let height_ratio = f32(${heightRatio});
+        let width_ratio = f32(${widthRatio});
+        let coords = getOutputCoords(globalId, index);
+        let b = coords[0];
+        let y = coords[1];
+        let x = coords[2];
+        let d = coords[3];
+        // get box vals
+        let y1 = getBoxes(b, 0);
+        let x1 = getBoxes(b, 1);
+        let y2 = getBoxes(b, 2);
+        let x2 = getBoxes(b, 3);
+        // get image in batch index
+        let bInd = i32(round(getBoxInd(b)));
+        if(bInd < 0 || bInd >= uniforms.outShape[0]) {
+          return;
+        }
+        let height_scale = ${heightScale};
+        let width_scale = ${widthScale};
+        let in_y = ${inY};
+        if( in_y < 0.0 || in_y > ${inputHeightFloat} ) {
+          writeResult(coords, uniforms.extrapolationValue);
+          return;
+        }
+        let in_x = ${inX};
+        if( in_x < 0.0 || in_x > ${inputWidthFloat} ) {
+          writeResult(coords, uniforms.extrapolationValue);
+          return;
+        }
+        let sourceFracIndexCR = vec2<f32>(in_x,in_y);
+        if(${this.methodId} == 1) {
+          // Compute the four integer indices.
+          let sourceFloorCR = vec2<i32>(sourceFracIndexCR);
+          let sourceCeilCR = vec2<i32>(ceil(sourceFracIndexCR));
+          let topLeft = getImage(bInd, sourceFloorCR.y, sourceFloorCR.x, d);
+          let bottomLeft = getImage(bInd, sourceCeilCR.y, sourceFloorCR.x, d);
+          let topRight = getImage(bInd, sourceFloorCR.y, sourceCeilCR.x, d);
+          let bottomRight = getImage(bInd, sourceCeilCR.y, sourceCeilCR.x, d);
+          let fracCR = sourceFracIndexCR - vec2<f32>(sourceFloorCR);
+          let top = topLeft + (topRight - topLeft) * fracCR.x;
+          let bottom = bottomLeft + (bottomRight - bottomLeft) * fracCR.x;
+          let newValue = top + (bottom - top) * fracCR.y;
+          writeResult(coords, newValue);
+        } else {
+          // Compute the coordinators of nearest neighbor point.
+          let sourceNearestCR = vec2<i32>(floor(
+            sourceFracIndexCR + vec2<f32>(0.5,0.5)));
+          let newValue = getImage(
+            bInd, sourceNearestCR.y, sourceNearestCR.x, d);
+          writeResult(coords,newValue);
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+var cropAndResize5 = (args) => {
+  const { inputs, backend: backend22, attrs } = args;
+  const { image: image32, boxes, boxInd } = inputs;
+  const { cropSize, method, extrapolationValue } = attrs;
+  const program = new CropAndResizeProgram2(image32.shape[3], boxes.shape, cropSize, method);
+  const uniformData = [{ type: "float32", data: [extrapolationValue] }];
+  return backend22.runWebGPUProgram(program, [image32, boxes, boxInd], "float32", uniformData);
+};
+var cropAndResizeConfig4 = {
+  kernelName: CropAndResize,
+  backendName: "webgpu",
+  kernelFunc: cropAndResize5
+};
+var DepthToSpaceProgram2 = class {
+  constructor(outputShape, dataFormat) {
+    this.variableNames = ["x"];
+    this.workGroupSize = [64, 1, 1];
+    this.uniforms = "blockSize : i32;";
+    this.outputShape = outputShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.shaderKey = `depthToSpace_${dataFormat}`;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+    this.dataFormat = dataFormat;
+  }
+  getUserCode() {
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        if (index < uniforms.size) {
+          let coords = getOutputCoords(globalId, index);
+          let b = coords[0];
+          let h = ${this.getHeightCoordString()};
+          let w = ${this.getWidthCoordString()};
+          let d = ${this.getDepthCoordString()};
+
+          let in_h = h / uniforms.blockSize;
+          let offset_h = h % uniforms.blockSize;
+          let in_w = w / uniforms.blockSize;
+          let offset_w = w % uniforms.blockSize;
+          let offset_d = (offset_h * uniforms.blockSize + offset_w) *
+            ${this.getOutputDepthSize()};
+          let in_d = d + offset_d;
+
+          let rlt = ${this.getInputSamplingString()};
+          setOutputFlat(index, rlt);
+        }
+      }`;
+    return userCode;
+  }
+  getHeightCoordString() {
+    if (this.dataFormat === "NHWC") {
+      return `coords[1]`;
+    } else {
+      return `coords[2]`;
+    }
+  }
+  getWidthCoordString() {
+    if (this.dataFormat === "NHWC") {
+      return `coords[2]`;
+    } else {
+      return `coords[3]`;
+    }
+  }
+  getDepthCoordString() {
+    if (this.dataFormat === "NHWC") {
+      return `coords[3]`;
+    } else {
+      return `coords[1]`;
+    }
+  }
+  getOutputDepthSize() {
+    if (this.dataFormat === "NHWC") {
+      return `uniforms.outShape[3]`;
+    } else {
+      return `uniforms.outShape[1]`;
+    }
+  }
+  getInputSamplingString() {
+    if (this.dataFormat === "NHWC") {
+      return `getX(b, in_h, in_w, in_d)`;
+    } else {
+      return `getX(b, in_d, in_h, in_w)`;
+    }
+  }
+};
+function depthToSpace5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { blockSize, dataFormat } = attrs;
+  const batchSize = x2.shape[0];
+  const inputHeight = dataFormat === "NHWC" ? x2.shape[1] : x2.shape[2];
+  const inputWidth = dataFormat === "NHWC" ? x2.shape[2] : x2.shape[3];
+  const inputDepth = dataFormat === "NHWC" ? x2.shape[3] : x2.shape[1];
+  const outputHeight = inputHeight * blockSize;
+  const outputWidth = inputWidth * blockSize;
+  const outputDepth = inputDepth / (blockSize * blockSize);
+  const outputShape = dataFormat === "NHWC" ? [batchSize, outputHeight, outputWidth, outputDepth] : [batchSize, outputDepth, outputHeight, outputWidth];
+  const uniformData = [
+    { type: "int32", data: [blockSize] }
+  ];
+  const program = new DepthToSpaceProgram2(outputShape, dataFormat);
+  return backend22.runWebGPUProgram(program, [x2], x2.dtype, uniformData);
+}
+var depthToSpaceConfig4 = {
+  kernelName: DepthToSpace,
+  backendName: "webgpu",
+  kernelFunc: depthToSpace5
+};
+var DepthwiseConv2D3x3Program = class {
+  constructor(convInfo, addBias = false, activation2 = null, hasPreluActivation = false) {
+    this.variableNames = ["x", "W"];
+    this.uniforms = "pad : vec2<i32>; stride : vec2<i32>; dilation : vec2<i32>; inDims : vec2<i32>;";
+    this.workGroupSize = [4, 4, 4];
+    this.isVec4 = true;
+    this.outputShape = convInfo.outShape;
+    this.dispatchLayout = { x: [0, 1], y: [2], z: [3] };
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [1, 4, 4]);
+    util_exports.assert(convInfo.dataFormat === "channelsLast", () => "TODO: NCHW is unimplemented");
+    if (addBias) {
+      this.variableNames.push("bias");
+    }
+    if (hasPreluActivation) {
+      this.variableNames.push("preluActivationWeights");
+    }
+    this.convInfo = convInfo;
+    this.addBias = addBias;
+    this.activation = activation2;
+    this.hasPreluActivation = hasPreluActivation;
+    this.shaderKey = `depthwise3x3_${activation2}`;
+  }
+  getUserCode() {
+    let activationSnippet = "", applyActivationSnippet = "";
+    if (this.activation) {
+      const activationOp = mapActivationToShaderProgram2(this.activation, this.isVec4);
+      if (this.hasPreluActivation) {
+        activationSnippet = `fn activation(a : vec4<f32>, globalId : vec3<u32>, globalIndex : i32) -> vec4<f32> {
+          let b = getPreluActivationWeightsAtOutCoordsByGlobalId(globalId, globalIndex);
+          ${activationOp}
+        }`;
+      } else {
+        activationSnippet = `
+        fn activation(a : vec4<f32>, globalId : vec3<u32>, globalIndex : i32) -> vec4<f32> {
+            ${activationOp}
+          }
+        `;
+      }
+      applyActivationSnippet = `dotProd[i] = activation(dotProd[i], globalId, index);`;
+    }
+    const addBiasSnippet = this.addBias ? "dotProd[i] = dotProd[i] + getBiasAtOutCoordsByCoords(coords);" : "";
+    const userCode = `
+      ${activationSnippet}
+
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let batch = 0;
+        let r = i32(globalId.x);
+        let c = i32(globalId.y) * 4;
+        let d2 = i32(globalId.z) * 4;
+        let xRCCorner = vec2<i32>(r, c) * uniforms.stride - uniforms.pad;
+        let d1 = d2;
+        let q = 0;
+
+        let xRCorner = xRCCorner.x;
+        let xCCorner = xRCCorner.y;
+
+        var wVals : array<vec4<f32>, 9>;
+        wVals[0] = getW(0, 0, d1, q);
+        wVals[1] = getW(0, 1, d1, q);
+        wVals[2] = getW(0, 2, d1, q);
+        wVals[3] = getW(1, 0, d1, q);
+        wVals[4] = getW(1, 1, d1, q);
+        wVals[5] = getW(1, 2, d1, q);
+        wVals[6] = getW(2, 0, d1, q);
+        wVals[7] = getW(2, 1, d1, q);
+        wVals[8] = getW(2, 2, d1, q);
+
+        var xVals : array<array<vec4<f32>, 6>, 3>;
+        for (var wR = 0; wR < 3; wR = wR + 1) {
+          let xR = xRCorner + wR * uniforms.dilation[0];
+          for (var wC = 0; wC < 6; wC = wC + 1) {
+            let xC = xCCorner + wC * uniforms.dilation[1];
+            if (xR < 0 || xR >= uniforms.inDims[0] || xC < 0 || xC >= uniforms.inDims[1]) {
+              xVals[wR][wC] = vec4<f32>(0.0);
+            } else {
+              xVals[wR][wC] = getX(batch, xR, xC, d1);
+            }
+          }
+        }
+
+        var dotProd : array<vec4<f32>, 4>;
+        dotProd[0] = vec4<f32>(0.0);
+        dotProd[1] = vec4<f32>(0.0);
+        dotProd[2] = vec4<f32>(0.0);
+        dotProd[3] = vec4<f32>(0.0);
+
+        for (var wR = 0; wR < 3; wR = wR + 1) {
+          for (var wC = 0; wC < 3; wC = wC + 1) {
+            let indexW = wR * 3 + wC;
+            dotProd[0] = dotProd[0] + xVals[wR][0 + wC] * wVals[indexW];
+            dotProd[1] = dotProd[1] + xVals[wR][1 + wC] * wVals[indexW];
+            dotProd[2] = dotProd[2] + xVals[wR][2 + wC] * wVals[indexW];
+            dotProd[3] = dotProd[3] + xVals[wR][3 + wC] * wVals[indexW];
+          }
+        }
+
+        for (var i = 0; i < 4; i = i + 1) {
+          let coords = vec4<i32>(batch, r, c + i, d2);
+          if (coordsInBounds4D(coords, uniforms.outShape)) {
+            ${addBiasSnippet}
+            ${applyActivationSnippet}
+            setOutput(coords[0], coords[1], coords[2], coords[3], dotProd[i]);
+          }
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+var DepthwiseConv2DProgram2 = class {
+  constructor(convInfo, addBias = false, activation2 = null, hasPreluActivation = false) {
+    this.variableNames = ["x", "W"];
+    this.uniforms = `pad : vec2<i32>; stride : vec2<i32>; dilation : vec2<i32>; inDims : vec2<i32>;`;
+    this.workGroupSize = [256, 1, 1];
+    this.outputShape = convInfo.outShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    util_exports.assert(convInfo.dataFormat === "channelsLast", () => "TODO: NCHW is unimplemented");
+    if (addBias) {
+      this.variableNames.push("bias");
+    }
+    if (hasPreluActivation) {
+      this.variableNames.push("preluActivationWeights");
+    }
+    this.convInfo = convInfo;
+    this.addBias = addBias;
+    this.activation = activation2;
+    this.hasPreluActivation = hasPreluActivation;
+    this.shaderKey = `depthwise_${this.convInfo.filterHeight}_${this.convInfo.filterWidth}_${this.activation}_${this.convInfo.outChannels / this.convInfo.inChannels}`;
+  }
+  getUserCode() {
+    const channelMul = this.convInfo.outChannels / this.convInfo.inChannels;
+    let activationSnippet = "", applyActivationSnippet = "";
+    if (this.activation) {
+      const activationOp = mapActivationToShaderProgram2(this.activation, false);
+      if (this.hasPreluActivation) {
+        activationSnippet = `fn activation(a : f32, globalId : vec3<u32>, index : i32) -> f32 {
+          let b = getPreluActivationWeightsAtOutCoordsByGlobalId(globalId, index);
+          ${activationOp}
+        }`;
+      } else {
+        activationSnippet = `
+          fn activation(a : f32, globalId : vec3<u32>, index : i32) -> f32 {
+            ${activationOp}
+          }
+        `;
+      }
+      applyActivationSnippet = `dotProd = activation(dotProd, globalId, index);`;
+    }
+    const addBiasSnippet = this.addBias ? "dotProd = dotProd + getBiasAtOutCoordsByGlobalId(globalId, index);" : "";
+    const userCode = `
+      ${activationSnippet}
+
+      fn writeResult(batch : i32, row : i32, col : i32, chan : i32, value : f32) {
+        let coord = vec4<i32>(batch, row, col, chan);
+        if (coordsInBounds4D(coord, uniforms.outShape)) {
+          setOutput(batch, row, col, chan, value);
+        }
+      }
+
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let coords = getOutputCoords(globalId, index);
+        let batch = coords[0];
+        let xRCCorner = vec2<i32>(coords.yz) * uniforms.stride - uniforms.pad;
+        let d2 = coords[3];
+        let d1 = d2 / ${channelMul};
+        let q = d2 - d1 * ${channelMul};
+
+        let inputRowStart = xRCCorner.x;
+        let inputColStart = xRCCorner.y;
+        let inputRowEnd = inputRowStart + ${this.convInfo.filterHeight} * uniforms.dilation[0];
+        let inputColEnd = inputColStart + ${this.convInfo.filterWidth} * uniforms.dilation[1];
+
+        // Convolve x(?, ?, d1) with w(:, :, d1, q) to get y(yR, yC, d2).
+        // ? = to be determined. : = across all values in that axis.
+        var dotProd = 0.0;
+
+        // Extract if checking out of for loop for performance.
+        if (inputRowStart >= 0 && inputColStart >= 0 &&
+          inputRowEnd < uniforms.inDims[0] && inputColEnd < uniforms.inDims[1]) {
+            // Here using a constant value |this.convInfo.filterHeight| instead
+            // of uniform value is in order to loop unrolling.
+            for (var wR = 0; wR < ${this.convInfo.filterHeight}; wR = wR + 1) {
+              let xR = inputRowStart + wR * uniforms.dilation[0];
+
+              for (var wC = 0; wC < ${this.convInfo.filterWidth}; wC = wC + 1) {
+                let xC = inputColStart + wC * uniforms.dilation[1];
+
+                let xVal = getX(batch, xR, xC, d1);
+                let wVal = getW(wR, wC, d1, q);
+                dotProd = dotProd + xVal * wVal;
+              }
+            }
+          } else {
+            for (var wR = 0; wR < ${this.convInfo.filterHeight}; wR = wR + 1) {
+              let xR = inputRowStart + wR * uniforms.dilation[0];
+
+              if (xR < 0 || xR >= uniforms.inDims[0]) {
+                continue;
+              }
+
+              for (var wC = 0; wC < ${this.convInfo.filterWidth}; wC = wC + 1) {
+                let xC = inputColStart + wC * uniforms.dilation[1];
+
+                if (xC < 0 || xC >= uniforms.inDims[1]) {
+                  continue;
+                }
+
+                let xVal = getX(batch, xR, xC, d1);
+                let wVal = getW(wR, wC, d1, q);
+                dotProd = dotProd + xVal * wVal;
+              }
+            }
+          }
+
+        ${addBiasSnippet}
+        ${applyActivationSnippet}
+        writeResult(batch, coords[1], coords[2], d2, dotProd);
+      }
+    `;
+    return userCode;
+  }
+};
+function depthwiseConv2dNative3(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2, filter } = inputs;
+  const { strides, pad: pad3, dilations, dimRoundingMode } = attrs;
+  let $dilations = dilations;
+  if ($dilations == null) {
+    $dilations = [1, 1];
+  }
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, $dilations, pad3, dimRoundingMode, true);
+  let program;
+  if (convInfo.batchSize === 1 && convInfo.inHeight === convInfo.outHeight && convInfo.inWidth === convInfo.outWidth && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && convInfo.filterHeight === convInfo.filterWidth && convInfo.inChannels === convInfo.outChannels && convInfo.filterHeight === 3 && convInfo.inChannels % 4 === 0) {
+    program = new DepthwiseConv2D3x3Program(convInfo);
+  } else {
+    program = new DepthwiseConv2DProgram2(convInfo);
+  }
+  const dimensions = [
+    { type: "int32", data: [convInfo.padInfo.top, convInfo.padInfo.left] },
+    { type: "int32", data: [convInfo.strideHeight, convInfo.strideWidth] },
+    { type: "int32", data: [convInfo.dilationHeight, convInfo.dilationWidth] },
+    { type: "int32", data: [convInfo.inHeight, convInfo.inWidth] }
+  ];
+  return backend22.runWebGPUProgram(program, [x2, filter], x2.dtype, dimensions);
+}
+var depthwiseConv2dNativeConfig4 = {
+  kernelName: DepthwiseConv2dNative,
+  backendName: "webgpu",
+  kernelFunc: depthwiseConv2dNative3
+};
+var multiplyKernelFunc = binaryKernelFunc3({
+  opSnippet: BinaryOpType.MUL,
+  cpuKernelImpl: multiplyImplCPU2,
+  supportsComplex: true
+});
+var multiplyConfig4 = {
+  kernelName: Multiply,
+  backendName: "webgpu",
+  kernelFunc: multiplyKernelFunc
+};
+var ReduceProgram2 = class {
+  constructor(reduceInfo, reduceType, outputDtype) {
+    this.variableNames = ["x"];
+    this.uniforms = "reduceSize : i32;";
+    this.inputShape = [reduceInfo.batchSize, reduceInfo.inSize];
+    const [outputShape] = backend_util_exports.computeOutAndReduceShapes(this.inputShape, [1]);
+    this.outputShape = outputShape.length === 0 ? [1] : outputShape;
+    this.reductionFactor = 2;
+    const xMaxThreads = 256;
+    const xThreads = Math.min(Math.ceil(reduceInfo.inSize / this.reductionFactor), xMaxThreads);
+    this.workGroupSize = [xThreads, 1, 1];
+    this.dispatchLayout = { x: [], y: this.outputShape.map((d2, i2) => i2) };
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.reduceType = reduceType;
+    this.shaderKey = `reduce_${reduceType}_${outputDtype}`;
+  }
+  getUserCode() {
+    const reduceInSharedMemory = this.workGroupSize[0] > 1;
+    let reduceOp = ``;
+    let initValue = "0.0";
+    if (this.reduceType === "min" || this.reduceType === "max") {
+      reduceOp = `
+         if (isNanCustom(candidate)) {
+          bestValue = uniforms.NAN;
+         } elseif (candidate ${this.reduceType === "min" ? "<" : ">"}
+           bestValue)
+           {  bestValue = candidate; }`;
+      initValue = "f32(x.numbers[offset])";
+    } else if (this.reduceType === "sum" || this.reduceType === "mean") {
+      reduceOp = " bestValue = bestValue + candidate; ";
+    } else if (this.reduceType === "prod") {
+      reduceOp = " bestValue = bestValue * candidate; ";
+      initValue = "1.0";
+    }
+    const outputSnippet = this.reduceType === "mean" ? `setOutputFlat(flatOutputIndex, bestValue / f32(uniforms.reduceSize));` : `setOutputFlat(flatOutputIndex, bestValue);`;
+    const sharedMemorySnippet = `
+         var<workgroup> xBestValues : array<f32, ${this.workGroupSize[0]}>;
+       `;
+    const sharedMemoryReduceSnippet = `
+       xBestValues[localId.x] = bestValue;
+       ${this.reduceType === "sum" || this.reduceType === "mean" || this.reduceType === "prod" ? `bestValue = ${initValue};` : " "}
+       var currentSize = WorkGroupSize;
+       for(; currentSize > 1;) {
+         workgroupBarrier();
+         for (var w = 0; w < ${this.reductionFactor}; w = w + 1) {
+           let i = i32(localId.x) * ${this.reductionFactor} + w;
+           if (i < currentSize) {
+             let candidate = xBestValues[i];
+             ${reduceOp}
+           }
+         }
+         workgroupBarrier();
+         xBestValues[localId.x] = bestValue;
+         currentSize = DIV_CEIL(currentSize, ${this.reductionFactor});
+         ${this.reduceType === "sum" || this.reduceType === "mean" || this.reduceType === "prod" ? `if(currentSize > 1) { bestValue = ${initValue}; }` : ""}
+       }
+       if (localId.x == 0u) {
+         ${outputSnippet}
+       }
+     `;
+    const userCode = `
+       fn DIV_CEIL(a : i32, b : i32) -> i32 {
+        return ((a - 1) / b + 1);
+       }
+       let WorkGroupSize = ${this.workGroupSize[0]};
+       ${reduceInSharedMemory ? sharedMemorySnippet : ""}
+       fn getOffset(globalId : vec3<u32>, index : i32) -> i32 {
+         let outputCoords = getOutputCoords(globalId, index);
+         let offset = ${this.outputShape.length === 1 ? "outputCoords" : "outputCoords[0]"} * uniforms.reduceSize;
+         return offset;
+       }
+       ${getMainHeaderString()} {
+         ${getGlobalIndexString()}
+         let offset= getOffset(globalId, index);
+         var bestValue = ${initValue};
+         let Length = uniforms.reduceSize;
+         let WorkPerThread = DIV_CEIL(Length, WorkGroupSize);
+         for (var w = 0; w < WorkPerThread; w = w + 1) {
+           let i = i32(globalId.x) * WorkPerThread + w;
+           if (i < Length) {
+             let candidate = f32(x.numbers[offset + i]);
+             ${reduceOp}
+           }
+         }
+         let flatOutputIndex = i32(globalId.y);
+         ${reduceInSharedMemory ? sharedMemoryReduceSnippet : outputSnippet}
+       }
+     `;
+    return userCode;
+  }
+};
+function reduce2(x2, axis, keepDims, reduceType, backend22) {
+  const xRank = x2.shape.length;
+  const toDispose = [];
+  const origAxes = util_exports.parseAxisParam(axis, x2.shape);
+  let axes = origAxes;
+  const permutedAxes = backend_util_exports.getAxesPermutation(axes, xRank);
+  let input2 = x2;
+  if (permutedAxes != null) {
+    input2 = transpose5({ inputs: { x: x2 }, attrs: { perm: permutedAxes }, backend: backend22 });
+    axes = backend_util_exports.getInnerMostAxes(axes.length, xRank);
+    toDispose.push(input2);
+  }
+  backend_util_exports.assertAxesAreInnerMostDims(reduceType, axes, xRank);
+  const [reduceOutShape, reduceShape] = backend_util_exports.computeOutAndReduceShapes(input2.shape, axes);
+  let resOutShape = reduceOutShape;
+  if (keepDims) {
+    resOutShape = backend_util_exports.expandShapeToKeepDim(reduceOutShape, origAxes);
+  }
+  let res2;
+  if ((reduceType === "max" || reduceType === "prod") && backend22.shouldExecuteOnCPU([input2])) {
+    const xVals = backend22.tensorMap.get(input2.dataId).values;
+    switch (reduceType) {
+      case "max":
+        const outValues = maxImplCPU2(xVals, util_exports.sizeFromShape(reduceShape), resOutShape, x2.dtype);
+        res2 = backend22.makeTensorInfo(resOutShape, x2.dtype, outValues);
+        break;
+      case "prod":
+        const { outVals, outShape, outDtype } = prodImplCPU2(input2.shape, input2.dtype, xVals, axes);
+        res2 = backend22.makeTensorInfo(outShape, outDtype, outVals);
+        break;
+      default:
+        throw new Error(`${reduceType} CPU implementation is not yet supported.`);
+    }
+  } else {
+    const inSize = util_exports.sizeFromShape(reduceShape);
+    const xSize = util_exports.sizeFromShape(input2.shape);
+    const batchSize = xSize / inSize;
+    const reduceInfo = { windowSize: inSize, inSize, batchSize, outSize: 1 };
+    const dtype = reduceType === "mean" ? "float32" : sumOutType(x2.dtype);
+    const uniformData = [
+      { type: "int32", data: [inSize] }
+    ];
+    const program = new ReduceProgram2(reduceInfo, reduceType, dtype);
+    const reduced = backend22.runWebGPUProgram(program, [input2], dtype, uniformData);
+    toDispose.push(reduced);
+    res2 = reshape6({ inputs: { x: reduced }, attrs: { shape: resOutShape }, backend: backend22 });
+  }
+  toDispose.forEach((t2) => backend22.disposeData(t2.dataId));
+  return res2;
+}
+function sum6(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { axis, keepDims } = attrs;
+  return reduce2(x2, axis, keepDims, "sum", backend22);
+}
+var sumConfig4 = {
+  kernelName: Sum,
+  backendName: "webgpu",
+  kernelFunc: sum6
+};
+function einsum4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { equation } = attrs;
+  const tensors = inputs;
+  const { allDims, summedDims, idDims } = backend_util_exports.decodeEinsumEquation(equation, tensors.length);
+  backend_util_exports.checkEinsumDimSizes(allDims.length, idDims, tensors);
+  const { path, steps } = backend_util_exports.getEinsumComputePath(summedDims, idDims);
+  const nSteps = steps.length;
+  let out = null;
+  let numDimsRemaining = allDims.length;
+  const tensorsToDispose = [];
+  for (let i2 = 0; i2 < nSteps; ++i2) {
+    for (const idTerm of steps[i2]) {
+      const { permutationIndices: perm, expandDims: dimsToExpand } = backend_util_exports.getEinsumPermutation(numDimsRemaining, idDims[idTerm]);
+      let x2;
+      if (backend_util_exports.isIdentityPermutation(perm)) {
+        x2 = tensors[idTerm];
+      } else {
+        x2 = transpose5({ inputs: { x: tensors[idTerm] }, backend: backend22, attrs: { perm } });
+        tensorsToDispose.push(x2);
+      }
+      const targetShape = x2.shape.slice();
+      for (let k3 = 0; k3 < dimsToExpand.length; ++k3) {
+        targetShape.splice(dimsToExpand[k3], 0, 1);
+      }
+      if (!util_exports.arraysEqual(x2.shape, targetShape)) {
+        x2 = reshape6({ inputs: { x: x2 }, backend: backend22, attrs: { shape: targetShape } });
+        tensorsToDispose.push(x2);
+      }
+      if (out === null) {
+        out = x2;
+      } else {
+        out = multiplyKernelFunc({ inputs: { a: x2, b: out }, backend: backend22 });
+        tensorsToDispose.push(out);
+      }
+    }
+    if (i2 < nSteps - 1) {
+      if (path[i2] >= 0) {
+        out = sum6({
+          inputs: { x: out },
+          backend: backend22,
+          attrs: {
+            axis: path[i2] - (allDims.length - numDimsRemaining),
+            keepDims: false
+          }
+        });
+        tensorsToDispose.push(out);
+      }
+      numDimsRemaining--;
+    }
+  }
+  for (const tensorInfo of tensorsToDispose) {
+    if (tensorInfo === out) {
+      continue;
+    }
+    backend22.disposeData(tensorInfo.dataId);
+  }
+  return out;
+}
+var einsumConfig3 = {
+  kernelName: Einsum,
+  backendName: "webgpu",
+  kernelFunc: einsum4
+};
+var elu6 = unaryKernelFunc3({ opType: UnaryOpType.ELU });
+var eluConfig4 = {
+  kernelName: Elu,
+  backendName: "webgpu",
+  kernelFunc: elu6
+};
+var equal4 = binaryKernelFunc3({ opSnippet: BinaryOpType.EQUAL, dtype: "bool", cpuKernelImpl: equalImplCPU2 });
+var equalConfig4 = {
+  kernelName: Equal,
+  backendName: "webgpu",
+  kernelFunc: equal4
+};
+var exp4 = unaryKernelFunc3({
+  opType: UnaryOpType.EXP,
+  cpuKernelImpl: expImplCPU2,
+  dtype: "float32"
+});
+var expConfig4 = {
+  kernelName: Exp,
+  backendName: "webgpu",
+  kernelFunc: exp4
+};
+function expandDims6(args) {
+  const { inputs, attrs, backend: backend22 } = args;
+  const { dim } = attrs;
+  const { input: input2 } = inputs;
+  const inputRank = input2.shape.length;
+  const newShape = input2.shape.slice();
+  let $dim = dim;
+  if (dim < 0) {
+    util_exports.assert(-(inputRank + 1) <= dim, () => `Axis must be in the interval [${-(inputRank + 1)}, ${inputRank}]`);
+    $dim = inputRank + dim + 1;
+  }
+  newShape.splice($dim, 0, 1);
+  return reshape6({ inputs: { x: input2 }, backend: backend22, attrs: { shape: newShape } });
+}
+var expandDimsConfig4 = {
+  kernelName: ExpandDims,
+  backendName: "webgpu",
+  kernelFunc: expandDims6
+};
+var expm14 = unaryKernelFunc3({ opType: UnaryOpType.EXPM1, cpuKernelImpl: expm1ImplCPU2 });
+var expm1Config3 = {
+  kernelName: Expm1,
+  backendName: "webgpu",
+  kernelFunc: expm14
+};
+var FillProgram2 = class {
+  constructor(shape) {
+    this.variableNames = [];
+    this.outputShape = [];
+    this.uniforms = "value : f32;";
+    this.workPerThread = 4;
+    this.workGroupSize = [16, 1, 1];
+    this.outputShape = shape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    this.shaderKey = "fill";
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const userCode = `
+    ${getMainHeaderString()} {
+      ${getGlobalIndexString()}
+      for (var i = 0; i < ${this.workPerThread}; i = i + 1) {
+        let flatIndex = index * ${this.workPerThread} + i;
+        if (flatIndex < uniforms.size) {
+          setOutputFlat(flatIndex, uniforms.value);
+        }
+      }
+    }
+  `;
+    return userCode;
+  }
+};
+function fill5(args) {
+  const { backend: backend22, attrs } = args;
+  const { shape, value } = attrs;
+  let { dtype } = attrs;
+  dtype = dtype || util_exports.inferDtype(value);
+  if (dtype === "string") {
+    const values = util_exports.getArrayFromDType(dtype, util_exports.sizeFromShape(shape));
+    values.fill(value);
+    return backend22.makeTensorInfo(shape, dtype, values);
+  } else {
+    const program = new FillProgram2(shape);
+    const uniformData = [{ type: "float32", data: [value] }];
+    return backend22.runWebGPUProgram(program, [], dtype, uniformData);
+  }
+}
+var fillConfig4 = {
+  kernelName: Fill,
+  backendName: "webgpu",
+  kernelFunc: fill5
+};
+var FlipLeftRightProgram2 = class {
+  constructor(imageShape) {
+    this.outputShape = [];
+    this.variableNames = ["x"];
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = imageShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.shaderKey = "flipLeftRight";
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+
+        if (index < uniforms.size) {
+          let coords = getOutputCoords(globalId, index);
+          let coordX = uniforms.xShape[2] - coords[2] - 1;
+          let outputValue = getX(coords[0], coords[1], coordX, coords[3]);
+          setOutputFlat(index, outputValue);
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+var flipLeftRightConfig4 = {
+  kernelName: FlipLeftRight,
+  backendName: "webgpu",
+  kernelFunc: ({ inputs, backend: backend22 }) => {
+    const { image: image32 } = inputs;
+    const webgpuBackend = backend22;
+    const program = new FlipLeftRightProgram2(image32.shape);
+    const output = webgpuBackend.runWebGPUProgram(program, [image32], image32.dtype);
+    return output;
+  }
+};
+var floor4 = unaryKernelFunc3({ opType: UnaryOpType.FLOOR, cpuKernelImpl: floorImplCPU2 });
+var floorConfig4 = {
+  kernelName: Floor,
+  backendName: "webgpu",
+  kernelFunc: floor4
+};
+var floorDiv4 = binaryKernelFunc3({ opSnippet: BinaryOpType.INT_DIV, dtype: "int32" });
+var floorDivConfig4 = {
+  kernelName: FloorDiv,
+  backendName: "webgpu",
+  kernelFunc: floorDiv4
+};
+var makeBindGroup = (device, bindGroupLayout, inputs, output, uniforms) => {
+  const bindings = [output, ...inputs];
+  if (uniforms) {
+    bindings.push(uniforms);
+  }
+  return device.createBindGroup({
+    layout: bindGroupLayout,
+    entries: bindings.map((b2, i2) => ({ binding: i2, resource: b2 }))
+  });
+};
+var compileProgram2 = (device, program, pipelineLayout, inputsData, output, isFromPixel = false) => {
+  const outputData = { dtype: output.dtype, shape: output.shape };
+  const source = makeShader2(inputsData, outputData, program, isFromPixel);
+  const module = device.createShaderModule({ code: source });
+  const pipeline = device.createComputePipeline({ layout: pipelineLayout, compute: { module, entryPoint: "main" } });
+  return pipeline;
+};
+function makeShaderKey2(program, shapes, types, broadcastDimsKey = "", inputShapesEqualsOutShape = "") {
+  const key = (program.workGroupSize ? program.workGroupSize.join(",") : "") + shapes.map((shape) => shape.length).join(",") + types.join(",") + program.variableNames.join(",") + broadcastDimsKey + inputShapesEqualsOutShape + program.shaderKey;
+  return key;
+}
+function fromPixelsExternalImage(args) {
+  const { externalImage, backend: backend22, attrs, outShape, useImport } = args;
+  const { numChannels } = attrs;
+  const size2 = util_exports.sizeFromShape(outShape);
+  const strides = util_exports.computeStrides(outShape);
+  const output = backend22.makeTensorInfo(outShape, "int32");
+  const program = backend22.getFromPixelsProgram(useImport ? "import" : "copyExternal");
+  program.updateOutputShape(outShape);
+  const outputShapes = [output.shape];
+  const outputTypes = [output.dtype, useImport ? "import" : "copyExternal"];
+  const key = makeShaderKey2(program, outputShapes, outputTypes);
+  const layout = program.getLayout(backend22.device);
+  const pipeline = backend22.getAndSavePipeline(key, () => {
+    return compileProgram2(backend22.device, program, layout.pipelineLayout, [], output, true);
+  });
+  program.setPipeline(pipeline);
+  if (!useImport) {
+    backend22.queue.copyExternalImageToTexture({ source: externalImage, origin: { x: 0, y: 0 } }, {
+      texture: program.makeInputTexture(backend22.device, outShape[1], outShape[0])
+    }, [outShape[1], outShape[0]]);
+  }
+  const info = backend22.tensorMap.get(output.dataId);
+  info.bufferInfo.buffer = backend22.acquireBuffer(info.bufferInfo.byteSize);
+  const uniformData = [size2, numChannels, ...strides, ...program.dispatch];
+  program.setUniform(backend22.device, uniformData);
+  let externalResource;
+  if (useImport) {
+    const externalTextureDescriptor = {
+      source: externalImage
+    };
+    externalResource = backend22.device.importExternalTexture(externalTextureDescriptor);
+  } else {
+    externalResource = program.inputTexture.createView();
+  }
+  backend22.runFromPixelsProgram(program, info.bufferInfo.buffer, layout, externalResource, output.dataId);
+  return output;
+}
+var fromPixelsConfig2 = {
+  kernelName: FromPixels,
+  backendName: "webgpu",
+  kernelFunc: fromPixels3
+};
+var fromPixels2DContext3;
+function fromPixels3(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  let { pixels } = inputs;
+  const { numChannels } = attrs;
+  if (pixels == null) {
+    throw new Error("pixels passed to tf.browser.fromPixels() can not be null");
+  }
+  const isVideo = typeof HTMLVideoElement !== "undefined" && pixels instanceof HTMLVideoElement;
+  const isImage = typeof HTMLImageElement !== "undefined" && pixels instanceof HTMLImageElement;
+  const isCanvas = typeof HTMLCanvasElement !== "undefined" && pixels instanceof HTMLCanvasElement;
+  const isImageBitmap = typeof ImageBitmap !== "undefined" && pixels instanceof ImageBitmap;
+  const [width, height] = isVideo ? [
+    pixels.videoWidth,
+    pixels.videoHeight
+  ] : [pixels.width, pixels.height];
+  const outShape = [height, width, numChannels];
+  if (env().getBool("WEBGPU_USE_IMPORT")) {
+    if (isVideo) {
+      return fromPixelsExternalImage({
+        externalImage: pixels,
+        backend: backend22,
+        attrs,
+        outShape,
+        useImport: true
+      });
+    }
+  }
+  if (isVideo || isImage) {
+    if (fromPixels2DContext3 == null) {
+      fromPixels2DContext3 = document.createElement("canvas").getContext("2d");
+    }
+    fromPixels2DContext3.canvas.width = width;
+    fromPixels2DContext3.canvas.height = height;
+    fromPixels2DContext3.drawImage(pixels, 0, 0, width, height);
+    pixels = fromPixels2DContext3.canvas;
+  }
+  if (isImageBitmap || isCanvas || isVideo || isImage) {
+    return fromPixelsExternalImage({
+      externalImage: pixels,
+      backend: backend22,
+      attrs,
+      outShape,
+      useImport: false
+    });
+  }
+  const imageData = pixels.data;
+  let pixelArray = imageData;
+  if (numChannels != null && numChannels !== 4) {
+    pixelArray = new Uint8Array(pixels.width * pixels.height * numChannels);
+    const dataLength = imageData.length;
+    let j2 = 0;
+    for (let i2 = 0; i2 < dataLength; i2++) {
+      if (i2 % 4 < numChannels) {
+        pixelArray[j2++] = imageData[i2];
+      }
+    }
+  }
+  const output = backend22.makeTensorInfo(outShape, "int32");
+  const info = backend22.tensorMap.get(output.dataId);
+  info.values = new Int32Array(pixelArray);
+  backend22.maybeReleaseBuffer(output.dataId);
+  backend22.uploadToGPU(output.dataId);
+  return output;
+}
+var BatchNormProgram2 = class {
+  constructor(xShape, meanShape, varianceShape, offsetShape, scaleShape) {
+    this.uniforms = "varianceEpsilon : f32;";
+    this.workGroupSize = [128, 1, 1];
+    this.variableNames = ["x", "mean", "variance"];
+    backend_util_exports.assertAndGetBroadcastShape(xShape, meanShape);
+    backend_util_exports.assertAndGetBroadcastShape(xShape, varianceShape);
+    this.outputShape = xShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    if (offsetShape != null) {
+      backend_util_exports.assertAndGetBroadcastShape(xShape, offsetShape);
+      this.variableNames.push("offset");
+    }
+    if (scaleShape != null) {
+      backend_util_exports.assertAndGetBroadcastShape(xShape, scaleShape);
+      this.variableNames.push("scale");
+    }
+    this.offsetShape = offsetShape;
+    this.scaleShape = scaleShape;
+    this.shaderKey = "batchNorm";
+  }
+  getUserCode() {
+    let offsetSnippet = "0.0";
+    if (this.offsetShape != null) {
+      offsetSnippet = "getOffsetAtOutCoordsByGlobalId(globalId, index)";
+    }
+    let scaleSnippet = "1.0";
+    if (this.scaleShape != null) {
+      scaleSnippet = "getScaleAtOutCoordsByGlobalId(globalId, index)";
+    }
+    const dim = this.outputShape.length;
+    const coordsDataType = getCoordsDataType2(dim);
+    let setOutput = "setOutput(coords[0], coords[1], coords[2], coords[3], value);";
+    if (dim === 2) {
+      setOutput = "setOutput(coords[0], coords[1], value);";
+    }
+    if (dim === 3) {
+      setOutput = "setOutput(coords[0], coords[1], coords[2], value);";
+    }
+    const userCode = `
+      fn writeResult(coords : ${coordsDataType}, value : f32) {
+        if (coordsInBounds${dim}D(coords, uniforms.outShape)) {
+          ${setOutput}
+        }
+      }
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let coords = getOutputCoords(globalId, index);
+        let xValue = getXAtOutCoordsByGlobalId(globalId, index);
+        let meanValue = getMeanAtOutCoordsByGlobalId(globalId, index);
+        let varianValue = getVarianceAtOutCoordsByGlobalId(globalId, index);
+        let offsetValue = ${offsetSnippet};
+        let scaleValue = ${scaleSnippet};
+        let inv = scaleValue * inverseSqrt(varianValue + f32(uniforms.varianceEpsilon));
+        writeResult(coords,dot(vec3<f32>(xValue, -meanValue, offsetValue), vec3<f32>(inv, inv, 1.0)));
+      }
+  `;
+    return userCode;
+  }
+};
+var fusedBatchNormConfig2 = {
+  kernelName: FusedBatchNorm,
+  backendName: "webgpu",
+  kernelFunc: ({ inputs, attrs, backend: backend22 }) => {
+    const { x: x2, scale: scale22, offset, mean: mean5, variance } = inputs;
+    const { varianceEpsilon } = attrs;
+    const webGPUBackend = backend22;
+    const batchNormInputs = [x2, mean5, variance];
+    let offsetShape = null;
+    if (offset != null) {
+      offsetShape = offset.shape;
+      batchNormInputs.push(offset);
+    }
+    let scaleShape = null;
+    if (scale22 != null) {
+      scaleShape = scale22.shape;
+      batchNormInputs.push(scale22);
+    }
+    const program = new BatchNormProgram2(x2.shape, mean5.shape, variance.shape, offsetShape, scaleShape);
+    const uniformData = [{ type: "float32", data: [varianceEpsilon] }];
+    return webGPUBackend.runWebGPUProgram(program, batchNormInputs, x2.dtype, uniformData);
+  }
+};
+function fusedConv2d3(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2, filter, bias, preluActivationWeights } = inputs;
+  const { strides, pad: pad3, dataFormat, dilations, dimRoundingMode, activation: activation2, leakyreluAlpha } = attrs;
+  const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, dilations, pad3, dimRoundingMode, false, $dataFormat);
+  const hasBias = bias != null;
+  const hasPreluActivationWeights = preluActivationWeights != null;
+  let program;
+  if (convInfo.filterHeight === 1 && convInfo.filterWidth === 1 && convInfo.dilationHeight === 1 && convInfo.dilationWidth === 1 && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && (convInfo.padInfo.type === "SAME" || convInfo.padInfo.type === "VALID")) {
+    return conv2dByMatMul2({
+      x: x2,
+      filter,
+      convInfo,
+      backend: backend22,
+      bias,
+      activation: activation2,
+      preluActivationWeights,
+      leakyreluAlpha
+    });
+  }
+  const useNaive = env().getBool("WEBGPU_USE_NAIVE_CONV2D");
+  const useVec4 = convInfo.inChannels % 4 === 0 && convInfo.outChannels % 4 === 0;
+  const padInfo = [convInfo.padInfo.top, convInfo.padInfo.left];
+  const dimensions = [
+    { type: "int32", data: [convInfo.filterHeight, convInfo.filterWidth] },
+    { type: "int32", data: [...padInfo] },
+    { type: "int32", data: [convInfo.strideHeight, convInfo.strideWidth] },
+    { type: "int32", data: [convInfo.dilationHeight, convInfo.dilationWidth] }
+  ];
+  if (useNaive) {
+    program = new Conv2DNaiveProgram(convInfo, hasBias, activation2, hasPreluActivationWeights);
+  } else {
+    if (useVec4) {
+      program = new Conv2DMMVec4Program(convInfo, hasBias, activation2, hasPreluActivationWeights);
+    } else {
+      program = new Conv2DMMProgram(convInfo, hasBias, activation2, hasPreluActivationWeights);
+    }
+    const dimAOuter = convInfo.outShape[1] * convInfo.outShape[2];
+    const dimBOuter = convInfo.outShape[3];
+    const dimInner = convInfo.filterHeight * convInfo.filterWidth * convInfo.inShape[3];
+    dimensions.push({ type: "int32", data: [dimAOuter] }, { type: "int32", data: [dimBOuter] }, { type: "int32", data: [dimInner] });
+  }
+  const inputVar = [x2, filter];
+  if (hasBias) {
+    inputVar.push(bias);
+  }
+  if (hasPreluActivationWeights) {
+    inputVar.push(preluActivationWeights);
+  }
+  return backend22.runWebGPUProgram(program, inputVar, x2.dtype, dimensions);
+}
+var fusedConv2DConfig4 = {
+  kernelName: FusedConv2D,
+  backendName: "webgpu",
+  kernelFunc: fusedConv2d3
+};
+function fusedDepthwiseConv2D3(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2, filter, bias, preluActivationWeights } = inputs;
+  const { strides, pad: pad3, dilations, dimRoundingMode, activation: activation2 } = attrs;
+  let $dilations = dilations;
+  if ($dilations == null) {
+    $dilations = [1, 1];
+  }
+  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides, $dilations), () => `Error in depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides} and dilations '${$dilations}'`);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, $dilations, pad3, dimRoundingMode, true);
+  const programInputs = [x2, filter];
+  const hasBias = bias != null;
+  const hasPreluActivationWeights = preluActivationWeights != null;
+  if (hasBias) {
+    programInputs.push(bias);
+  }
+  if (hasPreluActivationWeights) {
+    programInputs.push(preluActivationWeights);
+  }
+  let program;
+  if (convInfo.batchSize === 1 && convInfo.inHeight === convInfo.outHeight && convInfo.inWidth === convInfo.outWidth && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && convInfo.filterHeight === convInfo.filterWidth && convInfo.inChannels === convInfo.outChannels && convInfo.filterHeight === 3 && convInfo.inChannels % 4 === 0) {
+    program = new DepthwiseConv2D3x3Program(convInfo, hasBias, activation2, hasPreluActivationWeights);
+  } else {
+    program = new DepthwiseConv2DProgram2(convInfo, hasBias, activation2, hasPreluActivationWeights);
+  }
+  const dimensions = [
+    { type: "int32", data: [convInfo.padInfo.top, convInfo.padInfo.left] },
+    { type: "int32", data: [convInfo.strideHeight, convInfo.strideWidth] },
+    { type: "int32", data: [convInfo.dilationHeight, convInfo.dilationWidth] },
+    { type: "int32", data: [convInfo.inHeight, convInfo.inWidth] }
+  ];
+  const result = backend22.runWebGPUProgram(program, programInputs, "float32", dimensions);
+  return result;
+}
+var fusedDepthwiseConv2DConfig4 = {
+  kernelName: FusedDepthwiseConv2D,
+  backendName: "webgpu",
+  kernelFunc: fusedDepthwiseConv2D3
+};
+var GatherNDProgram2 = class {
+  constructor(sliceDim, shape) {
+    this.variableNames = ["A", "indices"];
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = shape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.shaderKey = `gathernd_${sliceDim}`;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+    this.sliceDim = sliceDim;
+    this.uniforms = `sliceDim : i32; strides : ${getCoordsDataType2(sliceDim)};`;
+  }
+  getUserCode() {
+    let strideString;
+    if (this.sliceDim > 1) {
+      strideString = "uniforms.strides[j]";
+    } else {
+      strideString = "uniforms.strides";
+    }
+    const userCode = `
+        ${getMainHeaderString()} {
+          ${getGlobalIndexString()}
+          let coords = getOutputCoords(globalId, index);
+          var flattenIndex = 0;
+          for (var j = 0; j < uniforms.sliceDim; j = j + 1) {
+            let indexTemp = i32(round(getIndices(coords[0], j)));
+            let strideNum = ${strideString};
+            flattenIndex = flattenIndex + indexTemp * strideNum;
+          }
+          if (index < uniforms.size) {
+            setOutputFlat(index, getA(flattenIndex, coords[1]));
+          }
+        }
+      `;
+    return userCode;
+  }
+};
+function gatherNd4(args) {
+  const { inputs, backend: backend22 } = args;
+  const { params, indices } = inputs;
+  const indicesShape = indices.shape;
+  const sliceRank = indicesShape[indicesShape.length - 1];
+  const paramsSize = util_exports.sizeFromShape(params.shape);
+  const [resultShape, numSlices, sliceSize, strides] = backend_util_exports.prepareAndValidate(params, indices);
+  const flattenIndices = reshape6({ inputs: { x: indices }, backend: backend22, attrs: { shape: [numSlices, sliceRank] } });
+  const flattenX = reshape6({
+    inputs: { x: params },
+    backend: backend22,
+    attrs: { shape: [util_exports.sizeFromShape(params.shape) / sliceSize, sliceSize] }
+  });
+  if (backend22.shouldExecuteOnCPU([params, indices]) || params.dtype === "string") {
+    const indicesData = backend22.readSync(indices.dataId);
+    const paramsBuf = backend22.bufferSync(params);
+    const outValue = gatherNdImplCPU2(indicesData, paramsBuf, params.dtype, numSlices, sliceRank, sliceSize, strides, params.shape, paramsSize);
+    return backend22.makeTensorInfo(resultShape, params.dtype, outValue.values);
+  }
+  const program = new GatherNDProgram2(sliceRank, [numSlices, sliceSize]);
+  const uniformData = [{ type: "int32", data: [sliceRank] }, { type: "int32", data: strides }];
+  const res2 = backend22.runWebGPUProgram(program, [flattenX, flattenIndices], flattenX.dtype, uniformData);
+  const reshaped = reshape6({ inputs: { x: res2 }, backend: backend22, attrs: { shape: resultShape } });
+  backend22.disposeData(flattenIndices.dataId);
+  backend22.disposeData(flattenX.dataId);
+  backend22.disposeData(res2.dataId);
+  return reshaped;
+}
+var gatherNdConfig4 = {
+  kernelName: GatherNd,
+  backendName: "webgpu",
+  kernelFunc: gatherNd4
+};
+var GatherProgram2 = class {
+  constructor(aShape, outputShape) {
+    this.variableNames = ["A", "indices"];
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = aShape.slice();
+    this.aShape = aShape;
+    this.outputShape = outputShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.shaderKey = `gather`;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const sourceCoords = getSourceCoords4(this.aShape, "i32");
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let resRC = getOutputCoords(globalId, index);
+        if (index < uniforms.size) {
+          setOutputFlat(index, getA(${sourceCoords}));
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+function getSourceCoords4(aShape, typePrefix = "int") {
+  const currentCoords = ["resRC.x", "resRC.y", "resRC.z", "resRC.w"];
+  const sourceCoords = [];
+  for (let i2 = 0; i2 < aShape.length; i2++) {
+    if (i2 === 2) {
+      sourceCoords.push(`${typePrefix}(getIndices(resRC.x, resRC.z))`);
+    } else {
+      sourceCoords.push(`${currentCoords[i2]}`);
+    }
+  }
+  return sourceCoords.join();
+}
+function gatherV24(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2, indices } = inputs;
+  const { axis, batchDims } = attrs;
+  const parsedAxis = util_exports.parseAxisParam(axis, x2.shape)[0];
+  const indicesVals = backend22.readSync(indices.dataId);
+  const axisDim = x2.shape[parsedAxis];
+  for (let i2 = 0; i2 < indicesVals.length; ++i2) {
+    const index = indicesVals[i2];
+    util_exports.assert(index <= axisDim - 1 && index >= 0, () => `GatherV2: the index value ${index} is not in [0, ${axisDim - 1}]`);
+  }
+  const shapeInfo = backend_util_exports.segment_util.collectGatherOpShapeInfo(x2, indices, parsedAxis, batchDims);
+  const indicesSize = util_exports.sizeFromShape(indices.shape);
+  const toDispose = [];
+  const flattenX = reshape6({
+    inputs: { x: x2 },
+    backend: backend22,
+    attrs: {
+      shape: [
+        shapeInfo.batchSize,
+        shapeInfo.outerSize,
+        shapeInfo.dimSize,
+        shapeInfo.sliceSize
+      ]
+    }
+  });
+  const flattenIndex = reshape6({
+    inputs: { x: indices },
+    backend: backend22,
+    attrs: { shape: [shapeInfo.batchSize, indicesSize / shapeInfo.batchSize] }
+  });
+  toDispose.push(flattenX);
+  toDispose.push(flattenIndex);
+  const flattenOutputShape = [
+    shapeInfo.batchSize,
+    shapeInfo.outerSize,
+    indicesSize / shapeInfo.batchSize,
+    shapeInfo.sliceSize
+  ];
+  if (backend22.shouldExecuteOnCPU([x2, indices])) {
+    const indicesBufferInfo = backend22.tensorMap.get(flattenIndex.dataId);
+    const indicesValues = indicesBufferInfo.values;
+    const indicesBuf = buffer(flattenIndex.shape, flattenIndex.dtype, indicesValues);
+    const xBufferInfo = backend22.tensorMap.get(flattenX.dataId);
+    const xValues = xBufferInfo.values;
+    const xBuf = buffer(flattenX.shape, flattenX.dtype, xValues);
+    const outBuf = gatherV2ImplCPU2(xBuf, indicesBuf, flattenOutputShape);
+    toDispose.forEach((t2) => backend22.disposeData(t2.dataId));
+    return backend22.makeTensorInfo(shapeInfo.outputShape, outBuf.dtype, outBuf.values);
+  }
+  const program = new GatherProgram2(flattenX.shape, flattenOutputShape);
+  const res2 = backend22.runWebGPUProgram(program, [flattenX, flattenIndex], flattenX.dtype);
+  toDispose.push(res2);
+  const reshaped = reshape6({ inputs: { x: res2 }, backend: backend22, attrs: { shape: shapeInfo.outputShape } });
+  toDispose.forEach((t2) => backend22.disposeData(t2.dataId));
+  return reshaped;
+}
+var gatherV2Config4 = {
+  kernelName: GatherV2,
+  backendName: "webgpu",
+  kernelFunc: gatherV24
+};
+var greater5 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.GREATER,
+  cpuKernelImpl: greaterImplCPU2,
+  dtype: "bool"
+});
+var greaterConfig4 = {
+  kernelName: Greater,
+  backendName: "webgpu",
+  kernelFunc: greater5
+};
+var greaterEqual4 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.GREATER_EQUAL,
+  dtype: "bool",
+  cpuKernelImpl: greaterEqualImplCPU2
+});
+var greaterEqualConfig4 = {
+  kernelName: GreaterEqual,
+  backendName: "webgpu",
+  kernelFunc: greaterEqual4
+};
+var less5 = binaryKernelFunc3({ opSnippet: BinaryOpType.LESS, dtype: "bool", cpuKernelImpl: lessImplCPU2 });
+var lessConfig4 = {
+  kernelName: Less,
+  backendName: "webgpu",
+  kernelFunc: less5
+};
+var lessEqual4 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.LESS_EQUAL,
+  dtype: "bool",
+  cpuKernelImpl: lessEqualImplCPU2
+});
+var lessEqualConfig4 = {
+  kernelName: LessEqual,
+  backendName: "webgpu",
+  kernelFunc: lessEqual4
+};
+var log8 = unaryKernelFunc3({ opType: UnaryOpType.LOG, cpuKernelImpl: logImplCPU2 });
+var logConfig4 = {
+  kernelName: Log,
+  backendName: "webgpu",
+  kernelFunc: log8
+};
+var logicalAnd4 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.LOGICAL_AND,
+  dtype: "bool"
+});
+var logicalAndConfig4 = {
+  kernelName: LogicalAnd,
+  backendName: "webgpu",
+  kernelFunc: logicalAnd4
+};
+var logicalNot4 = unaryKernelFunc3({ opType: UnaryOpType.LOGICAL_NOT });
+var logicalNotConfig3 = {
+  kernelName: LogicalNot,
+  backendName: "webgpu",
+  kernelFunc: logicalNot4
+};
+function max6(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { reductionIndices, keepDims } = attrs;
+  return reduce2(x2, reductionIndices, keepDims, "max", backend22);
+}
+var maxConfig4 = {
+  kernelName: Max,
+  backendName: "webgpu",
+  kernelFunc: max6
+};
+var maximum5 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.MAX,
+  cpuKernelImpl: maximumImplCPU2
+});
+var maximumConfig4 = {
+  kernelName: Maximum,
+  backendName: "webgpu",
+  kernelFunc: maximum5
+};
+function maxPool5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const dilations = 1;
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode);
+  let program;
+  const dimensions = [];
+  if (convInfo.filterHeight === 1 && convInfo.filterWidth === 1) {
+    if (util_exports.arraysEqual(convInfo.inShape, convInfo.outShape)) {
+      return identity5({ inputs: { x: x2 }, backend: backend22 });
+    }
+    program = new PoolWithFilterSizeEqualsOneProgram(convInfo);
+    dimensions.push({ type: "int32", data: [convInfo.strideHeight, convInfo.strideWidth] });
+  } else {
+    program = new Pool2DProgram2(convInfo, "max");
+    dimensions.push({ type: "int32", data: [convInfo.strideHeight, convInfo.strideWidth] }, { type: "int32", data: [convInfo.padInfo.top, convInfo.padInfo.left] }, {
+      type: "int32",
+      data: [convInfo.dilationHeight, convInfo.dilationWidth]
+    }, { type: "int32", data: [convInfo.inHeight, convInfo.inWidth] }, {
+      type: "int32",
+      data: [convInfo.effectiveFilterHeight, convInfo.effectiveFilterWidth]
+    });
+  }
+  return backend22.runWebGPUProgram(program, [x2], x2.dtype, dimensions);
+}
+var maxPoolConfig4 = {
+  kernelName: MaxPool,
+  backendName: "webgpu",
+  kernelFunc: maxPool5
+};
+function mean4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { keepDims, axis } = attrs;
+  return reduce2(x2, axis, keepDims, "mean", backend22);
+}
+var meanConfig4 = {
+  kernelName: Mean,
+  backendName: "webgpu",
+  kernelFunc: mean4
+};
+function min6(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { axis, keepDims } = attrs;
+  return reduce2(x2, axis, keepDims, "min", backend22);
+}
+var minConfig4 = {
+  kernelName: Min,
+  backendName: "webgpu",
+  kernelFunc: min6
+};
+var minimum5 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.MIN,
+  cpuKernelImpl: minimumImplCPU2
+});
+var minimumConfig4 = {
+  kernelName: Minimum,
+  backendName: "webgpu",
+  kernelFunc: minimum5
+};
+var MirrorPadProgram2 = class {
+  constructor(xShape, paddings, mode) {
+    this.uniforms = "";
+    this.variableNames = ["x"];
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = paddings.map((p22, i2) => p22[0] + xShape[i2] + p22[1]);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.xShape = xShape;
+    paddings.map((_2, i2) => {
+      this.uniforms += ` pad${i2} : vec2<i32>;`;
+    });
+    this.offset = mode === "reflect" ? 0 : 1;
+    this.shaderKey = `mirrorPad_${mode}`;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const rank = this.xShape.length;
+    const start = this.xShape.map((_2, i2) => `uniforms.pad${i2}[0]`).join(",");
+    const end = this.xShape.map((_2, i2) => `uniforms.pad${i2}[0] + uniforms.xShape${rank > 1 ? `[${i2}]` : ""}`).join(",");
+    const shaderStart = rank === 1 ? "start" : "start[i]";
+    const shaderEnd = rank === 1 ? "end" : "end[i]";
+    const shaderOutC = rank === 1 ? "outC" : "outC[i]";
+    const dtype = getCoordsDataType2(rank);
+    const unpackedCoords = rank > 1 ? ["coords[0]", "coords[1]", "coords[2]", "coords[3]"].slice(0, rank) : "coords";
+    return `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let start = ${dtype}(${start});
+        let end = ${dtype}(${end});
+        var outC = getOutputCoords(globalId, index);
+        if (index < uniforms.size) {
+          for (var i = 0; i < ${rank}; i = i + 1) {
+            if (${shaderOutC} < ${shaderStart}) {
+              ${shaderOutC} = ${shaderStart} * 2 - ${shaderOutC} - ${this.offset};
+            } elseif(${shaderOutC} >= ${shaderEnd}) {
+              ${shaderOutC} = (${shaderEnd} - 1) * 2 - ${shaderOutC} + ${this.offset};
+            }
+          }
+          let coords = outC - start;
+          setOutputFlat(index, getX(${unpackedCoords}));
+        }
+      }
+    `;
+  }
+};
+var mirrorPadConfig4 = {
+  kernelName: MirrorPad,
+  backendName: "webgpu",
+  kernelFunc: ({ inputs, attrs, backend: backend22 }) => {
+    const { x: x2 } = inputs;
+    const { paddings, mode } = attrs;
+    const webGPUBackend = backend22;
+    const uniformData = paddings.map((p22) => {
+      return { type: "int32", data: [p22[0], p22[1]] };
+    });
+    const program = new MirrorPadProgram2(x2.shape, paddings, mode);
+    const output = webGPUBackend.runWebGPUProgram(program, [x2], x2.dtype, uniformData);
+    return output;
+  }
+};
+function neg4(args) {
+  const { inputs, backend: backend22 } = args;
+  const { x: x2 } = inputs;
+  if (backend22.shouldExecuteOnCPU([x2])) {
+    const xData = backend22.tensorMap.get(x2.dataId);
+    const [outValues, newShape] = negImplCPU2(xData.values, x2.shape, x2.dtype);
+    return backend22.makeTensorInfo(newShape, x2.dtype, outValues);
+  }
+  const program = new UnaryOpProgram2(x2.shape, UnaryOpType.NEG);
+  return backend22.runWebGPUProgram(program, [x2], x2.dtype);
+}
+var negConfig4 = {
+  kernelName: Neg,
+  backendName: "webgpu",
+  kernelFunc: neg4
+};
+function nonMaxSuppressionV33(args) {
+  console.warn("tf.nonMaxSuppression() in webgpu locks the UI thread. Call tf.nonMaxSuppressionAsync() instead");
+  const { inputs, backend: backend22, attrs } = args;
+  const { boxes, scores } = inputs;
+  const { maxOutputSize, iouThreshold, scoreThreshold } = attrs;
+  const boxesVals = backend22.readSync(boxes.dataId);
+  const scoresVals = backend22.readSync(scores.dataId);
+  const { selectedIndices } = kernel_impls_exports.nonMaxSuppressionV3Impl(boxesVals, scoresVals, maxOutputSize, iouThreshold, scoreThreshold);
+  return backend22.makeTensorInfo([selectedIndices.length], "int32", new Int32Array(selectedIndices));
+}
+var nonMaxSuppressionV3Config4 = {
+  kernelName: NonMaxSuppressionV3,
+  backendName: "webgpu",
+  kernelFunc: nonMaxSuppressionV33
+};
+function nonMaxSuppressionV53(args) {
+  console.warn("tf.nonMaxSuppression() in webgpu locks the UI thread. Call tf.nonMaxSuppressionAsync() instead");
+  const { inputs, backend: backend22, attrs } = args;
+  const { boxes, scores } = inputs;
+  const { maxOutputSize, iouThreshold, scoreThreshold, softNmsSigma } = attrs;
+  const boxesVals = backend22.readSync(boxes.dataId);
+  const scoresVals = backend22.readSync(scores.dataId);
+  const maxOutputSizeVal = maxOutputSize;
+  const iouThresholdVal = iouThreshold;
+  const scoreThresholdVal = scoreThreshold;
+  const softNmsSigmaVal = softNmsSigma;
+  const { selectedIndices, selectedScores } = kernel_impls_exports.nonMaxSuppressionV5Impl(boxesVals, scoresVals, maxOutputSizeVal, iouThresholdVal, scoreThresholdVal, softNmsSigmaVal);
+  return [
+    backend22.makeTensorInfo([selectedIndices.length], "int32", new Int32Array(selectedIndices)),
+    backend22.makeTensorInfo([selectedScores.length], "float32", new Float32Array(selectedScores))
+  ];
+}
+var nonMaxSuppressionV5Config4 = {
+  kernelName: NonMaxSuppressionV5,
+  backendName: "webgpu",
+  kernelFunc: nonMaxSuppressionV53
+};
+function zerosLike5(args) {
+  const { inputs, backend: backend22 } = args;
+  const { x: x2 } = inputs;
+  if (x2.dtype === "complex64") {
+    const realPart = real4({ inputs: { input: x2 }, backend: backend22 });
+    const r2 = zerosLike5({ inputs: { x: realPart }, backend: backend22 });
+    const imagPart = imag4({ inputs: { input: x2 }, backend: backend22 });
+    const i2 = zerosLike5({ inputs: { x: imagPart }, backend: backend22 });
+    const result = complex4({ inputs: { real: r2, imag: i2 }, backend: backend22 });
+    backend22.disposeData(realPart.dataId);
+    backend22.disposeData(r2.dataId);
+    backend22.disposeData(imagPart.dataId);
+    backend22.disposeData(i2.dataId);
+    return result;
+  } else {
+    return fill5({
+      attrs: {
+        shape: x2.shape,
+        dtype: x2.dtype,
+        value: x2.dtype === "string" ? "" : 0
+      },
+      backend: backend22
+    });
+  }
+}
+var zerosLikeConfig4 = {
+  kernelName: ZerosLike,
+  backendName: "webgpu",
+  kernelFunc: zerosLike5
+};
+function onesLike5(args) {
+  const { inputs, backend: backend22 } = args;
+  const { x: x2 } = inputs;
+  if (x2.dtype === "string") {
+    throw new Error("onesLike is not supported under string dtype");
+  } else if (x2.dtype === "complex64") {
+    const realPart = real4({ inputs: { input: x2 }, backend: backend22 });
+    const r2 = onesLike5({ inputs: { x: realPart }, backend: backend22 });
+    const imagPart = imag4({ inputs: { input: x2 }, backend: backend22 });
+    const i2 = zerosLike5({ inputs: { x: imagPart }, backend: backend22 });
+    const result = complex4({ inputs: { real: r2, imag: i2 }, backend: backend22 });
+    backend22.disposeData(realPart.dataId);
+    backend22.disposeData(r2.dataId);
+    backend22.disposeData(imagPart.dataId);
+    backend22.disposeData(i2.dataId);
+    return result;
+  } else {
+    return fill5({ attrs: { shape: x2.shape, dtype: x2.dtype, value: 1 }, backend: backend22 });
+  }
+}
+var onesLikeConfig4 = {
+  kernelName: OnesLike,
+  backendName: "webgpu",
+  kernelFunc: onesLike5
+};
+function pack4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { axis } = attrs;
+  if (inputs.length === 1) {
+    return expandDims6({ inputs: { input: inputs[0] }, backend: backend22, attrs: { dim: axis } });
+  }
+  const shape = inputs[0].shape;
+  const dtype = inputs[0].dtype;
+  inputs.forEach((t2) => {
+    util_exports.assertShapesMatch(shape, t2.shape, "All tensors passed to stack must have matching shapes");
+    util_exports.assert(dtype === t2.dtype, () => "All tensors passed to stack must have matching dtypes");
+  });
+  const intermediateTensorInfos = [];
+  const expandedTensors = inputs.map((t2) => {
+    const expandedT = expandDims6({ inputs: { input: t2 }, backend: backend22, attrs: { dim: axis } });
+    intermediateTensorInfos.push(expandedT);
+    return expandedT;
+  });
+  const result = concat5({ inputs: expandedTensors, backend: backend22, attrs: { axis } });
+  intermediateTensorInfos.forEach((t2) => backend22.disposeData(t2.dataId));
+  return result;
+}
+var packConfig4 = {
+  kernelName: Pack,
+  backendName: "webgpu",
+  kernelFunc: pack4
+};
+var PadProgram2 = class {
+  constructor(xShape, paddings) {
+    this.variableNames = ["x"];
+    this.uniforms = "constantValue : f32;";
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = paddings.map((p22, i2) => p22[0] + xShape[i2] + p22[1]);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    paddings.map((_2, i2) => {
+      this.uniforms += ` pad${i2} : vec2<i32>;`;
+    });
+    this.xShape = xShape;
+    this.shaderKey = "pad";
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const rank = this.xShape.length;
+    const type = getCoordsDataType2(rank);
+    const start = this.xShape.map((_2, i2) => `uniforms.pad${i2}[0]`).join(",");
+    const end = this.xShape.map((_2, i2) => `uniforms.pad${i2}[0] + uniforms.xShape${rank > 1 ? `[${i2}]` : ""}`).join(",");
+    const startValue = rank > 1 ? `${type}(${start})` : `${start}`;
+    const endValue = rank > 1 ? `${type}(${end})` : `${end}`;
+    const leftPadCondition = rank > 1 ? `any(outC < start)` : `outC < start`;
+    const rightPadCondition = rank > 1 ? `any(outC >= end)` : `outC >= end`;
+    const unpackedCoords = rank > 1 ? ["coords[0]", "coords[1]", "coords[2]", "coords[3]"].slice(0, rank) : "coords";
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let start = ${startValue};
+        let end = ${endValue};
+        if (index < uniforms.size) {
+          let outC = getOutputCoords(globalId, index);
+
+          if (${leftPadCondition} || ${rightPadCondition}) {
+            setOutputFlat(index, uniforms.constantValue);
+          } else {
+            let coords = outC - start;
+            setOutputFlat(index, getX(${unpackedCoords}));
+          }
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+var padV23 = (args) => {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { paddings, constantValue } = attrs;
+  if (paddings.every((p22) => util_exports.arraysEqual(p22, [0, 0]))) {
+    return identity5({ inputs: { x: x2 }, backend: backend22 });
+  }
+  if (util_exports.sizeFromShape(x2.shape) === 0) {
+    const outputShape = paddings.map((p22, i2) => p22[0] + x2.shape[i2] + p22[1]);
+    return fill5({
+      backend: backend22,
+      attrs: { shape: outputShape, value: constantValue, dtype: x2.dtype }
+    });
+  }
+  const uniformData = [{ type: "float32", data: [constantValue] }];
+  paddings.map((p22) => uniformData.push({ type: "int32", data: [p22[0], p22[1]] }));
+  const program = new PadProgram2(x2.shape, paddings);
+  return backend22.runWebGPUProgram(program, [x2], x2.dtype, uniformData);
+};
+var padV2Config4 = {
+  kernelName: PadV2,
+  backendName: "webgpu",
+  kernelFunc: padV23
+};
+var pow4 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.POW
+});
+var powConfig4 = {
+  kernelName: Pow,
+  backendName: "webgpu",
+  kernelFunc: pow4
+};
+function prelu6(args) {
+  const { inputs, backend: backend22 } = args;
+  const { x: x2, alpha } = inputs;
+  const program = new BinaryOpProgram2(BinaryOpType.PRELU, x2.shape, alpha.shape);
+  return backend22.runWebGPUProgram(program, [x2, alpha], "float32");
+}
+var preluConfig4 = {
+  kernelName: Prelu,
+  backendName: "webgpu",
+  kernelFunc: prelu6
+};
+function prod5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { axis, keepDims } = attrs;
+  return reduce2(x2, axis, keepDims, "prod", backend22);
+}
+var prodConfig4 = {
+  kernelName: Prod,
+  backendName: "webgpu",
+  kernelFunc: prod5
+};
+var range6 = (args) => {
+  const { backend: backend22, attrs } = args;
+  const { start, stop, step: step5, dtype } = attrs;
+  const values = rangeImplCPU2(start, stop, step5, dtype);
+  return backend22.makeTensorInfo([values.length], dtype, values);
+};
+var rangeConfig4 = {
+  kernelName: Range,
+  backendName: "webgpu",
+  kernelFunc: range6
+};
+var realDiv2 = binaryKernelFunc3({ opSnippet: BinaryOpType.DIV });
+var realDivConfig4 = {
+  kernelName: RealDiv,
+  backendName: "webgpu",
+  kernelFunc: realDiv2
+};
+var relu4 = unaryKernelFunc3({ opType: UnaryOpType.RELU });
+var reluConfig4 = {
+  kernelName: Relu,
+  backendName: "webgpu",
+  kernelFunc: relu4
+};
+var relu64 = unaryKernelFunc3({ opType: UnaryOpType.RELU6 });
+var relu6Config4 = {
+  kernelName: Relu6,
+  backendName: "webgpu",
+  kernelFunc: relu64
+};
+var ResizeBilinearProgram2 = class {
+  constructor(inputShape, newHeight, newWidth, alignCorners, halfPixelCenters) {
+    this.variableNames = ["x"];
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = [inputShape[0], newHeight, newWidth, inputShape[3]];
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.alignCorners = alignCorners;
+    this.halfPixelCenters = halfPixelCenters;
+    this.shaderKey = `resizeBilinear_${alignCorners}_${halfPixelCenters}_${this.outputShape[1] > 1}_${this.outputShape[2] > 1}`;
+  }
+  getUserCode() {
+    const adjustHeight = this.alignCorners && this.outputShape[1] > 1;
+    const adjustWidth = this.alignCorners && this.outputShape[2] > 1;
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let coords = getOutputCoords(globalId, index);
+        if (all(coords < uniforms.outShape)) {
+          let b = coords[0];
+          let d = coords[3];
+          let rc = coords.yz;
+
+          let effectiveInSize = vec2<f32>(
+            ${adjustHeight ? `f32(uniforms.xShape.y) - 1.0` : `f32(uniforms.xShape.y)`},
+            ${adjustWidth ? `f32(uniforms.xShape.z) - 1.0` : `f32(uniforms.xShape.z)`});
+
+          let effectiveOutSize = vec2<f32>(
+            ${adjustHeight ? `f32(uniforms.outShape.y) - 1.0` : `f32(uniforms.outShape.y)`},
+            ${adjustWidth ? `f32(uniforms.outShape.z) - 1.0` : `f32(uniforms.outShape.z)`});
+
+          let effectiveInputOverOutputRatioRC =
+              effectiveInSize / effectiveOutSize;
+
+          // Fractional source index
+          let sourceFracIndexRC = ${this.halfPixelCenters ? "(vec2<f32>(rc) + vec2<f32>(0.5)) * effectiveInputOverOutputRatioRC - vec2<f32>(0.5)" : "vec2<f32>(rc) * effectiveInputOverOutputRatioRC"};
+
+          // Compute the four integer indices.
+          let sourceFloorRC = vec2<i32>(sourceFracIndexRC);
+          let sourceCeilRC = vec2<i32>(
+            min(vec2<f32>(uniforms.xShape.yz) - vec2<f32>(1.0), ceil(sourceFracIndexRC)));
+
+          let topLeft = getX(b, sourceFloorRC.x, sourceFloorRC.y, d);
+          let bottomLeft = getX(b, sourceCeilRC.x, sourceFloorRC.y, d);
+          let topRight = getX(b, sourceFloorRC.x, sourceCeilRC.y, d);
+          let bottomRight = getX(b, sourceCeilRC.x, sourceCeilRC.y, d);
+
+          let fracRC = sourceFracIndexRC - vec2<f32>(sourceFloorRC);
+
+          let top = topLeft + (topRight - topLeft) * fracRC.y;
+          let bottom = bottomLeft + (bottomRight - bottomLeft) * fracRC.y;
+          let newValue = top + (bottom - top) * fracRC.x;
+
+          setOutput(b, coords[1], coords[2], d, newValue);
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+function resizeBilinear5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { images } = inputs;
+  const { alignCorners, size: size2, halfPixelCenters } = attrs;
+  const [newHeight, newWidth] = size2;
+  const program = new ResizeBilinearProgram2(images.shape, newHeight, newWidth, alignCorners, halfPixelCenters);
+  return backend22.runWebGPUProgram(program, [images], "float32");
+}
+var resizeBilinearConfig4 = {
+  kernelName: ResizeBilinear,
+  backendName: "webgpu",
+  kernelFunc: resizeBilinear5
+};
+var ResizeNearestNeighborProgram2 = class {
+  constructor(inputShape, newHeight, newWidth, alignCorners, halfPixelCenters) {
+    this.variableNames = ["x"];
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = [inputShape[0], newHeight, newWidth, inputShape[3]];
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.alignCorners = alignCorners;
+    this.halfPixelCenters = halfPixelCenters;
+    this.shaderKey = `resizeNearest_${alignCorners}_${this.outputShape[1] > 1}_${this.outputShape[2] > 1}_${halfPixelCenters}`;
+  }
+  getUserCode() {
+    const roundBase = this.alignCorners ? "0.5" : "0.0";
+    let sourceFracIndexRC;
+    if (this.halfPixelCenters) {
+      sourceFracIndexRC = `max((vec2<f32>(rc) + vec2<f32>(0.5)) * effectiveInputOverOutputRatioRC, vec2<f32>(0.0))`;
+    } else {
+      sourceFracIndexRC = `vec2<f32>(rc) * effectiveInputOverOutputRatioRC`;
+    }
+    const adjustHeight = this.alignCorners && this.outputShape[1] > 1;
+    const adjustWidth = this.alignCorners && this.outputShape[2] > 1;
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let coords = getOutputCoords(globalId, index);
+        if (all(coords < uniforms.outShape)) {
+          let b = coords[0];
+          let d = coords[3];
+          let rc = coords.yz;
+
+          let effectiveInSize = vec2<f32>(
+            ${adjustHeight ? `f32(uniforms.xShape.y) - 1.0` : `f32(uniforms.xShape.y)`},
+            ${adjustWidth ? `f32(uniforms.xShape.z) - 1.0` : `f32(uniforms.xShape.z)`});
+
+          let effectiveOutSize = vec2<f32>(
+            ${adjustHeight ? `f32(uniforms.outShape.y) - 1.0` : `f32(uniforms.outShape.y)`},
+            ${adjustWidth ? `f32(uniforms.outShape.z) - 1.0` : `f32(uniforms.outShape.z)`});
+
+          let effectiveInputOverOutputRatioRC =
+              effectiveInSize / effectiveOutSize;
+
+          // Fractional source index
+          let sourceFracIndexRC = ${sourceFracIndexRC};
+
+          // Compute the coordinators of nearest neighbor point.
+          let inputShapeRC = vec2<f32>(f32(uniforms.xShape.y), f32(uniforms.xShape.z));
+          let sourceNearestRC = vec2<i32>(
+            min(inputShapeRC - 1.0, floor(sourceFracIndexRC + ${roundBase})));
+          let newValue = getX(b, sourceNearestRC.x, sourceNearestRC.y, d);
+
+          setOutput(b, coords[1], coords[2], d, newValue);
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+function resizeNearestNeighbor4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { images } = inputs;
+  const { alignCorners, halfPixelCenters, size: size2 } = attrs;
+  const [newHeight, newWidth] = size2;
+  const program = new ResizeNearestNeighborProgram2(images.shape, newHeight, newWidth, alignCorners, halfPixelCenters);
+  return backend22.runWebGPUProgram(program, [images], images.dtype);
+}
+var resizeNearestNeighborConfig3 = {
+  kernelName: ResizeNearestNeighbor,
+  backendName: "webgpu",
+  kernelFunc: resizeNearestNeighbor4
+};
+var RotateProgram2 = class {
+  constructor(imageShape, fillValue) {
+    this.outputShape = [];
+    this.variableNames = ["x"];
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = imageShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.uniforms = `centerX : f32; centerY : f32; sinRadians : f32;
+          cosRadians : f32;`;
+    this.shaderKey = "rotate";
+    this.size = util_exports.sizeFromShape(this.outputShape);
+    this.outputShape = imageShape;
+    if (typeof fillValue === "number") {
+      this.uniforms += ` fillValue : f32;`;
+      this.fillSnippet = `var outputValue = uniforms.fillValue;`;
+      this.shaderKey += "_float";
+    } else {
+      this.uniforms += ` fillValue : vec3<f32>;`;
+      this.fillSnippet = `var outputValue = uniforms.fillValue[coords[3]];`;
+      this.shaderKey += "_vec3";
+    }
+  }
+  getUserCode() {
+    const userCode = `
+        ${getMainHeaderString()} {
+          ${getGlobalIndexString()}
+
+          if (index < uniforms.size) {
+            let coords = getOutputCoords(globalId, index);
+            let coordXFloat = (f32(coords[2]) - uniforms.centerX) *
+                uniforms.cosRadians - (f32(coords[1]) - uniforms.centerY) *
+                uniforms.sinRadians;
+            let coordYFloat = (f32(coords[2]) - uniforms.centerX) *
+                uniforms.sinRadians + (f32(coords[1]) - uniforms.centerY) *
+                uniforms.cosRadians;
+            let coordX = i32(round(coordXFloat + uniforms.centerX));
+            let coordY = i32(round(coordYFloat + uniforms.centerY));
+            ${this.fillSnippet}
+            if(coordX >= 0 && coordX < uniforms.xShape[2] && coordY >= 0 &&
+                coordY < uniforms.xShape[1]) {
+              outputValue = getX(coords[0], coordY, coordX, coords[3]);
+            }
+            setOutputFlat(index, outputValue);
+          }
+        }
+      `;
+    return userCode;
+  }
+};
+var rotateWithOffsetConfig4 = {
+  kernelName: RotateWithOffset,
+  backendName: "webgpu",
+  kernelFunc: ({ inputs, attrs, backend: backend22 }) => {
+    const { image: image32 } = inputs;
+    const { radians, fillValue, center } = attrs;
+    const webgpuBackend = backend22;
+    const program = new RotateProgram2(image32.shape, fillValue);
+    const [centerX, centerY] = backend_util_exports.getImageCenter(center, image32.shape[1], image32.shape[2]);
+    const uniformData = [
+      { type: "float32", data: [centerX] },
+      { type: "float32", data: [centerY] },
+      { type: "float32", data: [Math.sin(radians)] },
+      { type: "float32", data: [Math.cos(radians)] }
+    ];
+    if (typeof fillValue === "number") {
+      uniformData.push({ type: "float32", data: [Number.parseFloat(fillValue.toFixed(2))] });
+    } else {
+      uniformData.push({ type: "float32", data: fillValue });
+    }
+    const output = webgpuBackend.runWebGPUProgram(program, [image32], image32.dtype, uniformData);
+    return output;
+  }
+};
+var rsqrt4 = unaryKernelFunc3({ opType: UnaryOpType.RSQRT, cpuKernelImpl: rsqrtImplCPU2 });
+var rsqrtConfig4 = {
+  kernelName: Rsqrt,
+  backendName: "webgpu",
+  kernelFunc: rsqrt4
+};
+var ScatterProgram2 = class {
+  constructor(updateSize, sliceDim, indicesRank, updatesRank, strides, shape, summingDupeIndex = true) {
+    this.variableNames = ["updates", "indices", "defaultValue"];
+    this.workGroupSize = [64, 1, 1];
+    this.workPerThread = 4;
+    this.outputShape = shape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    const sliceDimGreaterThanOne = sliceDim > 1;
+    this.shaderKey = `scatter_${indicesRank}_${updatesRank}_${sliceDimGreaterThanOne}`;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+    const stridesType = getCoordsDataType2(strides.length);
+    this.uniforms = `updateSize : i32; sliceDim : i32; strides: ${stridesType};`;
+    let indicesString = "";
+    if (indicesRank === 1) {
+      indicesString = "i";
+    } else if (indicesRank === 2) {
+      indicesString = "i, j";
+    }
+    this.indicesSnippet = `getIndices(${indicesString})`;
+    let updatesString = "";
+    if (updatesRank === 1) {
+      updatesString = "i";
+    } else if (updatesRank === 2) {
+      updatesString = "i, coords[1]";
+    }
+    this.updatesSnippet = `getUpdates(${updatesString})`;
+    this.strideString = sliceDimGreaterThanOne ? "uniforms.strides[j]" : "uniforms.strides";
+  }
+  getUserCode() {
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+
+        let globalIndex = index * ${this.workPerThread};
+        if (globalIndex < uniforms.size) {
+          var sum = vec4<f32>(0.0);
+          var found = vec4<bool>(false);
+          for (var i = 0; i < uniforms.updateSize; i = i + 1) {
+            var flattenedIndex = 0;
+            for (var j = 0; j < uniforms.sliceDim; j = j + 1) {
+              let indexInside = i32(round(${this.indicesSnippet}));
+              flattenedIndex = flattenedIndex + indexInside * ${this.strideString};
+            }
+            for (var innerIndex = 0; innerIndex < ${this.workPerThread}; innerIndex = innerIndex + 1) {
+              let curIndex = globalIndex + innerIndex;
+              let coords = getCoordsFromFlatIndex(curIndex);
+              if (flattenedIndex == coords[0]) {
+                sum[innerIndex] = sum[innerIndex] + ${this.updatesSnippet};
+                found[innerIndex] = true;
+              }
+            }
+          }
+          for (var innerIndex = 0; innerIndex < ${this.workPerThread}; innerIndex = innerIndex + 1) {
+            let curIndex = globalIndex + innerIndex;
+            if (curIndex < uniforms.size)
+            {
+              setOutputFlat(curIndex, mix(getDefaultValue(), sum[innerIndex], f32(found[innerIndex])));
+            }
+          }
+        }
+      }`;
+    return userCode;
+  }
+};
+function scatterNd4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { indices, updates } = inputs;
+  const { shape } = attrs;
+  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(updates, indices, shape);
+  const flattenShape = [outputSize2 / sliceSize, sliceSize];
+  if (outputSize2 === 0) {
+    return backend22.makeTensorInfo(shape, indices.dtype);
+  }
+  const flattenIndices = reshape6({ inputs: { x: indices }, backend: backend22, attrs: { shape: [numUpdates, sliceRank] } });
+  const flattenX = reshape6({ inputs: { x: updates }, backend: backend22, attrs: { shape: [numUpdates, sliceSize] } });
+  const defaultValue = backend22.makeTensorInfo([], "float32", new Float32Array([0]));
+  const uniformData = [
+    { type: "int32", data: [numUpdates] },
+    { type: "int32", data: [sliceRank] },
+    { type: "int32", data: strides }
+  ];
+  const program = new ScatterProgram2(numUpdates, sliceRank, flattenIndices.shape.length, flattenX.shape.length, strides, flattenShape);
+  const res2 = backend22.runWebGPUProgram(program, [flattenX, flattenIndices, defaultValue], flattenX.dtype, uniformData);
+  const reshaped = reshape6({ inputs: { x: res2 }, backend: backend22, attrs: { shape } });
+  backend22.disposeData(flattenIndices.dataId);
+  backend22.disposeData(flattenX.dataId);
+  backend22.disposeData(res2.dataId);
+  backend22.disposeData(defaultValue.dataId);
+  return reshaped;
+}
+var scatterNdConfig4 = {
+  kernelName: ScatterNd,
+  backendName: "webgpu",
+  kernelFunc: scatterNd4
+};
+var SelectProgram2 = class {
+  constructor(cRank, shape, rank) {
+    this.variableNames = ["c", "a", "b"];
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = shape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.cRank = cRank;
+    this.rank = rank;
+    this.shaderKey = "select";
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    let cCoords;
+    let abCoords;
+    if (this.rank > 4) {
+      throw Error(`Where for rank ${this.rank} is not yet supported`);
+    }
+    if (this.rank === 1) {
+      abCoords = `resRC`;
+      cCoords = `resRC`;
+    } else {
+      const currentCoords = ["resRC.x", "resRC.y", "resRC.z", "resRC.w"];
+      const cCoordVars = [];
+      const abCoordVars = [];
+      for (let i2 = 0; i2 < this.outputShape.length; i2++) {
+        abCoordVars.push(`${currentCoords[i2]}`);
+        if (i2 < this.cRank) {
+          cCoordVars.push(`${currentCoords[i2]}`);
+        }
+      }
+      cCoords = cCoordVars.join();
+      abCoords = abCoordVars.join();
+    }
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        if (index < uniforms.size) {
+          let resRC = getOutputCoords(globalId, index);
+          let cVal = getC(${cCoords});
+          if (cVal >= 1.0) {
+            setOutputFlat(index, getA(${abCoords}));
+          } else {
+            setOutputFlat(index, getB(${abCoords}));
+          }
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+function select5(args) {
+  const { inputs, backend: backend22 } = args;
+  const { condition, t: t2, e: e2 } = inputs;
+  const program = new SelectProgram2(condition.shape.length, t2.shape, t2.shape.length);
+  return backend22.runWebGPUProgram(program, [condition, t2, e2], upcastType(t2.dtype, e2.dtype));
+}
+var selectConfig4 = {
+  kernelName: Select,
+  backendName: "webgpu",
+  kernelFunc: select5
+};
+var sigmoid5 = unaryKernelFunc3({ opType: UnaryOpType.SIGMOID });
+var sigmoidConfig4 = {
+  kernelName: Sigmoid,
+  backendName: "webgpu",
+  kernelFunc: sigmoid5
+};
+var sin4 = unaryKernelFunc3({ opType: UnaryOpType.SIN });
+var sinConfig4 = {
+  kernelName: Sin,
+  backendName: "webgpu",
+  kernelFunc: sin4
+};
+var sinh4 = unaryKernelFunc3({ opType: UnaryOpType.SINH });
+var sinhConfig3 = {
+  kernelName: Sinh,
+  backendName: "webgpu",
+  kernelFunc: sinh4
+};
+var sub4 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.SUB,
+  cpuKernelImpl: subImplCPU2,
+  supportsComplex: true
+});
+var subConfig4 = {
+  kernelName: Sub,
+  backendName: "webgpu",
+  kernelFunc: sub4
+};
+function softmax6(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { logits } = inputs;
+  const { dim } = attrs;
+  const axes = util_exports.parseAxisParam([dim], logits.shape);
+  const maxLogit = max6({
+    inputs: { x: logits },
+    backend: backend22,
+    attrs: { reductionIndices: axes, keepDims: false }
+  });
+  const expandedShape = backend_util_exports.expandShapeToKeepDim(maxLogit.shape, axes);
+  const maxLogitsReshaped = reshape6({ inputs: { x: maxLogit }, backend: backend22, attrs: { shape: expandedShape } });
+  const a6 = sub4({ inputs: { a: logits, b: maxLogitsReshaped }, backend: backend22 });
+  const b2 = exp4({ inputs: { x: a6 }, backend: backend22 });
+  const sumExp = sum6({ inputs: { x: b2 }, backend: backend22, attrs: { axis: axes, keepDims: false } });
+  const sumExpReshaped = reshape6({ inputs: { x: sumExp }, backend: backend22, attrs: { shape: expandedShape } });
+  const res2 = realDiv2({ inputs: { a: b2, b: sumExpReshaped }, backend: backend22 });
+  backend22.disposeData(maxLogit.dataId);
+  backend22.disposeData(maxLogitsReshaped.dataId);
+  backend22.disposeData(a6.dataId);
+  backend22.disposeData(b2.dataId);
+  backend22.disposeData(sumExp.dataId);
+  backend22.disposeData(sumExpReshaped.dataId);
+  return res2;
+}
+var softmaxConfig4 = {
+  kernelName: Softmax,
+  backendName: "webgpu",
+  kernelFunc: softmax6
+};
+var spaceToBatchND5 = (args) => {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { blockShape, paddings } = attrs;
+  util_exports.assert(x2.shape.length <= 4, () => "spaceToBatchND for rank > 4 with a WebGPU backend not implemented yet");
+  const prod6 = blockShape.reduce((a6, b2) => a6 * b2);
+  const completePaddings = [[0, 0]];
+  completePaddings.push(...paddings);
+  for (let i2 = 1 + blockShape.length; i2 < x2.shape.length; ++i2) {
+    completePaddings.push([0, 0]);
+  }
+  const toDispose = [];
+  const paddedX = padV23({
+    inputs: { x: x2 },
+    backend: backend22,
+    attrs: { paddings: completePaddings, constantValue: 0 }
+  });
+  const reshapedPaddedShape = backend_util_exports.getReshaped(paddedX.shape, blockShape, prod6, false);
+  const permutedReshapedPaddedPermutation = backend_util_exports.getPermuted(reshapedPaddedShape.length, blockShape.length, false);
+  const flattenShape = backend_util_exports.getReshapedPermuted(paddedX.shape, blockShape, prod6, false);
+  const reshapedPaddedX = reshape6({ inputs: { x: paddedX }, backend: backend22, attrs: { shape: reshapedPaddedShape } });
+  const paddedXT = transpose5({
+    inputs: { x: reshapedPaddedX },
+    backend: backend22,
+    attrs: { perm: permutedReshapedPaddedPermutation }
+  });
+  const result = reshape6({ inputs: { x: paddedXT }, backend: backend22, attrs: { shape: flattenShape } });
+  toDispose.push(paddedX);
+  toDispose.push(reshapedPaddedX);
+  toDispose.push(paddedXT);
+  toDispose.forEach((t2) => backend22.disposeData(t2.dataId));
+  return result;
+};
+var spaceToBatchNDConfig4 = {
+  kernelName: SpaceToBatchND,
+  backendName: "webgpu",
+  kernelFunc: spaceToBatchND5
+};
+function sparseToDense4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { sparseIndices, sparseValues, defaultValue } = inputs;
+  const { outputShape } = attrs;
+  const { sliceRank, numUpdates, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
+  const sumDupeIndices = false;
+  const uniformData = [
+    { type: "int32", data: [numUpdates] },
+    { type: "int32", data: [sliceRank] },
+    { type: "int32", data: strides }
+  ];
+  const program = new ScatterProgram2(numUpdates, sliceRank, sparseIndices.shape.length, sparseValues.shape.length, strides, [outputSize2, 1], sumDupeIndices);
+  const res2 = backend22.runWebGPUProgram(program, [sparseValues, sparseIndices, defaultValue], sparseValues.dtype, uniformData);
+  const reshaped = reshape6({ inputs: { x: res2 }, backend: backend22, attrs: { shape: outputShape } });
+  backend22.disposeData(res2.dataId);
+  return reshaped;
+}
+var sparseToDenseConfig3 = {
+  kernelName: SparseToDense,
+  backendName: "webgpu",
+  kernelFunc: sparseToDense4
+};
+function splitV4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { numOrSizeSplits, axis } = attrs;
+  const $axis = util_exports.parseAxisParam(axis, x2.shape)[0];
+  const splitSizes = backend_util_exports.prepareSplitSize(x2, numOrSizeSplits, $axis);
+  const xRank = x2.shape.length;
+  const begin = new Array(xRank).fill(0);
+  const size2 = x2.shape.slice();
+  return splitSizes.map((s2) => {
+    const sliceSize = [...size2];
+    sliceSize[$axis] = s2;
+    const sliceT = slice5({ inputs: { x: x2 }, backend: backend22, attrs: { begin, size: sliceSize } });
+    begin[$axis] += s2;
+    return sliceT;
+  });
+}
+var splitVConfig4 = {
+  kernelName: SplitV,
+  backendName: "webgpu",
+  kernelFunc: splitV4
+};
+var sqrt4 = unaryKernelFunc3({ opType: UnaryOpType.SQRT });
+var sqrtConfig4 = {
+  kernelName: Sqrt,
+  backendName: "webgpu",
+  kernelFunc: sqrt4
+};
+var squareConfig4 = {
+  kernelName: Square,
+  backendName: "webgpu",
+  kernelFunc: ({ inputs, backend: backend22 }) => {
+    const { x: x2 } = inputs;
+    const webGPUBackend = backend22;
+    const program = new UnaryOpProgram2(x2.shape, UnaryOpType.SQUARE);
+    return webGPUBackend.runWebGPUProgram(program, [x2], x2.dtype);
+  }
+};
+var squaredDifference4 = binaryKernelFunc3({
+  opSnippet: BinaryOpType.SQUARED_DIFFERENCE
+});
+var squaredDifferenceConfig4 = {
+  kernelName: SquaredDifference,
+  backendName: "webgpu",
+  kernelFunc: squaredDifference4
+};
+var StridedSliceProgram2 = class {
+  constructor(destSize) {
+    this.variableNames = ["x"];
+    this.workPerThread = 1;
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = destSize;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+    const dtype = getCoordsDataType2(this.outputShape.length);
+    this.uniforms = `begin : ${dtype};  strides : ${dtype}; `;
+    this.shaderKey = "stridedSlice";
+    this.size = util_exports.sizeFromShape(this.outputShape);
+  }
+  getUserCode() {
+    const rank = this.outputShape.length;
+    let newCoords = "";
+    if (rank === 1) {
+      newCoords = "coords * uniforms.strides + uniforms.begin";
+    } else {
+      let outputAxis = 0;
+      newCoords = this.outputShape.map((_2, i2) => {
+        outputAxis++;
+        return this.outputShape.length === 1 ? `coords * uniforms.strides[${i2}] + uniforms.begin[${i2}]` : `coords[${outputAxis - 1}] * uniforms.strides[${i2}] + uniforms.begin[${i2}]`;
+      }).join(",");
+    }
+    const userCode = `
+       ${getMainHeaderString()} {
+         ${getGlobalIndexString()}
+         if (index < uniforms.size) {
+           let coords = getOutputCoords(globalId, index);
+           setOutputFlat(index, getX(${newCoords}));
+         }
+       }
+     `;
+    return userCode;
+  }
+};
+function stridedSlice5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask } = attrs;
+  const { nonStrided, $begin, $strides, size: size2, newShape, outShape } = slice_util_exports.sliceInfo(x2.shape, begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask);
+  const $x = reshape6({ inputs: { x: x2 }, backend: backend22, attrs: { shape: newShape } });
+  let result;
+  if (nonStrided) {
+    const sliced = slice5({ inputs: { x: $x }, backend: backend22, attrs: { begin: $begin, size: size2 } });
+    result = reshape6({ inputs: { x: sliced }, backend: backend22, attrs: { shape: outShape } });
+    backend22.disposeData(sliced.dataId);
+  } else if (outShape.some((axis) => axis === 0)) {
+    result = backend22.makeTensorInfo(outShape, x2.dtype, []);
+  } else {
+    const shouldExecuteOnCPU = backend22.shouldExecuteOnCPU([$x]);
+    if (shouldExecuteOnCPU) {
+      const xBufferInfo = backend22.tensorMap.get($x.dataId);
+      const values = xBufferInfo.values;
+      const xBuf = buffer($x.shape, $x.dtype, values);
+      const resultValues = stridedSliceImplCPU2(outShape, xBuf, $strides, $begin);
+      result = backend22.makeTensorInfo(outShape, $x.dtype, resultValues.values);
+    } else {
+      const program = new StridedSliceProgram2(outShape);
+      const uniformData = [{ type: "int32", data: $begin }, { type: "int32", data: $strides }];
+      result = backend22.runWebGPUProgram(program, [$x], $x.dtype, uniformData);
+    }
+  }
+  const resultReshaped = reshape6({ inputs: { x: result }, backend: backend22, attrs: { shape: outShape } });
+  backend22.disposeData($x.dataId);
+  backend22.disposeData(result.dataId);
+  return resultReshaped;
+}
+var stridedSliceConfig4 = {
+  kernelName: StridedSlice,
+  backendName: "webgpu",
+  kernelFunc: stridedSlice5
+};
+function stringNGrams4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { separator, nGramWidths, leftPad, rightPad: rightPad2, padWidth, preserveShortSequences } = attrs;
+  const { data, dataSplits } = inputs;
+  const $data = backend22.readSync(data.dataId);
+  const $dataSplits = backend22.readSync(dataSplits.dataId);
+  const [nGrams, nGramsSplits] = stringNGramsImplCPU2($data, $dataSplits, separator, nGramWidths, leftPad, rightPad2, padWidth, preserveShortSequences);
+  return [
+    backend22.makeTensorInfo([nGrams.length], "string", nGrams),
+    backend22.makeTensorInfo(dataSplits.shape, "int32", nGramsSplits)
+  ];
+}
+var stringNGramsConfig3 = {
+  kernelName: StringNGrams,
+  backendName: "webgpu",
+  kernelFunc: stringNGrams4
+};
+var tanh5 = unaryKernelFunc3({ opType: UnaryOpType.TANH });
+var tanhConfig4 = {
+  kernelName: Tanh,
+  backendName: "webgpu",
+  kernelFunc: tanh5
+};
+var TileProgram2 = class {
+  constructor(aShape, reps) {
+    this.variableNames = ["A"];
+    this.workGroupSize = [64, 1, 1];
+    const outputShape = new Array(aShape.length);
+    for (let i2 = 0; i2 < outputShape.length; i2++) {
+      outputShape[i2] = aShape[i2] * reps[i2];
+    }
+    this.outputShape = outputShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.rank = this.outputShape.length;
+    this.size = util_exports.sizeFromShape(this.outputShape);
+    this.shaderKey = "tile";
+  }
+  getUserCode() {
+    const sourceCoords = getSourceCoords5(this.rank, "uniforms.");
+    const userCode = `
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        if (index < uniforms.size) {
+          let resRC = getOutputCoords(globalId, index);
+          setOutputFlat(index, getA(${sourceCoords}));
+        }
+      }
+    `;
+    return userCode;
+  }
+};
+function getSourceCoords5(rank, uniformPrefix = "") {
+  if (rank >= 5) {
+    throw Error(`Tile for rank ${rank} is not yet supported`);
+  }
+  if (rank === 1) {
+    return `(resRC % ${uniformPrefix}aShape)`;
+  }
+  const currentCoords = ["resRC.x", "resRC.y", "resRC.z", "resRC.w"];
+  const sourceCoords = [];
+  for (let i2 = 0; i2 < rank; i2++) {
+    sourceCoords.push(`(${currentCoords[i2]} % ${uniformPrefix}aShape[${i2}])`);
+  }
+  return sourceCoords.join();
+}
+function tile6(params) {
+  const { inputs, backend: backend22, attrs } = params;
+  const { x: x2 } = inputs;
+  const { reps } = attrs;
+  if (backend22.shouldExecuteOnCPU([x2]) || x2.dtype === "string" || x2.shape.length >= 5) {
+    const data = backend22.readSync(x2.dataId);
+    const value = x2.dtype === "string" ? data.map((d2) => util_exports.decodeString(d2)) : data;
+    const buf = buffer(x2.shape, x2.dtype, value);
+    const outBuf = tileImplCPU2(buf, reps);
+    return backend22.makeTensorInfo(outBuf.shape, outBuf.dtype, outBuf.values);
+  }
+  const program = new TileProgram2(x2.shape, reps);
+  const output = backend22.runWebGPUProgram(program, [x2], x2.dtype);
+  return output;
+}
+var tileConfig4 = {
+  kernelName: Tile,
+  backendName: "webgpu",
+  kernelFunc: tile6
+};
+var TransformProgram2 = class {
+  constructor(outShape) {
+    this.variableNames = ["Image", "Transforms"];
+    this.uniforms = "interpolationModeId : i32; fillModeId : i32; fillValue : f32;";
+    this.workGroupSize = [64, 1, 1];
+    this.outputShape = outShape;
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.shaderKey = "transform";
+  }
+  getUserCode() {
+    const userCode = `
+          fn mapCoord(outCoord : f32, len : f32) -> f32{
+            var inCoord = outCoord;
+            if(uniforms.fillModeId == 2) {
+              if (inCoord < 0.0) {
+                if (len <= 1.0) {
+                  inCoord = 0.0;
+                } else {
+                  let sz2 = 2.0 * len;
+                  if (inCoord < sz2) {
+                    inCoord = sz2 * f32(i32(f32(-inCoord / sz2))) +
+                    inCoord;
+                  }
+                  if (inCoord < -len) {
+                    inCoord = inCoord + sz2;
+                  } else {
+                    inCoord = -inCoord - 1.0;
+                  }
+                }
+              } elseif (inCoord > len - 1.0) {
+                if (len <= 1.0) {
+                  inCoord = 0.0;
+                } else {
+                  let sz2 = 2.0 * len;
+                  inCoord = inCoord - sz2 * f32(i32(f32(inCoord / sz2)));
+                  if (inCoord >= len) {
+                    inCoord = sz2 - inCoord - 1.0;
+                  }
+                }
+              }
+              return clamp(inCoord, 0.0, len - 1.0);
+            } elseif (uniforms.fillModeId == 3) {
+              if (inCoord < 0.0) {
+                if (len <= 1.0) {
+                  inCoord = 0.0;
+                } else {
+                  let sz = len - 1.0;
+                  inCoord = inCoord + len * (f32(i32(f32(-inCoord / sz))) + 1.0);
+                }
+              } elseif (inCoord > len - 1.0) {
+                if (len <= 1.0) {
+                  inCoord = 0.0;
+                } else {
+                  let sz = len - 1.0;
+                  inCoord = inCoord - len * f32(i32(f32(inCoord / sz)));
+                }
+              }
+              return clamp(inCoord, 0.0, len - 1.0);
+            } elseif (uniforms.fillModeId == 4) {
+              return clamp(outCoord, 0.0, len - 1.0);
+            }
+            return outCoord;
+          }
+          fn readWithFillValue(batch : i32, coordY : i32, coordX : i32,
+            channel : i32) -> f32 {
+            var outputValue : f32;
+            if (0 <= coordY && coordY < uniforms.imageShape[1] && 0 <= coordX && coordX < uniforms.imageShape[2]) {
+                outputValue = getImage(batch, coordY, coordX, channel);
+            } else {
+              outputValue = uniforms.fillValue;
+            }
+            return outputValue;
+          }
+
+          ${getMainHeaderString()} {
+            ${getGlobalIndexString()}
+            let coords = getOutputCoords(globalId, index);
+            if (coordsInBounds4D(coords, uniforms.outShape)) {
+              var outputValue : f32;
+              let batch = coords[0];
+              let x = coords[2];
+              let y = coords[1];
+              let channel = coords[3];
+              let xf = f32(x);
+              let yf = f32(y);
+              let a1 = getTransforms(batch, 0);
+              let a2 = getTransforms(batch, 1);
+              let a3 = getTransforms(batch, 2);
+              let b1 = getTransforms(batch, 3);
+              let b2 = getTransforms(batch, 4);
+              let b3 = getTransforms(batch, 5);
+              let c1 = getTransforms(batch, 6);
+              let c2 = getTransforms(batch, 7);
+              let projection = c1 * xf + c2 * yf + 1.0;
+              if (projection == 0.0) {
+                outputValue = uniforms.fillValue;
+              } else {
+                let inX = (a1 * xf + a2 * yf + a3) / projection;
+                let inY = (b1 * xf + b2 * yf + b3) / projection;
+                let mapX = mapCoord(inX, f32(uniforms.imageShape[2]));
+                let mapY = mapCoord(inY, f32(uniforms.imageShape[1]));
+
+                if (uniforms.interpolationModeId == 1) {
+                  let coordY = i32(round(mapY));
+                  let coordX = i32(round(mapX));
+                  outputValue = readWithFillValue(batch, coordY, coordX,
+                    channel);
+                } else {
+                  let yFloor = floor(mapY);
+                  let xFloor = floor(mapX);
+                  let yCeil = yFloor + 1.0;
+                  let xCeil = xFloor + 1.0;
+                  let valueYFloor = (xCeil - mapX) *
+                  readWithFillValue(batch, i32(yFloor), i32(xFloor), channel) +
+                  (mapX - xFloor) *
+                  readWithFillValue(batch, i32(yFloor), i32(xCeil), channel);
+                  let valueYCeil = (xCeil - mapX) *
+                  readWithFillValue(batch, i32(yCeil), i32(xFloor), channel) +
+                  (mapX - xFloor) *
+                  readWithFillValue(batch, i32(yCeil), i32(xCeil), channel);
+                  outputValue = (yCeil - mapY) * valueYFloor +
+                  (mapY - yFloor) * valueYCeil;
+                }
+              }
+              setOutput(coords[0], coords[1], coords[2], coords[3], outputValue);
+            }
+          }
+        `;
+    return userCode;
+  }
+};
+function transform5(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { image: image32, transforms } = inputs;
+  const { interpolation, fillMode, fillValue, outputShape } = attrs;
+  const [batch, imageHeight, imageWidth, numChannels] = image32.shape;
+  const [outHeight, outWidth] = outputShape != null ? outputShape : [imageHeight, imageWidth];
+  const outShape = [
+    batch,
+    outHeight,
+    outWidth,
+    numChannels
+  ];
+  const program = new TransformProgram2(outShape);
+  const interpolationModeId = interpolation === "nearest" ? 1 : 2;
+  let fillModeId;
+  switch (fillMode) {
+    case "constant":
+      fillModeId = 1;
+      break;
+    case "reflect":
+      fillModeId = 2;
+      break;
+    case "wrap":
+      fillModeId = 3;
+      break;
+    case "nearest":
+      fillModeId = 4;
+      break;
+    default:
+      fillModeId = 1;
+      break;
+  }
+  const uniformData = [
+    { type: "int32", data: [interpolationModeId] },
+    { type: "int32", data: [fillModeId] },
+    { type: "float32", data: [fillValue] }
+  ];
+  return backend22.runWebGPUProgram(program, [image32, transforms], "float32", uniformData);
+}
+var transformConfig4 = {
+  kernelName: Transform,
+  backendName: "webgpu",
+  kernelFunc: transform5
+};
+function unpack4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { value } = inputs;
+  let { axis } = attrs;
+  if (axis < 0) {
+    axis += value.shape.length;
+  }
+  const x2 = value;
+  const xRank = x2.shape.length;
+  const num = value.shape[axis];
+  const outShape = new Array(xRank - 1);
+  let outIndex = 0;
+  for (let i2 = 0; i2 < xRank; i2++) {
+    if (i2 !== axis) {
+      outShape[outIndex++] = x2.shape[i2];
+    }
+  }
+  const toDispose = [];
+  const begin = new Array(xRank).fill(0);
+  const size2 = x2.shape.slice();
+  size2[axis] = 1;
+  const res2 = new Array(num);
+  for (let i2 = 0; i2 < res2.length; i2++) {
+    begin[axis] = i2;
+    const sliced = slice5({ inputs: { x: x2 }, backend: backend22, attrs: { begin, size: size2 } });
+    const reshaped = reshape6({ inputs: { x: sliced }, backend: backend22, attrs: { shape: outShape } });
+    res2[i2] = reshaped;
+    toDispose.push(sliced);
+  }
+  toDispose.forEach((t2) => backend22.disposeData(t2.dataId));
+  return res2;
+}
+var unpackConfig4 = {
+  kernelName: Unpack,
+  backendName: "webgpu",
+  kernelFunc: unpack4
+};
+var kernelConfigs4 = [
+  _fusedMatMulConfig3,
+  absConfig4,
+  addConfig4,
+  addNConfig4,
+  argMaxConfig4,
+  argMinConfig3,
+  avgPoolConfig4,
+  batchMatMulConfig4,
+  batchToSpaceNDConfig4,
+  castConfig4,
+  ceilConfig4,
+  clipByValueConfig3,
+  complexConfig3,
+  concatConfig4,
+  conv2DConfig4,
+  conv2DBackpropInputConfig4,
+  cosConfig4,
+  coshConfig4,
+  cropAndResizeConfig4,
+  depthToSpaceConfig4,
+  depthwiseConv2dNativeConfig4,
+  einsumConfig3,
+  eluConfig4,
+  equalConfig4,
+  expandDimsConfig4,
+  expConfig4,
+  expm1Config3,
+  fillConfig4,
+  flipLeftRightConfig4,
+  fromPixelsConfig2,
+  floorConfig4,
+  floorDivConfig4,
+  fusedBatchNormConfig2,
+  fusedConv2DConfig4,
+  fusedDepthwiseConv2DConfig4,
+  gatherNdConfig4,
+  gatherV2Config4,
+  greaterConfig4,
+  greaterEqualConfig4,
+  identityConfig4,
+  imagConfig3,
+  lessConfig4,
+  lessEqualConfig4,
+  logConfig4,
+  logicalAndConfig4,
+  logicalNotConfig3,
+  maxConfig4,
+  maximumConfig4,
+  maxPoolConfig4,
+  meanConfig4,
+  minConfig4,
+  minimumConfig4,
+  mirrorPadConfig4,
+  multiplyConfig4,
+  negConfig4,
+  nonMaxSuppressionV3Config4,
+  nonMaxSuppressionV5Config4,
+  notEqualConfig4,
+  onesLikeConfig4,
+  packConfig4,
+  padV2Config4,
+  preluConfig4,
+  prodConfig4,
+  powConfig4,
+  rangeConfig4,
+  realConfig3,
+  realDivConfig4,
+  reluConfig4,
+  relu6Config4,
+  reshapeConfig4,
+  resizeBilinearConfig4,
+  resizeNearestNeighborConfig3,
+  rotateWithOffsetConfig4,
+  rsqrtConfig4,
+  scatterNdConfig4,
+  selectConfig4,
+  sigmoidConfig4,
+  sinConfig4,
+  sinhConfig3,
+  sliceConfig4,
+  stridedSliceConfig4,
+  stringNGramsConfig3,
+  softmaxConfig4,
+  spaceToBatchNDConfig4,
+  splitVConfig4,
+  sparseToDenseConfig3,
+  sqrtConfig4,
+  squareConfig4,
+  squaredDifferenceConfig4,
+  subConfig4,
+  sumConfig4,
+  tanhConfig4,
+  tileConfig4,
+  transformConfig4,
+  transposeConfig4,
+  unpackConfig4,
+  zerosLikeConfig4
+];
+for (const kernelConfig of kernelConfigs4) {
+  registerKernel(kernelConfig);
+}
+var BufferManager = class {
+  constructor(device) {
+    this.device = device;
+    this.numUsedBuffers = 0;
+    this.numFreeBuffers = 0;
+    this.freeBuffers = new Map();
+    this.usedBuffers = new Map();
+    this.numBytesUsed = 0;
+    this.numBytesAllocated = 0;
+  }
+  acquireBuffer(byteSize, usage) {
+    const key = getBufferKey(byteSize, usage);
+    if (!this.freeBuffers.has(key)) {
+      this.freeBuffers.set(key, []);
+    }
+    if (!this.usedBuffers.has(key)) {
+      this.usedBuffers.set(key, []);
+    }
+    this.numBytesUsed += byteSize;
+    this.numUsedBuffers++;
+    if (this.freeBuffers.get(key).length > 0) {
+      this.numFreeBuffers--;
+      const newBuffer2 = this.freeBuffers.get(key).shift();
+      this.usedBuffers.get(key).push(newBuffer2);
+      return newBuffer2;
+    }
+    this.numBytesAllocated += byteSize;
+    const newBuffer = this.device.createBuffer({ size: byteSize, usage });
+    this.usedBuffers.get(key).push(newBuffer);
+    return newBuffer;
+  }
+  releaseBuffer(buffer2, byteSize, usage) {
+    if (this.freeBuffers == null) {
+      return;
+    }
+    const key = getBufferKey(byteSize, usage);
+    if (!this.freeBuffers.has(key)) {
+      this.freeBuffers.set(key, []);
+    }
+    this.freeBuffers.get(key).push(buffer2);
+    this.numFreeBuffers++;
+    this.numUsedBuffers--;
+    const bufferList = this.usedBuffers.get(key);
+    const bufferIndex = bufferList.indexOf(buffer2);
+    if (bufferIndex < 0) {
+      throw new Error("Cannot release a buffer that was never provided by this buffer manager");
+    }
+    bufferList.splice(bufferIndex, 1);
+    this.numBytesUsed -= byteSize;
+  }
+  getNumUsedBuffers() {
+    return this.numUsedBuffers;
+  }
+  getNumFreeBuffers() {
+    return this.numFreeBuffers;
+  }
+  reset() {
+    this.freeBuffers = new Map();
+    this.usedBuffers = new Map();
+    this.numUsedBuffers = 0;
+    this.numFreeBuffers = 0;
+    this.numBytesUsed = 0;
+    this.numBytesAllocated = 0;
+  }
+  dispose() {
+    if (this.freeBuffers == null && this.usedBuffers == null) {
+      return;
+    }
+    this.freeBuffers.forEach((buffers, key) => {
+      buffers.forEach((buff) => {
+        buff.destroy();
+      });
+    });
+    this.usedBuffers.forEach((buffers, key) => {
+      buffers.forEach((buff) => {
+        buff.destroy();
+      });
+    });
+    this.freeBuffers = null;
+    this.usedBuffers = null;
+    this.numUsedBuffers = 0;
+    this.numFreeBuffers = 0;
+    this.numBytesUsed = 0;
+    this.numBytesAllocated = 0;
+  }
+};
+function getBufferKey(byteSize, usage) {
+  return `${byteSize}_${usage}`;
+}
+var FromPixelsProgram2 = class {
+  constructor() {
+    this.outputShape = [0];
+    this.variableNames = [];
+    this.workGroupSize = [256, 1, 1];
+    this.lastUniformData = [];
+    this.inputTexture = null;
+    this.layout = null;
+    this.lastPixelSize = { width: 0, height: 0 };
+    this.disposed = false;
+    this.shaderKey = "fromPixels";
+    this.useImport = false;
+  }
+  updateOutputShape(outputShape) {
+    if (util_exports.arraysEqual(this.outputShape, outputShape)) {
+      return;
+    }
+    this.outputShape = outputShape;
+    this.workPerThread = outputShape[2];
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
+  }
+  makeFromPixelsSource() {
+    const textureLoad = this.useImport ? "textureLoad(src, vec2<i32>(coords.yx));" : "textureLoad(src, vec2<i32>(coords.yx), 0)";
+    const textureType = this.useImport ? "texture_external" : "texture_2d<f32>";
+    return `
+      [[binding(1), group(0)]] var src: ${textureType};
+
+      ${getMainHeaderString()} {
+        ${getGlobalIndexString()}
+        let flatIndexBase = index * uniforms.numChannels;
+        let coords = getCoordsFromFlatIndex(flatIndexBase);
+        let values = ${textureLoad};
+        for (var i = 0; i < uniforms.numChannels; i = i + 1) {
+          let flatIndex = flatIndexBase + i;
+          if (flatIndex < uniforms.size) {
+            result.numbers[flatIndex] = i32(floor(255.0 * values[i]));
+          }
+        }
+      }
+  `;
+  }
+  getUserCode() {
+    return this.makeFromPixelsSource();
+  }
+  setPipeline(pipeline) {
+    this.pipeline = pipeline;
+  }
+  setUniform(device, uniformData) {
+    if (!this.uniform) {
+      const uniformBuffer = device.createBuffer({
+        size: uniformData.length * 4,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+      });
+      this.uniform = uniformBuffer;
+    }
+    if (!uniformData || uniformData.length === this.lastUniformData.length && uniformData.every((v2, i2) => v2 === this.lastUniformData[i2])) {
+      return;
+    }
+    device.queue.writeBuffer(this.uniform, 0, new Uint32Array(uniformData));
+    this.lastUniformData = uniformData;
+  }
+  makeInputTexture(device, pixelWidth, pixelHeight) {
+    if (!this.inputTexture || this.lastPixelSize.width !== pixelWidth || this.lastPixelSize.height !== pixelHeight) {
+      if (this.inputTexture) {
+        this.inputTexture.destroy();
+      }
+      this.inputTexture = device.createTexture({
+        size: [pixelWidth, pixelHeight],
+        format: "rgba8unorm",
+        usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
+      });
+      this.lastPixelSize.width = pixelWidth;
+      this.lastPixelSize.height = pixelHeight;
+    }
+    return this.inputTexture;
+  }
+  dispose() {
+    if (this.disposed) {
+      return;
+    }
+    if (this.uniform) {
+      this.uniform.destroy();
+    }
+    if (this.inputTexture) {
+      this.inputTexture.destroy();
+    }
+    this.disposed = true;
+  }
+  getLayout(device) {
+    if (this.layout === null) {
+      this.layout = this.createTextureLayout(device);
+    }
+    return this.layout;
+  }
+  createTextureLayout(device) {
+    const bindGroupLayoutEntries = [];
+    bindGroupLayoutEntries.push({
+      binding: 0,
+      visibility: GPUShaderStage.COMPUTE,
+      buffer: { type: "storage" }
+    });
+    bindGroupLayoutEntries.push({ binding: 1, visibility: GPUShaderStage.COMPUTE, texture: {} });
+    bindGroupLayoutEntries.push({ binding: 2, visibility: GPUShaderStage.COMPUTE, buffer: {} });
+    const fromPixelBindGroupLayout = device.createBindGroupLayout({ entries: bindGroupLayoutEntries });
+    const fromPixelPipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [fromPixelBindGroupLayout] });
+    return {
+      bindGroupLayout: fromPixelBindGroupLayout,
+      pipelineLayout: fromPixelPipelineLayout
+    };
+  }
+};
+var FromPixelsImportProgram = class extends FromPixelsProgram2 {
+  constructor() {
+    super(...arguments);
+    this.layout = null;
+    this.useImport = true;
+  }
+  getUserCode() {
+    return this.makeFromPixelsSource();
+  }
+  getLayout(device) {
+    if (this.layout === null) {
+      this.layout = this.createTextureImportLayout(device);
+    }
+    return this.layout;
+  }
+  createTextureImportLayout(device) {
+    const bindGroupLayoutEntries = [];
+    bindGroupLayoutEntries.push({
+      binding: 0,
+      visibility: GPUShaderStage.COMPUTE,
+      buffer: { type: "storage" }
+    });
+    bindGroupLayoutEntries.push({
+      binding: 1,
+      visibility: GPUShaderStage.COMPUTE,
+      externalTexture: {}
+    });
+    bindGroupLayoutEntries.push({ binding: 2, visibility: GPUShaderStage.COMPUTE, buffer: {} });
+    const fromPixelImportBindGroupLayout = device.createBindGroupLayout({ entries: bindGroupLayoutEntries });
+    const fromPixelImportPipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [fromPixelImportBindGroupLayout] });
+    return {
+      bindGroupLayout: fromPixelImportBindGroupLayout,
+      pipelineLayout: fromPixelImportPipelineLayout
+    };
+  }
+};
+var CPU_HANDOFF_SIZE_THRESHOLD2 = env().getNumber("WEBGPU_CPU_HANDOFF_SIZE_THRESHOLD");
+var WebGPUBackend = class extends KernelBackend {
+  constructor(device, supportTimeQuery = false) {
+    super();
+    this.commandQueueOwnedIds = new WeakSet();
+    this.tensorDisposalQueue = [];
+    this.uniformDisposalQueue = [];
+    this.disposed = false;
+    this.uploadWaitMs = 0;
+    this.downloadWaitMs = 0;
+    this.dispatchNumberInEncoder = 0;
+    if (!isWebGPUSupported()) {
+      throw new Error("WebGPU is not supported on this device");
+    }
+    this.layoutCache = {};
+    this.pipelineCache = {};
+    this.device = device;
+    this.queue = device.queue;
+    this.currentCommandEncoder = null;
+    this.currentComputePass = null;
+    this.supportTimeQuery = supportTimeQuery;
+    this.bufferManager = new BufferManager(this.device);
+    this.tensorMap = new DataStorage(this, engine());
+    if (this.supportTimeQuery) {
+      this.querySet = this.device.createQuerySet({
+        type: "timestamp",
+        count: 2
+      });
+    }
+    if (env().getBool("WEBGPU_USE_PROFILE_TOOL")) {
+      this.dummyCanvas = document.createElement("canvas");
+      this.dummyCanvas.width = 1;
+      this.dummyCanvas.height = 1;
+      this.dummyContext = this.dummyCanvas.getContext("webgpu");
+      this.dummyContext.configure({
+        device,
+        format: "bgra8unorm"
+      });
+      document.body.appendChild(this.dummyCanvas);
+    }
+  }
+  nextDataId() {
+    return WebGPUBackend.nextDataId++;
+  }
+  floatPrecision() {
+    return 32;
+  }
+  defaultGpuBufferUsage() {
+    return GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST;
+  }
+  flushDisposalQueue() {
+    this.tensorDisposalQueue.forEach((d2) => {
+      this.maybeReleaseBuffer(d2);
+      this.tensorMap.delete(d2);
+    });
+    this.uniformDisposalQueue.forEach((d2) => this.bufferManager.releaseBuffer(d2.buffer, d2.byteSize, d2.usage));
+    this.tensorDisposalQueue = [];
+    this.uniformDisposalQueue = [];
+  }
+  disposeData(dataId, force = false) {
+    if (this.tensorMap.has(dataId)) {
+      const data = this.tensorMap.get(dataId);
+      data.refCount--;
+      if (!force && data.refCount > 0) {
+        return false;
+      }
+      if (this.commandQueueOwnedIds.has(dataId)) {
+        this.tensorDisposalQueue.push(dataId);
+        return false;
+      } else {
+        this.maybeReleaseBuffer(dataId);
+      }
+      const { complexTensorInfos } = this.tensorMap.get(dataId);
+      if (complexTensorInfos != null) {
+        this.disposeData(complexTensorInfos.real.dataId, true);
+        this.disposeData(complexTensorInfos.imag.dataId, true);
+      }
+      this.tensorMap.delete(dataId);
+    }
+    return true;
+  }
+  memory() {
+    return {
+      numBytesInGPU: this.bufferManager.numBytesUsed,
+      numBytesAllocatedInGPU: this.bufferManager.numBytesAllocated,
+      unreliable: false
+    };
+  }
+  getBufferManager() {
+    return this.bufferManager;
+  }
+  acquireBuffer(byteSize, usage = this.defaultGpuBufferUsage()) {
+    return this.bufferManager.acquireBuffer(byteSize, usage);
+  }
+  maybeReleaseBuffer(dataId) {
+    const info = this.tensorMap.get(dataId);
+    if (info != null && info.bufferInfo.buffer != null) {
+      this.bufferManager.releaseBuffer(info.bufferInfo.buffer, info.bufferInfo.byteSize, info.bufferInfo.usage);
+      info.bufferInfo.buffer = null;
+    }
+  }
+  refCount(dataId) {
+    if (this.tensorMap.has(dataId)) {
+      const tensorData = this.tensorMap.get(dataId);
+      return tensorData.refCount;
+    }
+    return 0;
+  }
+  incRef(dataId) {
+    const tensorData = this.tensorMap.get(dataId);
+    tensorData.refCount++;
+  }
+  decRef(dataId) {
+    if (this.tensorMap.has(dataId)) {
+      const tensorData = this.tensorMap.get(dataId);
+      tensorData.refCount--;
+    }
+  }
+  write(values, shape, dtype) {
+    if (dtype === "complex64" && values != null) {
+      throw new Error(`Cannot write to a complex64 dtype. Please use tf.complex(real, imag).`);
+    }
+    const dataId = { id: this.nextDataId() };
+    const byteSize = util_exports.sizeFromShape(shape) * GPUBytesPerElement(dtype);
+    if (dtype === "bool" && values instanceof Uint8Array) {
+      values = Int32Array.from(values);
+    }
+    this.tensorMap.set(dataId, {
+      dtype,
+      values,
+      bufferInfo: { byteSize, usage: this.defaultGpuBufferUsage() },
+      refCount: 1
+    });
+    return dataId;
+  }
+  move(dataId, values, shape, dtype, refCount) {
+    if (dtype === "complex64") {
+      throw new Error(`Cannot write to a complex64 dtype. Please use tf.complex(real, imag).`);
+    }
+    const byteSize = util_exports.sizeFromShape(shape) * GPUBytesPerElement(dtype);
+    this.tensorMap.set(dataId, {
+      dtype,
+      values,
+      bufferInfo: { byteSize, usage: this.defaultGpuBufferUsage() },
+      refCount
+    });
+  }
+  submitQueue() {
+    this.ensureComputePassEnded();
+    this.queue.submit([this.currentCommandEncoder.finish()]);
+    this.currentCommandEncoder = null;
+    this.dispatchNumberInEncoder = 0;
+    this.commandQueueOwnedIds = new WeakSet();
+    this.flushDisposalQueue();
+  }
+  getBuffer(dataId) {
+    this.uploadToGPU(dataId);
+    return this.tensorMap.get(dataId).bufferInfo.buffer;
+  }
+  getFromPixelsProgram(type) {
+    switch (type) {
+      case "copyExternal": {
+        if (!this.fromPixelProgram) {
+          this.fromPixelProgram = new FromPixelsProgram2();
+        }
+        return this.fromPixelProgram;
+      }
+      case "import": {
+        if (!this.fromPixelImportProgram) {
+          this.fromPixelImportProgram = new FromPixelsImportProgram();
+        }
+        return this.fromPixelImportProgram;
+      }
+      default:
+        util_exports.assert(false, () => `Unsupported fromPixels shape`);
+        return void 0;
+    }
+  }
+  ensureCommandEncoderReady() {
+    if (!this.currentCommandEncoder) {
+      this.currentCommandEncoder = this.device.createCommandEncoder();
+    }
+  }
+  ensureComputePassEnded() {
+    if (this.currentComputePass) {
+      this.currentComputePass.endPass();
+      this.currentComputePass = null;
+    }
+  }
+  getComputePass() {
+    if (!this.currentComputePass) {
+      this.currentComputePass = this.currentCommandEncoder.beginComputePass();
+    }
+    return this.currentComputePass;
+  }
+  async getBufferData(info) {
+    if (info.values != null) {
+      return info.values;
+    }
+    const staging = this.acquireBuffer(info.bufferInfo.byteSize, GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ);
+    this.ensureCommandEncoderReady();
+    this.ensureComputePassEnded();
+    this.currentCommandEncoder.copyBufferToBuffer(info.bufferInfo.buffer, 0, staging, 0, info.bufferInfo.byteSize);
+    this.submitQueue();
+    await staging.mapAsync(GPUMapMode.READ);
+    const values = staging.getMappedRange().slice(0);
+    staging.unmap();
+    if (staging != null) {
+      this.bufferManager.releaseBuffer(staging, info.bufferInfo.byteSize, GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ);
+    }
+    if (env().getBool("WEBGPU_USE_PROFILE_TOOL")) {
+      util_exports.assert(this.dummyContext !== void 0, () => `Fail to get context for profiling tool`);
+      this.dummyContext.getCurrentTexture();
+    }
+    return values;
+  }
+  convertAndCacheOnCPU(dataId, data) {
+    const info = this.tensorMap.get(dataId);
+    this.maybeReleaseBuffer(dataId);
+    info.values = data;
+    return info.values;
+  }
+  readSync(dataId) {
+    const texData = this.tensorMap.get(dataId);
+    const { values } = texData;
+    if (values == null) {
+      throw new Error("WebGPU readSync is only available for CPU-resident tensors.");
+    }
+    return values;
+  }
+  async read(dataId) {
+    if (!this.tensorMap.has(dataId)) {
+      throw new Error(`Tensor ${dataId} was not registered!`);
+    }
+    const info = this.tensorMap.get(dataId);
+    const { values } = info;
+    if (values != null) {
+      return this.convertAndCacheOnCPU(dataId, values);
+    }
+    let vals;
+    if (info.dtype === "complex64") {
+      const ps = await Promise.all([
+        this.read(info.complexTensorInfos.real.dataId),
+        this.read(info.complexTensorInfos.imag.dataId)
+      ]);
+      const realValues = ps[0];
+      const imagValues = ps[1];
+      vals = backend_util_exports.mergeRealAndImagArrays(realValues, imagValues);
+    } else {
+      const data = await this.getBufferData(info);
+      vals = ArrayBufferToTypedArray(data, info.dtype);
+    }
+    this.convertAndCacheOnCPU(dataId, vals);
+    return vals;
+  }
+  bufferSync(t2) {
+    const data = this.readSync(t2.dataId);
+    let decodedData = data;
+    if (t2.dtype === "string") {
+      try {
+        decodedData = data.map((d2) => util_exports.decodeString(d2));
+      } catch (_a) {
+        throw new Error("Failed to decode encoded string bytes into utf-8");
+      }
+    }
+    return buffer(t2.shape, t2.dtype, decodedData);
+  }
+  async time(f2) {
+    const oldActiveTimers = this.activeTimers;
+    const newActiveTimers = [];
+    let outerMostTime = false;
+    if (this.programTimersStack == null) {
+      this.programTimersStack = newActiveTimers;
+      outerMostTime = true;
+    } else {
+      this.activeTimers.push(newActiveTimers);
+    }
+    this.activeTimers = newActiveTimers;
+    f2();
+    const flattenedActiveTimerQueries = util_exports.flatten(this.activeTimers.map((d2) => d2.query)).filter((d2) => d2 != null);
+    const flattenedActiveTimerNames = util_exports.flatten(this.activeTimers.map((d2) => d2.name)).filter((d2) => d2 != null);
+    this.activeTimers = oldActiveTimers;
+    if (outerMostTime) {
+      this.programTimersStack = null;
+    }
+    const res2 = {
+      uploadWaitMs: this.uploadWaitMs,
+      downloadWaitMs: this.downloadWaitMs,
+      kernelMs: null,
+      wallMs: null
+    };
+    const kernelMs = await Promise.all(flattenedActiveTimerQueries);
+    res2["kernelMs"] = util_exports.sum(kernelMs);
+    res2["getExtraProfileInfo"] = () => kernelMs.map((d2, i2) => ({ name: flattenedActiveTimerNames[i2], ms: d2 })).map((d2) => `${d2.name}: ${d2.ms}`).join(", ");
+    this.uploadWaitMs = 0;
+    this.downloadWaitMs = 0;
+    return res2;
+  }
+  getAndSavePipeline(key, getPipeline) {
+    if (!(key in this.pipelineCache)) {
+      this.pipelineCache[key] = getPipeline();
+    }
+    return this.pipelineCache[key];
+  }
+  makeTensorInfo(shape, dtype, values) {
+    let dataId;
+    if (dtype === "string" && values != null && values.length > 0 && util_exports.isString(values[0])) {
+      const encodedValues = values.map((d2) => util_exports.encodeString(d2));
+      dataId = this.write(encodedValues, shape, dtype);
+    } else {
+      dataId = this.write(values, shape, dtype);
+    }
+    return { dataId, shape, dtype };
+  }
+  tensorToBinding(tensor2) {
+    if (!tensor2) {
+      return null;
+    }
+    const tensorData = this.tensorMap.get(tensor2.dataId);
+    return {
+      offset: 0,
+      size: tensorData.bufferInfo.byteSize,
+      buffer: tensorData.bufferInfo.buffer
+    };
+  }
+  async getQueryTime(query) {
+    if (this.supportTimeQuery) {
+      return this.getTimeFromQuerySet(query);
+    } else {
+      return 0;
+    }
+  }
+  uploadToGPU(dataId) {
+    const info = this.tensorMap.get(dataId);
+    if (info.bufferInfo.buffer != null) {
+      return;
+    }
+    info.bufferInfo.buffer = this.acquireBuffer(info.bufferInfo.byteSize);
+    if (info.values) {
+      this.queue.writeBuffer(info.bufferInfo.buffer, 0, info.values);
+    }
+  }
+  makeUniformsDataView(data) {
+    const dimensionsBuffer = this.acquireBuffer(data.byteLength, GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM);
+    this.queue.writeBuffer(dimensionsBuffer, 0, data);
+    return { offset: 0, size: data.byteLength, buffer: dimensionsBuffer };
+  }
+  arrayToDataView(arrays, length) {
+    const BYTES_PER_ELEMENT = 4;
+    const uniformDataView = new DataView(new ArrayBuffer(length * BYTES_PER_ELEMENT));
+    let dataViewIndex = 0;
+    arrays.forEach((array2) => {
+      const arrayData = array2.data;
+      if (array2.type !== "int32" && array2.type !== "float32" && array2.type !== "uint32") {
+        throw new Error(`${array2.type} not supported!`);
+      }
+      if (array2.type === "int32") {
+        arrayData.forEach((d2) => {
+          uniformDataView.setInt32(dataViewIndex * BYTES_PER_ELEMENT, d2, true);
+          dataViewIndex++;
+        });
+      } else if (array2.type === "uint32") {
+        arrayData.forEach((d2) => {
+          uniformDataView.setUint32(dataViewIndex * BYTES_PER_ELEMENT, d2, true);
+          dataViewIndex++;
+        });
+      } else {
+        arrayData.forEach((d2) => {
+          uniformDataView.setFloat32(dataViewIndex * BYTES_PER_ELEMENT, d2, true);
+          dataViewIndex++;
+        });
+      }
+    });
+    return uniformDataView;
+  }
+  computePadding(uniformsWithType) {
+    let currentOffset = 0;
+    let padding2 = 0;
+    let dataViewIndex = 0;
+    const dimUniformsData = [];
+    uniformsWithType.forEach((d2, i2) => {
+      if (d2.data.length === 0) {
+        d2.data = [1];
+      }
+      let baseAlignment;
+      switch (d2.data.length) {
+        case 0:
+          baseAlignment = 1;
+          break;
+        case 1:
+          baseAlignment = 1;
+          break;
+        case 2:
+          baseAlignment = 2;
+          break;
+        case 3:
+          baseAlignment = 4;
+          break;
+        case 4:
+          baseAlignment = 4;
+          break;
+        default:
+          util_exports.assert(false, () => `Unsupported ${d2.data.length}D shape`);
+      }
+      padding2 = Math.ceil(currentOffset / baseAlignment) * baseAlignment - currentOffset;
+      for (let p22 = 0; p22 < padding2; ++p22) {
+        dimUniformsData.push({ type: d2.type, data: [0] });
+        dataViewIndex++;
+      }
+      dimUniformsData.push({ type: d2.type, data: d2.data });
+      dataViewIndex = dataViewIndex + d2.data.length;
+      currentOffset += d2.data.length + padding2;
+    });
+    return this.arrayToDataView(dimUniformsData, dataViewIndex);
+  }
+  createLayout(inputEntrySize) {
+    const bindGroupLayoutEntries = [];
+    bindGroupLayoutEntries.push({
+      binding: 0,
+      visibility: GPUShaderStage.COMPUTE,
+      buffer: { type: "storage" }
+    });
+    for (let i2 = 0; i2 < inputEntrySize; i2++) {
+      bindGroupLayoutEntries.push({
+        binding: i2 + 1,
+        visibility: GPUShaderStage.COMPUTE,
+        buffer: { type: "read-only-storage" }
+      });
+    }
+    bindGroupLayoutEntries.push({
+      binding: inputEntrySize + 1,
+      visibility: GPUShaderStage.COMPUTE,
+      buffer: { type: "uniform" }
+    });
+    const bindGroupLayout = this.device.createBindGroupLayout({ entries: bindGroupLayoutEntries });
+    const pipelineLayout = this.device.createPipelineLayout({ bindGroupLayouts: [bindGroupLayout] });
+    return { bindGroupLayout, pipelineLayout };
+  }
+  getCachedOrCreateLayout(inputEntrySize) {
+    if (!(inputEntrySize in this.layoutCache)) {
+      this.layoutCache[inputEntrySize] = this.createLayout(inputEntrySize);
+    }
+    return this.layoutCache[inputEntrySize];
+  }
+  runWebGPUProgram(program, inputs, outputDtype, programUniforms) {
+    const output = this.makeTensorInfo(program.outputShape, outputDtype);
+    const outData = this.tensorMap.get(output.dataId);
+    if (util_exports.sizeFromShape(output.shape) === 0) {
+      outData.values = util_exports.getTypedArrayFromDType(output.dtype, 0);
+      return output;
+    }
+    let uniformsWithType = [{ type: "float32", data: [NaN] }];
+    const bufferShapes = inputs.concat(output).map((d2) => d2.shape);
+    const uniformsType = "int32";
+    bufferShapes.map((d2) => {
+      uniformsWithType.push({ type: uniformsType, data: d2 });
+    });
+    const strides = util_exports.computeStrides(output.shape);
+    uniformsWithType.push({ type: uniformsType, data: strides });
+    if (program.size != null) {
+      uniformsWithType.push({ type: uniformsType, data: [program.size] });
+    }
+    uniformsWithType.push({ type: "uint32", data: program.dispatch });
+    if (programUniforms) {
+      uniformsWithType = [...uniformsWithType, ...programUniforms];
+    }
+    let uniforms = null;
+    const uniformsDataView = this.computePadding(uniformsWithType);
+    const uniformsByteLength = uniformsDataView.byteLength;
+    uniforms = this.makeUniformsDataView(uniformsDataView);
+    const inputsData = inputs.map((input2, i2) => {
+      if (input2.dtype === "complex64") {
+        throw new Error(`GPGPUProgram does not support complex64 input. For complex64 dtypes, please separate the program into real and imaginary parts.`);
+      }
+      this.uploadToGPU(input2.dataId);
+      return {
+        dtype: this.tensorMap.get(input2.dataId).dtype,
+        shape: input2.shape,
+        name: program.variableNames[i2]
+      };
+    });
+    this.uploadToGPU(output.dataId);
+    const bufferTypes = inputsData.map((d2) => d2.dtype).concat(output.dtype);
+    const broadcastDims = inputsData.map((d2) => backend_util_exports.getBroadcastDims(d2.shape, output.shape));
+    const inputShapesEqualsOutShape = inputsData.map((d2) => util_exports.arraysEqual(d2.shape, output.shape)).join("_");
+    const broadcastDimsKey = broadcastDims.map((d2) => d2.join("_")).join(";");
+    const key = makeShaderKey2(program, bufferShapes, bufferTypes, broadcastDimsKey, inputShapesEqualsOutShape);
+    const { bindGroupLayout, pipelineLayout } = this.getCachedOrCreateLayout(program.variableNames.length);
+    const pipeline = this.getAndSavePipeline(key, () => {
+      return compileProgram2(this.device, program, pipelineLayout, inputsData, output);
+    });
+    const shouldTimeProgram = this.activeTimers != null;
+    const bg = makeBindGroup(this.device, bindGroupLayout, inputs.map((t2) => this.tensorToBinding(t2)), this.tensorToBinding(output), uniforms);
+    this.ensureCommandEncoderReady();
+    const pass = this.getComputePass();
+    if (shouldTimeProgram) {
+      if (this.supportTimeQuery) {
+        pass.writeTimestamp(this.querySet, 0);
+      }
+    }
+    pass.setPipeline(pipeline);
+    pass.setBindGroup(0, bg);
+    pass.dispatch(program.dispatch[0], program.dispatch[1], program.dispatch[2]);
+    if (shouldTimeProgram) {
+      if (this.supportTimeQuery) {
+        pass.writeTimestamp(this.querySet, 1);
+      }
+    }
+    this.dispatchNumberInEncoder++;
+    inputs.forEach((input2) => {
+      this.commandQueueOwnedIds.add(input2.dataId);
+    });
+    this.commandQueueOwnedIds.add(output.dataId);
+    if (uniforms) {
+      const uniformInfo = {
+        byteSize: uniformsByteLength,
+        usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM,
+        buffer: uniforms.buffer
+      };
+      this.uniformDisposalQueue.push(uniformInfo);
+    }
+    if (env().get("WEBGPU_DEFERRED_SUBMIT_BATCH_SIZE") <= this.dispatchNumberInEncoder) {
+      this.submitQueue();
+    }
+    if (shouldTimeProgram) {
+      this.activeTimers.push({
+        name: program.constructor.name,
+        query: this.getQueryTime(this.querySet)
+      });
+    }
+    return output;
+  }
+  runFromPixelsProgram(program, output, layout, externalResource, outputId) {
+    const bindGroup = this.device.createBindGroup({
+      layout: layout.bindGroupLayout,
+      entries: [
+        {
+          binding: 0,
+          resource: {
+            buffer: output
+          }
+        },
+        {
+          binding: 1,
+          resource: externalResource
+        },
+        {
+          binding: 2,
+          resource: {
+            buffer: program.uniform
+          }
+        }
+      ]
+    });
+    this.ensureCommandEncoderReady();
+    const passEncoder = this.getComputePass();
+    const shouldTimeProgram = this.activeTimers != null;
+    if (shouldTimeProgram) {
+      if (this.supportTimeQuery) {
+        passEncoder.writeTimestamp(this.querySet, 0);
+      }
+    }
+    passEncoder.setPipeline(program.pipeline);
+    passEncoder.setBindGroup(0, bindGroup);
+    passEncoder.dispatch(program.dispatch[0], program.dispatch[1], program.dispatch[2]);
+    if (shouldTimeProgram) {
+      if (this.supportTimeQuery) {
+        passEncoder.writeTimestamp(this.querySet, 1);
+      }
+    }
+    this.commandQueueOwnedIds.add(outputId);
+    this.submitQueue();
+    if (shouldTimeProgram) {
+      this.activeTimers.push({
+        name: program.constructor.name,
+        query: this.getQueryTime(this.querySet)
+      });
+    }
+  }
+  async getTimeFromQuerySet(querySet) {
+    const queryBuffer = this.acquireBuffer(16, GPUBufferUsage.COPY_SRC | GPUBufferUsage.QUERY_RESOLVE);
+    const dst = this.acquireBuffer(16, GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST);
+    this.ensureCommandEncoderReady();
+    this.ensureComputePassEnded();
+    this.currentCommandEncoder.resolveQuerySet(querySet, 0, 2, queryBuffer, 0);
+    this.currentCommandEncoder.copyBufferToBuffer(queryBuffer, 0, dst, 0, 16);
+    this.submitQueue();
+    await dst.mapAsync(GPUMapMode.READ);
+    const arrayBuf = new BigUint64Array(dst.getMappedRange());
+    const timeElapsedNanos = Number(arrayBuf[1] - arrayBuf[0]);
+    dst.unmap();
+    this.bufferManager.releaseBuffer(dst, 16, GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST);
+    this.bufferManager.releaseBuffer(queryBuffer, 16, GPUBufferUsage.COPY_SRC | GPUBufferUsage.QUERY_RESOLVE);
+    return timeElapsedNanos / 1e6;
+  }
+  shouldExecuteOnCPU(inputs, sizeThreshold = CPU_HANDOFF_SIZE_THRESHOLD2) {
+    return env().getBool("WEBGPU_CPU_FORWARD") && inputs.every((input2) => this.tensorMap.get(input2.dataId).bufferInfo.buffer == null && util_exports.sizeFromShape(input2.shape) < sizeThreshold);
+  }
+  numDataIds() {
+    return this.tensorMap.numDataIds() - this.tensorDisposalQueue.length;
+  }
+  dispose() {
+    if (this.disposed) {
+      return;
+    }
+    this.bufferManager.dispose();
+    if (this.fromPixelProgram) {
+      this.fromPixelProgram.dispose();
+    }
+    if (this.fromPixelImportProgram) {
+      this.fromPixelImportProgram.dispose();
+    }
+    this.disposed = true;
+  }
+};
+WebGPUBackend.nextDataId = 0;
+var webgpu_exports = {};
+__export2(webgpu_exports, {
+  WebGPUBackend: () => WebGPUBackend,
+  webgpu_util: () => webgpu_util_exports
+});
+if (device_util_exports.isBrowser() && isWebGPUSupported()) {
+  registerBackend("webgpu", async () => {
+    env().set("CHECK_COMPUTATION_FOR_ERRORS", false);
+    const gpuDescriptor = {
+      powerPreference: env().get("WEBGPU_USE_LOW_POWER_GPU") ? "low-power" : "high-performance"
+    };
+    const adapter = await navigator.gpu.requestAdapter(gpuDescriptor);
+    let deviceDescriptor = {};
+    const supportTimeQuery = adapter.features.has("timestamp-query");
+    if (supportTimeQuery) {
+      deviceDescriptor = { requiredFeatures: ["timestamp-query"] };
+    } else {
+      console.warn(`This device doesn't support timestamp-query extension. Start Chrome browser with flag --disable-dawn-features=disallow_unsafe_apis then try again. Or zero will shown for the kernel time when profiling mode isenabled. Using performance.now is not workable for webgpu sinceit doesn't support synchronously to read data from GPU.`);
+    }
+    const device = await adapter.requestDevice(deviceDescriptor);
+    return new WebGPUBackend(device, supportTimeQuery);
+  }, 3);
+}
 var version9 = "3.9.0";
 var version22 = "3.9.0";
 var version32 = "3.9.0";
@@ -88846,6 +96214,997 @@ var version92 = {
   "tfjs-backend-webgl": version72,
   "tfjs-backend-wasm": version82
 };
+var version6 = "2.3.3";
+var vertexIdentity = `
+  precision highp float;
+  attribute vec2 pos;
+  attribute vec2 uv;
+  varying vec2 vUv;
+  uniform float flipY;
+  void main(void) {
+    vUv = uv;
+    gl_Position = vec4(pos.x, pos.y*flipY, 0.0, 1.);
+  }
+`;
+var colorMatrixWithAlpha = `
+  precision highp float;
+  varying vec2 vUv;
+  uniform sampler2D texture;
+  uniform float m[20];
+  void main(void) {
+    vec4 c = texture2D(texture, vUv);
+    gl_FragColor.r = m[0] * c.r + m[1] * c.g + m[2] * c.b + m[3] * c.a + m[4];
+    gl_FragColor.g = m[5] * c.r + m[6] * c.g + m[7] * c.b + m[8] * c.a + m[9];
+    gl_FragColor.b = m[10] * c.r + m[11] * c.g + m[12] * c.b + m[13] * c.a + m[14];
+    gl_FragColor.a = m[15] * c.r + m[16] * c.g + m[17] * c.b + m[18] * c.a + m[19];
+  }
+`;
+var colorMatrixWithoutAlpha = `
+  precision highp float;
+  varying vec2 vUv;
+  uniform sampler2D texture;
+  uniform float m[20];
+  void main(void) {
+    vec4 c = texture2D(texture, vUv);
+    gl_FragColor.r = m[0] * c.r + m[1] * c.g + m[2] * c.b + m[4];
+    gl_FragColor.g = m[5] * c.r + m[6] * c.g + m[7] * c.b + m[9];
+    gl_FragColor.b = m[10] * c.r + m[11] * c.g + m[12] * c.b + m[14];
+    gl_FragColor.a = c.a;
+  }
+`;
+var pixelate = `
+  precision highp float;
+  varying vec2 vUv;
+  uniform vec2 size;
+  uniform sampler2D texture;
+  vec2 pixelate(vec2 coord, vec2 size) {
+    return floor( coord / size ) * size;
+  }
+  void main(void) {
+    gl_FragColor = vec4(0.0);
+    vec2 coord = pixelate(vUv, size);
+    gl_FragColor += texture2D(texture, coord);
+  }
+`;
+var blur = `
+  precision highp float;
+  varying vec2 vUv;
+  uniform sampler2D texture;
+  uniform vec2 px;
+  void main(void) {
+    gl_FragColor = vec4(0.0);
+    gl_FragColor += texture2D(texture, vUv + vec2(-7.0*px.x, -7.0*px.y))*0.0044299121055113265;
+    gl_FragColor += texture2D(texture, vUv + vec2(-6.0*px.x, -6.0*px.y))*0.00895781211794;
+    gl_FragColor += texture2D(texture, vUv + vec2(-5.0*px.x, -5.0*px.y))*0.0215963866053;
+    gl_FragColor += texture2D(texture, vUv + vec2(-4.0*px.x, -4.0*px.y))*0.0443683338718;
+    gl_FragColor += texture2D(texture, vUv + vec2(-3.0*px.x, -3.0*px.y))*0.0776744219933;
+    gl_FragColor += texture2D(texture, vUv + vec2(-2.0*px.x, -2.0*px.y))*0.115876621105;
+    gl_FragColor += texture2D(texture, vUv + vec2(-1.0*px.x, -1.0*px.y))*0.147308056121;
+    gl_FragColor += texture2D(texture, vUv                             )*0.159576912161;
+    gl_FragColor += texture2D(texture, vUv + vec2( 1.0*px.x,  1.0*px.y))*0.147308056121;
+    gl_FragColor += texture2D(texture, vUv + vec2( 2.0*px.x,  2.0*px.y))*0.115876621105;
+    gl_FragColor += texture2D(texture, vUv + vec2( 3.0*px.x,  3.0*px.y))*0.0776744219933;
+    gl_FragColor += texture2D(texture, vUv + vec2( 4.0*px.x,  4.0*px.y))*0.0443683338718;
+    gl_FragColor += texture2D(texture, vUv + vec2( 5.0*px.x,  5.0*px.y))*0.0215963866053;
+    gl_FragColor += texture2D(texture, vUv + vec2( 6.0*px.x,  6.0*px.y))*0.00895781211794;
+    gl_FragColor += texture2D(texture, vUv + vec2( 7.0*px.x,  7.0*px.y))*0.0044299121055113265;
+  }
+`;
+var convolution = `
+  precision highp float;
+  varying vec2 vUv;
+  uniform sampler2D texture;
+  uniform vec2 px;
+  uniform float m[9];
+  void main(void) {
+    vec4 c11 = texture2D(texture, vUv - px); // top left
+    vec4 c12 = texture2D(texture, vec2(vUv.x, vUv.y - px.y)); // top center
+    vec4 c13 = texture2D(texture, vec2(vUv.x + px.x, vUv.y - px.y)); // top right
+    vec4 c21 = texture2D(texture, vec2(vUv.x - px.x, vUv.y) ); // mid left
+    vec4 c22 = texture2D(texture, vUv); // mid center
+    vec4 c23 = texture2D(texture, vec2(vUv.x + px.x, vUv.y) ); // mid right
+    vec4 c31 = texture2D(texture, vec2(vUv.x - px.x, vUv.y + px.y) ); // bottom left
+    vec4 c32 = texture2D(texture, vec2(vUv.x, vUv.y + px.y) ); // bottom center
+    vec4 c33 = texture2D(texture, vUv + px ); // bottom right
+    gl_FragColor = 
+    c11 * m[0] + c12 * m[1] + c22 * m[2] +
+    c21 * m[3] + c22 * m[4] + c23 * m[5] +
+    c31 * m[6] + c32 * m[7] + c33 * m[8];
+    gl_FragColor.a = c22.a;
+  }
+`;
+var collect = (source, prefix, collection) => {
+  const r2 = new RegExp("\\b" + prefix + " \\w+ (\\w+)", "ig");
+  source.replace(r2, (match4, name) => {
+    collection[name] = 0;
+    return match4;
+  });
+};
+var GLProgram = class {
+  constructor(gl, vertexSource, fragmentSource) {
+    __publicField(this, "uniform", {});
+    __publicField(this, "attribute", {});
+    __publicField(this, "gl");
+    __publicField(this, "id");
+    __publicField(this, "compile", (source, type) => {
+      const shader = this.gl.createShader(type);
+      this.gl.shaderSource(shader, source);
+      this.gl.compileShader(shader);
+      if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS))
+        throw new Error(`filter: gl compile failed: ${this.gl.getShaderInfoLog(shader)}`);
+      return shader;
+    });
+    this.gl = gl;
+    const vertexShader = this.compile(vertexSource, this.gl.VERTEX_SHADER);
+    const fragmentShader = this.compile(fragmentSource, this.gl.FRAGMENT_SHADER);
+    this.id = this.gl.createProgram();
+    this.gl.attachShader(this.id, vertexShader);
+    this.gl.attachShader(this.id, fragmentShader);
+    this.gl.linkProgram(this.id);
+    if (!this.gl.getProgramParameter(this.id, this.gl.LINK_STATUS))
+      throw new Error(`filter: gl link failed: ${this.gl.getProgramInfoLog(this.id)}`);
+    this.gl.useProgram(this.id);
+    collect(vertexSource, "attribute", this.attribute);
+    for (const a6 in this.attribute)
+      this.attribute[a6] = this.gl.getAttribLocation(this.id, a6);
+    collect(vertexSource, "uniform", this.uniform);
+    collect(fragmentSource, "uniform", this.uniform);
+    for (const u2 in this.uniform)
+      this.uniform[u2] = this.gl.getUniformLocation(this.id, u2);
+  }
+};
+function GLImageFilter(params = {}) {
+  let drawCount = 0;
+  let sourceTexture = null;
+  let lastInChain = false;
+  let currentFramebufferIndex = -1;
+  let tempFramebuffers = [null, null];
+  let filterChain = [];
+  let vertexBuffer = null;
+  let currentProgram = null;
+  const canvas3 = params["canvas"] || typeof OffscreenCanvas !== "undefined" ? new OffscreenCanvas(100, 100) : document.createElement("canvas");
+  const shaderProgramCache = {};
+  const DRAW = { INTERMEDIATE: 1 };
+  const gl = canvas3.getContext("webgl");
+  if (!gl)
+    throw new Error("filter: cannot get webgl context");
+  function resize(width, height) {
+    if (width === canvas3.width && height === canvas3.height)
+      return;
+    canvas3.width = width;
+    canvas3.height = height;
+    if (!vertexBuffer) {
+      const vertices = new Float32Array([-1, -1, 0, 1, 1, -1, 1, 1, -1, 1, 0, 0, -1, 1, 0, 0, 1, -1, 1, 1, 1, 1, 1, 0]);
+      vertexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    }
+    gl.viewport(0, 0, canvas3.width, canvas3.height);
+    tempFramebuffers = [null, null];
+  }
+  function createFramebufferTexture(width, height) {
+    const fbo = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    const renderbuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    return { fbo, texture };
+  }
+  function getTempFramebuffer(index) {
+    tempFramebuffers[index] = tempFramebuffers[index] || createFramebufferTexture(canvas3.width, canvas3.height);
+    return tempFramebuffers[index];
+  }
+  function draw2(flags = 0) {
+    var _a, _b;
+    if (!currentProgram)
+      return;
+    let source = null;
+    let target = null;
+    let flipY = false;
+    if (drawCount === 0)
+      source = sourceTexture;
+    else
+      source = ((_a = getTempFramebuffer(currentFramebufferIndex)) == null ? void 0 : _a.texture) || null;
+    drawCount++;
+    if (lastInChain && !(flags & DRAW.INTERMEDIATE)) {
+      target = null;
+      flipY = drawCount % 2 === 0;
+    } else {
+      currentFramebufferIndex = (currentFramebufferIndex + 1) % 2;
+      target = ((_b = getTempFramebuffer(currentFramebufferIndex)) == null ? void 0 : _b.fbo) || null;
+    }
+    gl.bindTexture(gl.TEXTURE_2D, source);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, target);
+    gl.uniform1f(currentProgram.uniform["flipY"], flipY ? -1 : 1);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
+  function compileShader(fragmentSource) {
+    if (shaderProgramCache[fragmentSource]) {
+      currentProgram = shaderProgramCache[fragmentSource];
+      gl.useProgram((currentProgram == null ? void 0 : currentProgram.id) || null);
+      return currentProgram;
+    }
+    currentProgram = new GLProgram(gl, vertexIdentity, fragmentSource);
+    const floatSize = Float32Array.BYTES_PER_ELEMENT;
+    const vertSize = 4 * floatSize;
+    gl.enableVertexAttribArray(currentProgram.attribute["pos"]);
+    gl.vertexAttribPointer(currentProgram.attribute["pos"], 2, gl.FLOAT, false, vertSize, 0 * floatSize);
+    gl.enableVertexAttribArray(currentProgram.attribute["uv"]);
+    gl.vertexAttribPointer(currentProgram.attribute["uv"], 2, gl.FLOAT, false, vertSize, 2 * floatSize);
+    shaderProgramCache[fragmentSource] = currentProgram;
+    return currentProgram;
+  }
+  const filter = {
+    colorMatrix: (matrix) => {
+      const m2 = new Float32Array(matrix);
+      m2[4] /= 255;
+      m2[9] /= 255;
+      m2[14] /= 255;
+      m2[19] /= 255;
+      const shader = m2[18] === 1 && m2[3] === 0 && m2[8] === 0 && m2[13] === 0 && m2[15] === 0 && m2[16] === 0 && m2[17] === 0 && m2[19] === 0 ? colorMatrixWithoutAlpha : colorMatrixWithAlpha;
+      const program = compileShader(shader);
+      gl.uniform1fv(program == null ? void 0 : program.uniform["m"], m2);
+      draw2();
+    },
+    brightness: (brightness) => {
+      const b2 = (brightness || 0) + 1;
+      filter.colorMatrix([
+        b2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        b2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        b2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    saturation: (amount) => {
+      const x2 = (amount || 0) * 2 / 3 + 1;
+      const y2 = (x2 - 1) * -0.5;
+      filter.colorMatrix([
+        x2,
+        y2,
+        y2,
+        0,
+        0,
+        y2,
+        x2,
+        y2,
+        0,
+        0,
+        y2,
+        y2,
+        x2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    desaturate: () => {
+      filter.saturation(-1);
+    },
+    contrast: (amount) => {
+      const v2 = (amount || 0) + 1;
+      const o2 = -128 * (v2 - 1);
+      filter.colorMatrix([
+        v2,
+        0,
+        0,
+        0,
+        o2,
+        0,
+        v2,
+        0,
+        0,
+        o2,
+        0,
+        0,
+        v2,
+        0,
+        o2,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    negative: () => {
+      filter.contrast(-2);
+    },
+    hue: (rotation) => {
+      rotation = (rotation || 0) / 180 * Math.PI;
+      const cos5 = Math.cos(rotation);
+      const sin5 = Math.sin(rotation);
+      const lumR = 0.213;
+      const lumG = 0.715;
+      const lumB = 0.072;
+      filter.colorMatrix([
+        lumR + cos5 * (1 - lumR) + sin5 * -lumR,
+        lumG + cos5 * -lumG + sin5 * -lumG,
+        lumB + cos5 * -lumB + sin5 * (1 - lumB),
+        0,
+        0,
+        lumR + cos5 * -lumR + sin5 * 0.143,
+        lumG + cos5 * (1 - lumG) + sin5 * 0.14,
+        lumB + cos5 * -lumB + sin5 * -0.283,
+        0,
+        0,
+        lumR + cos5 * -lumR + sin5 * -(1 - lumR),
+        lumG + cos5 * -lumG + sin5 * lumG,
+        lumB + cos5 * (1 - lumB) + sin5 * lumB,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    desaturateLuminance: () => {
+      filter.colorMatrix([
+        0.2764723,
+        0.929708,
+        0.0938197,
+        0,
+        -37.1,
+        0.2764723,
+        0.929708,
+        0.0938197,
+        0,
+        -37.1,
+        0.2764723,
+        0.929708,
+        0.0938197,
+        0,
+        -37.1,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    sepia: () => {
+      filter.colorMatrix([
+        0.393,
+        0.7689999,
+        0.18899999,
+        0,
+        0,
+        0.349,
+        0.6859999,
+        0.16799999,
+        0,
+        0,
+        0.272,
+        0.5339999,
+        0.13099999,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    brownie: () => {
+      filter.colorMatrix([
+        0.5997023498159715,
+        0.34553243048391263,
+        -0.2708298674538042,
+        0,
+        47.43192855600873,
+        -0.037703249837783157,
+        0.8609577587992641,
+        0.15059552388459913,
+        0,
+        -36.96841498319127,
+        0.24113635128153335,
+        -0.07441037908422492,
+        0.44972182064877153,
+        0,
+        -7.562075277591283,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    vintagePinhole: () => {
+      filter.colorMatrix([
+        0.6279345635605994,
+        0.3202183420819367,
+        -0.03965408211312453,
+        0,
+        9.651285835294123,
+        0.02578397704808868,
+        0.6441188644374771,
+        0.03259127616149294,
+        0,
+        7.462829176470591,
+        0.0466055556782719,
+        -0.0851232987247891,
+        0.5241648018700465,
+        0,
+        5.159190588235296,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    kodachrome: () => {
+      filter.colorMatrix([
+        1.1285582396593525,
+        -0.3967382283601348,
+        -0.03992559172921793,
+        0,
+        63.72958762196502,
+        -0.16404339962244616,
+        1.0835251566291304,
+        -0.05498805115633132,
+        0,
+        24.732407896706203,
+        -0.16786010706155763,
+        -0.5603416277695248,
+        1.6014850761964943,
+        0,
+        35.62982807460946,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    technicolor: () => {
+      filter.colorMatrix([
+        1.9125277891456083,
+        -0.8545344976951645,
+        -0.09155508482755585,
+        0,
+        11.793603434377337,
+        -0.3087833385928097,
+        1.7658908555458428,
+        -0.10601743074722245,
+        0,
+        -70.35205161461398,
+        -0.231103377548616,
+        -0.7501899197440212,
+        1.847597816108189,
+        0,
+        30.950940869491138,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    polaroid: () => {
+      filter.colorMatrix([
+        1.438,
+        -0.062,
+        -0.062,
+        0,
+        0,
+        -0.122,
+        1.378,
+        -0.122,
+        0,
+        0,
+        -0.016,
+        -0.016,
+        1.483,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    shiftToBGR: () => {
+      filter.colorMatrix([
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]);
+    },
+    convolution: (matrix) => {
+      const m2 = new Float32Array(matrix);
+      const pixelSizeX = 1 / canvas3.width;
+      const pixelSizeY = 1 / canvas3.height;
+      const program = compileShader(convolution);
+      gl.uniform1fv(program == null ? void 0 : program.uniform["m"], m2);
+      gl.uniform2f(program == null ? void 0 : program.uniform["px"], pixelSizeX, pixelSizeY);
+      draw2();
+    },
+    detectEdges: () => {
+      filter.convolution.call(this, [
+        0,
+        1,
+        0,
+        1,
+        -4,
+        1,
+        0,
+        1,
+        0
+      ]);
+    },
+    sobelX: () => {
+      filter.convolution.call(this, [
+        -1,
+        0,
+        1,
+        -2,
+        0,
+        2,
+        -1,
+        0,
+        1
+      ]);
+    },
+    sobelY: () => {
+      filter.convolution.call(this, [
+        -1,
+        -2,
+        -1,
+        0,
+        0,
+        0,
+        1,
+        2,
+        1
+      ]);
+    },
+    sharpen: (amount) => {
+      const a6 = amount || 1;
+      filter.convolution.call(this, [
+        0,
+        -1 * a6,
+        0,
+        -1 * a6,
+        1 + 4 * a6,
+        -1 * a6,
+        0,
+        -1 * a6,
+        0
+      ]);
+    },
+    emboss: (size2) => {
+      const s2 = size2 || 1;
+      filter.convolution.call(this, [
+        -2 * s2,
+        -1 * s2,
+        0,
+        -1 * s2,
+        1,
+        1 * s2,
+        0,
+        1 * s2,
+        2 * s2
+      ]);
+    },
+    blur: (size2) => {
+      const blurSizeX = size2 / 7 / canvas3.width;
+      const blurSizeY = size2 / 7 / canvas3.height;
+      const program = compileShader(blur);
+      gl.uniform2f(program == null ? void 0 : program.uniform["px"], 0, blurSizeY);
+      draw2(DRAW.INTERMEDIATE);
+      gl.uniform2f(program == null ? void 0 : program.uniform["px"], blurSizeX, 0);
+      draw2();
+    },
+    pixelate: (size2) => {
+      const blurSizeX = size2 / canvas3.width;
+      const blurSizeY = size2 / canvas3.height;
+      const program = compileShader(pixelate);
+      gl.uniform2f(program == null ? void 0 : program.uniform["size"], blurSizeX, blurSizeY);
+      draw2();
+    }
+  };
+  this.add = function(name) {
+    const args = Array.prototype.slice.call(arguments, 1);
+    const func2 = filter[name];
+    filterChain.push({ func: func2, args });
+  };
+  this.reset = function() {
+    filterChain = [];
+  };
+  this.get = function() {
+    return filterChain;
+  };
+  this.apply = function(image7) {
+    resize(image7.width, image7.height);
+    drawCount = 0;
+    if (!sourceTexture)
+      sourceTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, sourceTexture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image7);
+    for (let i2 = 0; i2 < filterChain.length; i2++) {
+      lastInChain = i2 === filterChain.length - 1;
+      const f2 = filterChain[i2];
+      f2.func.apply(this, f2.args || []);
+    }
+    return canvas3;
+  };
+  this.draw = function(image7) {
+    this.add("brightness", 0);
+    return this.apply(image7);
+  };
+}
+var env2 = {
+  browser: void 0,
+  node: void 0,
+  worker: void 0,
+  platform: void 0,
+  agent: void 0,
+  initial: true,
+  backends: [],
+  offscreen: void 0,
+  filter: void 0,
+  tfjs: {
+    version: void 0
+  },
+  wasm: {
+    supported: void 0,
+    backend: void 0,
+    simd: void 0,
+    multithread: void 0
+  },
+  webgl: {
+    supported: void 0,
+    backend: void 0,
+    version: void 0,
+    renderer: void 0
+  },
+  webgpu: {
+    supported: void 0,
+    backend: void 0,
+    adapter: void 0
+  },
+  kernels: [],
+  Canvas: void 0,
+  Image: void 0,
+  ImageData: void 0
+};
+async function backendInfo() {
+  var _a;
+  env2.backends = Object.keys(engine().registryFactory);
+  env2.wasm.supported = typeof WebAssembly !== "undefined";
+  env2.wasm.backend = env2.backends.includes("wasm");
+  if (env2.wasm.supported && env2.wasm.backend && getBackend() === "wasm") {
+    env2.wasm.simd = await env().getAsync("WASM_HAS_SIMD_SUPPORT");
+    env2.wasm.multithread = await env().getAsync("WASM_HAS_MULTITHREAD_SUPPORT");
+  }
+  const c2 = canvas(100, 100);
+  const ctx = c2 ? c2.getContext("webgl2") : void 0;
+  env2.webgl.supported = typeof ctx !== "undefined";
+  env2.webgl.backend = env2.backends.includes("webgl");
+  if (env2.webgl.supported && env2.webgl.backend && (getBackend() === "webgl" || getBackend() === "humangl")) {
+    const gl = backend().gpgpu !== "undefined" ? await backend().getGPGPUContext().gl : null;
+    if (gl) {
+      env2.webgl.version = gl.getParameter(gl.VERSION);
+      env2.webgl.renderer = gl.getParameter(gl.RENDERER);
+    }
+  }
+  env2.webgpu.supported = env2.browser && typeof navigator["gpu"] !== "undefined";
+  env2.webgpu.backend = env2.backends.includes("webgpu");
+  if (env2.webgpu.supported)
+    env2.webgpu.adapter = (_a = await navigator["gpu"].requestAdapter()) == null ? void 0 : _a.name;
+  env2.kernels = getKernelsForBackend(getBackend()).map((kernel) => kernel.kernelName.toLowerCase());
+}
+async function get3() {
+  env2.browser = typeof navigator !== "undefined";
+  env2.node = typeof process !== "undefined";
+  env2.tfjs.version = version;
+  env2.offscreen = typeof env2.offscreen === "undefined" ? typeof OffscreenCanvas !== "undefined" : env2.offscreen;
+  if (typeof navigator !== "undefined") {
+    const raw = navigator.userAgent.match(/\(([^()]+)\)/g);
+    if (raw && raw[0]) {
+      const platformMatch = raw[0].match(/\(([^()]+)\)/g);
+      env2.platform = platformMatch && platformMatch[0] ? platformMatch[0].replace(/\(|\)/g, "") : "";
+      env2.agent = navigator.userAgent.replace(raw[0], "");
+      if (env2.platform[1])
+        env2.agent = env2.agent.replace(raw[1], "");
+      env2.agent = env2.agent.replace(/  /g, " ");
+    }
+  } else if (typeof process !== "undefined") {
+    env2.platform = `${process.platform} ${process.arch}`;
+    env2.agent = `NodeJS ${process.version}`;
+  }
+  env2.worker = env2.browser && env2.offscreen ? typeof WorkerGlobalScope !== "undefined" : void 0;
+  await backendInfo();
+}
+async function set(obj) {
+  env2 = mergeDeep(env2, obj);
+}
+var maxSize = 2048;
+var inCanvas = null;
+var outCanvas = null;
+var tmpCanvas = null;
+var fx;
+function canvas(width, height) {
+  let c2;
+  if (env2.browser) {
+    if (env2.offscreen) {
+      c2 = new OffscreenCanvas(width, height);
+    } else {
+      if (typeof document === "undefined")
+        throw new Error("attempted to run in web worker but offscreenCanvas is not supported");
+      c2 = document.createElement("canvas");
+      c2.width = width;
+      c2.height = height;
+    }
+  } else {
+    if (typeof env2.Canvas !== "undefined")
+      c2 = new env2.Canvas(width, height);
+    else if (typeof globalThis.Canvas !== "undefined")
+      c2 = new globalThis.Canvas(width, height);
+  }
+  return c2;
+}
+function copy(input2, output) {
+  const outputCanvas = output || canvas(input2.width, input2.height);
+  const ctx = outputCanvas.getContext("2d");
+  ctx.drawImage(input2, 0, 0);
+  return outputCanvas;
+}
+function process2(input2, config3, getTensor2 = true) {
+  if (!input2) {
+    if (config3.debug)
+      log("input is missing");
+    return { tensor: null, canvas: null };
+  }
+  if (!(input2 instanceof Tensor) && !(typeof Image !== "undefined" && input2 instanceof Image) && !(typeof env2.Canvas !== "undefined" && input2 instanceof env2.Canvas) && !(typeof globalThis.Canvas !== "undefined" && input2 instanceof globalThis.Canvas) && !(typeof ImageData !== "undefined" && input2 instanceof ImageData) && !(typeof ImageBitmap !== "undefined" && input2 instanceof ImageBitmap) && !(typeof HTMLImageElement !== "undefined" && input2 instanceof HTMLImageElement) && !(typeof HTMLMediaElement !== "undefined" && input2 instanceof HTMLMediaElement) && !(typeof HTMLVideoElement !== "undefined" && input2 instanceof HTMLVideoElement) && !(typeof HTMLCanvasElement !== "undefined" && input2 instanceof HTMLCanvasElement) && !(typeof OffscreenCanvas !== "undefined" && input2 instanceof OffscreenCanvas)) {
+    throw new Error("input type is not recognized");
+  }
+  if (input2 instanceof Tensor) {
+    if (input2["isDisposedInternal"]) {
+      throw new Error("input tensor is disposed");
+    } else if (!input2.shape || input2.shape.length !== 4 || input2.shape[0] !== 1 || input2.shape[3] !== 3) {
+      throw new Error(`input tensor shape must be [1, height, width, 3] and instead was ${input2["shape"]}`);
+    } else {
+      return { tensor: clone(input2), canvas: config3.filter.return ? outCanvas : null };
+    }
+  } else {
+    if (typeof input2["readyState"] !== "undefined" && input2["readyState"] <= 2) {
+      if (config3.debug)
+        log("input stream is not ready");
+      return { tensor: null, canvas: inCanvas };
+    }
+    const originalWidth = input2["naturalWidth"] || input2["videoWidth"] || input2["width"] || input2["shape"] && input2["shape"][1] > 0;
+    const originalHeight = input2["naturalHeight"] || input2["videoHeight"] || input2["height"] || input2["shape"] && input2["shape"][2] > 0;
+    if (!originalWidth || !originalHeight) {
+      if (config3.debug)
+        log("cannot determine input dimensions");
+      return { tensor: null, canvas: inCanvas };
+    }
+    let targetWidth = originalWidth;
+    let targetHeight = originalHeight;
+    if (targetWidth > maxSize) {
+      targetWidth = maxSize;
+      targetHeight = Math.trunc(targetWidth * originalHeight / originalWidth);
+    }
+    if (targetHeight > maxSize) {
+      targetHeight = maxSize;
+      targetWidth = Math.trunc(targetHeight * originalWidth / originalHeight);
+    }
+    if ((config3.filter.width || 0) > 0)
+      targetWidth = config3.filter.width;
+    else if ((config3.filter.height || 0) > 0)
+      targetWidth = originalWidth * ((config3.filter.height || 0) / originalHeight);
+    if ((config3.filter.height || 0) > 0)
+      targetHeight = config3.filter.height;
+    else if ((config3.filter.width || 0) > 0)
+      targetHeight = originalHeight * ((config3.filter.width || 0) / originalWidth);
+    if (!targetWidth || !targetHeight)
+      throw new Error("input cannot determine dimension");
+    if (!inCanvas || (inCanvas == null ? void 0 : inCanvas.width) !== targetWidth || (inCanvas == null ? void 0 : inCanvas.height) !== targetHeight)
+      inCanvas = canvas(targetWidth, targetHeight);
+    const inCtx = inCanvas.getContext("2d");
+    if (typeof ImageData !== "undefined" && input2 instanceof ImageData) {
+      inCtx.putImageData(input2, 0, 0);
+    } else {
+      if (config3.filter.flip && typeof inCtx.translate !== "undefined") {
+        inCtx.translate(originalWidth, 0);
+        inCtx.scale(-1, 1);
+        inCtx.drawImage(input2, 0, 0, originalWidth, originalHeight, 0, 0, inCanvas == null ? void 0 : inCanvas.width, inCanvas == null ? void 0 : inCanvas.height);
+        inCtx.setTransform(1, 0, 0, 1, 0, 0);
+      } else {
+        inCtx.drawImage(input2, 0, 0, originalWidth, originalHeight, 0, 0, inCanvas == null ? void 0 : inCanvas.width, inCanvas == null ? void 0 : inCanvas.height);
+      }
+    }
+    if (!outCanvas || inCanvas.width !== outCanvas.width || (inCanvas == null ? void 0 : inCanvas.height) !== (outCanvas == null ? void 0 : outCanvas.height))
+      outCanvas = canvas(inCanvas.width, inCanvas.height);
+    if (config3.filter.enabled && env2.webgl.supported) {
+      if (!fx)
+        fx = env2.browser ? new GLImageFilter({ canvas: outCanvas }) : null;
+      env2.filter = !!fx;
+      if (!fx)
+        return { tensor: null, canvas: inCanvas };
+      fx.reset();
+      if (config3.filter.brightness !== 0)
+        fx.add("brightness", config3.filter.brightness);
+      if (config3.filter.contrast !== 0)
+        fx.add("contrast", config3.filter.contrast);
+      if (config3.filter.sharpness !== 0)
+        fx.add("sharpen", config3.filter.sharpness);
+      if (config3.filter.blur !== 0)
+        fx.add("blur", config3.filter.blur);
+      if (config3.filter.saturation !== 0)
+        fx.add("saturation", config3.filter.saturation);
+      if (config3.filter.hue !== 0)
+        fx.add("hue", config3.filter.hue);
+      if (config3.filter.negative)
+        fx.add("negative");
+      if (config3.filter.sepia)
+        fx.add("sepia");
+      if (config3.filter.vintage)
+        fx.add("brownie");
+      if (config3.filter.sepia)
+        fx.add("sepia");
+      if (config3.filter.kodachrome)
+        fx.add("kodachrome");
+      if (config3.filter.technicolor)
+        fx.add("technicolor");
+      if (config3.filter.polaroid)
+        fx.add("polaroid");
+      if (config3.filter.pixelate !== 0)
+        fx.add("pixelate", config3.filter.pixelate);
+      if (fx.get() > 0)
+        outCanvas = fx.apply(inCanvas);
+      else
+        outCanvas = fx.draw(inCanvas);
+    } else {
+      copy(inCanvas, outCanvas);
+      if (fx)
+        fx = null;
+      env2.filter = !!fx;
+    }
+    if (!getTensor2)
+      return { tensor: null, canvas: outCanvas };
+    if (!outCanvas)
+      throw new Error("cannot create output canvas");
+    let pixels;
+    let depth = 3;
+    if (typeof ImageData !== "undefined" && input2 instanceof ImageData || input2["data"] && input2["width"] && input2["height"]) {
+      if (env2.browser && browser_exports) {
+        pixels = browser_exports ? browser_exports.fromPixels(input2) : null;
+      } else {
+        depth = input2["data"].length / input2["height"] / input2["width"];
+        const arr = new Uint8Array(input2["data"]["buffer"]);
+        pixels = tensor(arr, [input2["height"], input2["width"], depth], "int32");
+      }
+    } else {
+      if (!tmpCanvas || outCanvas.width !== tmpCanvas.width || (outCanvas == null ? void 0 : outCanvas.height) !== (tmpCanvas == null ? void 0 : tmpCanvas.height))
+        tmpCanvas = canvas(outCanvas.width, outCanvas.height);
+      if (browser_exports && env2.browser) {
+        if (config3.backend === "webgl" || config3.backend === "humangl" || config3.backend === "webgpu") {
+          pixels = browser_exports.fromPixels(outCanvas);
+        } else {
+          tmpCanvas = copy(outCanvas);
+          pixels = browser_exports.fromPixels(tmpCanvas);
+        }
+      } else {
+        const tempCanvas = copy(outCanvas);
+        const tempCtx = tempCanvas.getContext("2d");
+        const tempData = tempCtx.getImageData(0, 0, targetWidth, targetHeight);
+        depth = tempData.data.length / targetWidth / targetHeight;
+        const arr = new Uint8Array(tempData.data.buffer);
+        pixels = tensor(arr, [targetWidth, targetHeight, depth]);
+      }
+    }
+    if (depth === 4) {
+      const rgb2 = slice3d(pixels, [0, 0, 0], [-1, -1, 3]);
+      dispose(pixels);
+      pixels = rgb2;
+    }
+    if (!pixels)
+      throw new Error("cannot create tensor from input");
+    const casted = cast(pixels, "float32");
+    const tensor2 = expandDims(casted, 0);
+    dispose([pixels, casted]);
+    return { tensor: tensor2, canvas: config3.filter.return ? outCanvas : null };
+  }
+}
+var lastInputSum = 0;
+var lastCacheDiff = 1;
+var benchmarked = 0;
+var checksum = async (input2) => {
+  const resizeFact = 48;
+  const reduced = image.resizeBilinear(input2, [Math.trunc((input2.shape[1] || 1) / resizeFact), Math.trunc((input2.shape[2] || 1) / resizeFact)]);
+  const tfSum = async () => {
+    const sumT = sum2(reduced);
+    const sum0 = await sumT.data();
+    dispose(sumT);
+    return sum0[0];
+  };
+  const jsSum = async () => {
+    const reducedData = await reduced.data();
+    let sum0 = 0;
+    for (let i2 = 0; i2 < reducedData.length / 3; i2++)
+      sum0 += reducedData[3 * i2 + 2];
+    return sum0;
+  };
+  if (benchmarked === 0) {
+    const t0 = performance.now();
+    await jsSum();
+    const t1 = performance.now();
+    await tfSum();
+    const t2 = performance.now();
+    benchmarked = t1 - t0 < t2 - t1 ? 1 : 2;
+  }
+  const res2 = benchmarked === 1 ? await jsSum() : await tfSum();
+  dispose(reduced);
+  return res2;
+};
+async function skip(config3, input2) {
+  if (config3.cacheSensitivity === 0)
+    return false;
+  const sum7 = await checksum(input2);
+  const diff = 100 * (Math.max(sum7, lastInputSum) / Math.min(sum7, lastInputSum) - 1);
+  lastInputSum = sum7;
+  let skipFrame = diff < Math.max(config3.cacheSensitivity, lastCacheDiff);
+  lastCacheDiff = diff > 10 * config3.cacheSensitivity ? 0 : diff;
+  skipFrame = skipFrame && lastCacheDiff > 0;
+  return skipFrame;
+}
 var meshAnnotations = {
   silhouette: [
     10,
@@ -92128,41 +100487,41 @@ var UV68 = VTX68.map((x2) => UV468[x2]);
 var UV33 = VTX33.map((x2) => UV468[x2]);
 var UV7 = VTX7.map((x2) => UV468[x2]);
 var createBox = (startEndTensor) => ({ startPoint: slice(startEndTensor, [0, 0], [-1, 2]), endPoint: slice(startEndTensor, [0, 2], [-1, 2]) });
-var getBoxSize = (box4) => [Math.abs(box4.endPoint[0] - box4.startPoint[0]), Math.abs(box4.endPoint[1] - box4.startPoint[1])];
-var getBoxCenter = (box4) => [box4.startPoint[0] + (box4.endPoint[0] - box4.startPoint[0]) / 2, box4.startPoint[1] + (box4.endPoint[1] - box4.startPoint[1]) / 2];
-var getClampedBox = (box4, input2) => box4 ? [
-  Math.trunc(Math.max(0, box4.startPoint[0])),
-  Math.trunc(Math.max(0, box4.startPoint[1])),
-  Math.trunc(Math.min(input2.shape[2] || 0, box4.endPoint[0]) - Math.max(0, box4.startPoint[0])),
-  Math.trunc(Math.min(input2.shape[1] || 0, box4.endPoint[1]) - Math.max(0, box4.startPoint[1]))
+var getBoxSize = (box5) => [Math.abs(box5.endPoint[0] - box5.startPoint[0]), Math.abs(box5.endPoint[1] - box5.startPoint[1])];
+var getBoxCenter = (box5) => [box5.startPoint[0] + (box5.endPoint[0] - box5.startPoint[0]) / 2, box5.startPoint[1] + (box5.endPoint[1] - box5.startPoint[1]) / 2];
+var getClampedBox = (box5, input2) => box5 ? [
+  Math.trunc(Math.max(0, box5.startPoint[0])),
+  Math.trunc(Math.max(0, box5.startPoint[1])),
+  Math.trunc(Math.min(input2.shape[2] || 0, box5.endPoint[0]) - Math.max(0, box5.startPoint[0])),
+  Math.trunc(Math.min(input2.shape[1] || 0, box5.endPoint[1]) - Math.max(0, box5.startPoint[1]))
 ] : [0, 0, 0, 0];
-var getRawBox = (box4, input2) => box4 ? [
-  box4.startPoint[0] / (input2.shape[2] || 0),
-  box4.startPoint[1] / (input2.shape[1] || 0),
-  (box4.endPoint[0] - box4.startPoint[0]) / (input2.shape[2] || 0),
-  (box4.endPoint[1] - box4.startPoint[1]) / (input2.shape[1] || 0)
+var getRawBox = (box5, input2) => box5 ? [
+  box5.startPoint[0] / (input2.shape[2] || 0),
+  box5.startPoint[1] / (input2.shape[1] || 0),
+  (box5.endPoint[0] - box5.startPoint[0]) / (input2.shape[2] || 0),
+  (box5.endPoint[1] - box5.startPoint[1]) / (input2.shape[1] || 0)
 ] : [0, 0, 0, 0];
-var scaleBoxCoordinates = (box4, factor) => {
-  const startPoint = [box4.startPoint[0] * factor[0], box4.startPoint[1] * factor[1]];
-  const endPoint = [box4.endPoint[0] * factor[0], box4.endPoint[1] * factor[1]];
+var scaleBoxCoordinates = (box5, factor) => {
+  const startPoint = [box5.startPoint[0] * factor[0], box5.startPoint[1] * factor[1]];
+  const endPoint = [box5.endPoint[0] * factor[0], box5.endPoint[1] * factor[1]];
   return { startPoint, endPoint };
 };
-var cutBoxFromImageAndResize = (box4, image7, cropSize) => {
+var cutBoxFromImageAndResize = (box5, image7, cropSize) => {
   const h2 = image7.shape[1];
   const w2 = image7.shape[2];
-  return image.cropAndResize(image7, [[box4.startPoint[1] / h2, box4.startPoint[0] / w2, box4.endPoint[1] / h2, box4.endPoint[0] / w2]], [0], cropSize);
+  return image.cropAndResize(image7, [[box5.startPoint[1] / h2, box5.startPoint[0] / w2, box5.endPoint[1] / h2, box5.endPoint[0] / w2]], [0], cropSize);
 };
-var enlargeBox = (box4, factor = 1.5) => {
-  const center = getBoxCenter(box4);
-  const size2 = getBoxSize(box4);
+var enlargeBox = (box5, factor = 1.5) => {
+  const center = getBoxCenter(box5);
+  const size2 = getBoxSize(box5);
   const halfSize = [factor * size2[0] / 2, factor * size2[1] / 2];
-  return { startPoint: [center[0] - halfSize[0], center[1] - halfSize[1]], endPoint: [center[0] + halfSize[0], center[1] + halfSize[1]], landmarks: box4.landmarks };
+  return { startPoint: [center[0] - halfSize[0], center[1] - halfSize[1]], endPoint: [center[0] + halfSize[0], center[1] + halfSize[1]], landmarks: box5.landmarks };
 };
-var squarifyBox = (box4) => {
-  const centers = getBoxCenter(box4);
-  const size2 = getBoxSize(box4);
+var squarifyBox = (box5) => {
+  const centers = getBoxCenter(box5);
+  const size2 = getBoxSize(box5);
   const halfSize = Math.max(...size2) / 2;
-  return { startPoint: [Math.round(centers[0] - halfSize), Math.round(centers[1] - halfSize)], endPoint: [Math.round(centers[0] + halfSize), Math.round(centers[1] + halfSize)], landmarks: box4.landmarks };
+  return { startPoint: [Math.round(centers[0] - halfSize), Math.round(centers[1] - halfSize)], endPoint: [Math.round(centers[0] + halfSize), Math.round(centers[1] + halfSize)], landmarks: box5.landmarks };
 };
 var calculateLandmarksBoundingBox = (landmarks) => {
   const xs = landmarks.map((d2) => d2[0]);
@@ -92230,8 +100589,8 @@ function generateAnchors(inputSize8) {
   }
   return anchors4;
 }
-function transformRawCoords(rawCoords, box4, angle2, rotationMatrix, inputSize8) {
-  const boxSize = getBoxSize({ startPoint: box4.startPoint, endPoint: box4.endPoint });
+function transformRawCoords(rawCoords, box5, angle2, rotationMatrix, inputSize8) {
+  const boxSize = getBoxSize({ startPoint: box5.startPoint, endPoint: box5.endPoint });
   const coordsScaled = rawCoords.map((coord) => [
     boxSize[0] / inputSize8 * (coord[0] - inputSize8 / 2),
     boxSize[1] / inputSize8 * (coord[1] - inputSize8 / 2),
@@ -92240,1020 +100599,25 @@ function transformRawCoords(rawCoords, box4, angle2, rotationMatrix, inputSize8)
   const coordsRotationMatrix = angle2 !== 0 ? buildRotationMatrix(angle2, [0, 0]) : IDENTITY_MATRIX;
   const coordsRotated = angle2 !== 0 ? coordsScaled.map((coord) => [...rotatePoint(coord, coordsRotationMatrix), coord[2]]) : coordsScaled;
   const inverseRotationMatrix = angle2 !== 0 ? invertTransformMatrix(rotationMatrix) : IDENTITY_MATRIX;
-  const boxCenter = [...getBoxCenter({ startPoint: box4.startPoint, endPoint: box4.endPoint }), 1];
+  const boxCenter = [...getBoxCenter({ startPoint: box5.startPoint, endPoint: box5.endPoint }), 1];
   return coordsRotated.map((coord) => [
     Math.round(coord[0] + dot4(boxCenter, inverseRotationMatrix[0])),
     Math.round(coord[1] + dot4(boxCenter, inverseRotationMatrix[1])),
     Math.round(coord[2] || 0)
   ]);
 }
-function correctFaceRotation(box4, input2, inputSize8) {
-  const [indexOfMouth, indexOfForehead] = box4.landmarks.length >= meshLandmarks.count ? meshLandmarks.symmetryLine : blazeFaceLandmarks.symmetryLine;
-  const angle2 = computeRotation(box4.landmarks[indexOfMouth], box4.landmarks[indexOfForehead]);
-  const faceCenter = getBoxCenter({ startPoint: box4.startPoint, endPoint: box4.endPoint });
+function correctFaceRotation(box5, input2, inputSize8) {
+  const symmetryLine = box5.landmarks.length >= meshLandmarks.count ? meshLandmarks.symmetryLine : blazeFaceLandmarks.symmetryLine;
+  const angle2 = computeRotation(box5.landmarks[symmetryLine[0]], box5.landmarks[symmetryLine[1]]);
+  const faceCenter = getBoxCenter({ startPoint: box5.startPoint, endPoint: box5.endPoint });
   const faceCenterNormalized = [faceCenter[0] / input2.shape[2], faceCenter[1] / input2.shape[1]];
   const rotated = image.rotateWithOffset(input2, angle2, 0, faceCenterNormalized);
   const rotationMatrix = buildRotationMatrix(-angle2, faceCenter);
-  const cut = cutBoxFromImageAndResize({ startPoint: box4.startPoint, endPoint: box4.endPoint }, rotated, [inputSize8, inputSize8]);
+  const cut = cutBoxFromImageAndResize({ startPoint: box5.startPoint, endPoint: box5.endPoint }, rotated, [inputSize8, inputSize8]);
   const face5 = div(cut, 255);
   dispose(cut);
   dispose(rotated);
   return [angle2, rotationMatrix, face5];
-}
-function GLProgram(gl, vertexSource, fragmentSource) {
-  const _collect = function(source, prefix, collection) {
-    const r2 = new RegExp("\\b" + prefix + " \\w+ (\\w+)", "ig");
-    source.replace(r2, (match3, name) => {
-      collection[name] = 0;
-      return match3;
-    });
-  };
-  const _compile = function(source, type) {
-    const shader = gl.createShader(type);
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-      throw new Error("filter: gl compile failed", gl.getShaderInfoLog(shader));
-    return shader;
-  };
-  this.uniform = {};
-  this.attribute = {};
-  const _vsh = _compile(vertexSource, gl.VERTEX_SHADER);
-  const _fsh = _compile(fragmentSource, gl.FRAGMENT_SHADER);
-  this.id = gl.createProgram();
-  gl.attachShader(this.id, _vsh);
-  gl.attachShader(this.id, _fsh);
-  gl.linkProgram(this.id);
-  if (!gl.getProgramParameter(this.id, gl.LINK_STATUS))
-    throw new Error("filter: gl link failed", gl.getProgramInfoLog(this.id));
-  gl.useProgram(this.id);
-  _collect(vertexSource, "attribute", this.attribute);
-  for (const a6 in this.attribute)
-    this.attribute[a6] = gl.getAttribLocation(this.id, a6);
-  _collect(vertexSource, "uniform", this.uniform);
-  _collect(fragmentSource, "uniform", this.uniform);
-  for (const u2 in this.uniform)
-    this.uniform[u2] = gl.getUniformLocation(this.id, u2);
-}
-function GLImageFilter(params) {
-  if (!params)
-    params = {};
-  let _drawCount = 0;
-  let _sourceTexture = null;
-  let _lastInChain = false;
-  let _currentFramebufferIndex = -1;
-  let _tempFramebuffers = [null, null];
-  let _filterChain = [];
-  let _width = -1;
-  let _height = -1;
-  let _vertexBuffer = null;
-  let _currentProgram = null;
-  const _filter = {};
-  const _canvas2 = params.canvas || document.createElement("canvas");
-  const _shaderProgramCache = {};
-  const DRAW = { INTERMEDIATE: 1 };
-  const gl = _canvas2.getContext("webgl");
-  if (!gl)
-    throw new Error("filter: context failed");
-  this.addFilter = function(name) {
-    const args = Array.prototype.slice.call(arguments, 1);
-    const filter = _filter[name];
-    _filterChain.push({ func: filter, args });
-  };
-  this.reset = function() {
-    _filterChain = [];
-  };
-  const _resize = function(width, height) {
-    if (width === _width && height === _height) {
-      return;
-    }
-    _canvas2.width = width;
-    _width = width;
-    _canvas2.height = height;
-    _height = height;
-    if (!_vertexBuffer) {
-      const vertices = new Float32Array([
-        -1,
-        -1,
-        0,
-        1,
-        1,
-        -1,
-        1,
-        1,
-        -1,
-        1,
-        0,
-        0,
-        -1,
-        1,
-        0,
-        0,
-        1,
-        -1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        0
-      ]);
-      _vertexBuffer = gl.createBuffer(), gl.bindBuffer(gl.ARRAY_BUFFER, _vertexBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-    }
-    gl.viewport(0, 0, _width, _height);
-    _tempFramebuffers = [null, null];
-  };
-  const _createFramebufferTexture = function(width, height) {
-    const fbo = gl.createFramebuffer();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-    const renderbuffer = gl.createRenderbuffer();
-    gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    return { fbo, texture };
-  };
-  const _getTempFramebuffer = function(index) {
-    _tempFramebuffers[index] = _tempFramebuffers[index] || _createFramebufferTexture(_width, _height);
-    return _tempFramebuffers[index];
-  };
-  const _draw = function(flags = null) {
-    var _a, _b;
-    let source = null;
-    let target = null;
-    let flipY = false;
-    if (_drawCount === 0) {
-      source = _sourceTexture;
-    } else {
-      source = (_a = _getTempFramebuffer(_currentFramebufferIndex)) == null ? void 0 : _a.texture;
-    }
-    _drawCount++;
-    if (_lastInChain && !(flags & DRAW.INTERMEDIATE)) {
-      target = null;
-      flipY = _drawCount % 2 === 0;
-    } else {
-      _currentFramebufferIndex = (_currentFramebufferIndex + 1) % 2;
-      target = (_b = _getTempFramebuffer(_currentFramebufferIndex)) == null ? void 0 : _b.fbo;
-    }
-    gl.bindTexture(gl.TEXTURE_2D, source);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, target);
-    gl.uniform1f(_currentProgram.uniform.flipY, flipY ? -1 : 1);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-  };
-  this.apply = function(image7) {
-    _resize(image7.width, image7.height);
-    _drawCount = 0;
-    if (!_sourceTexture)
-      _sourceTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, _sourceTexture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image7);
-    if (_filterChain.length === 0) {
-      _draw();
-      return _canvas2;
-    }
-    for (let i2 = 0; i2 < _filterChain.length; i2++) {
-      _lastInChain = i2 === _filterChain.length - 1;
-      const f2 = _filterChain[i2];
-      f2.func.apply(this, f2.args || []);
-    }
-    return _canvas2;
-  };
-  const _compileShader = function(fragmentSource) {
-    if (_shaderProgramCache[fragmentSource]) {
-      _currentProgram = _shaderProgramCache[fragmentSource];
-      gl.useProgram(_currentProgram.id);
-      return _currentProgram;
-    }
-    const SHADER = {};
-    SHADER.VERTEX_IDENTITY = [
-      "precision highp float;",
-      "attribute vec2 pos;",
-      "attribute vec2 uv;",
-      "varying vec2 vUv;",
-      "uniform float flipY;",
-      "void main(void) {",
-      "vUv = uv;",
-      "gl_Position = vec4(pos.x, pos.y*flipY, 0.0, 1.);",
-      "}"
-    ].join("\n");
-    SHADER.FRAGMENT_IDENTITY = [
-      "precision highp float;",
-      "varying vec2 vUv;",
-      "uniform sampler2D texture;",
-      "void main(void) {",
-      "gl_FragColor = texture2D(texture, vUv);",
-      "}"
-    ].join("\n");
-    _currentProgram = new GLProgram(gl, SHADER.VERTEX_IDENTITY, fragmentSource);
-    const floatSize = Float32Array.BYTES_PER_ELEMENT;
-    const vertSize = 4 * floatSize;
-    gl.enableVertexAttribArray(_currentProgram.attribute.pos);
-    gl.vertexAttribPointer(_currentProgram.attribute.pos, 2, gl.FLOAT, false, vertSize, 0 * floatSize);
-    gl.enableVertexAttribArray(_currentProgram.attribute.uv);
-    gl.vertexAttribPointer(_currentProgram.attribute.uv, 2, gl.FLOAT, false, vertSize, 2 * floatSize);
-    _shaderProgramCache[fragmentSource] = _currentProgram;
-    return _currentProgram;
-  };
-  _filter.colorMatrix = function(matrix) {
-    const m2 = new Float32Array(matrix);
-    m2[4] /= 255;
-    m2[9] /= 255;
-    m2[14] /= 255;
-    m2[19] /= 255;
-    const shader = m2[18] === 1 && m2[3] === 0 && m2[8] === 0 && m2[13] === 0 && m2[15] === 0 && m2[16] === 0 && m2[17] === 0 && m2[19] === 0 ? _filter.colorMatrix.SHADER.WITHOUT_ALPHA : _filter.colorMatrix.SHADER.WITH_ALPHA;
-    const program = _compileShader(shader);
-    gl.uniform1fv(program.uniform.m, m2);
-    _draw();
-  };
-  _filter.colorMatrix.SHADER = {};
-  _filter.colorMatrix.SHADER.WITH_ALPHA = [
-    "precision highp float;",
-    "varying vec2 vUv;",
-    "uniform sampler2D texture;",
-    "uniform float m[20];",
-    "void main(void) {",
-    "vec4 c = texture2D(texture, vUv);",
-    "gl_FragColor.r = m[0] * c.r + m[1] * c.g + m[2] * c.b + m[3] * c.a + m[4];",
-    "gl_FragColor.g = m[5] * c.r + m[6] * c.g + m[7] * c.b + m[8] * c.a + m[9];",
-    "gl_FragColor.b = m[10] * c.r + m[11] * c.g + m[12] * c.b + m[13] * c.a + m[14];",
-    "gl_FragColor.a = m[15] * c.r + m[16] * c.g + m[17] * c.b + m[18] * c.a + m[19];",
-    "}"
-  ].join("\n");
-  _filter.colorMatrix.SHADER.WITHOUT_ALPHA = [
-    "precision highp float;",
-    "varying vec2 vUv;",
-    "uniform sampler2D texture;",
-    "uniform float m[20];",
-    "void main(void) {",
-    "vec4 c = texture2D(texture, vUv);",
-    "gl_FragColor.r = m[0] * c.r + m[1] * c.g + m[2] * c.b + m[4];",
-    "gl_FragColor.g = m[5] * c.r + m[6] * c.g + m[7] * c.b + m[9];",
-    "gl_FragColor.b = m[10] * c.r + m[11] * c.g + m[12] * c.b + m[14];",
-    "gl_FragColor.a = c.a;",
-    "}"
-  ].join("\n");
-  _filter.brightness = function(brightness) {
-    const b2 = (brightness || 0) + 1;
-    _filter.colorMatrix([
-      b2,
-      0,
-      0,
-      0,
-      0,
-      0,
-      b2,
-      0,
-      0,
-      0,
-      0,
-      0,
-      b2,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.saturation = function(amount) {
-    const x2 = (amount || 0) * 2 / 3 + 1;
-    const y2 = (x2 - 1) * -0.5;
-    _filter.colorMatrix([
-      x2,
-      y2,
-      y2,
-      0,
-      0,
-      y2,
-      x2,
-      y2,
-      0,
-      0,
-      y2,
-      y2,
-      x2,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.desaturate = function() {
-    _filter.saturation(-1);
-  };
-  _filter.contrast = function(amount) {
-    const v2 = (amount || 0) + 1;
-    const o2 = -128 * (v2 - 1);
-    _filter.colorMatrix([
-      v2,
-      0,
-      0,
-      0,
-      o2,
-      0,
-      v2,
-      0,
-      0,
-      o2,
-      0,
-      0,
-      v2,
-      0,
-      o2,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.negative = function() {
-    _filter.contrast(-2);
-  };
-  _filter.hue = function(rotation) {
-    rotation = (rotation || 0) / 180 * Math.PI;
-    const cos4 = Math.cos(rotation);
-    const sin4 = Math.sin(rotation);
-    const lumR = 0.213;
-    const lumG = 0.715;
-    const lumB = 0.072;
-    _filter.colorMatrix([
-      lumR + cos4 * (1 - lumR) + sin4 * -lumR,
-      lumG + cos4 * -lumG + sin4 * -lumG,
-      lumB + cos4 * -lumB + sin4 * (1 - lumB),
-      0,
-      0,
-      lumR + cos4 * -lumR + sin4 * 0.143,
-      lumG + cos4 * (1 - lumG) + sin4 * 0.14,
-      lumB + cos4 * -lumB + sin4 * -0.283,
-      0,
-      0,
-      lumR + cos4 * -lumR + sin4 * -(1 - lumR),
-      lumG + cos4 * -lumG + sin4 * lumG,
-      lumB + cos4 * (1 - lumB) + sin4 * lumB,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.desaturateLuminance = function() {
-    _filter.colorMatrix([
-      0.2764723,
-      0.929708,
-      0.0938197,
-      0,
-      -37.1,
-      0.2764723,
-      0.929708,
-      0.0938197,
-      0,
-      -37.1,
-      0.2764723,
-      0.929708,
-      0.0938197,
-      0,
-      -37.1,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.sepia = function() {
-    _filter.colorMatrix([
-      0.393,
-      0.7689999,
-      0.18899999,
-      0,
-      0,
-      0.349,
-      0.6859999,
-      0.16799999,
-      0,
-      0,
-      0.272,
-      0.5339999,
-      0.13099999,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.brownie = function() {
-    _filter.colorMatrix([
-      0.5997023498159715,
-      0.34553243048391263,
-      -0.2708298674538042,
-      0,
-      47.43192855600873,
-      -0.037703249837783157,
-      0.8609577587992641,
-      0.15059552388459913,
-      0,
-      -36.96841498319127,
-      0.24113635128153335,
-      -0.07441037908422492,
-      0.44972182064877153,
-      0,
-      -7.562075277591283,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.vintagePinhole = function() {
-    _filter.colorMatrix([
-      0.6279345635605994,
-      0.3202183420819367,
-      -0.03965408211312453,
-      0,
-      9.651285835294123,
-      0.02578397704808868,
-      0.6441188644374771,
-      0.03259127616149294,
-      0,
-      7.462829176470591,
-      0.0466055556782719,
-      -0.0851232987247891,
-      0.5241648018700465,
-      0,
-      5.159190588235296,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.kodachrome = function() {
-    _filter.colorMatrix([
-      1.1285582396593525,
-      -0.3967382283601348,
-      -0.03992559172921793,
-      0,
-      63.72958762196502,
-      -0.16404339962244616,
-      1.0835251566291304,
-      -0.05498805115633132,
-      0,
-      24.732407896706203,
-      -0.16786010706155763,
-      -0.5603416277695248,
-      1.6014850761964943,
-      0,
-      35.62982807460946,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.technicolor = function() {
-    _filter.colorMatrix([
-      1.9125277891456083,
-      -0.8545344976951645,
-      -0.09155508482755585,
-      0,
-      11.793603434377337,
-      -0.3087833385928097,
-      1.7658908555458428,
-      -0.10601743074722245,
-      0,
-      -70.35205161461398,
-      -0.231103377548616,
-      -0.7501899197440212,
-      1.847597816108189,
-      0,
-      30.950940869491138,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.polaroid = function() {
-    _filter.colorMatrix([
-      1.438,
-      -0.062,
-      -0.062,
-      0,
-      0,
-      -0.122,
-      1.378,
-      -0.122,
-      0,
-      0,
-      -0.016,
-      -0.016,
-      1.483,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.shiftToBGR = function() {
-    _filter.colorMatrix([
-      0,
-      0,
-      1,
-      0,
-      0,
-      0,
-      1,
-      0,
-      0,
-      0,
-      1,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.convolution = function(matrix) {
-    const m2 = new Float32Array(matrix);
-    const pixelSizeX = 1 / _width;
-    const pixelSizeY = 1 / _height;
-    const program = _compileShader(_filter.convolution.SHADER);
-    gl.uniform1fv(program.uniform.m, m2);
-    gl.uniform2f(program.uniform.px, pixelSizeX, pixelSizeY);
-    _draw();
-  };
-  _filter.convolution.SHADER = [
-    "precision highp float;",
-    "varying vec2 vUv;",
-    "uniform sampler2D texture;",
-    "uniform vec2 px;",
-    "uniform float m[9];",
-    "void main(void) {",
-    "vec4 c11 = texture2D(texture, vUv - px);",
-    "vec4 c12 = texture2D(texture, vec2(vUv.x, vUv.y - px.y));",
-    "vec4 c13 = texture2D(texture, vec2(vUv.x + px.x, vUv.y - px.y));",
-    "vec4 c21 = texture2D(texture, vec2(vUv.x - px.x, vUv.y) );",
-    "vec4 c22 = texture2D(texture, vUv);",
-    "vec4 c23 = texture2D(texture, vec2(vUv.x + px.x, vUv.y) );",
-    "vec4 c31 = texture2D(texture, vec2(vUv.x - px.x, vUv.y + px.y) );",
-    "vec4 c32 = texture2D(texture, vec2(vUv.x, vUv.y + px.y) );",
-    "vec4 c33 = texture2D(texture, vUv + px );",
-    "gl_FragColor = ",
-    "c11 * m[0] + c12 * m[1] + c22 * m[2] +",
-    "c21 * m[3] + c22 * m[4] + c23 * m[5] +",
-    "c31 * m[6] + c32 * m[7] + c33 * m[8];",
-    "gl_FragColor.a = c22.a;",
-    "}"
-  ].join("\n");
-  _filter.detectEdges = function() {
-    _filter.convolution.call(this, [
-      0,
-      1,
-      0,
-      1,
-      -4,
-      1,
-      0,
-      1,
-      0
-    ]);
-  };
-  _filter.sobelX = function() {
-    _filter.convolution.call(this, [
-      -1,
-      0,
-      1,
-      -2,
-      0,
-      2,
-      -1,
-      0,
-      1
-    ]);
-  };
-  _filter.sobelY = function() {
-    _filter.convolution.call(this, [
-      -1,
-      -2,
-      -1,
-      0,
-      0,
-      0,
-      1,
-      2,
-      1
-    ]);
-  };
-  _filter.sharpen = function(amount) {
-    const a6 = amount || 1;
-    _filter.convolution.call(this, [
-      0,
-      -1 * a6,
-      0,
-      -1 * a6,
-      1 + 4 * a6,
-      -1 * a6,
-      0,
-      -1 * a6,
-      0
-    ]);
-  };
-  _filter.emboss = function(size2) {
-    const s2 = size2 || 1;
-    _filter.convolution.call(this, [
-      -2 * s2,
-      -1 * s2,
-      0,
-      -1 * s2,
-      1,
-      1 * s2,
-      0,
-      1 * s2,
-      2 * s2
-    ]);
-  };
-  _filter.blur = function(size2) {
-    const blurSizeX = size2 / 7 / _width;
-    const blurSizeY = size2 / 7 / _height;
-    const program = _compileShader(_filter.blur.SHADER);
-    gl.uniform2f(program.uniform.px, 0, blurSizeY);
-    _draw(DRAW.INTERMEDIATE);
-    gl.uniform2f(program.uniform.px, blurSizeX, 0);
-    _draw();
-  };
-  _filter.blur.SHADER = [
-    "precision highp float;",
-    "varying vec2 vUv;",
-    "uniform sampler2D texture;",
-    "uniform vec2 px;",
-    "void main(void) {",
-    "gl_FragColor = vec4(0.0);",
-    "gl_FragColor += texture2D(texture, vUv + vec2(-7.0*px.x, -7.0*px.y))*0.0044299121055113265;",
-    "gl_FragColor += texture2D(texture, vUv + vec2(-6.0*px.x, -6.0*px.y))*0.00895781211794;",
-    "gl_FragColor += texture2D(texture, vUv + vec2(-5.0*px.x, -5.0*px.y))*0.0215963866053;",
-    "gl_FragColor += texture2D(texture, vUv + vec2(-4.0*px.x, -4.0*px.y))*0.0443683338718;",
-    "gl_FragColor += texture2D(texture, vUv + vec2(-3.0*px.x, -3.0*px.y))*0.0776744219933;",
-    "gl_FragColor += texture2D(texture, vUv + vec2(-2.0*px.x, -2.0*px.y))*0.115876621105;",
-    "gl_FragColor += texture2D(texture, vUv + vec2(-1.0*px.x, -1.0*px.y))*0.147308056121;",
-    "gl_FragColor += texture2D(texture, vUv                             )*0.159576912161;",
-    "gl_FragColor += texture2D(texture, vUv + vec2( 1.0*px.x,  1.0*px.y))*0.147308056121;",
-    "gl_FragColor += texture2D(texture, vUv + vec2( 2.0*px.x,  2.0*px.y))*0.115876621105;",
-    "gl_FragColor += texture2D(texture, vUv + vec2( 3.0*px.x,  3.0*px.y))*0.0776744219933;",
-    "gl_FragColor += texture2D(texture, vUv + vec2( 4.0*px.x,  4.0*px.y))*0.0443683338718;",
-    "gl_FragColor += texture2D(texture, vUv + vec2( 5.0*px.x,  5.0*px.y))*0.0215963866053;",
-    "gl_FragColor += texture2D(texture, vUv + vec2( 6.0*px.x,  6.0*px.y))*0.00895781211794;",
-    "gl_FragColor += texture2D(texture, vUv + vec2( 7.0*px.x,  7.0*px.y))*0.0044299121055113265;",
-    "}"
-  ].join("\n");
-  _filter.pixelate = function(size2) {
-    const blurSizeX = size2 / _width;
-    const blurSizeY = size2 / _height;
-    const program = _compileShader(_filter.pixelate.SHADER);
-    gl.uniform2f(program.uniform.size, blurSizeX, blurSizeY);
-    _draw();
-  };
-  _filter.pixelate.SHADER = [
-    "precision highp float;",
-    "varying vec2 vUv;",
-    "uniform vec2 size;",
-    "uniform sampler2D texture;",
-    "vec2 pixelate(vec2 coord, vec2 size) {",
-    "return floor( coord / size ) * size;",
-    "}",
-    "void main(void) {",
-    "gl_FragColor = vec4(0.0);",
-    "vec2 coord = pixelate(vUv, size);",
-    "gl_FragColor += texture2D(texture, coord);",
-    "}"
-  ].join("\n");
-}
-var maxSize = 2048;
-var inCanvas;
-var outCanvas;
-var fx;
-function canvas(width, height) {
-  let c2;
-  if (env2.browser) {
-    if (env2.offscreen) {
-      c2 = new OffscreenCanvas(width, height);
-    } else {
-      c2 = document.createElement("canvas");
-      c2.width = width;
-      c2.height = height;
-    }
-  } else {
-    if (typeof env2.Canvas !== "undefined")
-      c2 = new env2.Canvas(width, height);
-    else if (typeof globalThis.Canvas !== "undefined")
-      c2 = new globalThis.Canvas(width, height);
-  }
-  return c2;
-}
-function process2(input2, config3) {
-  let tensor2;
-  if (!input2) {
-    if (config3.debug)
-      log("input is missing");
-    return { tensor: null, canvas: null };
-  }
-  if (!(input2 instanceof Tensor) && !(typeof Image !== "undefined" && input2 instanceof Image) && !(typeof env2.Canvas !== "undefined" && input2 instanceof env2.Canvas) && !(typeof globalThis.Canvas !== "undefined" && input2 instanceof globalThis.Canvas) && !(typeof ImageData !== "undefined" && input2 instanceof ImageData) && !(typeof ImageBitmap !== "undefined" && input2 instanceof ImageBitmap) && !(typeof HTMLImageElement !== "undefined" && input2 instanceof HTMLImageElement) && !(typeof HTMLMediaElement !== "undefined" && input2 instanceof HTMLMediaElement) && !(typeof HTMLVideoElement !== "undefined" && input2 instanceof HTMLVideoElement) && !(typeof HTMLCanvasElement !== "undefined" && input2 instanceof HTMLCanvasElement) && !(typeof OffscreenCanvas !== "undefined" && input2 instanceof OffscreenCanvas)) {
-    throw new Error("input type is not recognized");
-  }
-  if (input2 instanceof Tensor) {
-    if (input2["isDisposedInternal"])
-      throw new Error("input tensor is disposed");
-    if (input2.shape && input2.shape.length === 4 && input2.shape[0] === 1 && input2.shape[3] === 3)
-      tensor2 = clone(input2);
-    else
-      throw new Error(`input tensor shape must be [1, height, width, 3] and instead was ${input2.shape}`);
-  } else {
-    if (typeof input2["readyState"] !== "undefined" && input2["readyState"] <= 2) {
-      if (config3.debug)
-        log("input stream is not ready");
-      return { tensor: null, canvas: inCanvas };
-    }
-    const originalWidth = input2["naturalWidth"] || input2["videoWidth"] || input2["width"] || input2["shape"] && input2["shape"][1] > 0;
-    const originalHeight = input2["naturalHeight"] || input2["videoHeight"] || input2["height"] || input2["shape"] && input2["shape"][2] > 0;
-    if (!originalWidth || !originalHeight) {
-      if (config3.debug)
-        log("cannot determine input dimensions");
-      return { tensor: null, canvas: inCanvas };
-    }
-    let targetWidth = originalWidth;
-    let targetHeight = originalHeight;
-    if (targetWidth > maxSize) {
-      targetWidth = maxSize;
-      targetHeight = Math.trunc(targetWidth * originalHeight / originalWidth);
-    }
-    if (targetHeight > maxSize) {
-      targetHeight = maxSize;
-      targetWidth = Math.trunc(targetHeight * originalWidth / originalHeight);
-    }
-    if ((config3.filter.width || 0) > 0)
-      targetWidth = config3.filter.width;
-    else if ((config3.filter.height || 0) > 0)
-      targetWidth = originalWidth * ((config3.filter.height || 0) / originalHeight);
-    if ((config3.filter.height || 0) > 0)
-      targetHeight = config3.filter.height;
-    else if ((config3.filter.width || 0) > 0)
-      targetHeight = originalHeight * ((config3.filter.width || 0) / originalWidth);
-    if (!targetWidth || !targetHeight)
-      throw new Error("input cannot determine dimension");
-    if (!inCanvas || (inCanvas == null ? void 0 : inCanvas.width) !== targetWidth || (inCanvas == null ? void 0 : inCanvas.height) !== targetHeight)
-      inCanvas = canvas(targetWidth, targetHeight);
-    const ctx = inCanvas.getContext("2d");
-    if (typeof ImageData !== "undefined" && input2 instanceof ImageData) {
-      ctx.putImageData(input2, 0, 0);
-    } else {
-      if (config3.filter.flip && typeof ctx.translate !== "undefined") {
-        ctx.translate(originalWidth, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(input2, 0, 0, originalWidth, originalHeight, 0, 0, inCanvas == null ? void 0 : inCanvas.width, inCanvas == null ? void 0 : inCanvas.height);
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-      } else {
-        ctx.drawImage(input2, 0, 0, originalWidth, originalHeight, 0, 0, inCanvas == null ? void 0 : inCanvas.width, inCanvas == null ? void 0 : inCanvas.height);
-      }
-    }
-    if (config3.filter.enabled && env2.webgl.supported) {
-      if (!fx || !outCanvas || inCanvas.width !== outCanvas.width || (inCanvas == null ? void 0 : inCanvas.height) !== (outCanvas == null ? void 0 : outCanvas.height)) {
-        outCanvas = canvas(inCanvas == null ? void 0 : inCanvas.width, inCanvas == null ? void 0 : inCanvas.height);
-        if ((outCanvas == null ? void 0 : outCanvas.width) !== (inCanvas == null ? void 0 : inCanvas.width))
-          outCanvas.width = inCanvas == null ? void 0 : inCanvas.width;
-        if ((outCanvas == null ? void 0 : outCanvas.height) !== (inCanvas == null ? void 0 : inCanvas.height))
-          outCanvas.height = inCanvas == null ? void 0 : inCanvas.height;
-        fx = env2.browser ? new GLImageFilter({ canvas: outCanvas }) : null;
-      }
-      if (!fx)
-        return { tensor: null, canvas: inCanvas };
-      fx.reset();
-      fx.addFilter("brightness", config3.filter.brightness);
-      if (config3.filter.contrast !== 0)
-        fx.addFilter("contrast", config3.filter.contrast);
-      if (config3.filter.sharpness !== 0)
-        fx.addFilter("sharpen", config3.filter.sharpness);
-      if (config3.filter.blur !== 0)
-        fx.addFilter("blur", config3.filter.blur);
-      if (config3.filter.saturation !== 0)
-        fx.addFilter("saturation", config3.filter.saturation);
-      if (config3.filter.hue !== 0)
-        fx.addFilter("hue", config3.filter.hue);
-      if (config3.filter.negative)
-        fx.addFilter("negative");
-      if (config3.filter.sepia)
-        fx.addFilter("sepia");
-      if (config3.filter.vintage)
-        fx.addFilter("brownie");
-      if (config3.filter.sepia)
-        fx.addFilter("sepia");
-      if (config3.filter.kodachrome)
-        fx.addFilter("kodachrome");
-      if (config3.filter.technicolor)
-        fx.addFilter("technicolor");
-      if (config3.filter.polaroid)
-        fx.addFilter("polaroid");
-      if (config3.filter.pixelate !== 0)
-        fx.addFilter("pixelate", config3.filter.pixelate);
-      fx.apply(inCanvas);
-    } else {
-      outCanvas = inCanvas;
-      if (fx)
-        fx = null;
-    }
-    if (!tensor2) {
-      let pixels;
-      if (outCanvas.data) {
-        const shape = [outCanvas.height, outCanvas.width, 3];
-        pixels = tensor3d(outCanvas.data, shape, "float32");
-      } else if (typeof ImageData !== "undefined" && outCanvas instanceof ImageData) {
-        pixels = browser_exports ? browser_exports.fromPixels(outCanvas) : null;
-      } else if (config3.backend === "webgl" || config3.backend === "humangl") {
-        const tempCanvas = canvas(targetWidth, targetHeight);
-        tempCanvas.width = targetWidth;
-        tempCanvas.height = targetHeight;
-        const tempCtx = tempCanvas.getContext("2d");
-        tempCtx == null ? void 0 : tempCtx.drawImage(outCanvas, 0, 0);
-        try {
-          pixels = browser_exports && env2.browser ? browser_exports.fromPixels(tempCanvas) : null;
-        } catch (err) {
-          throw new Error("browser webgl error");
-        }
-      } else {
-        const tempCanvas = canvas(targetWidth, targetHeight);
-        if (!tempCanvas)
-          return { tensor: null, canvas: inCanvas };
-        tempCanvas.width = targetWidth;
-        tempCanvas.height = targetHeight;
-        const tempCtx = tempCanvas.getContext("2d");
-        if (!tempCtx)
-          return { tensor: null, canvas: inCanvas };
-        tempCtx.drawImage(outCanvas, 0, 0);
-        const data = tempCtx.getImageData(0, 0, targetWidth, targetHeight);
-        if (browser_exports && env2.browser) {
-          pixels = browser_exports.fromPixels(data);
-        } else {
-          pixels = tidy(() => {
-            const imageData = tensor(Array.from(data.data), [targetWidth, targetHeight, 4]);
-            const channels = split(imageData, 4, 2);
-            const rgb2 = stack([channels[0], channels[1], channels[2]], 2);
-            const expand = reshape(rgb2, [imageData.shape[0], imageData.shape[1], 3]);
-            return expand;
-          });
-        }
-      }
-      if (pixels) {
-        const casted = cast(pixels, "float32");
-        tensor2 = expandDims(casted, 0);
-        dispose(pixels);
-        dispose(casted);
-      } else {
-        tensor2 = zeros([1, targetWidth, targetHeight, 3]);
-        throw new Error("cannot create tensor from input");
-      }
-    }
-  }
-  return { tensor: tensor2, canvas: config3.filter.return ? outCanvas : null };
-}
-var lastInputSum = 0;
-var lastCacheDiff = 1;
-async function skip(config3, input2) {
-  if (config3.cacheSensitivity === 0)
-    return false;
-  const resizeFact = 32;
-  if (!input2.shape[1] || !input2.shape[2])
-    return false;
-  const reduced = image.resizeBilinear(input2, [Math.trunc(input2.shape[1] / resizeFact), Math.trunc(input2.shape[2] / resizeFact)]);
-  const reducedData = await reduced.data();
-  dispose(reduced);
-  let sum6 = 0;
-  for (let i2 = 0; i2 < reducedData.length / 3; i2++)
-    sum6 += reducedData[3 * i2 + 2];
-  const diff = 100 * (Math.max(sum6, lastInputSum) / Math.min(sum6, lastInputSum) - 1);
-  lastInputSum = sum6;
-  const skipFrame = diff < Math.max(config3.cacheSensitivity, lastCacheDiff);
-  lastCacheDiff = diff > 10 * config3.cacheSensitivity ? 0 : diff;
-  return skipFrame;
-}
-var env2 = {
-  browser: void 0,
-  node: void 0,
-  worker: void 0,
-  platform: void 0,
-  agent: void 0,
-  initial: true,
-  backends: [],
-  offscreen: void 0,
-  tfjs: {
-    version: void 0
-  },
-  wasm: {
-    supported: void 0,
-    backend: void 0,
-    simd: void 0,
-    multithread: void 0
-  },
-  webgl: {
-    supported: void 0,
-    backend: void 0,
-    version: void 0,
-    renderer: void 0
-  },
-  webgpu: {
-    supported: void 0,
-    backend: void 0,
-    adapter: void 0
-  },
-  kernels: [],
-  Canvas: void 0,
-  Image: void 0,
-  ImageData: void 0
-};
-async function backendInfo() {
-  var _a;
-  env2.backends = Object.keys(engine().registryFactory);
-  env2.wasm.supported = typeof WebAssembly !== "undefined";
-  env2.wasm.backend = env2.backends.includes("wasm");
-  if (env2.wasm.supported && env2.wasm.backend && getBackend() === "wasm") {
-    env2.wasm.simd = await env().getAsync("WASM_HAS_SIMD_SUPPORT");
-    env2.wasm.multithread = await env().getAsync("WASM_HAS_MULTITHREAD_SUPPORT");
-  }
-  const c2 = canvas(100, 100);
-  const ctx = c2 ? c2.getContext("webgl2") : void 0;
-  env2.webgl.supported = typeof ctx !== "undefined";
-  env2.webgl.backend = env2.backends.includes("webgl");
-  if (env2.webgl.supported && env2.webgl.backend && (getBackend() === "webgl" || getBackend() === "humangl")) {
-    const gl = backend().gpgpu !== "undefined" ? await backend().getGPGPUContext().gl : null;
-    if (gl) {
-      env2.webgl.version = gl.getParameter(gl.VERSION);
-      env2.webgl.renderer = gl.getParameter(gl.RENDERER);
-    }
-  }
-  env2.webgpu.supported = env2.browser && typeof navigator["gpu"] !== "undefined";
-  env2.webgpu.backend = env2.backends.includes("webgpu");
-  if (env2.webgpu.supported)
-    env2.webgpu.adapter = (_a = await navigator["gpu"].requestAdapter()) == null ? void 0 : _a.name;
-  env2.kernels = getKernelsForBackend(getBackend()).map((kernel) => kernel.kernelName.toLowerCase());
-}
-async function get3() {
-  env2.browser = typeof navigator !== "undefined";
-  env2.node = typeof process !== "undefined";
-  env2.worker = env2.browser ? typeof WorkerGlobalScope !== "undefined" : void 0;
-  env2.tfjs.version = version;
-  env2.offscreen = typeof env2.offscreen === "undefined" ? typeof OffscreenCanvas !== "undefined" : env2.offscreen;
-  if (typeof navigator !== "undefined") {
-    const raw = navigator.userAgent.match(/\(([^()]+)\)/g);
-    if (raw && raw[0]) {
-      const platformMatch = raw[0].match(/\(([^()]+)\)/g);
-      env2.platform = platformMatch && platformMatch[0] ? platformMatch[0].replace(/\(|\)/g, "") : "";
-      env2.agent = navigator.userAgent.replace(raw[0], "");
-      if (env2.platform[1])
-        env2.agent = env2.agent.replace(raw[1], "");
-      env2.agent = env2.agent.replace(/  /g, " ");
-    }
-  } else if (typeof process !== "undefined") {
-    env2.platform = `${process.platform} ${process.arch}`;
-    env2.agent = `NodeJS ${process.version}`;
-  }
-  await backendInfo();
-}
-async function set(obj) {
-  env2 = mergeDeep(env2, obj);
 }
 var keypointsCount = 6;
 var model2;
@@ -93307,8 +100671,8 @@ async function getBoxes(inputImage, config3) {
       const sorted = res2.sort((a6, b2) => a6.size - b2.size);
       const concat384 = concat([sorted[0], sorted[2]], 2);
       const concat512 = concat([sorted[1], sorted[3]], 2);
-      const concat5 = concat([concat512, concat384], 1);
-      batchOut = squeeze(concat5, 0);
+      const concat6 = concat([concat512, concat384], 1);
+      batchOut = squeeze(concat6, 0);
     } else {
       batchOut = squeeze(res2);
     }
@@ -93393,20 +100757,20 @@ var getLeftToRightEyeDepthDifference = (rawCoords) => {
   return leftEyeZ - rightEyeZ;
 };
 var getEyeBox = (rawCoords, face5, eyeInnerCornerIndex, eyeOuterCornerIndex, flip = false, meshSize) => {
-  const box4 = squarifyBox(enlargeBox(calculateLandmarksBoundingBox([rawCoords[eyeInnerCornerIndex], rawCoords[eyeOuterCornerIndex]]), irisEnlarge));
-  const boxSize = getBoxSize(box4);
-  let crop = image.cropAndResize(face5, [[
-    box4.startPoint[1] / meshSize,
-    box4.startPoint[0] / meshSize,
-    box4.endPoint[1] / meshSize,
-    box4.endPoint[0] / meshSize
+  const box5 = squarifyBox(enlargeBox(calculateLandmarksBoundingBox([rawCoords[eyeInnerCornerIndex], rawCoords[eyeOuterCornerIndex]]), irisEnlarge));
+  const boxSize = getBoxSize(box5);
+  let crop2 = image.cropAndResize(face5, [[
+    box5.startPoint[1] / meshSize,
+    box5.startPoint[0] / meshSize,
+    box5.endPoint[1] / meshSize,
+    box5.endPoint[0] / meshSize
   ]], [0], [inputSize2, inputSize2]);
   if (flip && env2.kernels.includes("flipleftright")) {
-    const flipped = image.flipLeftRight(crop);
-    dispose(crop);
-    crop = flipped;
+    const flipped = image.flipLeftRight(crop2);
+    dispose(crop2);
+    crop2 = flipped;
   }
-  return { box: box4, boxSize, crop };
+  return { box: box5, boxSize, crop: crop2 };
 };
 var getEyeCoords = (eyeData, eyeBox, eyeBoxSize, flip = false) => {
   const eyeRawCoords = [];
@@ -93499,7 +100863,7 @@ async function predict(input2, config3) {
   const faces = [];
   const newBoxes = [];
   let id = 0;
-  for (let box4 of boxCache) {
+  for (let box5 of boxCache) {
     let angle2 = 0;
     let rotationMatrix;
     const face5 = {
@@ -93514,21 +100878,21 @@ async function predict(input2, config3) {
       annotations: {}
     };
     if (((_d = config3.face.detector) == null ? void 0 : _d.rotation) && ((_e2 = config3.face.mesh) == null ? void 0 : _e2.enabled) && env2.kernels.includes("rotatewithoffset")) {
-      [angle2, rotationMatrix, face5.tensor] = correctFaceRotation(box4, input2, inputSize3);
+      [angle2, rotationMatrix, face5.tensor] = correctFaceRotation(box5, input2, inputSize3);
     } else {
       rotationMatrix = IDENTITY_MATRIX;
-      const cut = cutBoxFromImageAndResize({ startPoint: box4.startPoint, endPoint: box4.endPoint }, input2, ((_f = config3.face.mesh) == null ? void 0 : _f.enabled) ? [inputSize3, inputSize3] : [size(), size()]);
+      const cut = cutBoxFromImageAndResize({ startPoint: box5.startPoint, endPoint: box5.endPoint }, input2, ((_f = config3.face.mesh) == null ? void 0 : _f.enabled) ? [inputSize3, inputSize3] : [size(), size()]);
       face5.tensor = div(cut, 255);
       dispose(cut);
     }
-    face5.boxScore = Math.round(100 * box4.confidence) / 100;
+    face5.boxScore = Math.round(100 * box5.confidence) / 100;
     if (!((_g = config3.face.mesh) == null ? void 0 : _g.enabled)) {
-      face5.box = getClampedBox(box4, input2);
-      face5.boxRaw = getRawBox(box4, input2);
-      face5.score = Math.round(100 * box4.confidence || 0) / 100;
-      face5.mesh = box4.landmarks.map((pt) => [
-        (box4.startPoint[0] + box4.endPoint[0]) / 2 + (box4.endPoint[0] + box4.startPoint[0]) * pt[0] / size(),
-        (box4.startPoint[1] + box4.endPoint[1]) / 2 + (box4.endPoint[1] + box4.startPoint[1]) * pt[1] / size()
+      face5.box = getClampedBox(box5, input2);
+      face5.boxRaw = getRawBox(box5, input2);
+      face5.score = Math.round(100 * box5.confidence || 0) / 100;
+      face5.mesh = box5.landmarks.map((pt) => [
+        (box5.startPoint[0] + box5.endPoint[0]) / 2 + (box5.endPoint[0] + box5.startPoint[0]) * pt[0] / size(),
+        (box5.startPoint[1] + box5.endPoint[1]) / 2 + (box5.endPoint[1] + box5.startPoint[1]) * pt[1] / size()
       ]);
       face5.meshRaw = face5.mesh.map((pt) => [pt[0] / (input2.shape[2] || 0), pt[1] / (input2.shape[1] || 0), (pt[2] || 0) / inputSize3]);
       for (const key of Object.keys(blazeFaceLandmarks))
@@ -93546,28 +100910,28 @@ async function predict(input2, config3) {
       dispose(contourCoords);
       dispose(coordsReshaped);
       if (faceConfidence < (((_h = config3.face.detector) == null ? void 0 : _h.minConfidence) || 1)) {
-        box4.confidence = faceConfidence;
+        box5.confidence = faceConfidence;
       } else {
         if ((_i = config3.face.iris) == null ? void 0 : _i.enabled)
           rawCoords = await augmentIris(rawCoords, face5.tensor, config3, inputSize3);
-        face5.mesh = transformRawCoords(rawCoords, box4, angle2, rotationMatrix, inputSize3);
+        face5.mesh = transformRawCoords(rawCoords, box5, angle2, rotationMatrix, inputSize3);
         face5.meshRaw = face5.mesh.map((pt) => [pt[0] / (input2.shape[2] || 0), pt[1] / (input2.shape[1] || 0), (pt[2] || 0) / inputSize3]);
-        box4 = { ...enlargeBox(calculateLandmarksBoundingBox(face5.mesh), 1.5), confidence: box4.confidence };
+        box5 = { ...enlargeBox(calculateLandmarksBoundingBox(face5.mesh), 1.5), confidence: box5.confidence };
         for (const key of Object.keys(meshAnnotations))
           face5.annotations[key] = meshAnnotations[key].map((index) => face5.mesh[index]);
         if (((_j = config3.face.detector) == null ? void 0 : _j.rotation) && config3.face.mesh.enabled && ((_k = config3.face.description) == null ? void 0 : _k.enabled) && env2.kernels.includes("rotatewithoffset")) {
           dispose(face5.tensor);
-          [angle2, rotationMatrix, face5.tensor] = correctFaceRotation(box4, input2, inputSize3);
+          [angle2, rotationMatrix, face5.tensor] = correctFaceRotation(box5, input2, inputSize3);
         }
-        face5.box = getClampedBox(box4, input2);
-        face5.boxRaw = getRawBox(box4, input2);
-        face5.score = Math.round(100 * faceConfidence || 100 * box4.confidence || 0) / 100;
+        face5.box = getClampedBox(box5, input2);
+        face5.boxRaw = getRawBox(box5, input2);
+        face5.score = Math.round(100 * faceConfidence || 100 * box5.confidence || 0) / 100;
         face5.faceScore = Math.round(100 * faceConfidence) / 100;
-        box4 = { ...squarifyBox(box4), confidence: box4.confidence, faceConfidence };
+        box5 = { ...squarifyBox(box5), confidence: box5.confidence, faceConfidence };
       }
     }
     faces.push(face5);
-    newBoxes.push(box4);
+    newBoxes.push(box5);
   }
   if ((_l = config3.face.mesh) == null ? void 0 : _l.enabled)
     boxCache = newBoxes.filter((a6) => {
@@ -93615,40 +100979,16 @@ async function load4(config3) {
     log("cached model:", modelUrl);
   return model5;
 }
-function similarity(embedding1, embedding2, order = 2) {
-  if (!embedding1 || !embedding2)
-    return 0;
-  if ((embedding1 == null ? void 0 : embedding1.length) === 0 || (embedding2 == null ? void 0 : embedding2.length) === 0)
-    return 0;
-  if ((embedding1 == null ? void 0 : embedding1.length) !== (embedding2 == null ? void 0 : embedding2.length))
-    return 0;
-  const distance = 5 * embedding1.map((_val, i2) => Math.abs(embedding1[i2] - embedding2[i2]) ** order).reduce((sum6, now3) => sum6 + now3, 0) ** (1 / order);
-  const res2 = Math.max(0, 100 - distance) / 100;
-  return res2;
-}
-function match(embedding2, db, threshold3 = 0) {
-  let best = { similarity: 0, name: "", source: "", embedding: [] };
-  if (!embedding2 || !db || !Array.isArray(embedding2) || !Array.isArray(db))
-    return best;
-  for (const f2 of db) {
-    if (f2.embedding && f2.name) {
-      const perc = similarity(embedding2, f2.embedding);
-      if (perc > threshold3 && perc > best.similarity)
-        best = { ...f2, similarity: perc };
-    }
-  }
-  return best;
-}
 function enhance(input2) {
   const image7 = tidy(() => {
     const tensor2 = input2.image || input2.tensor || input2;
     if (!(tensor2 instanceof Tensor))
       return null;
-    const box4 = [[0.05, 0.15, 0.85, 0.85]];
+    const box5 = [[0.05, 0.15, 0.85, 0.85]];
     if (!(model5 == null ? void 0 : model5.inputs[0].shape))
       return null;
-    const crop = tensor2.shape.length === 3 ? image.cropAndResize(expandDims(tensor2, 0), box4, [0], [model5.inputs[0].shape[2], model5.inputs[0].shape[1]]) : image.cropAndResize(tensor2, box4, [0], [model5.inputs[0].shape[2], model5.inputs[0].shape[1]]);
-    const norm2 = mul(crop, 255);
+    const crop2 = tensor2.shape.length === 3 ? image.cropAndResize(expandDims(tensor2, 0), box5, [0], [model5.inputs[0].shape[2], model5.inputs[0].shape[1]]) : image.cropAndResize(tensor2, box5, [0], [model5.inputs[0].shape[2], model5.inputs[0].shape[1]]);
+    const norm2 = mul(crop2, 255);
     return norm2;
   });
   return image7;
@@ -93817,8 +101157,8 @@ var poseChain = [
   ["rightHip", "rightKnee"],
   ["rightKnee", "rightAnkle"]
 ];
-function getBoundingBox(keypoints3) {
-  const coord = keypoints3.reduce(({ maxX, maxY, minX, minY }, { position: { x: x2, y: y2 } }) => ({
+function getBoundingBox(keypoints2) {
+  const coord = keypoints2.reduce(({ maxX, maxY, minX, minY }, { position: { x: x2, y: y2 } }) => ({
     maxX: Math.max(maxX, x2),
     maxY: Math.max(maxY, y2),
     minX: Math.min(minX, x2),
@@ -93839,8 +101179,8 @@ function scalePoses(poses, [height, width], [inputResolutionHeight, inputResolut
     score: pose.score,
     boxRaw: [pose.box[0] / inputResolutionWidth, pose.box[1] / inputResolutionHeight, pose.box[2] / inputResolutionWidth, pose.box[3] / inputResolutionHeight],
     box: [Math.trunc(pose.box[0] * scaleX), Math.trunc(pose.box[1] * scaleY), Math.trunc(pose.box[2] * scaleX), Math.trunc(pose.box[3] * scaleY)],
-    keypoints: pose.keypoints.map(({ score: score2, part, position }) => ({
-      score: score2,
+    keypoints: pose.keypoints.map(({ score, part, position }) => ({
+      score,
       part,
       position: [Math.trunc(position.x * scaleX), Math.trunc(position.y * scaleY)],
       positionRaw: [position.x / inputResolutionHeight, position.y / inputResolutionHeight]
@@ -93863,11 +101203,11 @@ var MaxHeap = class {
     this.swim(this.numberOfElements);
   }
   dequeue() {
-    const max6 = this.priorityQueue[0];
+    const max7 = this.priorityQueue[0];
     this.exchange(0, this.numberOfElements--);
     this.sink(0);
     this.priorityQueue[this.numberOfElements + 1] = null;
-    return max6;
+    return max7;
   }
   empty() {
     return this.numberOfElements === -1;
@@ -93924,11 +101264,11 @@ function getImageCoords(part, outputStride2, offsets) {
     y: part.heatmapY * outputStride2 + y2
   };
 }
-function clamp22(a6, min6, max6) {
-  if (a6 < min6)
-    return min6;
-  if (a6 > max6)
-    return max6;
+function clamp22(a6, min7, max7) {
+  if (a6 < min7)
+    return min7;
+  if (a6 > max7)
+    return max7;
   return a6;
 }
 function squaredDistance(y1, x1, y2, x2) {
@@ -93964,8 +101304,8 @@ function traverse(edgeId, sourceKeypoint, targetId, scores, offsets, displacemen
     targetKeypoint = addVectors({ x: targetKeypointIndices.x * outputStride, y: targetKeypointIndices.y * outputStride }, { x: offsetPoint.x, y: offsetPoint.y });
   }
   const targetKeyPointIndices = getStridedIndexNearPoint(targetKeypoint, height, width);
-  const score2 = scores.get(targetKeyPointIndices.y, targetKeyPointIndices.x, targetId);
-  return { position: targetKeypoint, part: partNames[targetId], score: score2 };
+  const score = scores.get(targetKeyPointIndices.y, targetKeyPointIndices.x, targetId);
+  return { position: targetKeypoint, part: partNames[targetId], score };
 }
 function decodePose(root, scores, offsets, displacementsFwd, displacementsBwd) {
   const tuples = poseChain.map(([parentJoinName, childJoinName]) => [partIds[parentJoinName], partIds[childJoinName]]);
@@ -93973,9 +101313,9 @@ function decodePose(root, scores, offsets, displacementsFwd, displacementsBwd) {
   const edgesBwd = tuples.map(([parentJointId]) => parentJointId);
   const numParts = scores.shape[2];
   const numEdges = edgesFwd.length;
-  const keypoints3 = new Array(numParts);
+  const keypoints2 = new Array(numParts);
   const rootPoint = getImageCoords(root.part, outputStride, offsets);
-  keypoints3[root.part.id] = {
+  keypoints2[root.part.id] = {
     score: root.score,
     part: partNames[root.part.id],
     position: rootPoint
@@ -93983,20 +101323,20 @@ function decodePose(root, scores, offsets, displacementsFwd, displacementsBwd) {
   for (let edge = numEdges - 1; edge >= 0; --edge) {
     const sourceId = edgesFwd[edge];
     const targetId = edgesBwd[edge];
-    if (keypoints3[sourceId] && !keypoints3[targetId]) {
-      keypoints3[targetId] = traverse(edge, keypoints3[sourceId], targetId, scores, offsets, displacementsBwd);
+    if (keypoints2[sourceId] && !keypoints2[targetId]) {
+      keypoints2[targetId] = traverse(edge, keypoints2[sourceId], targetId, scores, offsets, displacementsBwd);
     }
   }
   for (let edge = 0; edge < numEdges; ++edge) {
     const sourceId = edgesBwd[edge];
     const targetId = edgesFwd[edge];
-    if (keypoints3[sourceId] && !keypoints3[targetId]) {
-      keypoints3[targetId] = traverse(edge, keypoints3[sourceId], targetId, scores, offsets, displacementsFwd);
+    if (keypoints2[sourceId] && !keypoints2[targetId]) {
+      keypoints2[targetId] = traverse(edge, keypoints2[sourceId], targetId, scores, offsets, displacementsFwd);
     }
   }
-  return keypoints3;
+  return keypoints2;
 }
-function scoreIsMaximumInLocalWindow(keypointId, score2, heatmapY, heatmapX, scores) {
+function scoreIsMaximumInLocalWindow(keypointId, score, heatmapY, heatmapX, scores) {
   const [height, width] = scores.shape;
   let localMaximum = true;
   const yStart = Math.max(heatmapY - localMaximumRadius, 0);
@@ -94005,7 +101345,7 @@ function scoreIsMaximumInLocalWindow(keypointId, score2, heatmapY, heatmapX, sco
     const xStart = Math.max(heatmapX - localMaximumRadius, 0);
     const xEnd = Math.min(heatmapX + localMaximumRadius + 1, width);
     for (let xCurrent = xStart; xCurrent < xEnd; ++xCurrent) {
-      if (scores.get(yCurrent, xCurrent, keypointId) > score2) {
+      if (scores.get(yCurrent, xCurrent, keypointId) > score) {
         localMaximum = false;
         break;
       }
@@ -94017,36 +101357,36 @@ function scoreIsMaximumInLocalWindow(keypointId, score2, heatmapY, heatmapX, sco
 }
 function buildPartWithScoreQueue(minConfidence2, scores) {
   const [height, width, numKeypoints] = scores.shape;
-  const queue = new MaxHeap(height * width * numKeypoints, ({ score: score2 }) => score2);
+  const queue = new MaxHeap(height * width * numKeypoints, ({ score }) => score);
   for (let heatmapY = 0; heatmapY < height; ++heatmapY) {
     for (let heatmapX = 0; heatmapX < width; ++heatmapX) {
       for (let keypointId = 0; keypointId < numKeypoints; ++keypointId) {
-        const score2 = scores.get(heatmapY, heatmapX, keypointId);
-        if (score2 < minConfidence2)
+        const score = scores.get(heatmapY, heatmapX, keypointId);
+        if (score < minConfidence2)
           continue;
-        if (scoreIsMaximumInLocalWindow(keypointId, score2, heatmapY, heatmapX, scores))
-          queue.enqueue({ score: score2, part: { heatmapY, heatmapX, id: keypointId } });
+        if (scoreIsMaximumInLocalWindow(keypointId, score, heatmapY, heatmapX, scores))
+          queue.enqueue({ score, part: { heatmapY, heatmapX, id: keypointId } });
       }
     }
   }
   return queue;
 }
 function withinRadius(poses, { x: x2, y: y2 }, keypointId) {
-  return poses.some(({ keypoints: keypoints3 }) => {
+  return poses.some(({ keypoints: keypoints2 }) => {
     var _a;
-    const correspondingKeypoint = (_a = keypoints3[keypointId]) == null ? void 0 : _a.position;
+    const correspondingKeypoint = (_a = keypoints2[keypointId]) == null ? void 0 : _a.position;
     if (!correspondingKeypoint)
       return false;
     return squaredDistance(y2, x2, correspondingKeypoint.y, correspondingKeypoint.x) <= squaredNmsRadius;
   });
 }
-function getInstanceScore(existingPoses, keypoints3) {
-  const notOverlappedKeypointScores = keypoints3.reduce((result, { position, score: score2 }, keypointId) => {
+function getInstanceScore(existingPoses, keypoints2) {
+  const notOverlappedKeypointScores = keypoints2.reduce((result, { position, score }, keypointId) => {
     if (!withinRadius(existingPoses, position, keypointId))
-      result += score2;
+      result += score;
     return result;
   }, 0);
-  return notOverlappedKeypointScores / keypoints3.length;
+  return notOverlappedKeypointScores / keypoints2.length;
 }
 function decode(offsets, scores, displacementsFwd, displacementsBwd, maxDetected, minConfidence2) {
   const poses = [];
@@ -94056,12 +101396,12 @@ function decode(offsets, scores, displacementsFwd, displacementsBwd, maxDetected
     const rootImageCoords = getImageCoords(root.part, outputStride, offsets);
     if (withinRadius(poses, rootImageCoords, root.part.id))
       continue;
-    let keypoints3 = decodePose(root, scores, offsets, displacementsFwd, displacementsBwd);
-    keypoints3 = keypoints3.filter((a6) => a6.score > minConfidence2);
-    const score2 = getInstanceScore(poses, keypoints3);
-    const box4 = getBoundingBox(keypoints3);
-    if (score2 > minConfidence2)
-      poses.push({ keypoints: keypoints3, box: box4, score: Math.round(100 * score2) / 100 });
+    let keypoints2 = decodePose(root, scores, offsets, displacementsFwd, displacementsBwd);
+    keypoints2 = keypoints2.filter((a6) => a6.score > minConfidence2);
+    const score = getInstanceScore(poses, keypoints2);
+    const box5 = getBoundingBox(keypoints2);
+    if (score > minConfidence2)
+      poses.push({ keypoints: keypoints2, box: box5, score: Math.round(100 * score) / 100 });
   }
   return poses;
 }
@@ -94096,54 +101436,54 @@ async function load6(config3) {
     log("cached model:", model7["modelUrl"]);
   return model7;
 }
-function getBoxSize2(box4) {
+function getBoxSize2(box5) {
   return [
-    Math.abs(box4.endPoint[0] - box4.startPoint[0]),
-    Math.abs(box4.endPoint[1] - box4.startPoint[1])
+    Math.abs(box5.endPoint[0] - box5.startPoint[0]),
+    Math.abs(box5.endPoint[1] - box5.startPoint[1])
   ];
 }
-function getBoxCenter2(box4) {
+function getBoxCenter2(box5) {
   return [
-    box4.startPoint[0] + (box4.endPoint[0] - box4.startPoint[0]) / 2,
-    box4.startPoint[1] + (box4.endPoint[1] - box4.startPoint[1]) / 2
+    box5.startPoint[0] + (box5.endPoint[0] - box5.startPoint[0]) / 2,
+    box5.startPoint[1] + (box5.endPoint[1] - box5.startPoint[1]) / 2
   ];
 }
-function cutBoxFromImageAndResize2(box4, image7, cropSize) {
+function cutBoxFromImageAndResize2(box5, image7, cropSize) {
   const h2 = image7.shape[1];
   const w2 = image7.shape[2];
   const boxes = [[
-    box4.startPoint[1] / h2,
-    box4.startPoint[0] / w2,
-    box4.endPoint[1] / h2,
-    box4.endPoint[0] / w2
+    box5.startPoint[1] / h2,
+    box5.startPoint[0] / w2,
+    box5.endPoint[1] / h2,
+    box5.endPoint[0] / w2
   ]];
   return image.cropAndResize(image7, boxes, [0], cropSize);
 }
-function scaleBoxCoordinates2(box4, factor) {
-  const startPoint = [box4.startPoint[0] * factor[0], box4.startPoint[1] * factor[1]];
-  const endPoint = [box4.endPoint[0] * factor[0], box4.endPoint[1] * factor[1]];
-  const palmLandmarks = box4.palmLandmarks.map((coord) => {
+function scaleBoxCoordinates2(box5, factor) {
+  const startPoint = [box5.startPoint[0] * factor[0], box5.startPoint[1] * factor[1]];
+  const endPoint = [box5.endPoint[0] * factor[0], box5.endPoint[1] * factor[1]];
+  const palmLandmarks = box5.palmLandmarks.map((coord) => {
     const scaledCoord = [coord[0] * factor[0], coord[1] * factor[1]];
     return scaledCoord;
   });
-  return { startPoint, endPoint, palmLandmarks, confidence: box4.confidence };
+  return { startPoint, endPoint, palmLandmarks, confidence: box5.confidence };
 }
-function enlargeBox2(box4, factor = 1.5) {
-  const center = getBoxCenter2(box4);
-  const size2 = getBoxSize2(box4);
+function enlargeBox2(box5, factor = 1.5) {
+  const center = getBoxCenter2(box5);
+  const size2 = getBoxSize2(box5);
   const newHalfSize = [factor * size2[0] / 2, factor * size2[1] / 2];
   const startPoint = [center[0] - newHalfSize[0], center[1] - newHalfSize[1]];
   const endPoint = [center[0] + newHalfSize[0], center[1] + newHalfSize[1]];
-  return { startPoint, endPoint, palmLandmarks: box4.palmLandmarks };
+  return { startPoint, endPoint, palmLandmarks: box5.palmLandmarks };
 }
-function squarifyBox2(box4) {
-  const centers = getBoxCenter2(box4);
-  const size2 = getBoxSize2(box4);
+function squarifyBox2(box5) {
+  const centers = getBoxCenter2(box5);
+  const size2 = getBoxSize2(box5);
   const maxEdge = Math.max(...size2);
   const halfSize = maxEdge / 2;
   const startPoint = [centers[0] - halfSize, centers[1] - halfSize];
   const endPoint = [centers[0] + halfSize, centers[1] + halfSize];
-  return { startPoint, endPoint, palmLandmarks: box4.palmLandmarks };
+  return { startPoint, endPoint, palmLandmarks: box5.palmLandmarks };
 }
 var anchors2 = [
   { x: 0.015625, y: 0.015625 },
@@ -97322,20 +104662,20 @@ var HandPipeline = class {
         const handImage = div(croppedInput, 255);
         dispose(croppedInput);
         dispose(rotatedImage);
-        const [confidenceT, keypoints3] = await this.handPoseModel.predict(handImage);
+        const [confidenceT, keypoints2] = await this.handPoseModel.predict(handImage);
         dispose(handImage);
         const confidence = (await confidenceT.data())[0];
         dispose(confidenceT);
         if (confidence >= config3.hand.minConfidence / 4) {
-          const keypointsReshaped = reshape(keypoints3, [-1, 3]);
+          const keypointsReshaped = reshape(keypoints2, [-1, 3]);
           const rawCoords = await keypointsReshaped.array();
-          dispose(keypoints3);
+          dispose(keypoints2);
           dispose(keypointsReshaped);
-          const coords5 = this.transformRawCoords(rawCoords, newBox, angle2, rotationMatrix);
-          const nextBoundingBox = this.getBoxForHandLandmarks(coords5);
+          const coords9 = this.transformRawCoords(rawCoords, newBox, angle2, rotationMatrix);
+          const nextBoundingBox = this.getBoxForHandLandmarks(coords9);
           this.storedBoxes[i2] = { ...nextBoundingBox, confidence };
           const result = {
-            landmarks: coords5,
+            landmarks: coords9,
             confidence,
             boxConfidence: currentBox.confidence,
             fingerConfidence: confidence,
@@ -97345,7 +104685,7 @@ var HandPipeline = class {
         } else {
           this.storedBoxes[i2] = null;
         }
-        dispose(keypoints3);
+        dispose(keypoints2);
       } else {
         const enlarged = enlargeBox2(squarifyBox2(currentBox), handBoxEnlargeFactor);
         const result = {
@@ -97439,9 +104779,9 @@ var FingerGesture = class {
         confidence += this.weightsRelative[fingerIdx];
         continue;
       }
-      for (const [expectedCurl, score2] of expectedCurls) {
+      for (const [expectedCurl, score] of expectedCurls) {
         if (detectedCurl === expectedCurl) {
-          confidence += score2 * this.weightsRelative[fingerIdx];
+          confidence += score * this.weightsRelative[fingerIdx];
           break;
         }
       }
@@ -97453,9 +104793,9 @@ var FingerGesture = class {
         confidence += this.weightsRelative[fingerIdx];
         continue;
       }
-      for (const [expectedDirection, score2] of expectedDirections) {
+      for (const [expectedDirection, score] of expectedDirections) {
         if (detectedDirection === expectedDirection) {
-          confidence += score2 * this.weightsRelative[fingerIdx];
+          confidence += score * this.weightsRelative[fingerIdx];
           break;
         }
       }
@@ -97712,10 +105052,10 @@ function estimate(landmarks) {
   }
   return { curls: fingerCurls, directions: fingerDirections };
 }
-function analyze(keypoints3) {
-  if (!keypoints3 || keypoints3.length === 0)
+function analyze(keypoints2) {
+  if (!keypoints2 || keypoints2.length === 0)
     return null;
-  const estimatorRes = estimate(keypoints3);
+  const estimatorRes = estimate(keypoints2);
   const landmarks = {};
   for (const fingerIdx of Finger.all) {
     landmarks[Finger.getName(fingerIdx)] = {
@@ -97725,11 +105065,11 @@ function analyze(keypoints3) {
   }
   return landmarks;
 }
-function match2(keypoints3) {
+function match(keypoints2) {
   const poses = [];
-  if (!keypoints3 || keypoints3.length === 0)
+  if (!keypoints2 || keypoints2.length === 0)
     return poses;
-  const estimatorRes = estimate(keypoints3);
+  const estimatorRes = estimate(keypoints2);
   for (const gesture3 of fingergesture_default) {
     const confidence = gesture3.matchAgainst(estimatorRes.curls, estimatorRes.directions);
     if (confidence >= minConfidence)
@@ -97754,54 +105094,54 @@ async function predict5(input2, config3) {
     return [];
   const hands = [];
   for (let i2 = 0; i2 < predictions.length; i2++) {
-    const annotations3 = {};
+    const annotations2 = {};
     if (predictions[i2].landmarks) {
       for (const key of Object.keys(meshAnnotations2)) {
-        annotations3[key] = meshAnnotations2[key].map((index) => predictions[i2].landmarks[index]);
+        annotations2[key] = meshAnnotations2[key].map((index) => predictions[i2].landmarks[index]);
       }
     }
-    const keypoints3 = predictions[i2].landmarks;
-    let box4 = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, 0, 0];
-    let boxRaw2 = [0, 0, 0, 0];
-    if (keypoints3 && keypoints3.length > 0) {
-      for (const pt of keypoints3) {
-        if (pt[0] < box4[0])
-          box4[0] = pt[0];
-        if (pt[1] < box4[1])
-          box4[1] = pt[1];
-        if (pt[0] > box4[2])
-          box4[2] = pt[0];
-        if (pt[1] > box4[3])
-          box4[3] = pt[1];
+    const keypoints2 = predictions[i2].landmarks;
+    let box5 = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, 0, 0];
+    let boxRaw = [0, 0, 0, 0];
+    if (keypoints2 && keypoints2.length > 0) {
+      for (const pt of keypoints2) {
+        if (pt[0] < box5[0])
+          box5[0] = pt[0];
+        if (pt[1] < box5[1])
+          box5[1] = pt[1];
+        if (pt[0] > box5[2])
+          box5[2] = pt[0];
+        if (pt[1] > box5[3])
+          box5[3] = pt[1];
       }
-      box4[2] -= box4[0];
-      box4[3] -= box4[1];
-      boxRaw2 = [box4[0] / (input2.shape[2] || 0), box4[1] / (input2.shape[1] || 0), box4[2] / (input2.shape[2] || 0), box4[3] / (input2.shape[1] || 0)];
+      box5[2] -= box5[0];
+      box5[3] -= box5[1];
+      boxRaw = [box5[0] / (input2.shape[2] || 0), box5[1] / (input2.shape[1] || 0), box5[2] / (input2.shape[2] || 0), box5[3] / (input2.shape[1] || 0)];
     } else {
-      box4 = predictions[i2].box ? [
+      box5 = predictions[i2].box ? [
         Math.trunc(Math.max(0, predictions[i2].box.topLeft[0])),
         Math.trunc(Math.max(0, predictions[i2].box.topLeft[1])),
         Math.trunc(Math.min(input2.shape[2] || 0, predictions[i2].box.bottomRight[0]) - Math.max(0, predictions[i2].box.topLeft[0])),
         Math.trunc(Math.min(input2.shape[1] || 0, predictions[i2].box.bottomRight[1]) - Math.max(0, predictions[i2].box.topLeft[1]))
       ] : [0, 0, 0, 0];
-      boxRaw2 = [
+      boxRaw = [
         predictions[i2].box.topLeft[0] / (input2.shape[2] || 0),
         predictions[i2].box.topLeft[1] / (input2.shape[1] || 0),
         (predictions[i2].box.bottomRight[0] - predictions[i2].box.topLeft[0]) / (input2.shape[2] || 0),
         (predictions[i2].box.bottomRight[1] - predictions[i2].box.topLeft[1]) / (input2.shape[1] || 0)
       ];
     }
-    const landmarks = analyze(keypoints3);
+    const landmarks = analyze(keypoints2);
     hands.push({
       id: i2,
       score: Math.round(100 * predictions[i2].confidence) / 100,
       boxScore: Math.round(100 * predictions[i2].boxConfidence) / 100,
       fingerScore: Math.round(100 * predictions[i2].fingerConfidence) / 100,
       label: "hand",
-      box: box4,
-      boxRaw: boxRaw2,
-      keypoints: keypoints3,
-      annotations: annotations3,
+      box: box5,
+      boxRaw,
+      keypoints: keypoints2,
+      annotations: annotations2,
       landmarks
     });
   }
@@ -97838,241 +105178,51 @@ async function load7(config3) {
   handPipeline = new HandPipeline(handDetector, handPoseModel);
   return [handDetectorModel, handPoseModel];
 }
-function scale2(keypoints3, boxScaleFact2, outputSize3) {
-  const coords5 = [keypoints3.map((pt) => pt[0]), keypoints3.map((pt) => pt[1])];
-  const maxmin = [Math.max(...coords5[0]), Math.min(...coords5[0]), Math.max(...coords5[1]), Math.min(...coords5[1])];
-  const center = [(maxmin[0] + maxmin[1]) / 2, (maxmin[2] + maxmin[3]) / 2];
-  const diff = Math.max(center[0] - maxmin[1], center[1] - maxmin[3], -center[0] + maxmin[0], -center[1] + maxmin[2]) * boxScaleFact2;
-  const box4 = [
-    Math.trunc(center[0] - diff),
-    Math.trunc(center[1] - diff),
-    Math.trunc(2 * diff),
-    Math.trunc(2 * diff)
+function calc(keypoints2, outputSize2 = [1, 1]) {
+  const coords9 = [keypoints2.map((pt) => pt[0]), keypoints2.map((pt) => pt[1])];
+  const min7 = [Math.min(...coords9[0]), Math.min(...coords9[1])];
+  const max7 = [Math.max(...coords9[0]), Math.max(...coords9[1])];
+  const box5 = [min7[0], min7[1], max7[0] - min7[0], max7[1] - min7[1]];
+  const boxRaw = [box5[0] / outputSize2[0], box5[1] / outputSize2[1], box5[2] / outputSize2[0], box5[3] / outputSize2[1]];
+  return { box: box5, boxRaw };
+}
+function square4(keypoints2, outputSize2 = [1, 1]) {
+  const coords9 = [keypoints2.map((pt) => pt[0]), keypoints2.map((pt) => pt[1])];
+  const min7 = [Math.min(...coords9[0]), Math.min(...coords9[1])];
+  const max7 = [Math.max(...coords9[0]), Math.max(...coords9[1])];
+  const center = [(min7[0] + max7[0]) / 2, (min7[1] + max7[1]) / 2];
+  const dist = Math.max(center[0] - min7[0], center[1] - min7[1], -center[0] + max7[0], -center[1] + max7[1]);
+  const box5 = [Math.trunc(center[0] - dist), Math.trunc(center[1] - dist), Math.trunc(2 * dist), Math.trunc(2 * dist)];
+  const boxRaw = [box5[0] / outputSize2[0], box5[1] / outputSize2[1], box5[2] / outputSize2[0], box5[3] / outputSize2[1]];
+  return { box: box5, boxRaw };
+}
+function scale2(box5, scaleFact) {
+  const dist = [box5[2] * scaleFact, box5[3] * scaleFact];
+  const newBox = [
+    box5[0] - (dist[0] - box5[2]) / 2,
+    box5[1] - (dist[1] - box5[3]) / 2,
+    dist[0],
+    dist[1]
   ];
-  const boxRaw2 = [
-    box4[0] / outputSize3[0],
-    box4[1] / outputSize3[1],
-    box4[2] / outputSize3[0],
-    box4[3] / outputSize3[1]
-  ];
-  const yxBox = [
-    boxRaw2[1],
-    boxRaw2[0],
-    boxRaw2[3] + boxRaw2[1],
-    boxRaw2[2] + boxRaw2[0]
-  ];
-  return { box: box4, boxRaw: boxRaw2, yxBox };
+  return newBox;
 }
-var config2 = {
-  name: "humangl",
-  priority: 999,
-  canvas: null,
-  gl: null,
-  extensions: [],
-  webGLattr: {
-    alpha: false,
-    antialias: false,
-    premultipliedAlpha: false,
-    preserveDrawingBuffer: false,
-    depth: false,
-    stencil: false,
-    failIfMajorPerformanceCaveat: false,
-    desynchronized: true
-  }
-};
-function extensions() {
-  const gl = config2.gl;
-  if (!gl)
-    return;
-  config2.extensions = gl.getSupportedExtensions();
+function crop(box5) {
+  const yxBox = [Math.max(0, box5[1]), Math.max(0, box5[0]), Math.min(1, box5[3] + box5[1]), Math.min(1, box5[2] + box5[0])];
+  return yxBox;
 }
-async function register(instance) {
-  var _a;
-  if (instance.config.backend !== "humangl")
-    return;
-  if (config2.name in engine().registry && (!config2.gl || !config2.gl.getParameter(config2.gl.VERSION))) {
-    log("error: humangl backend invalid context");
-    reset(instance);
-  }
-  if (!findBackend(config2.name)) {
-    try {
-      config2.canvas = await canvas(100, 100);
-    } catch (err) {
-      log("error: cannot create canvas:", err);
-      return;
-    }
-    try {
-      config2.gl = (_a = config2.canvas) == null ? void 0 : _a.getContext("webgl2", config2.webGLattr);
-      if (config2.canvas) {
-        config2.canvas.addEventListener("webglcontextlost", async (e2) => {
-          log("error: humangl:", e2.type);
-          log("possible browser memory leak using webgl");
-          instance.emit("error");
-          throw new Error("browser webgl error");
-        });
-        config2.canvas.addEventListener("webglcontextrestored", (e2) => {
-          log("error: humangl context restored:", e2);
-        });
-        config2.canvas.addEventListener("webglcontextcreationerror", (e2) => {
-          log("error: humangl context create:", e2);
-        });
-      }
-    } catch (err) {
-      log("error: cannot get WebGL context:", err);
-      return;
-    }
-    try {
-      setWebGLContext(2, config2.gl);
-    } catch (err) {
-      log("error: cannot set WebGL context:", err);
-      return;
-    }
-    const current = backend().getGPGPUContext ? backend().getGPGPUContext().gl : null;
-    if (current) {
-      log(`humangl webgl version:${current.getParameter(current.VERSION)} renderer:${current.getParameter(current.RENDERER)}`);
-    } else {
-      log("error: no current gl context:", current, config2.gl);
-      return;
-    }
-    try {
-      const ctx = new GPGPUContext(config2.gl);
-      registerBackend(config2.name, () => new MathBackendWebGL(ctx), config2.priority);
-    } catch (err) {
-      log("error: cannot register WebGL backend:", err);
-      return;
-    }
-    try {
-      const kernels = getKernelsForBackend("webgl");
-      kernels.forEach((kernelConfig) => {
-        const newKernelConfig = { ...kernelConfig, backendName: config2.name };
-        registerKernel(newKernelConfig);
-      });
-    } catch (err) {
-      log("error: cannot update WebGL backend registration:", err);
-      return;
-    }
-    try {
-      ENV.set("WEBGL_VERSION", 2);
-    } catch (err) {
-      log("error: cannot set WebGL backend flags:", err);
-      return;
-    }
-    extensions();
-    log("backend registered:", config2.name);
-  }
-}
-async function check(instance, force = false) {
-  instance.state = "backend";
-  if (force || env2.initial || instance.config.backend && instance.config.backend.length > 0 && getBackend() !== instance.config.backend) {
-    const timeStamp = now2();
-    if (instance.config.backend && instance.config.backend.length > 0) {
-      if (typeof window === "undefined" && typeof WorkerGlobalScope !== "undefined" && instance.config.debug) {
-        if (instance.config.debug)
-          log("running inside web worker");
-      }
-      if (env2.browser && instance.config.backend === "tensorflow") {
-        if (instance.config.debug)
-          log("override: backend set to tensorflow while running in browser");
-        instance.config.backend = "humangl";
-      }
-      if (env2.node && (instance.config.backend === "webgl" || instance.config.backend === "humangl")) {
-        if (instance.config.debug)
-          log(`override: backend set to ${instance.config.backend} while running in nodejs`);
-        instance.config.backend = "tensorflow";
-      }
-      if (env2.browser && instance.config.backend === "webgpu") {
-        if (typeof navigator === "undefined" || typeof navigator["gpu"] === "undefined") {
-          log("override: backend set to webgpu but browser does not support webgpu");
-          instance.config.backend = "humangl";
-        } else {
-          const adapter = await navigator["gpu"].requestAdapter();
-          if (instance.config.debug)
-            log("enumerated webgpu adapter:", adapter);
-        }
-      }
-      if (instance.config.backend === "humangl")
-        await register(instance);
-      const available = Object.keys(engine().registryFactory);
-      if (instance.config.debug)
-        log("available backends:", available);
-      if (!available.includes(instance.config.backend)) {
-        log(`error: backend ${instance.config.backend} not found in registry`);
-        instance.config.backend = env2.node ? "tensorflow" : "humangl";
-        if (instance.config.debug)
-          log(`override: setting backend ${instance.config.backend}`);
-      }
-      if (instance.config.debug)
-        log("setting backend:", instance.config.backend);
-      if (instance.config.backend === "wasm") {
-        if (instance.config.debug)
-          log("wasm path:", instance.config.wasmPath);
-        if (typeof (tfjs_esm_exports == null ? void 0 : tfjs_esm_exports.setWasmPaths) !== "undefined")
-          await setWasmPaths(instance.config.wasmPath);
-        else
-          throw new Error("wasm backend is not loaded");
-        const simd = await env().getAsync("WASM_HAS_SIMD_SUPPORT");
-        const mt = await env().getAsync("WASM_HAS_MULTITHREAD_SUPPORT");
-        if (instance.config.debug)
-          log(`wasm execution: ${simd ? "SIMD" : "no SIMD"} ${mt ? "multithreaded" : "singlethreaded"}`);
-        if (instance.config.debug && !simd)
-          log("warning: wasm simd support is not enabled");
-      }
-      try {
-        await setBackend(instance.config.backend);
-        await ready();
-      } catch (err) {
-        log("error: cannot set backend:", instance.config.backend, err);
-        return false;
-      }
-    }
-    if (getBackend() === "humangl") {
-      ENV.set("CHECK_COMPUTATION_FOR_ERRORS", false);
-      ENV.set("WEBGL_CPU_FORWARD", true);
-      ENV.set("WEBGL_PACK_DEPTHWISECONV", false);
-      ENV.set("WEBGL_USE_SHAPES_UNIFORMS", true);
-      ENV.set("CPU_HANDOFF_SIZE_THRESHOLD", 128);
-      if (typeof instance.config["deallocate"] !== "undefined" && instance.config["deallocate"]) {
-        log("changing webgl: WEBGL_DELETE_TEXTURE_THRESHOLD:", true);
-        ENV.set("WEBGL_DELETE_TEXTURE_THRESHOLD", 0);
-      }
-      const gl = await backend().getGPGPUContext().gl;
-      if (instance.config.debug)
-        log(`gl version:${gl.getParameter(gl.VERSION)} renderer:${gl.getParameter(gl.RENDERER)}`);
-    }
-    enableProdMode();
-    await ready();
-    instance.performance.backend = Math.trunc(now2() - timeStamp);
-    instance.config.backend = getBackend();
-    get3();
-    instance.env = env2;
-  }
-  return true;
-}
-function fakeOps(kernelNames, config3) {
-  for (const kernelName of kernelNames) {
-    const kernelConfig = {
-      kernelName,
-      backendName: config3.backend,
-      kernelFunc: () => {
-        if (config3.debug)
-          log("kernelFunc", kernelName, config3.backend);
-      }
-    };
-    registerKernel(kernelConfig);
-  }
-  env2.kernels = getKernelsForBackend(getBackend()).map((kernel) => kernel.kernelName.toLowerCase());
-}
-var boxScaleFact = 1.5;
-var models2 = [null, null];
+var models = [null, null];
 var modelOutputNodes = ["StatefulPartitionedCall/Postprocessor/Slice", "StatefulPartitionedCall/Postprocessor/ExpandDims_1"];
 var inputSize4 = [[0, 0], [0, 0]];
 var classes = ["hand", "fist", "pinch", "point", "face", "tip", "pinchtip"];
+var faceIndex = 4;
+var boxExpandFact = 1.6;
+var maxDetectorResolution = 512;
+var detectorExpandFact = 1.4;
 var skipped4 = 0;
 var outputSize = [0, 0];
 var cache = {
-  handBoxes: [],
-  fingerBoxes: [],
-  tmpBoxes: []
+  boxes: [],
+  hands: []
 };
 var fingerMap = {
   thumb: [1, 2, 3, 4],
@@ -98085,81 +105235,76 @@ var fingerMap = {
 async function loadDetect(config3) {
   var _a;
   if (env2.initial)
-    models2[0] = null;
-  if (!models2[0]) {
+    models[0] = null;
+  if (!models[0]) {
     fakeOps(["tensorlistreserve", "enter", "tensorlistfromtensor", "merge", "loopcond", "switch", "exit", "tensorliststack", "nextiteration", "tensorlistsetitem", "tensorlistgetitem", "reciprocal", "shape", "split", "where"], config3);
-    models2[0] = await loadGraphModel(join(config3.modelBasePath, ((_a = config3.hand.detector) == null ? void 0 : _a.modelPath) || ""));
-    const inputs = Object.values(models2[0].modelSignature["inputs"]);
+    models[0] = await loadGraphModel(join(config3.modelBasePath, ((_a = config3.hand.detector) == null ? void 0 : _a.modelPath) || ""));
+    const inputs = Object.values(models[0].modelSignature["inputs"]);
     inputSize4[0][0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
     inputSize4[0][1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
-    if (!models2[0] || !models2[0]["modelUrl"])
+    if (!models[0] || !models[0]["modelUrl"])
       log("load model failed:", config3.object.modelPath);
     else if (config3.debug)
-      log("load model:", models2[0]["modelUrl"]);
+      log("load model:", models[0]["modelUrl"]);
   } else if (config3.debug)
-    log("cached model:", models2[0]["modelUrl"]);
-  return models2[0];
+    log("cached model:", models[0]["modelUrl"]);
+  return models[0];
 }
 async function loadSkeleton(config3) {
   var _a;
   if (env2.initial)
-    models2[1] = null;
-  if (!models2[1]) {
-    models2[1] = await loadGraphModel(join(config3.modelBasePath, ((_a = config3.hand.skeleton) == null ? void 0 : _a.modelPath) || ""));
-    const inputs = Object.values(models2[1].modelSignature["inputs"]);
+    models[1] = null;
+  if (!models[1]) {
+    models[1] = await loadGraphModel(join(config3.modelBasePath, ((_a = config3.hand.skeleton) == null ? void 0 : _a.modelPath) || ""));
+    const inputs = Object.values(models[1].modelSignature["inputs"]);
     inputSize4[1][0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
     inputSize4[1][1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
-    if (!models2[1] || !models2[1]["modelUrl"])
+    if (!models[1] || !models[1]["modelUrl"])
       log("load model failed:", config3.object.modelPath);
     else if (config3.debug)
-      log("load model:", models2[1]["modelUrl"]);
+      log("load model:", models[1]["modelUrl"]);
   } else if (config3.debug)
-    log("cached model:", models2[1]["modelUrl"]);
-  return models2[1];
+    log("cached model:", models[1]["modelUrl"]);
+  return models[1];
 }
 async function detectHands(input2, config3) {
   const hands = [];
-  if (!input2 || !models2[0])
+  if (!input2 || !models[0])
     return hands;
   const t2 = {};
   const ratio = (input2.shape[2] || 1) / (input2.shape[1] || 1);
-  const height = Math.min(Math.round((input2.shape[1] || 0) / 8) * 8, 512);
+  const height = Math.min(Math.round((input2.shape[1] || 0) / 8) * 8, maxDetectorResolution);
   const width = Math.round(height * ratio / 8) * 8;
   t2.resize = image.resizeBilinear(input2, [height, width]);
   t2.cast = cast(t2.resize, "int32");
-  [t2.rawScores, t2.rawBoxes] = await models2[0].executeAsync(t2.cast, modelOutputNodes);
+  [t2.rawScores, t2.rawBoxes] = await models[0].executeAsync(t2.cast, modelOutputNodes);
   t2.boxes = squeeze(t2.rawBoxes, [0, 2]);
   t2.scores = squeeze(t2.rawScores, [0]);
   const classScores = unstack(t2.scores, 1);
+  dispose(classScores[faceIndex]);
+  classScores.splice(faceIndex, 1);
+  t2.filtered = stack(classScores, 1);
+  dispose(classScores);
+  t2.max = max(t2.filtered, 1);
+  t2.argmax = argMax(t2.filtered, 1);
   let id = 0;
-  for (let i2 = 0; i2 < classScores.length; i2++) {
-    if (i2 === 4)
-      continue;
-    t2.nms = await image.nonMaxSuppressionAsync(t2.boxes, classScores[i2], config3.hand.maxDetected, config3.hand.iouThreshold, config3.hand.minConfidence);
-    const nms = await t2.nms.data();
-    dispose(t2.nms);
-    for (const res2 of Array.from(nms)) {
-      const boxSlice = slice(t2.boxes, res2, 1);
-      let yxBox = [0, 0, 0, 0];
-      if (config3.hand.landmarks) {
-        const detectedBox = await boxSlice.data();
-        const boxCenter = [(detectedBox[0] + detectedBox[2]) / 2, (detectedBox[1] + detectedBox[3]) / 2];
-        const boxDiff = [+boxCenter[0] - detectedBox[0], +boxCenter[1] - detectedBox[1], -boxCenter[0] + detectedBox[2], -boxCenter[1] + detectedBox[3]];
-        yxBox = [boxCenter[0] - boxScaleFact * boxDiff[0], boxCenter[1] - boxScaleFact * boxDiff[1], boxCenter[0] + boxScaleFact * boxDiff[2], boxCenter[1] + boxScaleFact * boxDiff[3]];
-      } else {
-        yxBox = await boxSlice.data();
-      }
-      const boxRaw2 = [yxBox[1], yxBox[0], yxBox[3] - yxBox[1], yxBox[2] - yxBox[0]];
-      const box4 = [Math.trunc(boxRaw2[0] * outputSize[0]), Math.trunc(boxRaw2[1] * outputSize[1]), Math.trunc(boxRaw2[2] * outputSize[0]), Math.trunc(boxRaw2[3] * outputSize[1])];
-      dispose(boxSlice);
-      const scoreSlice = slice(classScores[i2], res2, 1);
-      const score2 = (await scoreSlice.data())[0];
-      dispose(scoreSlice);
-      const hand3 = { id: id++, score: score2, box: box4, boxRaw: boxRaw2, label: classes[i2], yxBox };
-      hands.push(hand3);
-    }
+  t2.nms = await image.nonMaxSuppressionAsync(t2.boxes, t2.max, config3.hand.maxDetected, config3.hand.iouThreshold, config3.hand.minConfidence);
+  const nms = await t2.nms.data();
+  const scores = await t2.max.data();
+  const classNum = await t2.argmax.data();
+  for (const nmsIndex of Array.from(nms)) {
+    const boxSlice = slice(t2.boxes, nmsIndex, 1);
+    const boxYX = await boxSlice.data();
+    dispose(boxSlice);
+    const boxData = [boxYX[1], boxYX[0], boxYX[3] - boxYX[1], boxYX[2] - boxYX[0]];
+    const boxRaw = scale2(boxData, detectorExpandFact);
+    const boxCrop = crop(boxRaw);
+    const boxFull = [Math.trunc(boxData[0] * outputSize[0]), Math.trunc(boxData[1] * outputSize[1]), Math.trunc(boxData[2] * outputSize[0]), Math.trunc(boxData[3] * outputSize[1])];
+    const score = scores[nmsIndex];
+    const label = classes[classNum[nmsIndex]];
+    const hand3 = { id: id++, score, box: boxFull, boxRaw, boxCrop, label };
+    hands.push(hand3);
   }
-  classScores.forEach((tensor2) => dispose(tensor2));
   Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
   hands.sort((a6, b2) => b2.score - a6.score);
   if (hands.length > (config3.hand.maxDetected || 1))
@@ -98179,65 +105324,73 @@ async function detectFingers(input2, h2, config3) {
     landmarks: {},
     annotations: {}
   };
-  if (input2 && models2[1] && config3.hand.landmarks) {
+  if (input2 && models[1] && config3.hand.landmarks && h2.score > (config3.hand.minConfidence || 0)) {
     const t2 = {};
-    if (!h2.yxBox)
-      return hand3;
-    t2.crop = image.cropAndResize(input2, [h2.yxBox], [0], [inputSize4[1][0], inputSize4[1][1]], "bilinear");
+    t2.crop = image.cropAndResize(input2, [h2.boxCrop], [0], [inputSize4[1][0], inputSize4[1][1]], "bilinear");
     t2.cast = cast(t2.crop, "float32");
     t2.div = div(t2.cast, 255);
-    [t2.score, t2.keypoints] = models2[1].execute(t2.div);
+    [t2.score, t2.keypoints] = models[1].execute(t2.div);
     const rawScore = (await t2.score.data())[0];
-    const score2 = (100 - Math.trunc(100 / (1 + Math.exp(rawScore)))) / 100;
-    if (score2 >= (config3.hand.minConfidence || 0)) {
-      hand3.fingerScore = score2;
+    const score = (100 - Math.trunc(100 / (1 + Math.exp(rawScore)))) / 100;
+    if (score >= (config3.hand.minConfidence || 0)) {
+      hand3.fingerScore = score;
       t2.reshaped = reshape(t2.keypoints, [-1, 3]);
-      const rawCoords = await t2.reshaped.array();
-      hand3.keypoints = rawCoords.map((coord) => [
-        h2.box[2] * coord[0] / inputSize4[1][0] + h2.box[0],
-        h2.box[3] * coord[1] / inputSize4[1][1] + h2.box[1],
-        (h2.box[2] + h2.box[3]) / 2 / inputSize4[1][0] * (coord[2] || 0)
+      const coordsData = await t2.reshaped.array();
+      const coordsRaw = coordsData.map((kpt4) => [kpt4[0] / inputSize4[1][1], kpt4[1] / inputSize4[1][0], kpt4[2] || 0]);
+      const coordsNorm = coordsRaw.map((kpt4) => [kpt4[0] * h2.boxRaw[2], kpt4[1] * h2.boxRaw[3], kpt4[2] || 0]);
+      hand3.keypoints = coordsNorm.map((kpt4) => [
+        outputSize[0] * (kpt4[0] + h2.boxRaw[0]),
+        outputSize[1] * (kpt4[1] + h2.boxRaw[1]),
+        kpt4[2] || 0
       ]);
-      const updatedBox = scale2(hand3.keypoints, boxScaleFact, outputSize);
-      h2.box = updatedBox.box;
-      h2.boxRaw = updatedBox.boxRaw;
-      h2.yxBox = updatedBox.yxBox;
-      hand3.box = h2.box;
       hand3.landmarks = analyze(hand3.keypoints);
       for (const key of Object.keys(fingerMap)) {
         hand3.annotations[key] = fingerMap[key].map((index) => hand3.landmarks && hand3.keypoints[index] ? hand3.keypoints[index] : null);
       }
-      const ratioBoxFrame = Math.min(h2.box[2] / (input2.shape[2] || 1), h2.box[3] / (input2.shape[1] || 1));
-      if (ratioBoxFrame > 0.05)
-        cache.tmpBoxes.push(h2);
     }
     Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
   }
   return hand3;
 }
 async function predict6(input2, config3) {
+  var _a, _b;
+  if (!models[0] || !models[1] || !((_a = models[0]) == null ? void 0 : _a.inputs[0].shape) || !((_b = models[1]) == null ? void 0 : _b.inputs[0].shape))
+    return [];
   outputSize = [input2.shape[2] || 0, input2.shape[1] || 0];
-  let hands = [];
-  cache.tmpBoxes = [];
-  if (!config3.hand.landmarks)
-    cache.fingerBoxes = cache.handBoxes;
-  if (!config3.skipFrame)
-    cache.fingerBoxes = [];
-  if (skipped4 < (config3.hand.skipFrames || 0) && config3.skipFrame) {
-    skipped4++;
-    hands = await Promise.all(cache.fingerBoxes.map((hand3) => detectFingers(input2, hand3, config3)));
-  } else {
-    skipped4 = 0;
-    hands = await Promise.all(cache.fingerBoxes.map((hand3) => detectFingers(input2, hand3, config3)));
-    if (hands.length !== config3.hand.maxDetected) {
-      cache.handBoxes = await detectHands(input2, config3);
-      hands = await Promise.all(cache.handBoxes.map((hand3) => detectFingers(input2, hand3, config3)));
-    }
+  skipped4++;
+  if (config3.skipFrame && skipped4 <= (config3.hand.skipFrames || 0)) {
+    return cache.hands;
   }
-  cache.fingerBoxes = [...cache.tmpBoxes];
-  return hands;
+  return new Promise(async (resolve) => {
+    if (config3.skipFrame && skipped4 < 5 * (config3.hand.skipFrames || 0) && cache.hands.length > 0) {
+      cache.hands = await Promise.all(cache.boxes.map((handBox) => detectFingers(input2, handBox, config3)));
+    } else {
+      cache.boxes = await detectHands(input2, config3);
+      cache.hands = await Promise.all(cache.boxes.map((handBox) => detectFingers(input2, handBox, config3)));
+      skipped4 = 0;
+    }
+    const oldCache = [...cache.boxes];
+    cache.boxes.length = 0;
+    if (config3.cacheSensitivity > 0) {
+      for (let i2 = 0; i2 < cache.hands.length; i2++) {
+        const boxKpt = square4(cache.hands[i2].keypoints, outputSize);
+        if (boxKpt.box[2] / (input2.shape[2] || 1) > 0.05 && boxKpt.box[3] / (input2.shape[1] || 1) > 0.05 && cache.hands[i2].fingerScore && cache.hands[i2].fingerScore > (config3.hand.minConfidence || 0)) {
+          const boxScale = scale2(boxKpt.box, boxExpandFact);
+          const boxScaleRaw = scale2(boxKpt.boxRaw, boxExpandFact);
+          const boxCrop = crop(boxScaleRaw);
+          cache.boxes.push({ ...oldCache[i2], box: boxScale, boxRaw: boxScaleRaw, boxCrop });
+        }
+      }
+    }
+    resolve(cache.hands);
+  });
 }
-var full = [
+var blazeposecoords_exports = {};
+__export(blazeposecoords_exports, {
+  connected: () => connected,
+  kpt: () => kpt
+});
+var kpt = [
   "nose",
   "leftEyeInside",
   "leftEye",
@@ -98271,138 +105424,185 @@ var full = [
   "rightHeel",
   "leftFoot",
   "rightFoot",
-  "midHip",
-  "forehead",
+  "bodyCenter",
+  "bodyTop",
   "leftThumb",
   "leftHand",
   "rightThumb",
   "rightHand"
 ];
-var upper = [
-  "nose",
-  "leftEyeInside",
-  "leftEye",
-  "leftEyeOutside",
-  "rightEyeInside",
-  "rightEye",
-  "rightEyeOutside",
-  "leftEar",
-  "rightEar",
-  "leftMouth",
-  "rightMouth",
-  "leftShoulder",
-  "rightShoulder",
-  "leftElbow",
-  "rightElbow",
-  "left:15",
-  "right:16",
-  "left:17",
-  "right:18",
-  "left:19",
-  "right:20",
-  "left:21",
-  "right:22",
-  "leftChest",
-  "rightChest",
-  "neck",
-  "forehead",
-  "left:27",
-  "right:28",
-  "left:29",
-  "right:30"
-];
-var models3 = [null, null];
-var outputNodes = ["ld_3d", "activation_segmentation", "activation_heatmap", "world_3d", "output_poseflag"];
+var connected = {
+  leftLeg: ["leftHip", "leftKnee", "leftAnkle", "leftHeel", "leftFoot"],
+  rightLeg: ["rightHip", "rightKnee", "rightAnkle", "rightHeel", "rightFoot"],
+  torso: ["leftShoulder", "rightShoulder", "rightHip", "leftHip", "leftShoulder"],
+  leftArm: ["leftShoulder", "leftElbow", "leftWrist", "leftPalm"],
+  rightArm: ["rightShoulder", "rightElbow", "rightWrist", "rightPalm"],
+  leftHand: [],
+  rightHand: [],
+  head: []
+};
+var env3 = { initial: true };
+var models2 = [null, null];
 var inputSize5 = [[0, 0], [0, 0]];
-var outputSize2 = [0, 0];
+var skipped5 = Number.MAX_SAFE_INTEGER;
+var outputNodes;
+var cache2 = null;
+var padding = [[0, 0], [0, 0], [0, 0], [0, 0]];
 async function loadDetect2(config3) {
-  var _a;
-  if (env2.initial)
-    models3[0] = null;
-  if (!models3[0]) {
-    models3[0] = await loadGraphModel(join(config3.modelBasePath, ((_a = config3.body.detector) == null ? void 0 : _a.modelPath) || ""));
-    const inputs = Object.values(models3[0].modelSignature["inputs"]);
+  var _a, _b;
+  if (env3.initial)
+    models2[0] = null;
+  if (!models2[0] && ((_a = config3.body.detector) == null ? void 0 : _a.modelPath) || "") {
+    models2[0] = await loadGraphModel(join(config3.modelBasePath, ((_b = config3.body.detector) == null ? void 0 : _b.modelPath) || ""));
+    const inputs = Object.values(models2[0].modelSignature["inputs"]);
     inputSize5[0][0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
     inputSize5[0][1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
-    if (!models3[0] || !models3[0]["modelUrl"])
+    if (!models2[0] || !models2[0]["modelUrl"])
       log("load model failed:", config3.object.modelPath);
     else if (config3.debug)
-      log("load model:", models3[0]["modelUrl"]);
-  } else if (config3.debug)
-    log("cached model:", models3[0]["modelUrl"]);
-  return models3[0];
+      log("load model:", models2[0]["modelUrl"]);
+  } else if (config3.debug && models2[0])
+    log("cached model:", models2[0]["modelUrl"]);
+  return models2[0];
 }
 async function loadPose(config3) {
-  if (env2.initial)
-    models3[1] = null;
-  if (!models3[1]) {
-    models3[1] = await loadGraphModel(join(config3.modelBasePath, config3.body.modelPath || ""));
-    const inputs = Object.values(models3[1].modelSignature["inputs"]);
+  var _a;
+  if (env3.initial)
+    models2[1] = null;
+  if (!models2[1]) {
+    models2[1] = await loadGraphModel(join(config3.modelBasePath, config3.body.modelPath || ""));
+    const inputs = Object.values(models2[1].modelSignature["inputs"]);
     inputSize5[1][0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
     inputSize5[1][1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
-    if (!models3[1] || !models3[1]["modelUrl"])
+    if ((_a = config3.body.modelPath) == null ? void 0 : _a.includes("lite"))
+      outputNodes = ["ld_3d", "output_segmentation", "output_heatmap", "world_3d", "output_poseflag"];
+    else
+      outputNodes = ["Identity", "Identity_2", "Identity_3", "Identity_4", "Identity_1"];
+    if (!models2[1] || !models2[1]["modelUrl"])
       log("load model failed:", config3.object.modelPath);
     else if (config3.debug)
-      log("load model:", models3[1]["modelUrl"]);
+      log("load model:", models2[1]["modelUrl"]);
   } else if (config3.debug)
-    log("cached model:", models3[1]["modelUrl"]);
-  return models3[1];
+    log("cached model:", models2[1]["modelUrl"]);
+  return models2[1];
 }
-async function detectParts(input2, config3) {
+function calculateBoxes(keypoints2, outputSize2) {
+  const x2 = keypoints2.map((a6) => a6.position[0]);
+  const y2 = keypoints2.map((a6) => a6.position[1]);
+  const keypointsBox = [Math.min(...x2), Math.min(...y2), Math.max(...x2) - Math.min(...x2), Math.max(...y2) - Math.min(...y2)];
+  const keypointsBoxRaw = [keypointsBox[0] / outputSize2[0], keypointsBox[1] / outputSize2[1], keypointsBox[2] / outputSize2[0], keypointsBox[3] / outputSize2[1]];
+  return { keypointsBox, keypointsBoxRaw };
+}
+async function prepareImage(input2) {
+  const t2 = {};
+  if (!input2.shape || !input2.shape[1] || !input2.shape[2])
+    return input2;
+  padding = [
+    [0, 0],
+    [input2.shape[2] > input2.shape[1] ? Math.trunc((input2.shape[2] - input2.shape[1]) / 2) : 0, input2.shape[2] > input2.shape[1] ? Math.trunc((input2.shape[2] - input2.shape[1]) / 2) : 0],
+    [input2.shape[1] > input2.shape[2] ? Math.trunc((input2.shape[1] - input2.shape[2]) / 2) : 0, input2.shape[1] > input2.shape[2] ? Math.trunc((input2.shape[1] - input2.shape[2]) / 2) : 0],
+    [0, 0]
+  ];
+  t2.pad = pad(input2, padding);
+  t2.resize = image.resizeBilinear(t2.pad, [inputSize5[1][0], inputSize5[1][1]]);
+  const final = div(t2.resize, 255);
+  Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
+  return final;
+}
+function rescaleKeypoints(keypoints2, outputSize2) {
+  for (const kpt4 of keypoints2) {
+    kpt4.position = [
+      kpt4.position[0] * (outputSize2[0] + padding[2][0] + padding[2][1]) / outputSize2[0] - padding[2][0],
+      kpt4.position[1] * (outputSize2[1] + padding[1][0] + padding[1][1]) / outputSize2[1] - padding[1][0],
+      kpt4.position[2]
+    ];
+    kpt4.positionRaw = [
+      kpt4.position[0] / outputSize2[0],
+      kpt4.position[1] / outputSize2[1],
+      kpt4.position[2]
+    ];
+  }
+  return keypoints2;
+}
+async function detectParts(input2, config3, outputSize2) {
   var _a;
   const t2 = {};
-  t2.resize = image.resizeBilinear(input2, [inputSize5[1][0], inputSize5[1][1]]);
-  [t2.ld, t2.segmentation, t2.heatmap, t2.world, t2.poseflag] = await ((_a = models3[1]) == null ? void 0 : _a.execute(t2.resize, outputNodes));
+  t2.input = await prepareImage(input2);
+  [t2.ld, t2.segmentation, t2.heatmap, t2.world, t2.poseflag] = await ((_a = models2[1]) == null ? void 0 : _a.execute(t2.input, outputNodes));
   const points = await t2.ld.data();
-  const keypoints3 = [];
-  const labels2 = (points == null ? void 0 : points.length) === 195 ? full : upper;
+  const keypointsRelative = [];
   const depth = 5;
   for (let i2 = 0; i2 < points.length / depth; i2++) {
-    const score3 = (100 - Math.trunc(100 / (1 + Math.exp(points[depth * i2 + 3])))) / 100;
-    if (score3 > (config3.body.minConfidence || 0)) {
-      keypoints3.push({
-        part: labels2[i2],
-        position: [
-          Math.trunc(outputSize2[0] * points[depth * i2 + 0] / 255),
-          Math.trunc(outputSize2[1] * points[depth * i2 + 1] / 255),
-          Math.trunc(points[depth * i2 + 2]) + 0
-        ],
-        positionRaw: [
-          points[depth * i2 + 0] / 255,
-          points[depth * i2 + 1] / 255,
-          points[depth * i2 + 2] + 0
-        ],
-        score: score3
-      });
-    }
+    const score = (100 - Math.trunc(100 / (1 + Math.exp(points[depth * i2 + 3])))) / 100;
+    const positionRaw = [points[depth * i2 + 0] / inputSize5[1][0], points[depth * i2 + 1] / inputSize5[1][1], points[depth * i2 + 2] + 0];
+    const position = [Math.trunc(outputSize2[0] * positionRaw[0]), Math.trunc(outputSize2[1] * positionRaw[1]), positionRaw[2]];
+    keypointsRelative.push({ part: kpt[i2], positionRaw, position, score });
   }
-  const x2 = keypoints3.map((a6) => a6.position[0]);
-  const y2 = keypoints3.map((a6) => a6.position[1]);
-  const box4 = [
-    Math.min(...x2),
-    Math.min(...y2),
-    Math.max(...x2) - Math.min(...x2),
-    Math.max(...y2) - Math.min(...x2)
-  ];
-  const boxRaw2 = [0, 0, 0, 0];
-  const score2 = keypoints3.reduce((prev, curr) => curr.score > prev ? curr.score : prev, 0);
+  const avgScore = Math.round(100 * keypointsRelative.reduce((prev, curr) => prev += curr.score, 0) / keypointsRelative.length) / 100;
+  if (avgScore < (config3.body.minConfidence || 0))
+    return null;
+  const keypoints2 = rescaleKeypoints(keypointsRelative, outputSize2);
+  const boxes = calculateBoxes(keypoints2, [outputSize2[0], outputSize2[1]]);
   Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
-  return { id: 0, score: score2, box: box4, boxRaw: boxRaw2, keypoints: keypoints3 };
+  const annotations2 = {};
+  for (const [name, indexes] of Object.entries(connected)) {
+    const pt = [];
+    for (let i2 = 0; i2 < indexes.length - 1; i2++) {
+      const pt0 = keypoints2.find((kpt4) => kpt4.part === indexes[i2]);
+      const pt1 = keypoints2.find((kpt4) => kpt4.part === indexes[i2 + 1]);
+      if (pt0 && pt1 && pt0.score > (config3.body.minConfidence || 0) && pt1.score > (config3.body.minConfidence || 0))
+        pt.push([pt0.position, pt1.position]);
+    }
+    annotations2[name] = pt;
+  }
+  return { id: 0, score: avgScore, box: boxes.keypointsBox, boxRaw: boxes.keypointsBoxRaw, keypoints: keypoints2, annotations: annotations2 };
 }
 async function predict7(input2, config3) {
-  outputSize2 = [input2.shape[2] || 0, input2.shape[1] || 0];
-  const bodies = [];
-  const body4 = await detectParts(input2, config3);
-  bodies.push(body4);
-  return bodies;
+  const outputSize2 = [input2.shape[2] || 0, input2.shape[1] || 0];
+  if (skipped5 < (config3.body.skipFrames || 0) && config3.skipFrame) {
+    skipped5++;
+  } else {
+    cache2 = await detectParts(input2, config3, outputSize2);
+    skipped5 = 0;
+  }
+  if (cache2)
+    return [cache2];
+  return [];
 }
+var efficientposecoords_exports = {};
+__export(efficientposecoords_exports, {
+  connected: () => connected2,
+  kpt: () => kpt2
+});
+var kpt2 = [
+  "head",
+  "neck",
+  "rightShoulder",
+  "rightElbow",
+  "rightWrist",
+  "chest",
+  "leftShoulder",
+  "leftElbow",
+  "leftWrist",
+  "bodyCenter",
+  "rightHip",
+  "rightKnee",
+  "rightAnkle",
+  "leftHip",
+  "leftKnee",
+  "leftAnkle"
+];
+var connected2 = {
+  leftLeg: ["leftHip", "leftKnee", "leftAnkle"],
+  rightLeg: ["rightHip", "rightKnee", "rightAnkle"],
+  torso: ["leftShoulder", "rightShoulder", "rightHip", "leftHip", "leftShoulder"],
+  leftArm: ["leftShoulder", "leftElbow", "leftWrist"],
+  rightArm: ["rightShoulder", "rightElbow", "rightWrist"],
+  head: []
+};
 var model8;
-var keypoints = [];
-var box3 = [0, 0, 0, 0];
-var boxRaw = [0, 0, 0, 0];
-var score = 0;
-var skipped5 = Number.MAX_SAFE_INTEGER;
-var bodyParts = ["head", "neck", "rightShoulder", "rightElbow", "rightWrist", "chest", "leftShoulder", "leftElbow", "leftWrist", "pelvis", "rightHip", "rightKnee", "rightAnkle", "leftHip", "leftKnee", "leftAnkle"];
+var cache3 = { id: 0, keypoints: [], box: [0, 0, 0, 0], boxRaw: [0, 0, 0, 0], score: 0, annotations: {} };
+var skipped6 = Number.MAX_SAFE_INTEGER;
 async function load8(config3) {
   if (env2.initial)
     model8 = null;
@@ -98423,9 +105623,9 @@ function max2d(inputs, minScore) {
     const reshaped = reshape(inputs, [height * width]);
     const newScore = max(reshaped, 0).dataSync()[0];
     if (newScore > minScore) {
-      const coords5 = argMax(reshaped, 0);
-      const x2 = mod4(coords5, width).dataSync()[0];
-      const y2 = div(coords5, scalar(width, "int32")).dataSync()[0];
+      const coordinates = argMax(reshaped, 0);
+      const x2 = mod4(coordinates, width).dataSync()[0];
+      const y2 = div(coordinates, scalar(width, "int32")).dataSync()[0];
       return [x2, y2, newScore];
     }
     return [0, 0, newScore];
@@ -98433,11 +105633,11 @@ function max2d(inputs, minScore) {
 }
 async function predict8(image7, config3) {
   var _a;
-  if (skipped5 < (((_a = config3.body) == null ? void 0 : _a.skipFrames) || 0) && config3.skipFrame && Object.keys(keypoints).length > 0) {
-    skipped5++;
-    return [{ id: 0, score, box: box3, boxRaw, keypoints }];
+  if (skipped6 < (((_a = config3.body) == null ? void 0 : _a.skipFrames) || 0) && config3.skipFrame && Object.keys(cache3.keypoints).length > 0) {
+    skipped6++;
+    return [cache3];
   }
-  skipped5 = 0;
+  skipped6 = 0;
   return new Promise(async (resolve) => {
     var _a2;
     const tensor2 = tidy(() => {
@@ -98453,17 +105653,17 @@ async function predict8(image7, config3) {
       resT = await (model8 == null ? void 0 : model8.predict(tensor2));
     dispose(tensor2);
     if (resT) {
-      keypoints.length = 0;
+      cache3.keypoints.length = 0;
       const squeeze2 = resT.squeeze();
       dispose(resT);
       const stack2 = squeeze2.unstack(2);
       dispose(squeeze2);
       for (let id = 0; id < stack2.length; id++) {
         const [x22, y22, partScore] = max2d(stack2[id], config3.body.minConfidence);
-        if (score > (((_a2 = config3.body) == null ? void 0 : _a2.minConfidence) || 0)) {
-          keypoints.push({
+        if (partScore > (((_a2 = config3.body) == null ? void 0 : _a2.minConfidence) || 0)) {
+          cache3.keypoints.push({
             score: Math.round(100 * partScore) / 100,
-            part: bodyParts[id],
+            part: kpt2[id],
             positionRaw: [
               x22 / model8.inputs[0].shape[2],
               y22 / model8.inputs[0].shape[1]
@@ -98477,32 +105677,88 @@ async function predict8(image7, config3) {
       }
       stack2.forEach((s2) => dispose(s2));
     }
-    score = keypoints.reduce((prev, curr) => curr.score > prev ? curr.score : prev, 0);
-    const x2 = keypoints.map((a6) => a6.position[0]);
-    const y2 = keypoints.map((a6) => a6.position[1]);
-    box3 = [
+    cache3.score = cache3.keypoints.reduce((prev, curr) => curr.score > prev ? curr.score : prev, 0);
+    const x2 = cache3.keypoints.map((a6) => a6.position[0]);
+    const y2 = cache3.keypoints.map((a6) => a6.position[1]);
+    cache3.box = [
       Math.min(...x2),
       Math.min(...y2),
       Math.max(...x2) - Math.min(...x2),
       Math.max(...y2) - Math.min(...y2)
     ];
-    const xRaw = keypoints.map((a6) => a6.positionRaw[0]);
-    const yRaw = keypoints.map((a6) => a6.positionRaw[1]);
-    boxRaw = [
+    const xRaw = cache3.keypoints.map((a6) => a6.positionRaw[0]);
+    const yRaw = cache3.keypoints.map((a6) => a6.positionRaw[1]);
+    cache3.boxRaw = [
       Math.min(...xRaw),
       Math.min(...yRaw),
       Math.max(...xRaw) - Math.min(...xRaw),
       Math.max(...yRaw) - Math.min(...yRaw)
     ];
-    resolve([{ id: 0, score, box: box3, boxRaw, keypoints }]);
+    for (const [name, indexes] of Object.entries(connected2)) {
+      const pt = [];
+      for (let i2 = 0; i2 < indexes.length - 1; i2++) {
+        const pt0 = cache3.keypoints.find((kpt4) => kpt4.part === indexes[i2]);
+        const pt1 = cache3.keypoints.find((kpt4) => kpt4.part === indexes[i2 + 1]);
+        if (pt0 && pt1 && pt0.score > (config3.body.minConfidence || 0) && pt1.score > (config3.body.minConfidence || 0))
+          pt.push([pt0.position, pt1.position]);
+      }
+      cache3.annotations[name] = pt;
+    }
+    resolve([cache3]);
   });
 }
+var movenetcoords_exports = {};
+__export(movenetcoords_exports, {
+  connected: () => connected3,
+  kpt: () => kpt3,
+  pairs: () => pairs
+});
+var kpt3 = [
+  "nose",
+  "leftEye",
+  "rightEye",
+  "leftEar",
+  "rightEar",
+  "leftShoulder",
+  "rightShoulder",
+  "leftElbow",
+  "rightElbow",
+  "leftWrist",
+  "rightWrist",
+  "leftHip",
+  "rightHip",
+  "leftKnee",
+  "rightKnee",
+  "leftAnkle",
+  "rightAnkle"
+];
+var pairs = [
+  ["leftEye", "rightEye"],
+  ["leftEar", "rightEar"],
+  ["leftShoulder", "rightShoulder"],
+  ["leftElbow", "rightElbow"],
+  ["leftWrist", "rightWrist"],
+  ["leftHip", "rightHip"],
+  ["leftKnee", "rightKnee"],
+  ["leftAnkle", "rightAnkle"]
+];
+var connected3 = {
+  leftLeg: ["leftHip", "leftKnee", "leftAnkle"],
+  rightLeg: ["rightHip", "rightKnee", "rightAnkle"],
+  torso: ["leftShoulder", "rightShoulder", "rightHip", "leftHip", "leftShoulder"],
+  leftArm: ["leftShoulder", "leftElbow", "leftWrist"],
+  rightArm: ["rightShoulder", "rightElbow", "rightWrist"],
+  head: []
+};
 var model9;
 var inputSize6 = 0;
-var cachedBoxes = [];
-var skipped6 = Number.MAX_SAFE_INTEGER;
-var keypoints2 = [];
-var bodyParts2 = ["nose", "leftEye", "rightEye", "leftEar", "rightEar", "leftShoulder", "rightShoulder", "leftElbow", "rightElbow", "leftWrist", "rightWrist", "leftHip", "rightHip", "leftKnee", "rightKnee", "leftAnkle", "rightAnkle"];
+var boxExpandFact2 = 1.5;
+var cache4 = {
+  boxes: [],
+  bodies: []
+};
+var skipped7 = Number.MAX_SAFE_INTEGER;
+var keypoints = [];
 async function load9(config3) {
   if (env2.initial)
     model9 = null;
@@ -98520,39 +105776,33 @@ async function load9(config3) {
     inputSize6 = 256;
   return model9;
 }
-function createBox2(points) {
-  const x2 = points.map((a6) => a6.position[0]);
-  const y2 = points.map((a6) => a6.position[1]);
-  const box4 = [
-    Math.min(...x2),
-    Math.min(...y2),
-    Math.max(...x2) - Math.min(...x2),
-    Math.max(...y2) - Math.min(...y2)
-  ];
-  const xRaw = points.map((a6) => a6.positionRaw[0]);
-  const yRaw = points.map((a6) => a6.positionRaw[1]);
-  const boxRaw2 = [
-    Math.min(...xRaw),
-    Math.min(...yRaw),
-    Math.max(...xRaw) - Math.min(...xRaw),
-    Math.max(...yRaw) - Math.min(...yRaw)
-  ];
-  return [box4, boxRaw2];
+function fixSides() {
+  for (const pair of pairs) {
+    let left = keypoints.find((kp) => kp.part === pair[0]);
+    let right = keypoints.find((kp) => kp.part === pair[1]);
+    if (left && right) {
+      if (left.position[0] > right.position[0]) {
+        const tmp2 = left;
+        left = right;
+        right = tmp2;
+      }
+    }
+  }
 }
 async function parseSinglePose(res2, config3, image7, inputBox) {
-  const kpt = res2[0][0];
-  keypoints2.length = 0;
-  let score2 = 0;
-  for (let id = 0; id < kpt.length; id++) {
-    score2 = kpt[id][2];
-    if (score2 > config3.body.minConfidence) {
+  const kpt4 = res2[0][0];
+  keypoints.length = 0;
+  let score = 0;
+  for (let id = 0; id < kpt4.length; id++) {
+    score = kpt4[id][2];
+    if (score > config3.body.minConfidence) {
       const positionRaw = [
-        (inputBox[3] - inputBox[1]) * kpt[id][1] + inputBox[1],
-        (inputBox[2] - inputBox[0]) * kpt[id][0] + inputBox[0]
+        (inputBox[3] - inputBox[1]) * kpt4[id][1] + inputBox[1],
+        (inputBox[2] - inputBox[0]) * kpt4[id][0] + inputBox[0]
       ];
-      keypoints2.push({
-        score: Math.round(100 * score2) / 100,
-        part: bodyParts2[id],
+      keypoints.push({
+        score: Math.round(100 * score) / 100,
+        part: kpt3[id],
         positionRaw,
         position: [
           Math.round((image7.shape[2] || 0) * positionRaw[0]),
@@ -98561,40 +105811,60 @@ async function parseSinglePose(res2, config3, image7, inputBox) {
       });
     }
   }
-  score2 = keypoints2.reduce((prev, curr) => curr.score > prev ? curr.score : prev, 0);
+  fixSides();
+  score = keypoints.reduce((prev, curr) => curr.score > prev ? curr.score : prev, 0);
   const bodies = [];
-  const [box4, boxRaw2] = createBox2(keypoints2);
-  bodies.push({ id: 0, score: score2, box: box4, boxRaw: boxRaw2, keypoints: keypoints2 });
+  const newBox = calc(keypoints.map((pt) => pt.position), [image7.shape[2], image7.shape[1]]);
+  const annotations2 = {};
+  for (const [name, indexes] of Object.entries(connected3)) {
+    const pt = [];
+    for (let i2 = 0; i2 < indexes.length - 1; i2++) {
+      const pt0 = keypoints.find((kp) => kp.part === indexes[i2]);
+      const pt1 = keypoints.find((kp) => kp.part === indexes[i2 + 1]);
+      if (pt0 && pt1 && pt0.score > (config3.body.minConfidence || 0) && pt1.score > (config3.body.minConfidence || 0))
+        pt.push([pt0.position, pt1.position]);
+    }
+    annotations2[name] = pt;
+  }
+  bodies.push({ id: 0, score, box: newBox.box, boxRaw: newBox.boxRaw, keypoints, annotations: annotations2 });
   return bodies;
 }
 async function parseMultiPose(res2, config3, image7, inputBox) {
   const bodies = [];
   for (let id = 0; id < res2[0].length; id++) {
-    const kpt = res2[0][id];
-    const totalScore = Math.round(100 * kpt[51 + 4]) / 100;
+    const kpt4 = res2[0][id];
+    const totalScore = Math.round(100 * kpt4[51 + 4]) / 100;
     if (totalScore > config3.body.minConfidence) {
-      keypoints2.length = 0;
+      keypoints.length = 0;
       for (let i2 = 0; i2 < 17; i2++) {
-        const score2 = kpt[3 * i2 + 2];
-        if (score2 > config3.body.minConfidence) {
+        const score = kpt4[3 * i2 + 2];
+        if (score > config3.body.minConfidence) {
           const positionRaw = [
-            (inputBox[3] - inputBox[1]) * kpt[3 * i2 + 1] + inputBox[1],
-            (inputBox[2] - inputBox[0]) * kpt[3 * i2 + 0] + inputBox[0]
+            (inputBox[3] - inputBox[1]) * kpt4[3 * i2 + 1] + inputBox[1],
+            (inputBox[2] - inputBox[0]) * kpt4[3 * i2 + 0] + inputBox[0]
           ];
-          keypoints2.push({
-            part: bodyParts2[i2],
-            score: Math.round(100 * score2) / 100,
+          keypoints.push({
+            part: kpt3[i2],
+            score: Math.round(100 * score) / 100,
             positionRaw,
-            position: [
-              Math.round((image7.shape[2] || 0) * positionRaw[0]),
-              Math.round((image7.shape[1] || 0) * positionRaw[1])
-            ]
+            position: [Math.round((image7.shape[2] || 0) * positionRaw[0]), Math.round((image7.shape[1] || 0) * positionRaw[1])]
           });
         }
       }
-      const boxRaw2 = [kpt[51 + 1], kpt[51 + 0], kpt[51 + 3] - kpt[51 + 1], kpt[51 + 2] - kpt[51 + 0]];
-      const box4 = [Math.trunc(boxRaw2[0] * (image7.shape[2] || 0)), Math.trunc(boxRaw2[1] * (image7.shape[1] || 0)), Math.trunc(boxRaw2[2] * (image7.shape[2] || 0)), Math.trunc(boxRaw2[3] * (image7.shape[1] || 0))];
-      bodies.push({ id, score: totalScore, boxRaw: boxRaw2, box: box4, keypoints: [...keypoints2] });
+      fixSides();
+      const newBox = calc(keypoints.map((pt) => pt.position), [image7.shape[2], image7.shape[1]]);
+      const annotations2 = {};
+      for (const [name, indexes] of Object.entries(connected3)) {
+        const pt = [];
+        for (let i2 = 0; i2 < indexes.length - 1; i2++) {
+          const pt0 = keypoints.find((kp) => kp.part === indexes[i2]);
+          const pt1 = keypoints.find((kp) => kp.part === indexes[i2 + 1]);
+          if (pt0 && pt1 && pt0.score > (config3.body.minConfidence || 0) && pt1.score > (config3.body.minConfidence || 0))
+            pt.push([pt0.position, pt1.position]);
+        }
+        annotations2[name] = pt;
+      }
+      bodies.push({ id, score: totalScore, box: newBox.box, boxRaw: newBox.boxRaw, keypoints: [...keypoints], annotations: annotations2 });
     }
   }
   bodies.sort((a6, b2) => b2.score - a6.score);
@@ -98605,42 +105875,44 @@ async function parseMultiPose(res2, config3, image7, inputBox) {
 async function predict9(input2, config3) {
   if (!model9 || !(model9 == null ? void 0 : model9.inputs[0].shape))
     return [];
+  if (!config3.skipFrame)
+    cache4.boxes.length = 0;
+  skipped7++;
+  if (config3.skipFrame && skipped7 <= (config3.body.skipFrames || 0)) {
+    return cache4.bodies;
+  }
   return new Promise(async (resolve) => {
     const t2 = {};
-    let bodies = [];
-    if (!config3.skipFrame)
-      cachedBoxes.length = 0;
-    skipped6++;
-    for (let i2 = 0; i2 < cachedBoxes.length; i2++) {
-      t2.crop = image.cropAndResize(input2, [cachedBoxes[i2]], [0], [inputSize6, inputSize6], "bilinear");
-      t2.cast = cast(t2.crop, "int32");
-      t2.res = await (model9 == null ? void 0 : model9.predict(t2.cast));
-      const res2 = await t2.res.array();
-      const newBodies = t2.res.shape[2] === 17 ? await parseSinglePose(res2, config3, input2, cachedBoxes[i2]) : await parseMultiPose(res2, config3, input2, cachedBoxes[i2]);
-      bodies = bodies.concat(newBodies);
-      Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
+    skipped7 = 0;
+    cache4.bodies = [];
+    if (cache4.boxes.length >= (config3.body.maxDetected || 0)) {
+      for (let i2 = 0; i2 < cache4.boxes.length; i2++) {
+        t2.crop = image.cropAndResize(input2, [cache4.boxes[i2]], [0], [inputSize6, inputSize6], "bilinear");
+        t2.cast = cast(t2.crop, "int32");
+        t2.res = await (model9 == null ? void 0 : model9.predict(t2.cast));
+        const res2 = await t2.res.array();
+        const newBodies = t2.res.shape[2] === 17 ? await parseSinglePose(res2, config3, input2, cache4.boxes[i2]) : await parseMultiPose(res2, config3, input2, cache4.boxes[i2]);
+        cache4.bodies = cache4.bodies.concat(newBodies);
+        Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
+      }
     }
-    if (bodies.length !== config3.body.maxDetected && skipped6 > (config3.body.skipFrames || 0)) {
+    if (cache4.bodies.length !== config3.body.maxDetected) {
       t2.resized = image.resizeBilinear(input2, [inputSize6, inputSize6], false);
       t2.cast = cast(t2.resized, "int32");
       t2.res = await (model9 == null ? void 0 : model9.predict(t2.cast));
       const res2 = await t2.res.array();
-      bodies = t2.res.shape[2] === 17 ? await parseSinglePose(res2, config3, input2, [0, 0, 1, 1]) : await parseMultiPose(res2, config3, input2, [0, 0, 1, 1]);
+      cache4.bodies = t2.res.shape[2] === 17 ? await parseSinglePose(res2, config3, input2, [0, 0, 1, 1]) : await parseMultiPose(res2, config3, input2, [0, 0, 1, 1]);
       Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
-      cachedBoxes.length = 0;
-      skipped6 = 0;
     }
-    if (config3.skipFrame) {
-      cachedBoxes.length = 0;
-      for (let i2 = 0; i2 < bodies.length; i2++) {
-        if (bodies[i2].keypoints.length > 10) {
-          const kpts = bodies[i2].keypoints.map((kpt) => kpt.position);
-          const newBox = scale2(kpts, 1.5, [input2.shape[2], input2.shape[1]]);
-          cachedBoxes.push([...newBox.yxBox]);
-        }
+    cache4.boxes.length = 0;
+    for (let i2 = 0; i2 < cache4.bodies.length; i2++) {
+      if (cache4.bodies[i2].keypoints.length > kpt3.length / 2) {
+        const scaledBox = scale2(cache4.bodies[i2].boxRaw, boxExpandFact2);
+        const cropBox = crop(scaledBox);
+        cache4.boxes.push(cropBox);
       }
     }
-    resolve(bodies);
+    resolve(cache4.bodies);
   });
 }
 var labels = [
@@ -98727,7 +105999,7 @@ var labels = [
 ];
 var model10;
 var last3 = [];
-var skipped7 = Number.MAX_SAFE_INTEGER;
+var skipped8 = Number.MAX_SAFE_INTEGER;
 var scaleBox = 2.5;
 async function load10(config3) {
   if (!model10 || env2.initial) {
@@ -98758,8 +106030,8 @@ async function process3(res2, inputSize8, outputShape, config3) {
       const scores = await scoresT.array();
       for (let i2 = 0; i2 < scoresT.shape[0]; i2++) {
         for (let j2 = 0; j2 < scoresT.shape[1]; j2++) {
-          const score2 = scores[i2][j2];
-          if (score2 > config3.object.minConfidence && j2 !== 61) {
+          const score = scores[i2][j2];
+          if (score > config3.object.minConfidence && j2 !== 61) {
             const cx = (0.5 + Math.trunc(i2 % baseSize)) / baseSize;
             const cy = (0.5 + Math.trunc(i2 / baseSize)) / baseSize;
             const boxOffset = boxIdx[i2].map((a6) => a6 * (baseSize / strideSize / inputSize8));
@@ -98771,21 +106043,21 @@ async function process3(res2, inputSize8, outputShape, config3) {
               cx + scaleBox / strideSize * boxOffset[2] - x2,
               cy + scaleBox / strideSize * boxOffset[3] - y2
             ];
-            let boxRaw2 = [x2, y2, w2, h2];
-            boxRaw2 = boxRaw2.map((a6) => Math.max(0, Math.min(a6, 1)));
-            const box4 = [
-              boxRaw2[0] * outputShape[0],
-              boxRaw2[1] * outputShape[1],
-              boxRaw2[2] * outputShape[0],
-              boxRaw2[3] * outputShape[1]
+            let boxRaw = [x2, y2, w2, h2];
+            boxRaw = boxRaw.map((a6) => Math.max(0, Math.min(a6, 1)));
+            const box5 = [
+              boxRaw[0] * outputShape[0],
+              boxRaw[1] * outputShape[1],
+              boxRaw[2] * outputShape[0],
+              boxRaw[3] * outputShape[1]
             ];
             const result = {
               id: id++,
-              score: Math.round(100 * score2) / 100,
+              score: Math.round(100 * score) / 100,
               class: j2 + 1,
               label: labels[j2].label,
-              box: box4.map((a6) => Math.trunc(a6)),
-              boxRaw: boxRaw2
+              box: box5.map((a6) => Math.trunc(a6)),
+              boxRaw
             };
             results.push(result);
           }
@@ -98806,25 +106078,25 @@ async function process3(res2, inputSize8, outputShape, config3) {
   return results;
 }
 async function predict10(image7, config3) {
-  if (skipped7 < (config3.object.skipFrames || 0) && config3.skipFrame && last3.length > 0) {
-    skipped7++;
+  if (skipped8 < (config3.object.skipFrames || 0) && config3.skipFrame && last3.length > 0) {
+    skipped8++;
     return last3;
   }
-  skipped7 = 0;
+  skipped8 = 0;
   if (!env2.kernels.includes("mod") || !env2.kernels.includes("sparsetodense"))
     return last3;
   return new Promise(async (resolve) => {
-    const outputSize3 = [image7.shape[2], image7.shape[1]];
+    const outputSize2 = [image7.shape[2], image7.shape[1]];
     const resize = image.resizeBilinear(image7, [model10.inputSize, model10.inputSize], false);
     const norm2 = div(resize, 255);
-    const transpose5 = norm2.transpose([0, 3, 1, 2]);
+    const transpose6 = norm2.transpose([0, 3, 1, 2]);
     dispose(norm2);
     dispose(resize);
     let objectT;
     if (config3.object.enabled)
-      objectT = await model10.predict(transpose5);
-    dispose(transpose5);
-    const obj = await process3(objectT, model10.inputSize, outputSize3, config3);
+      objectT = await model10.predict(transpose6);
+    dispose(transpose6);
+    const obj = await process3(objectT, model10.inputSize, outputSize2, config3);
     last3 = obj;
     resolve(obj);
   });
@@ -98832,7 +106104,7 @@ async function predict10(image7, config3) {
 var model11;
 var inputSize7 = 0;
 var last4 = [];
-var skipped8 = Number.MAX_SAFE_INTEGER;
+var skipped9 = Number.MAX_SAFE_INTEGER;
 async function load11(config3) {
   if (env2.initial)
     model11 = null;
@@ -98872,43 +106144,43 @@ async function process4(res2, outputShape, config3) {
   dispose(nmsT);
   let i2 = 0;
   for (const id of nms) {
-    const score2 = Math.trunc(100 * detections[0][id][4]) / 100;
+    const score = Math.trunc(100 * detections[0][id][4]) / 100;
     const classVal = detections[0][id][5];
     const label = labels[classVal].label;
     const [x2, y2] = [
       detections[0][id][0] / inputSize7,
       detections[0][id][1] / inputSize7
     ];
-    const boxRaw2 = [
+    const boxRaw = [
       x2,
       y2,
       detections[0][id][2] / inputSize7 - x2,
       detections[0][id][3] / inputSize7 - y2
     ];
-    const box4 = [
-      Math.trunc(boxRaw2[0] * outputShape[0]),
-      Math.trunc(boxRaw2[1] * outputShape[1]),
-      Math.trunc(boxRaw2[2] * outputShape[0]),
-      Math.trunc(boxRaw2[3] * outputShape[1])
+    const box5 = [
+      Math.trunc(boxRaw[0] * outputShape[0]),
+      Math.trunc(boxRaw[1] * outputShape[1]),
+      Math.trunc(boxRaw[2] * outputShape[0]),
+      Math.trunc(boxRaw[3] * outputShape[1])
     ];
-    results.push({ id: i2++, score: score2, class: classVal, label, box: box4, boxRaw: boxRaw2 });
+    results.push({ id: i2++, score, class: classVal, label, box: box5, boxRaw });
   }
   return results;
 }
 async function predict11(input2, config3) {
-  if (skipped8 < (config3.object.skipFrames || 0) && config3.skipFrame && last4.length > 0) {
-    skipped8++;
+  if (skipped9 < (config3.object.skipFrames || 0) && config3.skipFrame && last4.length > 0) {
+    skipped9++;
     return last4;
   }
-  skipped8 = 0;
+  skipped9 = 0;
   if (!env2.kernels.includes("mod") || !env2.kernels.includes("sparsetodense"))
     return last4;
   return new Promise(async (resolve) => {
-    const outputSize3 = [input2.shape[2], input2.shape[1]];
+    const outputSize2 = [input2.shape[2], input2.shape[1]];
     const resize = image.resizeBilinear(input2, [inputSize7, inputSize7]);
     const objectT = config3.object.enabled ? model11 == null ? void 0 : model11.execute(resize, ["tower_0/detections"]) : null;
     dispose(resize);
-    const obj = await process4(objectT, outputSize3, config3);
+    const obj = await process4(objectT, outputSize2, config3);
     last4 = obj;
     resolve(obj);
   });
@@ -98995,7 +106267,7 @@ async function process5(input2, background, config3) {
   return { data, canvas: mergedCanvas || compositeCanvas, alpha: alphaCanvas };
 }
 var model13;
-var skipped9 = Number.MAX_SAFE_INTEGER;
+var skipped10 = Number.MAX_SAFE_INTEGER;
 async function load13(config3) {
   if (env2.initial)
     model13 = null;
@@ -99125,6 +106397,656 @@ async function validate2(instance) {
       }
     }
   }
+}
+var config2 = {
+  name: "humangl",
+  priority: 999,
+  canvas: null,
+  gl: null,
+  extensions: [],
+  webGLattr: {
+    alpha: false,
+    antialias: false,
+    premultipliedAlpha: false,
+    preserveDrawingBuffer: false,
+    depth: false,
+    stencil: false,
+    failIfMajorPerformanceCaveat: false,
+    desynchronized: true
+  }
+};
+function extensions() {
+  const gl = config2.gl;
+  if (!gl)
+    return;
+  config2.extensions = gl.getSupportedExtensions();
+}
+async function register(instance) {
+  var _a;
+  if (instance.config.backend !== "humangl")
+    return;
+  if (config2.name in engine().registry && (!config2.gl || !config2.gl.getParameter(config2.gl.VERSION))) {
+    log("error: humangl backend invalid context");
+    reset(instance);
+  }
+  if (!findBackend(config2.name)) {
+    try {
+      config2.canvas = await canvas(100, 100);
+    } catch (err) {
+      log("error: cannot create canvas:", err);
+      return;
+    }
+    try {
+      config2.gl = (_a = config2.canvas) == null ? void 0 : _a.getContext("webgl2", config2.webGLattr);
+      if (config2.canvas) {
+        config2.canvas.addEventListener("webglcontextlost", async (e2) => {
+          log("error: humangl:", e2.type);
+          log("possible browser memory leak using webgl or conflict with multiple backend registrations");
+          instance.emit("error");
+          throw new Error("browser webgl error");
+        });
+        config2.canvas.addEventListener("webglcontextrestored", (e2) => {
+          log("error: humangl context restored:", e2);
+        });
+        config2.canvas.addEventListener("webglcontextcreationerror", (e2) => {
+          log("error: humangl context create:", e2);
+        });
+      }
+    } catch (err) {
+      log("error: cannot get WebGL context:", err);
+      return;
+    }
+    try {
+      setWebGLContext(2, config2.gl);
+    } catch (err) {
+      log("error: cannot set WebGL context:", err);
+      return;
+    }
+    try {
+      const ctx = new GPGPUContext(config2.gl);
+      registerBackend(config2.name, () => new MathBackendWebGL(ctx), config2.priority);
+    } catch (err) {
+      log("error: cannot register WebGL backend:", err);
+      return;
+    }
+    try {
+      const kernels = getKernelsForBackend("webgl");
+      kernels.forEach((kernelConfig) => {
+        const newKernelConfig = { ...kernelConfig, backendName: config2.name };
+        registerKernel(newKernelConfig);
+      });
+    } catch (err) {
+      log("error: cannot update WebGL backend registration:", err);
+      return;
+    }
+    const current = backend().getGPGPUContext ? backend().getGPGPUContext().gl : null;
+    if (current) {
+      log(`humangl webgl version:${current.getParameter(current.VERSION)} renderer:${current.getParameter(current.RENDERER)}`);
+    } else {
+      log("error: no current gl context:", current, config2.gl);
+      return;
+    }
+    try {
+      ENV.set("WEBGL_VERSION", 2);
+    } catch (err) {
+      log("error: cannot set WebGL backend flags:", err);
+      return;
+    }
+    extensions();
+    log("backend registered:", config2.name);
+  }
+}
+async function check(instance, force = false) {
+  instance.state = "backend";
+  if (force || env2.initial || instance.config.backend && instance.config.backend.length > 0 && getBackend() !== instance.config.backend) {
+    const timeStamp = now2();
+    if (instance.config.backend && instance.config.backend.length > 0) {
+      if (typeof window === "undefined" && typeof WorkerGlobalScope !== "undefined" && instance.config.debug) {
+        if (instance.config.debug)
+          log("running inside web worker");
+      }
+      if (env2.browser && instance.config.backend === "tensorflow") {
+        if (instance.config.debug)
+          log("override: backend set to tensorflow while running in browser");
+        instance.config.backend = "humangl";
+      }
+      if (env2.node && (instance.config.backend === "webgl" || instance.config.backend === "humangl")) {
+        if (instance.config.debug)
+          log(`override: backend set to ${instance.config.backend} while running in nodejs`);
+        instance.config.backend = "tensorflow";
+      }
+      if (env2.browser && instance.config.backend === "webgpu") {
+        if (typeof navigator === "undefined" || typeof navigator["gpu"] === "undefined") {
+          log("override: backend set to webgpu but browser does not support webgpu");
+          instance.config.backend = "humangl";
+        } else {
+          const adapter = await navigator["gpu"].requestAdapter();
+          if (instance.config.debug)
+            log("enumerated webgpu adapter:", adapter);
+        }
+      }
+      if (instance.config.backend === "humangl")
+        await register(instance);
+      const available = Object.keys(engine().registryFactory);
+      if (instance.config.debug)
+        log("available backends:", available);
+      if (!available.includes(instance.config.backend)) {
+        log(`error: backend ${instance.config.backend} not found in registry`);
+        instance.config.backend = env2.node ? "tensorflow" : "webgl";
+        if (instance.config.debug)
+          log(`override: setting backend ${instance.config.backend}`);
+      }
+      if (instance.config.debug)
+        log("setting backend:", instance.config.backend);
+      if (instance.config.backend === "wasm") {
+        if (instance.config.debug)
+          log("wasm path:", instance.config.wasmPath);
+        if (typeof (tfjs_esm_exports == null ? void 0 : tfjs_esm_exports.setWasmPaths) !== "undefined")
+          await setWasmPaths(instance.config.wasmPath);
+        else
+          throw new Error("wasm backend is not loaded");
+        const simd = await env().getAsync("WASM_HAS_SIMD_SUPPORT");
+        const mt = await env().getAsync("WASM_HAS_MULTITHREAD_SUPPORT");
+        if (instance.config.debug)
+          log(`wasm execution: ${simd ? "SIMD" : "no SIMD"} ${mt ? "multithreaded" : "singlethreaded"}`);
+        if (instance.config.debug && !simd)
+          log("warning: wasm simd support is not enabled");
+      }
+      try {
+        await setBackend(instance.config.backend);
+        await ready();
+      } catch (err) {
+        log("error: cannot set backend:", instance.config.backend, err);
+        return false;
+      }
+    }
+    if (getBackend() === "humangl") {
+      ENV.set("CHECK_COMPUTATION_FOR_ERRORS", false);
+      ENV.set("WEBGL_CPU_FORWARD", true);
+      ENV.set("WEBGL_PACK_DEPTHWISECONV", false);
+      ENV.set("WEBGL_USE_SHAPES_UNIFORMS", true);
+      ENV.set("CPU_HANDOFF_SIZE_THRESHOLD", 256);
+      if (typeof instance.config["deallocate"] !== "undefined" && instance.config["deallocate"]) {
+        log("changing webgl: WEBGL_DELETE_TEXTURE_THRESHOLD:", true);
+        ENV.set("WEBGL_DELETE_TEXTURE_THRESHOLD", 0);
+      }
+      if (backend().getGPGPUContext) {
+        const gl = await backend().getGPGPUContext().gl;
+        if (instance.config.debug)
+          log(`gl version:${gl.getParameter(gl.VERSION)} renderer:${gl.getParameter(gl.RENDERER)}`);
+      }
+    }
+    if (getBackend() === "webgpu") {
+      ENV.set("WEBGPU_CPU_HANDOFF_SIZE_THRESHOLD", 512);
+      ENV.set("WEBGPU_DEFERRED_SUBMIT_BATCH_SIZE", 0);
+      ENV.set("WEBGPU_CPU_FORWARD", true);
+    }
+    enableProdMode();
+    await ready();
+    instance.performance.backend = Math.trunc(now2() - timeStamp);
+    instance.config.backend = getBackend();
+    get3();
+    instance.env = env2;
+  }
+  return true;
+}
+function fakeOps(kernelNames, config3) {
+  for (const kernelName of kernelNames) {
+    const kernelConfig = {
+      kernelName,
+      backendName: config3.backend,
+      kernelFunc: () => {
+        if (config3.debug)
+          log("kernelFunc", kernelName, config3.backend);
+      }
+    };
+    registerKernel(kernelConfig);
+  }
+  env2.kernels = getKernelsForBackend(getBackend()).map((kernel) => kernel.kernelName.toLowerCase());
+}
+var options2 = {
+  color: "rgba(173, 216, 230, 0.6)",
+  labelColor: "rgba(173, 216, 230, 1)",
+  shadowColor: "black",
+  font: 'small-caps 14px "Segoe UI"',
+  lineHeight: 18,
+  lineWidth: 4,
+  pointSize: 2,
+  roundRect: 8,
+  drawPoints: false,
+  drawLabels: true,
+  drawBoxes: true,
+  drawPolygons: true,
+  drawGaze: true,
+  fillPolygons: false,
+  useDepth: true,
+  useCurves: false,
+  bufferedOutput: true
+};
+var getCanvasContext = (input2) => {
+  if (input2 && input2.getContext)
+    return input2.getContext("2d");
+  throw new Error("invalid canvas");
+};
+var rad2deg = (theta) => Math.round(theta * 180 / Math.PI);
+function point(ctx, x2, y2, z2 = 0, localOptions) {
+  ctx.fillStyle = localOptions.useDepth && z2 ? `rgba(${127.5 + 2 * z2}, ${127.5 - 2 * z2}, 255, 0.3)` : localOptions.color;
+  ctx.beginPath();
+  ctx.arc(x2, y2, localOptions.pointSize, 0, 2 * Math.PI);
+  ctx.fill();
+}
+function rect(ctx, x2, y2, width, height, localOptions) {
+  ctx.beginPath();
+  if (localOptions.useCurves) {
+    const cx = (x2 + x2 + width) / 2;
+    const cy = (y2 + y2 + height) / 2;
+    ctx.ellipse(cx, cy, width / 2, height / 2, 0, 0, 2 * Math.PI);
+  } else {
+    ctx.lineWidth = localOptions.lineWidth;
+    ctx.moveTo(x2 + localOptions.roundRect, y2);
+    ctx.lineTo(x2 + width - localOptions.roundRect, y2);
+    ctx.quadraticCurveTo(x2 + width, y2, x2 + width, y2 + localOptions.roundRect);
+    ctx.lineTo(x2 + width, y2 + height - localOptions.roundRect);
+    ctx.quadraticCurveTo(x2 + width, y2 + height, x2 + width - localOptions.roundRect, y2 + height);
+    ctx.lineTo(x2 + localOptions.roundRect, y2 + height);
+    ctx.quadraticCurveTo(x2, y2 + height, x2, y2 + height - localOptions.roundRect);
+    ctx.lineTo(x2, y2 + localOptions.roundRect);
+    ctx.quadraticCurveTo(x2, y2, x2 + localOptions.roundRect, y2);
+    ctx.closePath();
+  }
+  ctx.stroke();
+}
+function lines(ctx, points = [], localOptions) {
+  if (points === void 0 || points.length === 0)
+    return;
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], points[0][1]);
+  for (const pt of points) {
+    const z2 = pt[2] || 0;
+    ctx.strokeStyle = localOptions.useDepth && z2 ? `rgba(${127.5 + 2 * z2}, ${127.5 - 2 * z2}, 255, 0.3)` : localOptions.color;
+    ctx.fillStyle = localOptions.useDepth && z2 ? `rgba(${127.5 + 2 * z2}, ${127.5 - 2 * z2}, 255, 0.3)` : localOptions.color;
+    ctx.lineTo(pt[0], Math.round(pt[1]));
+  }
+  ctx.stroke();
+  if (localOptions.fillPolygons) {
+    ctx.closePath();
+    ctx.fill();
+  }
+}
+function curves(ctx, points = [], localOptions) {
+  if (points === void 0 || points.length === 0)
+    return;
+  if (!localOptions.useCurves || points.length <= 2) {
+    lines(ctx, points, localOptions);
+    return;
+  }
+  ctx.moveTo(points[0][0], points[0][1]);
+  for (let i2 = 0; i2 < points.length - 2; i2++) {
+    const xc = (points[i2][0] + points[i2 + 1][0]) / 2;
+    const yc = (points[i2][1] + points[i2 + 1][1]) / 2;
+    ctx.quadraticCurveTo(points[i2][0], points[i2][1], xc, yc);
+  }
+  ctx.quadraticCurveTo(points[points.length - 2][0], points[points.length - 2][1], points[points.length - 1][0], points[points.length - 1][1]);
+  ctx.stroke();
+  if (localOptions.fillPolygons) {
+    ctx.closePath();
+    ctx.fill();
+  }
+}
+function arrow(ctx, from, to, radius = 5) {
+  let angle2;
+  let x2;
+  let y2;
+  ctx.beginPath();
+  ctx.moveTo(from[0], from[1]);
+  ctx.lineTo(to[0], to[1]);
+  angle2 = Math.atan2(to[1] - from[1], to[0] - from[0]);
+  x2 = radius * Math.cos(angle2) + to[0];
+  y2 = radius * Math.sin(angle2) + to[1];
+  ctx.moveTo(x2, y2);
+  angle2 += 1 / 3 * (2 * Math.PI);
+  x2 = radius * Math.cos(angle2) + to[0];
+  y2 = radius * Math.sin(angle2) + to[1];
+  ctx.lineTo(x2, y2);
+  angle2 += 1 / 3 * (2 * Math.PI);
+  x2 = radius * Math.cos(angle2) + to[0];
+  y2 = radius * Math.sin(angle2) + to[1];
+  ctx.lineTo(x2, y2);
+  ctx.closePath();
+  ctx.stroke();
+  ctx.fill();
+}
+async function gesture(inCanvas2, result, drawOptions) {
+  const localOptions = mergeDeep(options2, drawOptions);
+  if (!result || !inCanvas2)
+    return;
+  const ctx = getCanvasContext(inCanvas2);
+  ctx.font = localOptions.font;
+  ctx.fillStyle = localOptions.color;
+  let i2 = 1;
+  for (let j2 = 0; j2 < result.length; j2++) {
+    let where2 = [];
+    let what = [];
+    [where2, what] = Object.entries(result[j2]);
+    if (what.length > 1 && what[1].length > 0) {
+      const who = where2[1] > 0 ? `#${where2[1]}` : "";
+      const label = `${where2[0]} ${who}: ${what[1]}`;
+      if (localOptions.shadowColor && localOptions.shadowColor !== "") {
+        ctx.fillStyle = localOptions.shadowColor;
+        ctx.fillText(label, 8, 2 + i2 * localOptions.lineHeight);
+      }
+      ctx.fillStyle = localOptions.labelColor;
+      ctx.fillText(label, 6, 0 + i2 * localOptions.lineHeight);
+      i2 += 1;
+    }
+  }
+}
+async function face(inCanvas2, result, drawOptions) {
+  var _a, _b, _c, _d, _e2;
+  const localOptions = mergeDeep(options2, drawOptions);
+  if (!result || !inCanvas2)
+    return;
+  const ctx = getCanvasContext(inCanvas2);
+  for (const f2 of result) {
+    ctx.font = localOptions.font;
+    ctx.strokeStyle = localOptions.color;
+    ctx.fillStyle = localOptions.color;
+    if (localOptions.drawBoxes)
+      rect(ctx, f2.box[0], f2.box[1], f2.box[2], f2.box[3], localOptions);
+    const labels2 = [];
+    labels2.push(`face: ${Math.trunc(100 * f2.score)}%`);
+    if (f2.genderScore)
+      labels2.push(`${f2.gender || ""} ${Math.trunc(100 * f2.genderScore)}%`);
+    if (f2.age)
+      labels2.push(`age: ${f2.age || ""}`);
+    if (f2.iris)
+      labels2.push(`distance: ${f2.iris}`);
+    if (f2.emotion && f2.emotion.length > 0) {
+      const emotion3 = f2.emotion.map((a6) => `${Math.trunc(100 * a6.score)}% ${a6.emotion}`);
+      if (emotion3.length > 3)
+        emotion3.length = 3;
+      labels2.push(emotion3.join(" "));
+    }
+    if (f2.rotation && f2.rotation.angle && f2.rotation.gaze) {
+      if (f2.rotation.angle.roll)
+        labels2.push(`roll: ${rad2deg(f2.rotation.angle.roll)}\xB0 yaw:${rad2deg(f2.rotation.angle.yaw)}\xB0 pitch:${rad2deg(f2.rotation.angle.pitch)}\xB0`);
+      if (f2.rotation.gaze.bearing)
+        labels2.push(`gaze: ${rad2deg(f2.rotation.gaze.bearing)}\xB0`);
+    }
+    if (labels2.length === 0)
+      labels2.push("face");
+    ctx.fillStyle = localOptions.color;
+    for (let i2 = labels2.length - 1; i2 >= 0; i2--) {
+      const x2 = Math.max(f2.box[0], 0);
+      const y2 = i2 * localOptions.lineHeight + f2.box[1];
+      if (localOptions.shadowColor && localOptions.shadowColor !== "") {
+        ctx.fillStyle = localOptions.shadowColor;
+        ctx.fillText(labels2[i2], x2 + 5, y2 + 16);
+      }
+      ctx.fillStyle = localOptions.labelColor;
+      ctx.fillText(labels2[i2], x2 + 4, y2 + 15);
+    }
+    ctx.lineWidth = 1;
+    if (f2.mesh && f2.mesh.length > 0) {
+      if (localOptions.drawPoints) {
+        for (const pt of f2.mesh)
+          point(ctx, pt[0], pt[1], pt[2], localOptions);
+      }
+      if (localOptions.drawPolygons) {
+        ctx.lineWidth = 1;
+        if (f2.mesh.length > 450) {
+          for (let i2 = 0; i2 < TRI468.length / 3; i2++) {
+            const points = [
+              TRI468[i2 * 3 + 0],
+              TRI468[i2 * 3 + 1],
+              TRI468[i2 * 3 + 2]
+            ].map((index) => f2.mesh[index]);
+            lines(ctx, points, localOptions);
+          }
+        }
+        if (f2.annotations && f2.annotations["leftEyeIris"] && f2.annotations["leftEyeIris"][0]) {
+          ctx.strokeStyle = localOptions.useDepth ? "rgba(255, 200, 255, 0.3)" : localOptions.color;
+          ctx.beginPath();
+          const sizeX = Math.abs(f2.annotations["leftEyeIris"][3][0] - f2.annotations["leftEyeIris"][1][0]) / 2;
+          const sizeY = Math.abs(f2.annotations["leftEyeIris"][4][1] - f2.annotations["leftEyeIris"][2][1]) / 2;
+          ctx.ellipse(f2.annotations["leftEyeIris"][0][0], f2.annotations["leftEyeIris"][0][1], sizeX, sizeY, 0, 0, 2 * Math.PI);
+          ctx.stroke();
+          if (localOptions.fillPolygons) {
+            ctx.fillStyle = localOptions.useDepth ? "rgba(255, 255, 200, 0.3)" : localOptions.color;
+            ctx.fill();
+          }
+        }
+        if (f2.annotations && f2.annotations["rightEyeIris"] && f2.annotations["rightEyeIris"][0]) {
+          ctx.strokeStyle = localOptions.useDepth ? "rgba(255, 200, 255, 0.3)" : localOptions.color;
+          ctx.beginPath();
+          const sizeX = Math.abs(f2.annotations["rightEyeIris"][3][0] - f2.annotations["rightEyeIris"][1][0]) / 2;
+          const sizeY = Math.abs(f2.annotations["rightEyeIris"][4][1] - f2.annotations["rightEyeIris"][2][1]) / 2;
+          ctx.ellipse(f2.annotations["rightEyeIris"][0][0], f2.annotations["rightEyeIris"][0][1], sizeX, sizeY, 0, 0, 2 * Math.PI);
+          ctx.stroke();
+          if (localOptions.fillPolygons) {
+            ctx.fillStyle = localOptions.useDepth ? "rgba(255, 255, 200, 0.3)" : localOptions.color;
+            ctx.fill();
+          }
+        }
+        if (localOptions.drawGaze && ((_a = f2.rotation) == null ? void 0 : _a.angle)) {
+          ctx.strokeStyle = "pink";
+          const valX = f2.box[0] + f2.box[2] / 2 - f2.box[3] * rad2deg(f2.rotation.angle.yaw) / 90;
+          const valY = f2.box[1] + f2.box[3] / 2 + f2.box[2] * rad2deg(f2.rotation.angle.pitch) / 90;
+          const pathV = new Path2D(`
+            M ${f2.box[0] + f2.box[2] / 2} ${f2.box[1]}
+            C
+              ${valX} ${f2.box[1]},
+              ${valX} ${f2.box[1] + f2.box[3]},
+              ${f2.box[0] + f2.box[2] / 2} ${f2.box[1] + f2.box[3]}
+          `);
+          const pathH = new Path2D(`
+            M ${f2.box[0]} ${f2.box[1] + f2.box[3] / 2}
+            C 
+              ${f2.box[0]} ${valY},
+              ${f2.box[0] + f2.box[2]} ${valY},
+              ${f2.box[0] + f2.box[2]} ${f2.box[1] + f2.box[3] / 2}
+          `);
+          ctx.stroke(pathH);
+          ctx.stroke(pathV);
+        }
+        if (localOptions.drawGaze && ((_c = (_b = f2.rotation) == null ? void 0 : _b.gaze) == null ? void 0 : _c.strength) && ((_e2 = (_d = f2.rotation) == null ? void 0 : _d.gaze) == null ? void 0 : _e2.bearing) && f2.annotations["leftEyeIris"] && f2.annotations["rightEyeIris"] && f2.annotations["leftEyeIris"][0] && f2.annotations["rightEyeIris"][0]) {
+          ctx.strokeStyle = "pink";
+          ctx.fillStyle = "pink";
+          const leftGaze = [
+            f2.annotations["leftEyeIris"][0][0] + Math.sin(f2.rotation.gaze.bearing) * f2.rotation.gaze.strength * f2.box[3],
+            f2.annotations["leftEyeIris"][0][1] + Math.cos(f2.rotation.gaze.bearing) * f2.rotation.gaze.strength * f2.box[2]
+          ];
+          arrow(ctx, [f2.annotations["leftEyeIris"][0][0], f2.annotations["leftEyeIris"][0][1]], [leftGaze[0], leftGaze[1]], 4);
+          const rightGaze = [
+            f2.annotations["rightEyeIris"][0][0] + Math.sin(f2.rotation.gaze.bearing) * f2.rotation.gaze.strength * f2.box[3],
+            f2.annotations["rightEyeIris"][0][1] + Math.cos(f2.rotation.gaze.bearing) * f2.rotation.gaze.strength * f2.box[2]
+          ];
+          arrow(ctx, [f2.annotations["rightEyeIris"][0][0], f2.annotations["rightEyeIris"][0][1]], [rightGaze[0], rightGaze[1]], 4);
+        }
+      }
+    }
+  }
+}
+async function body(inCanvas2, result, drawOptions) {
+  var _a;
+  const localOptions = mergeDeep(options2, drawOptions);
+  if (!result || !inCanvas2)
+    return;
+  const ctx = getCanvasContext(inCanvas2);
+  ctx.lineJoin = "round";
+  for (let i2 = 0; i2 < result.length; i2++) {
+    ctx.strokeStyle = localOptions.color;
+    ctx.fillStyle = localOptions.color;
+    ctx.lineWidth = localOptions.lineWidth;
+    ctx.font = localOptions.font;
+    if (localOptions.drawBoxes && result[i2].box && ((_a = result[i2].box) == null ? void 0 : _a.length) === 4) {
+      rect(ctx, result[i2].box[0], result[i2].box[1], result[i2].box[2], result[i2].box[3], localOptions);
+      if (localOptions.drawLabels) {
+        if (localOptions.shadowColor && localOptions.shadowColor !== "") {
+          ctx.fillStyle = localOptions.shadowColor;
+          ctx.fillText(`body ${100 * result[i2].score}%`, result[i2].box[0] + 3, 1 + result[i2].box[1] + localOptions.lineHeight, result[i2].box[2]);
+        }
+        ctx.fillStyle = localOptions.labelColor;
+        ctx.fillText(`body ${100 * result[i2].score}%`, result[i2].box[0] + 2, 0 + result[i2].box[1] + localOptions.lineHeight, result[i2].box[2]);
+      }
+    }
+    if (localOptions.drawPoints && result[i2].keypoints) {
+      for (let pt = 0; pt < result[i2].keypoints.length; pt++) {
+        ctx.fillStyle = localOptions.useDepth && result[i2].keypoints[pt].position[2] ? `rgba(${127.5 + 2 * (result[i2].keypoints[pt].position[2] || 0)}, ${127.5 - 2 * (result[i2].keypoints[pt].position[2] || 0)}, 255, 0.5)` : localOptions.color;
+        point(ctx, result[i2].keypoints[pt].position[0], result[i2].keypoints[pt].position[1], 0, localOptions);
+      }
+    }
+    if (localOptions.drawLabels && result[i2].keypoints) {
+      ctx.font = localOptions.font;
+      for (const pt of result[i2].keypoints) {
+        ctx.fillStyle = localOptions.useDepth && pt.position[2] ? `rgba(${127.5 + 2 * pt.position[2]}, ${127.5 - 2 * pt.position[2]}, 255, 0.5)` : localOptions.color;
+        ctx.fillText(`${pt.part} ${Math.trunc(100 * pt.score)}%`, pt.position[0] + 4, pt.position[1] + 4);
+      }
+    }
+    if (localOptions.drawPolygons && result[i2].keypoints && result[i2].annotations) {
+      for (const part of Object.values(result[i2].annotations)) {
+        for (const connected4 of part)
+          curves(ctx, connected4, localOptions);
+      }
+    }
+  }
+}
+async function hand(inCanvas2, result, drawOptions) {
+  const localOptions = mergeDeep(options2, drawOptions);
+  if (!result || !inCanvas2)
+    return;
+  const ctx = getCanvasContext(inCanvas2);
+  ctx.lineJoin = "round";
+  ctx.font = localOptions.font;
+  for (const h2 of result) {
+    if (localOptions.drawBoxes) {
+      ctx.strokeStyle = localOptions.color;
+      ctx.fillStyle = localOptions.color;
+      rect(ctx, h2.box[0], h2.box[1], h2.box[2], h2.box[3], localOptions);
+      if (localOptions.drawLabels) {
+        if (localOptions.shadowColor && localOptions.shadowColor !== "") {
+          ctx.fillStyle = localOptions.shadowColor;
+          ctx.fillText(`hand:${Math.trunc(100 * h2.score)}%`, h2.box[0] + 3, 1 + h2.box[1] + localOptions.lineHeight, h2.box[2]);
+        }
+        ctx.fillStyle = localOptions.labelColor;
+        ctx.fillText(`hand:${Math.trunc(100 * h2.score)}%`, h2.box[0] + 2, 0 + h2.box[1] + localOptions.lineHeight, h2.box[2]);
+      }
+      ctx.stroke();
+    }
+    if (localOptions.drawPoints) {
+      if (h2.keypoints && h2.keypoints.length > 0) {
+        for (const pt of h2.keypoints) {
+          ctx.fillStyle = localOptions.useDepth ? `rgba(${127.5 + 2 * (pt[2] || 0)}, ${127.5 - 2 * (pt[2] || 0)}, 255, 0.5)` : localOptions.color;
+          point(ctx, pt[0], pt[1], 0, localOptions);
+        }
+      }
+    }
+    if (localOptions.drawLabels && h2.annotations) {
+      const addHandLabel = (part, title) => {
+        if (!part || part.length === 0 || !part[0])
+          return;
+        ctx.fillStyle = localOptions.useDepth ? `rgba(${127.5 + 2 * part[part.length - 1][2]}, ${127.5 - 2 * part[part.length - 1][2]}, 255, 0.5)` : localOptions.color;
+        ctx.fillText(title, part[part.length - 1][0] + 4, part[part.length - 1][1] + 4);
+      };
+      ctx.font = localOptions.font;
+      addHandLabel(h2.annotations["index"], "index");
+      addHandLabel(h2.annotations["middle"], "middle");
+      addHandLabel(h2.annotations["ring"], "ring");
+      addHandLabel(h2.annotations["pinky"], "pinky");
+      addHandLabel(h2.annotations["thumb"], "thumb");
+      addHandLabel(h2.annotations["palm"], "palm");
+    }
+    if (localOptions.drawPolygons && h2.annotations) {
+      const addHandLine = (part) => {
+        if (!part || part.length === 0 || !part[0])
+          return;
+        for (let i2 = 0; i2 < part.length; i2++) {
+          ctx.beginPath();
+          ctx.strokeStyle = localOptions.useDepth ? `rgba(${127.5 + 2 * part[i2][2]}, ${127.5 - 2 * part[i2][2]}, 255, 0.5)` : localOptions.color;
+          ctx.moveTo(part[i2 > 0 ? i2 - 1 : 0][0], part[i2 > 0 ? i2 - 1 : 0][1]);
+          ctx.lineTo(part[i2][0], part[i2][1]);
+          ctx.stroke();
+        }
+      };
+      ctx.lineWidth = localOptions.lineWidth;
+      addHandLine(h2.annotations["index"]);
+      addHandLine(h2.annotations["middle"]);
+      addHandLine(h2.annotations["ring"]);
+      addHandLine(h2.annotations["pinky"]);
+      addHandLine(h2.annotations["thumb"]);
+    }
+  }
+}
+async function object(inCanvas2, result, drawOptions) {
+  const localOptions = mergeDeep(options2, drawOptions);
+  if (!result || !inCanvas2)
+    return;
+  const ctx = getCanvasContext(inCanvas2);
+  ctx.lineJoin = "round";
+  ctx.font = localOptions.font;
+  for (const h2 of result) {
+    if (localOptions.drawBoxes) {
+      ctx.strokeStyle = localOptions.color;
+      ctx.fillStyle = localOptions.color;
+      rect(ctx, h2.box[0], h2.box[1], h2.box[2], h2.box[3], localOptions);
+      if (localOptions.drawLabels) {
+        const label = `${h2.label} ${Math.round(100 * h2.score)}%`;
+        if (localOptions.shadowColor && localOptions.shadowColor !== "") {
+          ctx.fillStyle = localOptions.shadowColor;
+          ctx.fillText(label, h2.box[0] + 3, 1 + h2.box[1] + localOptions.lineHeight, h2.box[2]);
+        }
+        ctx.fillStyle = localOptions.labelColor;
+        ctx.fillText(label, h2.box[0] + 2, 0 + h2.box[1] + localOptions.lineHeight, h2.box[2]);
+      }
+      ctx.stroke();
+    }
+  }
+}
+async function person(inCanvas2, result, drawOptions) {
+  const localOptions = mergeDeep(options2, drawOptions);
+  if (!result || !inCanvas2)
+    return;
+  const ctx = getCanvasContext(inCanvas2);
+  ctx.lineJoin = "round";
+  ctx.font = localOptions.font;
+  for (let i2 = 0; i2 < result.length; i2++) {
+    if (localOptions.drawBoxes) {
+      ctx.strokeStyle = localOptions.color;
+      ctx.fillStyle = localOptions.color;
+      rect(ctx, result[i2].box[0], result[i2].box[1], result[i2].box[2], result[i2].box[3], localOptions);
+      if (localOptions.drawLabels) {
+        const label = `person #${i2}`;
+        if (localOptions.shadowColor && localOptions.shadowColor !== "") {
+          ctx.fillStyle = localOptions.shadowColor;
+          ctx.fillText(label, result[i2].box[0] + 3, 1 + result[i2].box[1] + localOptions.lineHeight, result[i2].box[2]);
+        }
+        ctx.fillStyle = localOptions.labelColor;
+        ctx.fillText(label, result[i2].box[0] + 2, 0 + result[i2].box[1] + localOptions.lineHeight, result[i2].box[2]);
+      }
+      ctx.stroke();
+    }
+  }
+}
+async function canvas2(input2, output) {
+  if (!input2 || !output)
+    return;
+  const ctx = getCanvasContext(output);
+  ctx.drawImage(input2, 0, 0);
+}
+async function all5(inCanvas2, result, drawOptions) {
+  if (!result || !result.performance || !result || !inCanvas2)
+    return null;
+  const timestamp = now2();
+  const localOptions = mergeDeep(options2, drawOptions);
+  const promise = Promise.all([
+    face(inCanvas2, result.face, localOptions),
+    body(inCanvas2, result.body, localOptions),
+    hand(inCanvas2, result.hand, localOptions),
+    object(inCanvas2, result.object, localOptions),
+    gesture(inCanvas2, result.gesture, localOptions)
+  ]);
+  result.performance.draw = Math.trunc(now2() - timestamp);
+  return promise;
 }
 var calculateGaze = (face5) => {
   const radians = (pt1, pt2) => Math.atan2(pt1[1] - pt2[1], pt1[0] - pt2[0]);
@@ -99315,7 +107237,7 @@ var detectFace = async (parent, input2) => {
   }
   return faceRes;
 };
-var body = (res2) => {
+var body2 = (res2) => {
   if (!res2)
     return [];
   const gestures = [];
@@ -99323,20 +107245,20 @@ var body = (res2) => {
     const leftWrist = res2[i2].keypoints.find((a6) => a6.part === "leftWrist");
     const rightWrist = res2[i2].keypoints.find((a6) => a6.part === "rightWrist");
     const nose = res2[i2].keypoints.find((a6) => a6.part === "nose");
-    if (nose && leftWrist && rightWrist && leftWrist.position.y < nose.position.y && rightWrist.position.y < nose.position.y)
+    if (nose && leftWrist && rightWrist && leftWrist.position[1] < nose.position[1] && rightWrist.position[1] < nose.position[1])
       gestures.push({ body: i2, gesture: "i give up" });
-    else if (nose && leftWrist && leftWrist.position.y < nose.position.y)
+    else if (nose && leftWrist && leftWrist.position[1] < nose.position[1])
       gestures.push({ body: i2, gesture: "raise left hand" });
-    else if (nose && rightWrist && rightWrist.position.y < nose.position.y)
+    else if (nose && rightWrist && rightWrist.position[1] < nose.position[1])
       gestures.push({ body: i2, gesture: "raise right hand" });
     const leftShoulder = res2[i2].keypoints.find((a6) => a6.part === "leftShoulder");
     const rightShoulder = res2[i2].keypoints.find((a6) => a6.part === "rightShoulder");
     if (leftShoulder && rightShoulder)
-      gestures.push({ body: i2, gesture: `leaning ${leftShoulder.position.y > rightShoulder.position.y ? "left" : "right"}` });
+      gestures.push({ body: i2, gesture: `leaning ${leftShoulder.position[1] > rightShoulder.position[1] ? "left" : "right"}` });
   }
   return gestures;
 };
-var face = (res2) => {
+var face2 = (res2) => {
   if (!res2)
     return [];
   const gestures = [];
@@ -99403,7 +107325,7 @@ var iris3 = (res2) => {
   }
   return gestures;
 };
-var hand = (res2) => {
+var hand2 = (res2) => {
   if (!res2)
     return [];
   const gestures = [];
@@ -99422,500 +107344,158 @@ var hand = (res2) => {
       gestures.push({ hand: i2, gesture: `${highest.name} up` });
     }
     if (res2[i2]["keypoints"]) {
-      const poses = match2(res2[i2]["keypoints"]);
+      const poses = match(res2[i2]["keypoints"]);
       for (const pose of poses)
         gestures.push({ hand: i2, gesture: pose.name });
     }
   }
   return gestures;
 };
-var options2 = {
-  color: "rgba(173, 216, 230, 0.6)",
-  labelColor: "rgba(173, 216, 230, 1)",
-  shadowColor: "black",
-  font: 'small-caps 14px "Segoe UI"',
-  lineHeight: 18,
-  lineWidth: 4,
-  pointSize: 2,
-  roundRect: 8,
-  drawPoints: false,
-  drawLabels: true,
-  drawBoxes: true,
-  drawPolygons: true,
-  drawGaze: true,
-  fillPolygons: false,
-  useDepth: true,
-  useCurves: false,
-  bufferedOutput: true
-};
-var getCanvasContext = (input2) => {
-  if (input2 && input2.getContext)
-    return input2.getContext("2d");
-  throw new Error("invalid canvas");
-};
-var rad2deg = (theta) => Math.round(theta * 180 / Math.PI);
-function point(ctx, x2, y2, z2 = 0, localOptions) {
-  ctx.fillStyle = localOptions.useDepth && z2 ? `rgba(${127.5 + 2 * z2}, ${127.5 - 2 * z2}, 255, 0.3)` : localOptions.color;
-  ctx.beginPath();
-  ctx.arc(x2, y2, localOptions.pointSize, 0, 2 * Math.PI);
-  ctx.fill();
-}
-function rect(ctx, x2, y2, width, height, localOptions) {
-  ctx.beginPath();
-  if (localOptions.useCurves) {
-    const cx = (x2 + x2 + width) / 2;
-    const cy = (y2 + y2 + height) / 2;
-    ctx.ellipse(cx, cy, width / 2, height / 2, 0, 0, 2 * Math.PI);
+var bufferedResult = { face: [], body: [], hand: [], gesture: [], object: [], persons: [], performance: {}, timestamp: 0 };
+function calc2(newResult, config3) {
+  var _a, _b, _c, _d, _e2, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q2, _r, _s, _t, _u, _v, _w, _x2, _y2, _z2, _A;
+  const t0 = performance.now();
+  if (!newResult)
+    return { face: [], body: [], hand: [], gesture: [], object: [], persons: [], performance: {}, timestamp: 0 };
+  const elapsed = Date.now() - newResult.timestamp;
+  const bufferedFactor = elapsed < 1e3 ? 8 - Math.log(elapsed + 1) : 1;
+  bufferedResult.canvas = newResult.canvas;
+  if (!bufferedResult.body || newResult.body.length !== bufferedResult.body.length) {
+    bufferedResult.body = JSON.parse(JSON.stringify(newResult.body));
   } else {
-    ctx.lineWidth = localOptions.lineWidth;
-    ctx.moveTo(x2 + localOptions.roundRect, y2);
-    ctx.lineTo(x2 + width - localOptions.roundRect, y2);
-    ctx.quadraticCurveTo(x2 + width, y2, x2 + width, y2 + localOptions.roundRect);
-    ctx.lineTo(x2 + width, y2 + height - localOptions.roundRect);
-    ctx.quadraticCurveTo(x2 + width, y2 + height, x2 + width - localOptions.roundRect, y2 + height);
-    ctx.lineTo(x2 + localOptions.roundRect, y2 + height);
-    ctx.quadraticCurveTo(x2, y2 + height, x2, y2 + height - localOptions.roundRect);
-    ctx.lineTo(x2, y2 + localOptions.roundRect);
-    ctx.quadraticCurveTo(x2, y2, x2 + localOptions.roundRect, y2);
-    ctx.closePath();
-  }
-  ctx.stroke();
-}
-function lines(ctx, points = [], localOptions) {
-  if (points === void 0 || points.length === 0)
-    return;
-  ctx.beginPath();
-  ctx.moveTo(points[0][0], points[0][1]);
-  for (const pt of points) {
-    const z2 = pt[2] || 0;
-    ctx.strokeStyle = localOptions.useDepth && z2 ? `rgba(${127.5 + 2 * z2}, ${127.5 - 2 * z2}, 255, 0.3)` : localOptions.color;
-    ctx.fillStyle = localOptions.useDepth && z2 ? `rgba(${127.5 + 2 * z2}, ${127.5 - 2 * z2}, 255, 0.3)` : localOptions.color;
-    ctx.lineTo(pt[0], Math.round(pt[1]));
-  }
-  ctx.stroke();
-  if (localOptions.fillPolygons) {
-    ctx.closePath();
-    ctx.fill();
-  }
-}
-function curves(ctx, points = [], localOptions) {
-  if (points === void 0 || points.length === 0)
-    return;
-  if (!localOptions.useCurves || points.length <= 2) {
-    lines(ctx, points, localOptions);
-    return;
-  }
-  ctx.moveTo(points[0][0], points[0][1]);
-  for (let i2 = 0; i2 < points.length - 2; i2++) {
-    const xc = (points[i2][0] + points[i2 + 1][0]) / 2;
-    const yc = (points[i2][1] + points[i2 + 1][1]) / 2;
-    ctx.quadraticCurveTo(points[i2][0], points[i2][1], xc, yc);
-  }
-  ctx.quadraticCurveTo(points[points.length - 2][0], points[points.length - 2][1], points[points.length - 1][0], points[points.length - 1][1]);
-  ctx.stroke();
-  if (localOptions.fillPolygons) {
-    ctx.closePath();
-    ctx.fill();
-  }
-}
-async function gesture(inCanvas2, result, drawOptions) {
-  const localOptions = mergeDeep(options2, drawOptions);
-  if (!result || !inCanvas2)
-    return;
-  const ctx = getCanvasContext(inCanvas2);
-  ctx.font = localOptions.font;
-  ctx.fillStyle = localOptions.color;
-  let i2 = 1;
-  for (let j2 = 0; j2 < result.length; j2++) {
-    let where2 = [];
-    let what = [];
-    [where2, what] = Object.entries(result[j2]);
-    if (what.length > 1 && what[1].length > 0) {
-      const who = where2[1] > 0 ? `#${where2[1]}` : "";
-      const label = `${where2[0]} ${who}: ${what[1]}`;
-      if (localOptions.shadowColor && localOptions.shadowColor !== "") {
-        ctx.fillStyle = localOptions.shadowColor;
-        ctx.fillText(label, 8, 2 + i2 * localOptions.lineHeight);
-      }
-      ctx.fillStyle = localOptions.labelColor;
-      ctx.fillText(label, 6, 0 + i2 * localOptions.lineHeight);
-      i2 += 1;
-    }
-  }
-}
-async function face2(inCanvas2, result, drawOptions) {
-  var _a, _b, _c, _d;
-  const localOptions = mergeDeep(options2, drawOptions);
-  if (!result || !inCanvas2)
-    return;
-  const ctx = getCanvasContext(inCanvas2);
-  for (const f2 of result) {
-    ctx.font = localOptions.font;
-    ctx.strokeStyle = localOptions.color;
-    ctx.fillStyle = localOptions.color;
-    if (localOptions.drawBoxes)
-      rect(ctx, f2.box[0], f2.box[1], f2.box[2], f2.box[3], localOptions);
-    const labels2 = [];
-    labels2.push(`face: ${Math.trunc(100 * f2.score)}%`);
-    if (f2.genderScore)
-      labels2.push(`${f2.gender || ""} ${Math.trunc(100 * f2.genderScore)}%`);
-    if (f2.age)
-      labels2.push(`age: ${f2.age || ""}`);
-    if (f2.iris)
-      labels2.push(`distance: ${f2.iris}`);
-    if (f2.emotion && f2.emotion.length > 0) {
-      const emotion3 = f2.emotion.map((a6) => `${Math.trunc(100 * a6.score)}% ${a6.emotion}`);
-      if (emotion3.length > 3)
-        emotion3.length = 3;
-      labels2.push(emotion3.join(" "));
-    }
-    if (f2.rotation && f2.rotation.angle && f2.rotation.gaze) {
-      if (f2.rotation.angle.roll)
-        labels2.push(`roll: ${rad2deg(f2.rotation.angle.roll)}\xB0 yaw:${rad2deg(f2.rotation.angle.yaw)}\xB0 pitch:${rad2deg(f2.rotation.angle.pitch)}\xB0`);
-      if (f2.rotation.gaze.bearing)
-        labels2.push(`gaze: ${rad2deg(f2.rotation.gaze.bearing)}\xB0`);
-    }
-    if (labels2.length === 0)
-      labels2.push("face");
-    ctx.fillStyle = localOptions.color;
-    for (let i2 = labels2.length - 1; i2 >= 0; i2--) {
-      const x2 = Math.max(f2.box[0], 0);
-      const y2 = i2 * localOptions.lineHeight + f2.box[1];
-      if (localOptions.shadowColor && localOptions.shadowColor !== "") {
-        ctx.fillStyle = localOptions.shadowColor;
-        ctx.fillText(labels2[i2], x2 + 5, y2 + 16);
-      }
-      ctx.fillStyle = localOptions.labelColor;
-      ctx.fillText(labels2[i2], x2 + 4, y2 + 15);
-    }
-    ctx.lineWidth = 1;
-    if (f2.mesh && f2.mesh.length > 0) {
-      if (localOptions.drawPoints) {
-        for (const pt of f2.mesh)
-          point(ctx, pt[0], pt[1], pt[2], localOptions);
-      }
-      if (localOptions.drawPolygons) {
-        ctx.lineWidth = 1;
-        if (f2.mesh.length > 450) {
-          for (let i2 = 0; i2 < TRI468.length / 3; i2++) {
-            const points = [
-              TRI468[i2 * 3 + 0],
-              TRI468[i2 * 3 + 1],
-              TRI468[i2 * 3 + 2]
-            ].map((index) => f2.mesh[index]);
-            lines(ctx, points, localOptions);
-          }
+    for (let i2 = 0; i2 < newResult.body.length; i2++) {
+      const box5 = newResult.body[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.body[i2].box[j2] + b2) / bufferedFactor);
+      const boxRaw = newResult.body[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.body[i2].boxRaw[j2] + b2) / bufferedFactor);
+      const keypoints2 = newResult.body[i2].keypoints.map((keypoint, j2) => ({
+        score: keypoint.score,
+        part: keypoint.part,
+        position: [
+          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].position[0] + keypoint.position[0]) / bufferedFactor : keypoint.position[0],
+          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].position[1] + keypoint.position[1]) / bufferedFactor : keypoint.position[1]
+        ],
+        positionRaw: [
+          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].positionRaw[0] + keypoint.positionRaw[0]) / bufferedFactor : keypoint.position[0],
+          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].positionRaw[1] + keypoint.positionRaw[1]) / bufferedFactor : keypoint.position[1]
+        ]
+      }));
+      const annotations2 = {};
+      let coords9 = { connected: {} };
+      if ((_b = (_a = config3.body) == null ? void 0 : _a.modelPath) == null ? void 0 : _b.includes("efficientpose"))
+        coords9 = efficientposecoords_exports;
+      else if ((_d = (_c = config3.body) == null ? void 0 : _c.modelPath) == null ? void 0 : _d.includes("blazepose"))
+        coords9 = blazeposecoords_exports;
+      else if ((_f = (_e2 = config3.body) == null ? void 0 : _e2.modelPath) == null ? void 0 : _f.includes("movenet"))
+        coords9 = movenetcoords_exports;
+      for (const [name, indexes] of Object.entries(coords9.connected)) {
+        const pt = [];
+        for (let j2 = 0; j2 < indexes.length - 1; j2++) {
+          const pt0 = keypoints2.find((kp) => kp.part === indexes[j2]);
+          const pt1 = keypoints2.find((kp) => kp.part === indexes[j2 + 1]);
+          if (pt0 && pt1 && pt0.score > (config3.body.minConfidence || 0) && pt1.score > (config3.body.minConfidence || 0))
+            pt.push([pt0.position, pt1.position]);
         }
-        if (f2.annotations && f2.annotations["leftEyeIris"] && f2.annotations["leftEyeIris"][0]) {
-          ctx.strokeStyle = localOptions.useDepth ? "rgba(255, 200, 255, 0.3)" : localOptions.color;
-          ctx.beginPath();
-          const sizeX = Math.abs(f2.annotations["leftEyeIris"][3][0] - f2.annotations["leftEyeIris"][1][0]) / 2;
-          const sizeY = Math.abs(f2.annotations["leftEyeIris"][4][1] - f2.annotations["leftEyeIris"][2][1]) / 2;
-          ctx.ellipse(f2.annotations["leftEyeIris"][0][0], f2.annotations["leftEyeIris"][0][1], sizeX, sizeY, 0, 0, 2 * Math.PI);
-          ctx.stroke();
-          if (localOptions.fillPolygons) {
-            ctx.fillStyle = localOptions.useDepth ? "rgba(255, 255, 200, 0.3)" : localOptions.color;
-            ctx.fill();
-          }
-        }
-        if (f2.annotations && f2.annotations["rightEyeIris"] && f2.annotations["rightEyeIris"][0]) {
-          ctx.strokeStyle = localOptions.useDepth ? "rgba(255, 200, 255, 0.3)" : localOptions.color;
-          ctx.beginPath();
-          const sizeX = Math.abs(f2.annotations["rightEyeIris"][3][0] - f2.annotations["rightEyeIris"][1][0]) / 2;
-          const sizeY = Math.abs(f2.annotations["rightEyeIris"][4][1] - f2.annotations["rightEyeIris"][2][1]) / 2;
-          ctx.ellipse(f2.annotations["rightEyeIris"][0][0], f2.annotations["rightEyeIris"][0][1], sizeX, sizeY, 0, 0, 2 * Math.PI);
-          ctx.stroke();
-          if (localOptions.fillPolygons) {
-            ctx.fillStyle = localOptions.useDepth ? "rgba(255, 255, 200, 0.3)" : localOptions.color;
-            ctx.fill();
-          }
-        }
-        if (localOptions.drawGaze && ((_b = (_a = f2.rotation) == null ? void 0 : _a.gaze) == null ? void 0 : _b.strength) && ((_d = (_c = f2.rotation) == null ? void 0 : _c.gaze) == null ? void 0 : _d.bearing) && f2.annotations["leftEyeIris"] && f2.annotations["rightEyeIris"] && f2.annotations["leftEyeIris"][0] && f2.annotations["rightEyeIris"][0]) {
-          ctx.strokeStyle = "pink";
-          ctx.beginPath();
-          const leftGaze = [
-            f2.annotations["leftEyeIris"][0][0] + Math.sin(f2.rotation.gaze.bearing) * f2.rotation.gaze.strength * f2.box[3],
-            f2.annotations["leftEyeIris"][0][1] + Math.cos(f2.rotation.gaze.bearing) * f2.rotation.gaze.strength * f2.box[2]
-          ];
-          ctx.moveTo(f2.annotations["leftEyeIris"][0][0], f2.annotations["leftEyeIris"][0][1]);
-          ctx.lineTo(leftGaze[0], leftGaze[1]);
-          const rightGaze = [
-            f2.annotations["rightEyeIris"][0][0] + Math.sin(f2.rotation.gaze.bearing) * f2.rotation.gaze.strength * f2.box[3],
-            f2.annotations["rightEyeIris"][0][1] + Math.cos(f2.rotation.gaze.bearing) * f2.rotation.gaze.strength * f2.box[2]
-          ];
-          ctx.moveTo(f2.annotations["rightEyeIris"][0][0], f2.annotations["rightEyeIris"][0][1]);
-          ctx.lineTo(rightGaze[0], rightGaze[1]);
-          ctx.stroke();
+        annotations2[name] = pt;
+      }
+      bufferedResult.body[i2] = { ...newResult.body[i2], box: box5, boxRaw, keypoints: keypoints2, annotations: annotations2 };
+    }
+  }
+  if (!bufferedResult.hand || newResult.hand.length !== bufferedResult.hand.length) {
+    bufferedResult.hand = JSON.parse(JSON.stringify(newResult.hand));
+  } else {
+    for (let i2 = 0; i2 < newResult.hand.length; i2++) {
+      const box5 = newResult.hand[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.hand[i2].box[j2] + b2) / bufferedFactor);
+      const boxRaw = newResult.hand[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.hand[i2].boxRaw[j2] + b2) / bufferedFactor);
+      if (bufferedResult.hand[i2].keypoints.length !== newResult.hand[i2].keypoints.length)
+        bufferedResult.hand[i2].keypoints = newResult.hand[i2].keypoints;
+      const keypoints2 = newResult.hand[i2].keypoints && newResult.hand[i2].keypoints.length > 0 ? newResult.hand[i2].keypoints.map((landmark, j2) => landmark.map((coord, k3) => ((bufferedFactor - 1) * (bufferedResult.hand[i2].keypoints[j2][k3] || 1) + (coord || 0)) / bufferedFactor)) : [];
+      let annotations2 = {};
+      if (Object.keys(bufferedResult.hand[i2].annotations).length !== Object.keys(newResult.hand[i2].annotations).length) {
+        bufferedResult.hand[i2].annotations = newResult.hand[i2].annotations;
+        annotations2 = bufferedResult.hand[i2].annotations;
+      } else if (newResult.hand[i2].annotations) {
+        for (const key of Object.keys(newResult.hand[i2].annotations)) {
+          annotations2[key] = newResult.hand[i2].annotations[key] && newResult.hand[i2].annotations[key][0] ? newResult.hand[i2].annotations[key].map((val, j2) => val.map((coord, k3) => ((bufferedFactor - 1) * bufferedResult.hand[i2].annotations[key][j2][k3] + coord) / bufferedFactor)) : null;
         }
       }
+      bufferedResult.hand[i2] = { ...newResult.hand[i2], box: box5, boxRaw, keypoints: keypoints2, annotations: annotations2 };
     }
   }
-}
-async function body2(inCanvas2, result, drawOptions) {
-  var _a;
-  const localOptions = mergeDeep(options2, drawOptions);
-  if (!result || !inCanvas2)
-    return;
-  const ctx = getCanvasContext(inCanvas2);
-  ctx.lineJoin = "round";
-  for (let i2 = 0; i2 < result.length; i2++) {
-    ctx.strokeStyle = localOptions.color;
-    ctx.fillStyle = localOptions.color;
-    ctx.lineWidth = localOptions.lineWidth;
-    ctx.font = localOptions.font;
-    if (localOptions.drawBoxes && result[i2].box && ((_a = result[i2].box) == null ? void 0 : _a.length) === 4) {
-      rect(ctx, result[i2].box[0], result[i2].box[1], result[i2].box[2], result[i2].box[3], localOptions);
-      if (localOptions.drawLabels) {
-        if (localOptions.shadowColor && localOptions.shadowColor !== "") {
-          ctx.fillStyle = localOptions.shadowColor;
-          ctx.fillText(`body ${100 * result[i2].score}%`, result[i2].box[0] + 3, 1 + result[i2].box[1] + localOptions.lineHeight, result[i2].box[2]);
-        }
-        ctx.fillStyle = localOptions.labelColor;
-        ctx.fillText(`body ${100 * result[i2].score}%`, result[i2].box[0] + 2, 0 + result[i2].box[1] + localOptions.lineHeight, result[i2].box[2]);
-      }
-    }
-    if (localOptions.drawPoints) {
-      for (let pt = 0; pt < result[i2].keypoints.length; pt++) {
-        ctx.fillStyle = localOptions.useDepth && result[i2].keypoints[pt].position[2] ? `rgba(${127.5 + 2 * (result[i2].keypoints[pt].position[2] || 0)}, ${127.5 - 2 * (result[i2].keypoints[pt].position[2] || 0)}, 255, 0.5)` : localOptions.color;
-        point(ctx, result[i2].keypoints[pt].position[0], result[i2].keypoints[pt].position[1], 0, localOptions);
-      }
-    }
-    if (localOptions.drawLabels) {
-      ctx.font = localOptions.font;
-      if (result[i2].keypoints) {
-        for (const pt of result[i2].keypoints) {
-          ctx.fillStyle = localOptions.useDepth && pt.position[2] ? `rgba(${127.5 + 2 * pt.position[2]}, ${127.5 - 2 * pt.position[2]}, 255, 0.5)` : localOptions.color;
-          ctx.fillText(`${pt.part} ${Math.trunc(100 * pt.score)}%`, pt.position[0] + 4, pt.position[1] + 4);
-        }
-      }
-    }
-    if (localOptions.drawPolygons && result[i2].keypoints) {
-      let part;
-      const points = [];
-      points.length = 0;
-      part = result[i2].keypoints.find((a6) => a6.part === "leftShoulder");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "rightShoulder");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      curves(ctx, points, localOptions);
-      points.length = 0;
-      part = result[i2].keypoints.find((a6) => a6.part === "rightShoulder");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "rightHip");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "leftHip");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "leftShoulder");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      if (points.length === 4)
-        lines(ctx, points, localOptions);
-      points.length = 0;
-      part = result[i2].keypoints.find((a6) => a6.part === "leftHip");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "leftKnee");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "leftAnkle");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "leftHeel");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "leftFoot");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      curves(ctx, points, localOptions);
-      points.length = 0;
-      part = result[i2].keypoints.find((a6) => a6.part === "rightHip");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "rightKnee");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "rightAnkle");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "rightHeel");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "rightFoot");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      curves(ctx, points, localOptions);
-      points.length = 0;
-      part = result[i2].keypoints.find((a6) => a6.part === "leftShoulder");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "leftElbow");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "leftWrist");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "leftPalm");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      curves(ctx, points, localOptions);
-      points.length = 0;
-      part = result[i2].keypoints.find((a6) => a6.part === "rightShoulder");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "rightElbow");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "rightWrist");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      part = result[i2].keypoints.find((a6) => a6.part === "rightPalm");
-      if (part)
-        points.push([part.position[0], part.position[1]]);
-      curves(ctx, points, localOptions);
-    }
-  }
-}
-async function hand2(inCanvas2, result, drawOptions) {
-  const localOptions = mergeDeep(options2, drawOptions);
-  if (!result || !inCanvas2)
-    return;
-  const ctx = getCanvasContext(inCanvas2);
-  ctx.lineJoin = "round";
-  ctx.font = localOptions.font;
-  for (const h2 of result) {
-    if (localOptions.drawBoxes) {
-      ctx.strokeStyle = localOptions.color;
-      ctx.fillStyle = localOptions.color;
-      rect(ctx, h2.box[0], h2.box[1], h2.box[2], h2.box[3], localOptions);
-      if (localOptions.drawLabels) {
-        if (localOptions.shadowColor && localOptions.shadowColor !== "") {
-          ctx.fillStyle = localOptions.shadowColor;
-          ctx.fillText(`hand:${Math.trunc(100 * h2.score)}%`, h2.box[0] + 3, 1 + h2.box[1] + localOptions.lineHeight, h2.box[2]);
-        }
-        ctx.fillStyle = localOptions.labelColor;
-        ctx.fillText(`hand:${Math.trunc(100 * h2.score)}%`, h2.box[0] + 2, 0 + h2.box[1] + localOptions.lineHeight, h2.box[2]);
-      }
-      ctx.stroke();
-    }
-    if (localOptions.drawPoints) {
-      if (h2.keypoints && h2.keypoints.length > 0) {
-        for (const pt of h2.keypoints) {
-          ctx.fillStyle = localOptions.useDepth ? `rgba(${127.5 + 2 * (pt[2] || 0)}, ${127.5 - 2 * (pt[2] || 0)}, 255, 0.5)` : localOptions.color;
-          point(ctx, pt[0], pt[1], 0, localOptions);
-        }
-      }
-    }
-    if (localOptions.drawLabels && h2.annotations) {
-      const addHandLabel = (part, title) => {
-        if (!part || part.length === 0 || !part[0])
-          return;
-        ctx.fillStyle = localOptions.useDepth ? `rgba(${127.5 + 2 * part[part.length - 1][2]}, ${127.5 - 2 * part[part.length - 1][2]}, 255, 0.5)` : localOptions.color;
-        ctx.fillText(title, part[part.length - 1][0] + 4, part[part.length - 1][1] + 4);
+  if (!bufferedResult.face || newResult.face.length !== bufferedResult.face.length) {
+    bufferedResult.face = JSON.parse(JSON.stringify(newResult.face));
+  } else {
+    for (let i2 = 0; i2 < newResult.face.length; i2++) {
+      const box5 = newResult.face[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.face[i2].box[j2] + b2) / bufferedFactor);
+      const boxRaw = newResult.face[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.face[i2].boxRaw[j2] + b2) / bufferedFactor);
+      const rotation = { matrix: [0, 0, 0, 0, 0, 0, 0, 0, 0], angle: { roll: 0, yaw: 0, pitch: 0 }, gaze: { bearing: 0, strength: 0 } };
+      rotation.matrix = (_g = newResult.face[i2].rotation) == null ? void 0 : _g.matrix;
+      rotation.angle = {
+        roll: ((bufferedFactor - 1) * (((_i = (_h = bufferedResult.face[i2].rotation) == null ? void 0 : _h.angle) == null ? void 0 : _i.roll) || 0) + (((_k = (_j = newResult.face[i2].rotation) == null ? void 0 : _j.angle) == null ? void 0 : _k.roll) || 0)) / bufferedFactor,
+        yaw: ((bufferedFactor - 1) * (((_m = (_l = bufferedResult.face[i2].rotation) == null ? void 0 : _l.angle) == null ? void 0 : _m.yaw) || 0) + (((_o = (_n = newResult.face[i2].rotation) == null ? void 0 : _n.angle) == null ? void 0 : _o.yaw) || 0)) / bufferedFactor,
+        pitch: ((bufferedFactor - 1) * (((_q2 = (_p = bufferedResult.face[i2].rotation) == null ? void 0 : _p.angle) == null ? void 0 : _q2.pitch) || 0) + (((_s = (_r = newResult.face[i2].rotation) == null ? void 0 : _r.angle) == null ? void 0 : _s.pitch) || 0)) / bufferedFactor
       };
-      ctx.font = localOptions.font;
-      addHandLabel(h2.annotations["index"], "index");
-      addHandLabel(h2.annotations["middle"], "middle");
-      addHandLabel(h2.annotations["ring"], "ring");
-      addHandLabel(h2.annotations["pinky"], "pinky");
-      addHandLabel(h2.annotations["thumb"], "thumb");
-      addHandLabel(h2.annotations["palm"], "palm");
-    }
-    if (localOptions.drawPolygons && h2.annotations) {
-      const addHandLine = (part) => {
-        if (!part || part.length === 0 || !part[0])
-          return;
-        for (let i2 = 0; i2 < part.length; i2++) {
-          ctx.beginPath();
-          ctx.strokeStyle = localOptions.useDepth ? `rgba(${127.5 + 2 * part[i2][2]}, ${127.5 - 2 * part[i2][2]}, 255, 0.5)` : localOptions.color;
-          ctx.moveTo(part[i2 > 0 ? i2 - 1 : 0][0], part[i2 > 0 ? i2 - 1 : 0][1]);
-          ctx.lineTo(part[i2][0], part[i2][1]);
-          ctx.stroke();
-        }
+      rotation.gaze = {
+        bearing: ((bufferedFactor - 1) * (((_u = (_t = bufferedResult.face[i2].rotation) == null ? void 0 : _t.gaze) == null ? void 0 : _u.bearing) || 0) + (((_w = (_v = newResult.face[i2].rotation) == null ? void 0 : _v.gaze) == null ? void 0 : _w.bearing) || 0)) / bufferedFactor,
+        strength: ((bufferedFactor - 1) * (((_y2 = (_x2 = bufferedResult.face[i2].rotation) == null ? void 0 : _x2.gaze) == null ? void 0 : _y2.strength) || 0) + (((_A = (_z2 = newResult.face[i2].rotation) == null ? void 0 : _z2.gaze) == null ? void 0 : _A.strength) || 0)) / bufferedFactor
       };
-      ctx.lineWidth = localOptions.lineWidth;
-      addHandLine(h2.annotations["index"]);
-      addHandLine(h2.annotations["middle"]);
-      addHandLine(h2.annotations["ring"]);
-      addHandLine(h2.annotations["pinky"]);
-      addHandLine(h2.annotations["thumb"]);
+      bufferedResult.face[i2] = { ...newResult.face[i2], rotation, box: box5, boxRaw };
     }
   }
-}
-async function object(inCanvas2, result, drawOptions) {
-  const localOptions = mergeDeep(options2, drawOptions);
-  if (!result || !inCanvas2)
-    return;
-  const ctx = getCanvasContext(inCanvas2);
-  ctx.lineJoin = "round";
-  ctx.font = localOptions.font;
-  for (const h2 of result) {
-    if (localOptions.drawBoxes) {
-      ctx.strokeStyle = localOptions.color;
-      ctx.fillStyle = localOptions.color;
-      rect(ctx, h2.box[0], h2.box[1], h2.box[2], h2.box[3], localOptions);
-      if (localOptions.drawLabels) {
-        const label = `${h2.label} ${Math.round(100 * h2.score)}%`;
-        if (localOptions.shadowColor && localOptions.shadowColor !== "") {
-          ctx.fillStyle = localOptions.shadowColor;
-          ctx.fillText(label, h2.box[0] + 3, 1 + h2.box[1] + localOptions.lineHeight, h2.box[2]);
-        }
-        ctx.fillStyle = localOptions.labelColor;
-        ctx.fillText(label, h2.box[0] + 2, 0 + h2.box[1] + localOptions.lineHeight, h2.box[2]);
+  if (!bufferedResult.object || newResult.object.length !== bufferedResult.object.length) {
+    bufferedResult.object = JSON.parse(JSON.stringify(newResult.object));
+  } else {
+    for (let i2 = 0; i2 < newResult.object.length; i2++) {
+      const box5 = newResult.object[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.object[i2].box[j2] + b2) / bufferedFactor);
+      const boxRaw = newResult.object[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.object[i2].boxRaw[j2] + b2) / bufferedFactor);
+      bufferedResult.object[i2] = { ...newResult.object[i2], box: box5, boxRaw };
+    }
+  }
+  if (newResult.persons) {
+    const newPersons = newResult.persons;
+    if (!bufferedResult.persons || newPersons.length !== bufferedResult.persons.length) {
+      bufferedResult.persons = JSON.parse(JSON.stringify(newPersons));
+    } else {
+      for (let i2 = 0; i2 < newPersons.length; i2++) {
+        bufferedResult.persons[i2].box = newPersons[i2].box.map((box5, j2) => ((bufferedFactor - 1) * bufferedResult.persons[i2].box[j2] + box5) / bufferedFactor);
       }
-      ctx.stroke();
     }
   }
+  if (newResult.gesture)
+    bufferedResult.gesture = newResult.gesture;
+  const t1 = performance.now();
+  if (newResult.performance)
+    bufferedResult.performance = { ...newResult.performance, interpolate: Math.round(t1 - t0) };
+  return bufferedResult;
 }
-async function person(inCanvas2, result, drawOptions) {
-  const localOptions = mergeDeep(options2, drawOptions);
-  if (!result || !inCanvas2)
-    return;
-  const ctx = getCanvasContext(inCanvas2);
-  ctx.lineJoin = "round";
-  ctx.font = localOptions.font;
-  for (let i2 = 0; i2 < result.length; i2++) {
-    if (localOptions.drawBoxes) {
-      ctx.strokeStyle = localOptions.color;
-      ctx.fillStyle = localOptions.color;
-      rect(ctx, result[i2].box[0], result[i2].box[1], result[i2].box[2], result[i2].box[3], localOptions);
-      if (localOptions.drawLabels) {
-        const label = `person #${i2}`;
-        if (localOptions.shadowColor && localOptions.shadowColor !== "") {
-          ctx.fillStyle = localOptions.shadowColor;
-          ctx.fillText(label, result[i2].box[0] + 3, 1 + result[i2].box[1] + localOptions.lineHeight, result[i2].box[2]);
-        }
-        ctx.fillStyle = localOptions.labelColor;
-        ctx.fillText(label, result[i2].box[0] + 2, 0 + result[i2].box[1] + localOptions.lineHeight, result[i2].box[2]);
-      }
-      ctx.stroke();
-    }
+function distance(descriptor1, descriptor2, options3 = { order: 2 }) {
+  let sum7 = 0;
+  for (let i2 = 0; i2 < descriptor1.length; i2++) {
+    const diff = options3.order === 2 ? descriptor1[i2] - descriptor2[i2] : Math.abs(descriptor1[i2] - descriptor2[i2]);
+    sum7 += options3.order === 2 ? diff * diff : diff ** options3.order;
   }
+  return sum7;
 }
-async function canvas2(input2, output) {
-  if (!input2 || !output)
-    return;
-  const ctx = getCanvasContext(output);
-  ctx.drawImage(input2, 0, 0);
+function similarity(descriptor1, descriptor2, options3 = { order: 2 }) {
+  const dist = distance(descriptor1, descriptor2, options3);
+  const invert = options3.order === 2 ? Math.sqrt(dist) : dist ** (1 / options3.order);
+  return Math.max(0, 100 - invert) / 100;
 }
-async function all5(inCanvas2, result, drawOptions) {
-  if (!result || !result.performance || !result || !inCanvas2)
-    return null;
-  const timestamp = now2();
-  const localOptions = mergeDeep(options2, drawOptions);
-  const promise = Promise.all([
-    face2(inCanvas2, result.face, localOptions),
-    body2(inCanvas2, result.body, localOptions),
-    hand2(inCanvas2, result.hand, localOptions),
-    object(inCanvas2, result.object, localOptions),
-    gesture(inCanvas2, result.gesture, localOptions)
-  ]);
-  result.performance.draw = Math.trunc(now2() - timestamp);
-  return promise;
+function match2(descriptor, descriptors, options3 = { order: 2, threshold: 0 }) {
+  if (!Array.isArray(descriptor) || !Array.isArray(descriptors) || descriptor.length < 64 || descriptors.length === 0 || descriptor.length !== descriptors[0].length) {
+    return { index: -1, distance: Number.POSITIVE_INFINITY, similarity: 0 };
+  }
+  let best = Number.MAX_SAFE_INTEGER;
+  let index = -1;
+  for (let i2 = 0; i2 < descriptors.length; i2++) {
+    const res2 = distance(descriptor, descriptors[i2], { order: options3.order });
+    if (res2 < best) {
+      best = res2;
+      index = i2;
+    }
+    if (best < options3.threshold)
+      break;
+  }
+  best = options3.order === 2 ? Math.sqrt(best) : best ** (1 / options3.order);
+  return { index, distance: best, similarity: Math.max(0, 100 - best) / 100 };
 }
 function join2(faces, bodies, hands, gestures, shape) {
   var _a, _b, _c, _d, _e2, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p;
@@ -99954,10 +107534,10 @@ function join2(faces, bodies, hands, gestures, shape) {
     }
     const x2 = [];
     const y2 = [];
-    const extractXY = (box4) => {
-      if (box4 && box4.length === 4) {
-        x2.push(box4[0], box4[0] + box4[2]);
-        y2.push(box4[1], box4[1] + box4[3]);
+    const extractXY = (box5) => {
+      if (box5 && box5.length === 4) {
+        x2.push(box5[0], box5[0] + box5[2]);
+        y2.push(box5[1], box5[1] + box5[3]);
       }
     };
     extractXY((_k = person2.face) == null ? void 0 : _k.box);
@@ -99973,101 +107553,6 @@ function join2(faces, bodies, hands, gestures, shape) {
   }
   return persons2;
 }
-var bufferedResult = { face: [], body: [], hand: [], gesture: [], object: [], persons: [], performance: {}, timestamp: 0 };
-function calc(newResult) {
-  var _a, _b, _c, _d, _e2, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q2, _r, _s, _t, _u;
-  if (!newResult)
-    return { face: [], body: [], hand: [], gesture: [], object: [], persons: [], performance: {}, timestamp: 0 };
-  const elapsed = Date.now() - newResult.timestamp;
-  const bufferedFactor = elapsed < 1e3 ? 8 - Math.log(elapsed + 1) : 1;
-  bufferedResult.canvas = newResult.canvas;
-  if (!bufferedResult.body || newResult.body.length !== bufferedResult.body.length) {
-    bufferedResult.body = JSON.parse(JSON.stringify(newResult.body));
-  } else {
-    for (let i2 = 0; i2 < newResult.body.length; i2++) {
-      const box4 = newResult.body[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.body[i2].box[j2] + b2) / bufferedFactor);
-      const boxRaw2 = newResult.body[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.body[i2].boxRaw[j2] + b2) / bufferedFactor);
-      const keypoints3 = newResult.body[i2].keypoints.map((keypoint, j2) => ({
-        score: keypoint.score,
-        part: keypoint.part,
-        position: [
-          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].position[0] + keypoint.position[0]) / bufferedFactor : keypoint.position[0],
-          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].position[1] + keypoint.position[1]) / bufferedFactor : keypoint.position[1]
-        ],
-        positionRaw: [
-          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].positionRaw[0] + keypoint.positionRaw[0]) / bufferedFactor : keypoint.position[0],
-          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].positionRaw[1] + keypoint.positionRaw[1]) / bufferedFactor : keypoint.position[1]
-        ]
-      }));
-      bufferedResult.body[i2] = { ...newResult.body[i2], box: box4, boxRaw: boxRaw2, keypoints: keypoints3 };
-    }
-  }
-  if (!bufferedResult.hand || newResult.hand.length !== bufferedResult.hand.length) {
-    bufferedResult.hand = JSON.parse(JSON.stringify(newResult.hand));
-  } else {
-    for (let i2 = 0; i2 < newResult.hand.length; i2++) {
-      const box4 = newResult.hand[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.hand[i2].box[j2] + b2) / bufferedFactor);
-      const boxRaw2 = newResult.hand[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.hand[i2].boxRaw[j2] + b2) / bufferedFactor);
-      if (bufferedResult.hand[i2].keypoints.length !== newResult.hand[i2].keypoints.length)
-        bufferedResult.hand[i2].keypoints = newResult.hand[i2].keypoints;
-      const keypoints3 = newResult.hand[i2].keypoints && newResult.hand[i2].keypoints.length > 0 ? newResult.hand[i2].keypoints.map((landmark, j2) => landmark.map((coord, k3) => ((bufferedFactor - 1) * (bufferedResult.hand[i2].keypoints[j2][k3] || 1) + (coord || 0)) / bufferedFactor)) : [];
-      const annotations3 = {};
-      if (Object.keys(bufferedResult.hand[i2].annotations).length !== Object.keys(newResult.hand[i2].annotations).length)
-        bufferedResult.hand[i2].annotations = newResult.hand[i2].annotations;
-      if (newResult.hand[i2].annotations) {
-        for (const key of Object.keys(newResult.hand[i2].annotations)) {
-          annotations3[key] = newResult.hand[i2].annotations[key] && newResult.hand[i2].annotations[key][0] ? newResult.hand[i2].annotations[key].map((val, j2) => val.map((coord, k3) => ((bufferedFactor - 1) * bufferedResult.hand[i2].annotations[key][j2][k3] + coord) / bufferedFactor)) : null;
-        }
-      }
-      bufferedResult.hand[i2] = { ...newResult.hand[i2], box: box4, boxRaw: boxRaw2, keypoints: keypoints3, annotations: annotations3 };
-    }
-  }
-  if (!bufferedResult.face || newResult.face.length !== bufferedResult.face.length) {
-    bufferedResult.face = JSON.parse(JSON.stringify(newResult.face));
-  } else {
-    for (let i2 = 0; i2 < newResult.face.length; i2++) {
-      const box4 = newResult.face[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.face[i2].box[j2] + b2) / bufferedFactor);
-      const boxRaw2 = newResult.face[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.face[i2].boxRaw[j2] + b2) / bufferedFactor);
-      const rotation = { matrix: [0, 0, 0, 0, 0, 0, 0, 0, 0], angle: { roll: 0, yaw: 0, pitch: 0 }, gaze: { bearing: 0, strength: 0 } };
-      rotation.matrix = (_a = newResult.face[i2].rotation) == null ? void 0 : _a.matrix;
-      rotation.angle = {
-        roll: ((bufferedFactor - 1) * (((_c = (_b = bufferedResult.face[i2].rotation) == null ? void 0 : _b.angle) == null ? void 0 : _c.roll) || 0) + (((_e2 = (_d = newResult.face[i2].rotation) == null ? void 0 : _d.angle) == null ? void 0 : _e2.roll) || 0)) / bufferedFactor,
-        yaw: ((bufferedFactor - 1) * (((_g = (_f = bufferedResult.face[i2].rotation) == null ? void 0 : _f.angle) == null ? void 0 : _g.yaw) || 0) + (((_i = (_h = newResult.face[i2].rotation) == null ? void 0 : _h.angle) == null ? void 0 : _i.yaw) || 0)) / bufferedFactor,
-        pitch: ((bufferedFactor - 1) * (((_k = (_j = bufferedResult.face[i2].rotation) == null ? void 0 : _j.angle) == null ? void 0 : _k.pitch) || 0) + (((_m = (_l = newResult.face[i2].rotation) == null ? void 0 : _l.angle) == null ? void 0 : _m.pitch) || 0)) / bufferedFactor
-      };
-      rotation.gaze = {
-        bearing: ((bufferedFactor - 1) * (((_o = (_n = bufferedResult.face[i2].rotation) == null ? void 0 : _n.gaze) == null ? void 0 : _o.bearing) || 0) + (((_q2 = (_p = newResult.face[i2].rotation) == null ? void 0 : _p.gaze) == null ? void 0 : _q2.bearing) || 0)) / bufferedFactor,
-        strength: ((bufferedFactor - 1) * (((_s = (_r = bufferedResult.face[i2].rotation) == null ? void 0 : _r.gaze) == null ? void 0 : _s.strength) || 0) + (((_u = (_t = newResult.face[i2].rotation) == null ? void 0 : _t.gaze) == null ? void 0 : _u.strength) || 0)) / bufferedFactor
-      };
-      bufferedResult.face[i2] = { ...newResult.face[i2], rotation, box: box4, boxRaw: boxRaw2 };
-    }
-  }
-  if (!bufferedResult.object || newResult.object.length !== bufferedResult.object.length) {
-    bufferedResult.object = JSON.parse(JSON.stringify(newResult.object));
-  } else {
-    for (let i2 = 0; i2 < newResult.object.length; i2++) {
-      const box4 = newResult.object[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.object[i2].box[j2] + b2) / bufferedFactor);
-      const boxRaw2 = newResult.object[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.object[i2].boxRaw[j2] + b2) / bufferedFactor);
-      bufferedResult.object[i2] = { ...newResult.object[i2], box: box4, boxRaw: boxRaw2 };
-    }
-  }
-  if (newResult.persons) {
-    const newPersons = newResult.persons;
-    if (!bufferedResult.persons || newPersons.length !== bufferedResult.persons.length) {
-      bufferedResult.persons = JSON.parse(JSON.stringify(newPersons));
-    } else {
-      for (let i2 = 0; i2 < newPersons.length; i2++) {
-        bufferedResult.persons[i2].box = newPersons[i2].box.map((box4, j2) => ((bufferedFactor - 1) * bufferedResult.persons[i2].box[j2] + box4) / bufferedFactor);
-      }
-    }
-  }
-  if (newResult.gesture)
-    bufferedResult.gesture = newResult.gesture;
-  if (newResult.performance)
-    bufferedResult.performance = newResult.performance;
-  return bufferedResult;
-}
-var version6 = "2.3.0";
 var face3 = `
 /9j/4AAQSkZJRgABAQEAYABgAAD/4QBoRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAAExAAIAAAARAAAATgAAAAAAAABgAAAAAQAAAGAAAAABcGFpbnQu
@@ -100941,9 +108426,13 @@ var Human = class {
       }
       return null;
     });
+    __publicField(this, "similarity", similarity);
+    __publicField(this, "distance", distance);
+    __publicField(this, "match", match2);
     __publicField(this, "emit", (event) => {
       var _a;
-      return (_a = this.events) == null ? void 0 : _a.dispatchEvent(new Event(event));
+      if (this.events && this.events.dispatchEvent)
+        (_a = this.events) == null ? void 0 : _a.dispatchEvent(new Event(event));
     });
     get3();
     this.env = env2;
@@ -100962,14 +108451,14 @@ var Human = class {
     __privateSet(this, _analyzeMemoryLeaks, false);
     __privateSet(this, _checkSanity, false);
     this.performance = { backend: 0, load: 0, image: 0, frames: 0, cached: 0, changed: 0, total: 0, draw: 0 };
-    this.events = new EventTarget();
+    this.events = typeof EventTarget !== "undefined" ? new EventTarget() : void 0;
     this.models = new Models();
     this.draw = {
       options: options2,
       canvas: (input2, output) => canvas2(input2, output),
-      face: (output, result, options3) => face2(output, result, options3),
-      body: (output, result, options3) => body2(output, result, options3),
-      hand: (output, result, options3) => hand2(output, result, options3),
+      face: (output, result, options3) => face(output, result, options3),
+      body: (output, result, options3) => body(output, result, options3),
+      hand: (output, result, options3) => hand(output, result, options3),
       gesture: (output, result, options3) => gesture(output, result, options3),
       object: (output, result, options3) => object(output, result, options3),
       person: (output, result, options3) => person(output, result, options3),
@@ -100990,20 +108479,14 @@ var Human = class {
   validate(userConfig) {
     return validate(config, userConfig || this.config);
   }
-  image(input2) {
-    return process2(input2, this.config);
-  }
-  similarity(embedding1, embedding2) {
-    return similarity(embedding1, embedding2);
+  image(input2, getTensor2 = true) {
+    return process2(input2, this.config, getTensor2);
   }
   async segmentation(input2, background) {
     return process5(input2, background, this.config);
   }
   enhance(input2) {
     return enhance(input2);
-  }
-  match(faceEmbedding, db, threshold3 = 0) {
-    return match(faceEmbedding, db, threshold3);
   }
   async init() {
     await check(this, true);
@@ -101045,7 +108528,7 @@ var Human = class {
       this.performance.load = current;
   }
   next(result = this.result) {
-    return calc(result);
+    return calc2(result, this.config);
   }
   async warmup(userConfig) {
     return warmup(this, userConfig);
@@ -101186,7 +108669,7 @@ var Human = class {
       let gestureRes = [];
       if (this.config.gesture.enabled) {
         timeStamp = now2();
-        gestureRes = [...face(faceRes), ...body(bodyRes), ...hand(handRes), ...iris3(faceRes)];
+        gestureRes = [...face2(faceRes), ...body2(bodyRes), ...hand2(handRes), ...iris3(faceRes)];
         if (!this.config.async)
           this.performance.gesture = Math.trunc(now2() - timeStamp);
         else if (this.performance.gesture)
@@ -101424,7 +108907,7 @@ async function loadVRM(f2) {
   const loader = new GLTFLoader();
   return new Promise((resolve, reject) => {
     loader.load(f2, (gltf) => {
-      Ee.removeUnnecessaryJoints(gltf.scene);
+      Le.removeUnnecessaryJoints(gltf.scene);
       ye.from(gltf).then((vrmInstance) => resolve(vrmInstance));
     }, () => {
     }, (error) => {
@@ -101673,6 +109156,22 @@ PERFORMANCE OF THIS SOFTWARE.
  * @license
  * Copyright 2020 Google LLC. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use backend file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =============================================================================
+ */
+/**
+ * @license
+ * Copyright 2020 Google LLC. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -101728,6 +109227,22 @@ PERFORMANCE OF THIS SOFTWARE.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =============================================================================
+ */
+/**
+ * @license
+ * Copyright 2021 Google LLC. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.

@@ -1,6 +1,6 @@
 {
   "name": "human-vrm",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "VR Humanoid Avatar using Human library",
   "main": "",
   "engines": {
@@ -30,22 +30,22 @@
     "three"
   ],
   "dependencies": {
-    "@pixiv/three-vrm": "^0.6.6",
+    "@pixiv/three-vrm": "^0.6.7",
     "@vladmandic/human": "github:vladmandic/human",
-    "three": "^0.132.2"
+    "three": "^0.133.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.32.0",
-    "@typescript-eslint/parser": "^4.32.0",
-    "@vladmandic/build": "^0.5.3",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "@vladmandic/build": "^0.6.0",
     "@vladmandic/pilogger": "^0.3.3",
-    "esbuild": "^0.13.3",
-    "eslint": "^7.32.0",
+    "esbuild": "^0.13.5",
+    "eslint": "^8.0.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-json": "^3.1.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "typescript": "^4.4.3"
+    "typescript": "^4.4.4"
   }
 }
