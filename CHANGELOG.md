@@ -1,4 +1,4 @@
-# packageJson  
+#   
 
   Version: **undefined**  
   Description: **undefined**  
@@ -9,8 +9,9 @@
   
 ## Changelog
   
-### **HEAD -> main** 2021/09/16 mandic00@live.com
+### **HEAD -> main** 2021/10/13 mandic00@live.com
 
+- major update
 
 ### **0.2.1** 2021/09/16 mandic00@live.com
 
