@@ -1,6 +1,6 @@
 {
   "name": "human-vrm",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "VR Humanoid Avatar using Human library",
   "main": "",
   "engines": {
