@@ -40,7 +40,7 @@
     "@vladmandic/build": "^0.6.3",
     "@vladmandic/pilogger": "^0.3.5",
     "esbuild": "^0.13.12",
-    "eslint": "^8.1.0",
+    "eslint": "^8.2.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-json": "^3.1.0",
