@@ -3,7 +3,7 @@ import Stats from 'three/examples/jsm/libs/stats.module';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { VRM, VRMSchema, VRMUtils } from '@pixiv/three-vrm'; // npm package <https://github.com/pixiv/three-vrm>
-import { Human, Result } from '@vladmandic/human';
+import { Human, Result, Config } from '@vladmandic/human';
 import * as vrmCalc from './vrm-calculate';
 
 // import { VRM, VRMSchema, VRMUtils } from '../assets/three-vrm.module'; // custom build from 1.0 beta branch <https://github.com/pixiv/three-vrm/tree/1.0>
@@ -25,7 +25,7 @@ let stats: THREE.Stats;
 let human: Human;
 let res: Result;
 
-const humanConfig = {
+const humanConfig: Partial<Config> = {
   modelBasePath: 'https://vladmandic.github.io/human/models',
   face: { enabled: true,
     detector: { return: false, rotation: true },
@@ -117,7 +117,7 @@ async function initHuman() {
 async function animateFrame() {
   const deltaTime = clock.getDelta();
   // get human interpolated results
-  const interpolated = human.next(res);
+  const interpolated: Result = human.next(res);
   // draw human detected results
   const detected = document.getElementById('detected') as HTMLCanvasElement;
   const ctx = detected.getContext('2d');
@@ -138,7 +138,7 @@ async function animateFrame() {
 
 async function detectionLoop() {
   const video = document.getElementById('video') as HTMLVideoElement;
-  res = await human.detect(video) as Result;
+  res = await human.detect(video);
   if (!video.paused) requestAnimationFrame(detectionLoop);
 }
 
@@ -164,7 +164,7 @@ async function initWebCam() {
 }
 
 async function startupAnimation() { // rotate to face camera
-  const wait = async (t) => new Promise((resolve) => setTimeout(() => resolve(true), t));
+  const wait = async (t) => new Promise((resolve) => { setTimeout(() => resolve(true), t); });
   if (!vrm.humanoid || !vrm.blendShapeProxy) return;
   while (clock.elapsedTime < Math.PI) {
     const deltaTime = clock.getDelta();
