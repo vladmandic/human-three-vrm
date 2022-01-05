@@ -4,16 +4,8 @@
   author: <https://github.com/vladmandic>'
 */
 
-var __require = /* @__PURE__ */ ((x2) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x2, {
-  get: (a6, b2) => (typeof require !== "undefined" ? require : a6)[b2]
-}) : x2)(function(x2) {
-  if (typeof require !== "undefined")
-    return require.apply(this, arguments);
-  throw new Error('Dynamic require of "' + x2 + '" is not supported');
-});
-
-// node_modules/.pnpm/three@0.134.0/node_modules/three/build/three.module.js
-var REVISION = "134";
+// node_modules/.pnpm/three@0.135.0/node_modules/three/build/three.module.js
+var REVISION = "135";
 var MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2, ROTATE: 0, DOLLY: 1, PAN: 2 };
 var TOUCH = { ROTATE: 0, PAN: 1, DOLLY_PAN: 2, DOLLY_ROTATE: 3 };
 var CullFaceNone = 0;
@@ -165,7 +157,6 @@ var LinearEncoding = 3e3;
 var sRGBEncoding = 3001;
 var GammaEncoding = 3007;
 var RGBEEncoding = 3002;
-var LogLuvEncoding = 3003;
 var RGBM7Encoding = 3004;
 var RGBM16Encoding = 3005;
 var RGBDEncoding = 3006;
@@ -223,18 +214,14 @@ var EventDispatcher = class {
     }
   }
 };
-var _seed = 1234567;
-var DEG2RAD = Math.PI / 180;
-var RAD2DEG = 180 / Math.PI;
 var _lut = [];
 for (let i2 = 0; i2 < 256; i2++) {
   _lut[i2] = (i2 < 16 ? "0" : "") + i2.toString(16);
 }
-var hasRandomUUID = typeof crypto !== "undefined" && "randomUUID" in crypto;
+var _seed = 1234567;
+var DEG2RAD = Math.PI / 180;
+var RAD2DEG = 180 / Math.PI;
 function generateUUID() {
-  if (hasRandomUUID) {
-    return crypto.randomUUID().toUpperCase();
-  }
   const d0 = Math.random() * 4294967295 | 0;
   const d1 = Math.random() * 4294967295 | 0;
   const d2 = Math.random() * 4294967295 | 0;
@@ -1612,13 +1599,18 @@ var WebGLMultipleRenderTargets = class extends WebGLRenderTarget {
 };
 WebGLMultipleRenderTargets.prototype.isWebGLMultipleRenderTargets = true;
 var WebGLMultisampleRenderTarget = class extends WebGLRenderTarget {
-  constructor(width, height, options3) {
+  constructor(width, height, options3 = {}) {
     super(width, height, options3);
     this.samples = 4;
+    this.ignoreDepthForMultisampleCopy = options3.ignoreDepth !== void 0 ? options3.ignoreDepth : true;
+    this.useRenderToTexture = options3.useRenderToTexture !== void 0 ? options3.useRenderToTexture : false;
+    this.useRenderbuffer = this.useRenderToTexture === false;
   }
   copy(source) {
     super.copy.call(this, source);
     this.samples = source.samples;
+    this.useRenderToTexture = source.useRenderToTexture;
+    this.useRenderbuffer = source.useRenderbuffer;
     return this;
   }
 };
@@ -3876,7 +3868,7 @@ var Layers = class {
     this.mask = 1 | 0;
   }
   set(channel) {
-    this.mask = 1 << channel | 0;
+    this.mask = (1 << channel | 0) >>> 0;
   }
   enable(channel) {
     this.mask |= 1 << channel | 0;
@@ -3895,6 +3887,9 @@ var Layers = class {
   }
   test(layers) {
     return (this.mask & layers.mask) !== 0;
+  }
+  isEnabled(channel) {
+    return (this.mask & (1 << channel | 0)) !== 0;
   }
 };
 var _object3DId = 0;
@@ -4363,10 +4358,10 @@ var Object3D = class extends EventDispatcher {
     }
     output.object = object2;
     return output;
-    function extractFromCache(cache6) {
+    function extractFromCache(cache7) {
       const values = [];
-      for (const key in cache6) {
-        const data = cache6[key];
+      for (const key in cache7) {
+        const data = cache7[key];
         delete data.metadata;
         values.push(data);
       }
@@ -4860,10 +4855,10 @@ var Material = class extends EventDispatcher {
       data.toneMapped = false;
     if (JSON.stringify(this.userData) !== "{}")
       data.userData = this.userData;
-    function extractFromCache(cache6) {
+    function extractFromCache(cache7) {
       const values = [];
-      for (const key in cache6) {
-        const data2 = cache6[key];
+      for (const key in cache7) {
+        const data2 = cache7[key];
         delete data2.metadata;
         values.push(data2);
       }
@@ -7483,9 +7478,9 @@ var displacementmap_vertex = "#ifdef USE_DISPLACEMENTMAP\n	transformed += normal
 var emissivemap_fragment = "#ifdef USE_EMISSIVEMAP\n	vec4 emissiveColor = texture2D( emissiveMap, vUv );\n	emissiveColor.rgb = emissiveMapTexelToLinear( emissiveColor ).rgb;\n	totalEmissiveRadiance *= emissiveColor.rgb;\n#endif";
 var emissivemap_pars_fragment = "#ifdef USE_EMISSIVEMAP\n	uniform sampler2D emissiveMap;\n#endif";
 var encodings_fragment = "gl_FragColor = linearToOutputTexel( gl_FragColor );";
-var encodings_pars_fragment = "\nvec4 LinearToLinear( in vec4 value ) {\n	return value;\n}\nvec4 GammaToLinear( in vec4 value, in float gammaFactor ) {\n	return vec4( pow( value.rgb, vec3( gammaFactor ) ), value.a );\n}\nvec4 LinearToGamma( in vec4 value, in float gammaFactor ) {\n	return vec4( pow( value.rgb, vec3( 1.0 / gammaFactor ) ), value.a );\n}\nvec4 sRGBToLinear( in vec4 value ) {\n	return vec4( mix( pow( value.rgb * 0.9478672986 + vec3( 0.0521327014 ), vec3( 2.4 ) ), value.rgb * 0.0773993808, vec3( lessThanEqual( value.rgb, vec3( 0.04045 ) ) ) ), value.a );\n}\nvec4 LinearTosRGB( in vec4 value ) {\n	return vec4( mix( pow( value.rgb, vec3( 0.41666 ) ) * 1.055 - vec3( 0.055 ), value.rgb * 12.92, vec3( lessThanEqual( value.rgb, vec3( 0.0031308 ) ) ) ), value.a );\n}\nvec4 RGBEToLinear( in vec4 value ) {\n	return vec4( value.rgb * exp2( value.a * 255.0 - 128.0 ), 1.0 );\n}\nvec4 LinearToRGBE( in vec4 value ) {\n	float maxComponent = max( max( value.r, value.g ), value.b );\n	float fExp = clamp( ceil( log2( maxComponent ) ), -128.0, 127.0 );\n	return vec4( value.rgb / exp2( fExp ), ( fExp + 128.0 ) / 255.0 );\n}\nvec4 RGBMToLinear( in vec4 value, in float maxRange ) {\n	return vec4( value.rgb * value.a * maxRange, 1.0 );\n}\nvec4 LinearToRGBM( in vec4 value, in float maxRange ) {\n	float maxRGB = max( value.r, max( value.g, value.b ) );\n	float M = clamp( maxRGB / maxRange, 0.0, 1.0 );\n	M = ceil( M * 255.0 ) / 255.0;\n	return vec4( value.rgb / ( M * maxRange ), M );\n}\nvec4 RGBDToLinear( in vec4 value, in float maxRange ) {\n	return vec4( value.rgb * ( ( maxRange / 255.0 ) / value.a ), 1.0 );\n}\nvec4 LinearToRGBD( in vec4 value, in float maxRange ) {\n	float maxRGB = max( value.r, max( value.g, value.b ) );\n	float D = max( maxRange / maxRGB, 1.0 );\n	D = clamp( floor( D ) / 255.0, 0.0, 1.0 );\n	return vec4( value.rgb * ( D * ( 255.0 / maxRange ) ), D );\n}\nconst mat3 cLogLuvM = mat3( 0.2209, 0.3390, 0.4184, 0.1138, 0.6780, 0.7319, 0.0102, 0.1130, 0.2969 );\nvec4 LinearToLogLuv( in vec4 value ) {\n	vec3 Xp_Y_XYZp = cLogLuvM * value.rgb;\n	Xp_Y_XYZp = max( Xp_Y_XYZp, vec3( 1e-6, 1e-6, 1e-6 ) );\n	vec4 vResult;\n	vResult.xy = Xp_Y_XYZp.xy / Xp_Y_XYZp.z;\n	float Le = 2.0 * log2(Xp_Y_XYZp.y) + 127.0;\n	vResult.w = fract( Le );\n	vResult.z = ( Le - ( floor( vResult.w * 255.0 ) ) / 255.0 ) / 255.0;\n	return vResult;\n}\nconst mat3 cLogLuvInverseM = mat3( 6.0014, -2.7008, -1.7996, -1.3320, 3.1029, -5.7721, 0.3008, -1.0882, 5.6268 );\nvec4 LogLuvToLinear( in vec4 value ) {\n	float Le = value.z * 255.0 + value.w;\n	vec3 Xp_Y_XYZp;\n	Xp_Y_XYZp.y = exp2( ( Le - 127.0 ) / 2.0 );\n	Xp_Y_XYZp.z = Xp_Y_XYZp.y / value.y;\n	Xp_Y_XYZp.x = value.x * Xp_Y_XYZp.z;\n	vec3 vRGB = cLogLuvInverseM * Xp_Y_XYZp.rgb;\n	return vec4( max( vRGB, 0.0 ), 1.0 );\n}";
+var encodings_pars_fragment = "\nvec4 LinearToLinear( in vec4 value ) {\n	return value;\n}\nvec4 GammaToLinear( in vec4 value, in float gammaFactor ) {\n	return vec4( pow( value.rgb, vec3( gammaFactor ) ), value.a );\n}\nvec4 LinearToGamma( in vec4 value, in float gammaFactor ) {\n	return vec4( pow( value.rgb, vec3( 1.0 / gammaFactor ) ), value.a );\n}\nvec4 sRGBToLinear( in vec4 value ) {\n	return vec4( mix( pow( value.rgb * 0.9478672986 + vec3( 0.0521327014 ), vec3( 2.4 ) ), value.rgb * 0.0773993808, vec3( lessThanEqual( value.rgb, vec3( 0.04045 ) ) ) ), value.a );\n}\nvec4 LinearTosRGB( in vec4 value ) {\n	return vec4( mix( pow( value.rgb, vec3( 0.41666 ) ) * 1.055 - vec3( 0.055 ), value.rgb * 12.92, vec3( lessThanEqual( value.rgb, vec3( 0.0031308 ) ) ) ), value.a );\n}\nvec4 RGBEToLinear( in vec4 value ) {\n	return vec4( value.rgb * exp2( value.a * 255.0 - 128.0 ), 1.0 );\n}\nvec4 LinearToRGBE( in vec4 value ) {\n	float maxComponent = max( max( value.r, value.g ), value.b );\n	float fExp = clamp( ceil( log2( maxComponent ) ), -128.0, 127.0 );\n	return vec4( value.rgb / exp2( fExp ), ( fExp + 128.0 ) / 255.0 );\n}\nvec4 RGBMToLinear( in vec4 value, in float maxRange ) {\n	return vec4( value.rgb * value.a * maxRange, 1.0 );\n}\nvec4 LinearToRGBM( in vec4 value, in float maxRange ) {\n	float maxRGB = max( value.r, max( value.g, value.b ) );\n	float M = clamp( maxRGB / maxRange, 0.0, 1.0 );\n	M = ceil( M * 255.0 ) / 255.0;\n	return vec4( value.rgb / ( M * maxRange ), M );\n}\nvec4 RGBDToLinear( in vec4 value, in float maxRange ) {\n	return vec4( value.rgb * ( ( maxRange / 255.0 ) / value.a ), 1.0 );\n}\nvec4 LinearToRGBD( in vec4 value, in float maxRange ) {\n	float maxRGB = max( value.r, max( value.g, value.b ) );\n	float D = max( maxRange / maxRGB, 1.0 );\n	D = clamp( floor( D ) / 255.0, 0.0, 1.0 );\n	return vec4( value.rgb * ( D * ( 255.0 / maxRange ) ), D );\n}";
 var envmap_fragment = "#ifdef USE_ENVMAP\n	#ifdef ENV_WORLDPOS\n		vec3 cameraToFrag;\n		if ( isOrthographic ) {\n			cameraToFrag = normalize( vec3( - viewMatrix[ 0 ][ 2 ], - viewMatrix[ 1 ][ 2 ], - viewMatrix[ 2 ][ 2 ] ) );\n		} else {\n			cameraToFrag = normalize( vWorldPosition - cameraPosition );\n		}\n		vec3 worldNormal = inverseTransformDirection( normal, viewMatrix );\n		#ifdef ENVMAP_MODE_REFLECTION\n			vec3 reflectVec = reflect( cameraToFrag, worldNormal );\n		#else\n			vec3 reflectVec = refract( cameraToFrag, worldNormal, refractionRatio );\n		#endif\n	#else\n		vec3 reflectVec = vReflect;\n	#endif\n	#ifdef ENVMAP_TYPE_CUBE\n		vec4 envColor = textureCube( envMap, vec3( flipEnvMap * reflectVec.x, reflectVec.yz ) );\n		envColor = envMapTexelToLinear( envColor );\n	#elif defined( ENVMAP_TYPE_CUBE_UV )\n		vec4 envColor = textureCubeUV( envMap, reflectVec, 0.0 );\n	#else\n		vec4 envColor = vec4( 0.0 );\n	#endif\n	#ifdef ENVMAP_BLENDING_MULTIPLY\n		outgoingLight = mix( outgoingLight, outgoingLight * envColor.xyz, specularStrength * reflectivity );\n	#elif defined( ENVMAP_BLENDING_MIX )\n		outgoingLight = mix( outgoingLight, envColor.xyz, specularStrength * reflectivity );\n	#elif defined( ENVMAP_BLENDING_ADD )\n		outgoingLight += envColor.xyz * specularStrength * reflectivity;\n	#endif\n#endif";
-var envmap_common_pars_fragment = "#ifdef USE_ENVMAP\n	uniform float envMapIntensity;\n	uniform float flipEnvMap;\n	uniform int maxMipLevel;\n	#ifdef ENVMAP_TYPE_CUBE\n		uniform samplerCube envMap;\n	#else\n		uniform sampler2D envMap;\n	#endif\n	\n#endif";
+var envmap_common_pars_fragment = "#ifdef USE_ENVMAP\n	uniform float envMapIntensity;\n	uniform float flipEnvMap;\n	#ifdef ENVMAP_TYPE_CUBE\n		uniform samplerCube envMap;\n	#else\n		uniform sampler2D envMap;\n	#endif\n	\n#endif";
 var envmap_pars_fragment = "#ifdef USE_ENVMAP\n	uniform float reflectivity;\n	#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )\n		#define ENV_WORLDPOS\n	#endif\n	#ifdef ENV_WORLDPOS\n		varying vec3 vWorldPosition;\n		uniform float refractionRatio;\n	#else\n		varying vec3 vReflect;\n	#endif\n#endif";
 var envmap_pars_vertex = "#ifdef USE_ENVMAP\n	#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) ||defined( PHONG )\n		#define ENV_WORLDPOS\n	#endif\n	#ifdef ENV_WORLDPOS\n		\n		varying vec3 vWorldPosition;\n	#else\n		varying vec3 vReflect;\n		uniform float refractionRatio;\n	#endif\n#endif";
 var envmap_vertex = "#ifdef USE_ENVMAP\n	#ifdef ENV_WORLDPOS\n		vWorldPosition = worldPosition.xyz;\n	#else\n		vec3 cameraToVertex;\n		if ( isOrthographic ) {\n			cameraToVertex = normalize( vec3( - viewMatrix[ 0 ][ 2 ], - viewMatrix[ 1 ][ 2 ], - viewMatrix[ 2 ][ 2 ] ) );\n		} else {\n			cameraToVertex = normalize( worldPosition.xyz - cameraPosition );\n		}\n		vec3 worldNormal = inverseTransformDirection( transformedNormal, viewMatrix );\n		#ifdef ENVMAP_MODE_REFLECTION\n			vReflect = reflect( cameraToVertex, worldNormal );\n		#else\n			vReflect = refract( cameraToVertex, worldNormal, refractionRatio );\n		#endif\n	#endif\n#endif";
@@ -7582,7 +7577,7 @@ var fragment$7 = "#define NORMAL\nuniform float opacity;\n#if defined( FLAT_SHAD
 var vertex$6 = "#define PHONG\nvarying vec3 vViewPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <envmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <envmap_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
 var fragment$6 = "#define PHONG\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform vec3 specular;\nuniform float shininess;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_pars_fragment>\n#include <cube_uv_reflection_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_phong_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <specularmap_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_phong_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n	#include <envmap_fragment>\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
 var vertex$5 = "#define STANDARD\nvarying vec3 vViewPosition;\n#ifdef USE_TRANSMISSION\n	varying vec3 vWorldPosition;\n#endif\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n#ifdef USE_TRANSMISSION\n	vWorldPosition = worldPosition.xyz;\n#endif\n}";
-var fragment$5 = "#define STANDARD\n#ifdef PHYSICAL\n	#define IOR\n	#define SPECULAR\n#endif\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\n#ifdef IOR\n	uniform float ior;\n#endif\n#ifdef SPECULAR\n	uniform float specularIntensity;\n	uniform vec3 specularColor;\n	#ifdef USE_SPECULARINTENSITYMAP\n		uniform sampler2D specularIntensityMap;\n	#endif\n	#ifdef USE_SPECULARCOLORMAP\n		uniform sampler2D specularColorMap;\n	#endif\n#endif\n#ifdef USE_CLEARCOAT\n	uniform float clearcoat;\n	uniform float clearcoatRoughness;\n#endif\n#ifdef USE_SHEEN\n	uniform vec3 sheenColor;\n	uniform float sheenRoughness;\n	#ifdef USE_SHEENCOLORMAP\n		uniform sampler2D sheenColorMap;\n	#endif\n	#ifdef USE_SHEENROUGHNESSMAP\n		uniform sampler2D sheenRoughnessMap;\n	#endif\n#endif\nvarying vec3 vViewPosition;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_physical_pars_fragment>\n#include <fog_pars_fragment>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_physical_pars_fragment>\n#include <transmission_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <clearcoat_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <roughnessmap_fragment>\n	#include <metalnessmap_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <clearcoat_normal_fragment_begin>\n	#include <clearcoat_normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_physical_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 totalDiffuse = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;\n	vec3 totalSpecular = reflectedLight.directSpecular + reflectedLight.indirectSpecular;\n	#include <transmission_fragment>\n	vec3 outgoingLight = totalDiffuse + totalSpecular + totalEmissiveRadiance;\n	#ifdef USE_CLEARCOAT\n		float dotNVcc = saturate( dot( geometry.clearcoatNormal, geometry.viewDir ) );\n		vec3 Fcc = F_Schlick( material.clearcoatF0, material.clearcoatF90, dotNVcc );\n		outgoingLight = outgoingLight * ( 1.0 - clearcoat * Fcc ) + clearcoatSpecular * clearcoat;\n	#endif\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
+var fragment$5 = "#define STANDARD\n#ifdef PHYSICAL\n	#define IOR\n	#define SPECULAR\n#endif\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\n#ifdef IOR\n	uniform float ior;\n#endif\n#ifdef SPECULAR\n	uniform float specularIntensity;\n	uniform vec3 specularColor;\n	#ifdef USE_SPECULARINTENSITYMAP\n		uniform sampler2D specularIntensityMap;\n	#endif\n	#ifdef USE_SPECULARCOLORMAP\n		uniform sampler2D specularColorMap;\n	#endif\n#endif\n#ifdef USE_CLEARCOAT\n	uniform float clearcoat;\n	uniform float clearcoatRoughness;\n#endif\n#ifdef USE_SHEEN\n	uniform vec3 sheenColor;\n	uniform float sheenRoughness;\n	#ifdef USE_SHEENCOLORMAP\n		uniform sampler2D sheenColorMap;\n	#endif\n	#ifdef USE_SHEENROUGHNESSMAP\n		uniform sampler2D sheenRoughnessMap;\n	#endif\n#endif\nvarying vec3 vViewPosition;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <envmap_common_pars_fragment>\n#include <envmap_physical_pars_fragment>\n#include <fog_pars_fragment>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_physical_pars_fragment>\n#include <transmission_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <clearcoat_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <roughnessmap_fragment>\n	#include <metalnessmap_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <clearcoat_normal_fragment_begin>\n	#include <clearcoat_normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_physical_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 totalDiffuse = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse;\n	vec3 totalSpecular = reflectedLight.directSpecular + reflectedLight.indirectSpecular;\n	#include <transmission_fragment>\n	vec3 outgoingLight = totalDiffuse + totalSpecular + totalEmissiveRadiance;\n	#ifdef USE_CLEARCOAT\n		float dotNVcc = saturate( dot( geometry.clearcoatNormal, geometry.viewDir ) );\n		vec3 Fcc = F_Schlick( material.clearcoatF0, material.clearcoatF90, dotNVcc );\n		outgoingLight = outgoingLight * ( 1.0 - material.clearcoat * Fcc ) + clearcoatSpecular * material.clearcoat;\n	#endif\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
 var vertex$4 = "#define TOON\nvarying vec3 vViewPosition;\n#include <common>\n#include <uv_pars_vertex>\n#include <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <normal_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <uv_vertex>\n	#include <uv2_vertex>\n	#include <color_vertex>\n	#include <beginnormal_vertex>\n	#include <morphnormal_vertex>\n	#include <skinbase_vertex>\n	#include <skinnormal_vertex>\n	#include <defaultnormal_vertex>\n	#include <normal_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <skinning_vertex>\n	#include <displacementmap_vertex>\n	#include <project_vertex>\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	vViewPosition = - mvPosition.xyz;\n	#include <worldpos_vertex>\n	#include <shadowmap_vertex>\n	#include <fog_vertex>\n}";
 var fragment$4 = "#define TOON\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float opacity;\n#include <common>\n#include <packing>\n#include <dithering_pars_fragment>\n#include <color_pars_fragment>\n#include <uv_pars_fragment>\n#include <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n#include <alphatest_pars_fragment>\n#include <aomap_pars_fragment>\n#include <lightmap_pars_fragment>\n#include <emissivemap_pars_fragment>\n#include <gradientmap_pars_fragment>\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <lights_pars_begin>\n#include <normal_pars_fragment>\n#include <lights_toon_pars_fragment>\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\nvoid main() {\n	#include <clipping_planes_fragment>\n	vec4 diffuseColor = vec4( diffuse, opacity );\n	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n	vec3 totalEmissiveRadiance = emissive;\n	#include <logdepthbuf_fragment>\n	#include <map_fragment>\n	#include <color_fragment>\n	#include <alphamap_fragment>\n	#include <alphatest_fragment>\n	#include <normal_fragment_begin>\n	#include <normal_fragment_maps>\n	#include <emissivemap_fragment>\n	#include <lights_toon_fragment>\n	#include <lights_fragment_begin>\n	#include <lights_fragment_maps>\n	#include <lights_fragment_end>\n	#include <aomap_fragment>\n	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;\n	#include <output_fragment>\n	#include <tonemapping_fragment>\n	#include <encodings_fragment>\n	#include <fog_fragment>\n	#include <premultiplied_alpha_fragment>\n	#include <dithering_fragment>\n}";
 var vertex$3 = "uniform float size;\nuniform float scale;\n#include <common>\n#include <color_pars_vertex>\n#include <fog_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\nvoid main() {\n	#include <color_vertex>\n	#include <begin_vertex>\n	#include <morphtarget_vertex>\n	#include <project_vertex>\n	gl_PointSize = size;\n	#ifdef USE_SIZEATTENUATION\n		bool isPerspective = isPerspectiveMatrix( projectionMatrix );\n		if ( isPerspective ) gl_PointSize *= ( scale / - mvPosition.z );\n	#endif\n	#include <logdepthbuf_vertex>\n	#include <clipping_planes_vertex>\n	#include <worldpos_vertex>\n	#include <fog_vertex>\n}";
@@ -7745,8 +7740,7 @@ var UniformsLib = {
     flipEnvMap: { value: -1 },
     reflectivity: { value: 1 },
     ior: { value: 1.5 },
-    refractionRatio: { value: 0.98 },
-    maxMipLevel: { value: 0 }
+    refractionRatio: { value: 0.98 }
   },
   aomap: {
     aoMap: { value: null },
@@ -8236,7 +8230,7 @@ function WebGLBindingStates(gl, extensions2, attributes, capabilities) {
   const bindingStates = {};
   const defaultState = createBindingState(null);
   let currentState = defaultState;
-  function setup46(object2, material, program, geometry, index2) {
+  function setup49(object2, material, program, geometry, index2) {
     let updateBuffers = false;
     if (vaoAvailable) {
       const state = getBindingState(geometry, program, material);
@@ -8346,7 +8340,7 @@ function WebGLBindingStates(gl, extensions2, attributes, capabilities) {
     return false;
   }
   function saveCache(geometry, index2) {
-    const cache6 = {};
+    const cache7 = {};
     const attributes2 = geometry.attributes;
     let attributesNum = 0;
     for (const key in attributes2) {
@@ -8356,10 +8350,10 @@ function WebGLBindingStates(gl, extensions2, attributes, capabilities) {
       if (attribute.data) {
         data.data = attribute.data;
       }
-      cache6[key] = data;
+      cache7[key] = data;
       attributesNum++;
     }
-    currentState.attributes = cache6;
+    currentState.attributes = cache7;
     currentState.attributesNum = attributesNum;
     currentState.index = index2;
   }
@@ -8547,7 +8541,7 @@ function WebGLBindingStates(gl, extensions2, attributes, capabilities) {
     defaultState.wireframe = false;
   }
   return {
-    setup: setup46,
+    setup: setup49,
     reset: reset2,
     resetDefaultState,
     dispose: dispose2,
@@ -9057,11 +9051,7 @@ var PMREMGenerator = class {
     scene2.background = background;
   }
   _setEncoding(uniform, texture) {
-    if (this._renderer.capabilities.isWebGL2 === true && texture.format === RGBAFormat && texture.type === UnsignedByteType && texture.encoding === sRGBEncoding) {
-      uniform.value = ENCODINGS[LinearEncoding];
-    } else {
-      uniform.value = ENCODINGS[texture.encoding];
-    }
+    uniform.value = ENCODINGS[texture.encoding];
   }
   _textureToCubeUV(texture, cubeUVRenderTarget) {
     const renderer2 = this._renderer;
@@ -9663,6 +9653,7 @@ function WebGLExtensions(gl) {
       }
       getExtension("OES_texture_float_linear");
       getExtension("EXT_color_buffer_half_float");
+      getExtension("WEBGL_multisampled_render_to_texture");
     },
     get: function(name) {
       const extension = getExtension(name);
@@ -9722,10 +9713,10 @@ function WebGLGeometries(gl, attributes, info, bindingStates) {
     const indices = [];
     const geometryIndex = geometry.index;
     const geometryPosition = geometry.attributes.position;
-    let version9 = 0;
+    let version10 = 0;
     if (geometryIndex !== null) {
       const array2 = geometryIndex.array;
-      version9 = geometryIndex.version;
+      version10 = geometryIndex.version;
       for (let i2 = 0, l3 = array2.length; i2 < l3; i2 += 3) {
         const a6 = array2[i2 + 0];
         const b2 = array2[i2 + 1];
@@ -9734,7 +9725,7 @@ function WebGLGeometries(gl, attributes, info, bindingStates) {
       }
     } else {
       const array2 = geometryPosition.array;
-      version9 = geometryPosition.version;
+      version10 = geometryPosition.version;
       for (let i2 = 0, l3 = array2.length / 3 - 1; i2 < l3; i2 += 3) {
         const a6 = i2 + 0;
         const b2 = i2 + 1;
@@ -9743,7 +9734,7 @@ function WebGLGeometries(gl, attributes, info, bindingStates) {
       }
     }
     const attribute = new (arrayMax(indices) > 65535 ? Uint32BufferAttribute : Uint16BufferAttribute)(indices, 1);
-    attribute.version = version9;
+    attribute.version = version10;
     const previousAttribute = wireframeAttributes.get(geometry);
     if (previousAttribute)
       attributes.remove(previousAttribute);
@@ -10129,204 +10120,204 @@ function allocTexUnits(textures, n2) {
   return r2;
 }
 function setValueV1f(gl, v2) {
-  const cache6 = this.cache;
-  if (cache6[0] === v2)
+  const cache7 = this.cache;
+  if (cache7[0] === v2)
     return;
   gl.uniform1f(this.addr, v2);
-  cache6[0] = v2;
+  cache7[0] = v2;
 }
 function setValueV2f(gl, v2) {
-  const cache6 = this.cache;
+  const cache7 = this.cache;
   if (v2.x !== void 0) {
-    if (cache6[0] !== v2.x || cache6[1] !== v2.y) {
+    if (cache7[0] !== v2.x || cache7[1] !== v2.y) {
       gl.uniform2f(this.addr, v2.x, v2.y);
-      cache6[0] = v2.x;
-      cache6[1] = v2.y;
+      cache7[0] = v2.x;
+      cache7[1] = v2.y;
     }
   } else {
-    if (arraysEqual(cache6, v2))
+    if (arraysEqual(cache7, v2))
       return;
     gl.uniform2fv(this.addr, v2);
-    copyArray(cache6, v2);
+    copyArray(cache7, v2);
   }
 }
 function setValueV3f(gl, v2) {
-  const cache6 = this.cache;
+  const cache7 = this.cache;
   if (v2.x !== void 0) {
-    if (cache6[0] !== v2.x || cache6[1] !== v2.y || cache6[2] !== v2.z) {
+    if (cache7[0] !== v2.x || cache7[1] !== v2.y || cache7[2] !== v2.z) {
       gl.uniform3f(this.addr, v2.x, v2.y, v2.z);
-      cache6[0] = v2.x;
-      cache6[1] = v2.y;
-      cache6[2] = v2.z;
+      cache7[0] = v2.x;
+      cache7[1] = v2.y;
+      cache7[2] = v2.z;
     }
   } else if (v2.r !== void 0) {
-    if (cache6[0] !== v2.r || cache6[1] !== v2.g || cache6[2] !== v2.b) {
+    if (cache7[0] !== v2.r || cache7[1] !== v2.g || cache7[2] !== v2.b) {
       gl.uniform3f(this.addr, v2.r, v2.g, v2.b);
-      cache6[0] = v2.r;
-      cache6[1] = v2.g;
-      cache6[2] = v2.b;
+      cache7[0] = v2.r;
+      cache7[1] = v2.g;
+      cache7[2] = v2.b;
     }
   } else {
-    if (arraysEqual(cache6, v2))
+    if (arraysEqual(cache7, v2))
       return;
     gl.uniform3fv(this.addr, v2);
-    copyArray(cache6, v2);
+    copyArray(cache7, v2);
   }
 }
 function setValueV4f(gl, v2) {
-  const cache6 = this.cache;
+  const cache7 = this.cache;
   if (v2.x !== void 0) {
-    if (cache6[0] !== v2.x || cache6[1] !== v2.y || cache6[2] !== v2.z || cache6[3] !== v2.w) {
+    if (cache7[0] !== v2.x || cache7[1] !== v2.y || cache7[2] !== v2.z || cache7[3] !== v2.w) {
       gl.uniform4f(this.addr, v2.x, v2.y, v2.z, v2.w);
-      cache6[0] = v2.x;
-      cache6[1] = v2.y;
-      cache6[2] = v2.z;
-      cache6[3] = v2.w;
+      cache7[0] = v2.x;
+      cache7[1] = v2.y;
+      cache7[2] = v2.z;
+      cache7[3] = v2.w;
     }
   } else {
-    if (arraysEqual(cache6, v2))
+    if (arraysEqual(cache7, v2))
       return;
     gl.uniform4fv(this.addr, v2);
-    copyArray(cache6, v2);
+    copyArray(cache7, v2);
   }
 }
 function setValueM2(gl, v2) {
-  const cache6 = this.cache;
+  const cache7 = this.cache;
   const elements = v2.elements;
   if (elements === void 0) {
-    if (arraysEqual(cache6, v2))
+    if (arraysEqual(cache7, v2))
       return;
     gl.uniformMatrix2fv(this.addr, false, v2);
-    copyArray(cache6, v2);
+    copyArray(cache7, v2);
   } else {
-    if (arraysEqual(cache6, elements))
+    if (arraysEqual(cache7, elements))
       return;
     mat2array.set(elements);
     gl.uniformMatrix2fv(this.addr, false, mat2array);
-    copyArray(cache6, elements);
+    copyArray(cache7, elements);
   }
 }
 function setValueM3(gl, v2) {
-  const cache6 = this.cache;
+  const cache7 = this.cache;
   const elements = v2.elements;
   if (elements === void 0) {
-    if (arraysEqual(cache6, v2))
+    if (arraysEqual(cache7, v2))
       return;
     gl.uniformMatrix3fv(this.addr, false, v2);
-    copyArray(cache6, v2);
+    copyArray(cache7, v2);
   } else {
-    if (arraysEqual(cache6, elements))
+    if (arraysEqual(cache7, elements))
       return;
     mat3array.set(elements);
     gl.uniformMatrix3fv(this.addr, false, mat3array);
-    copyArray(cache6, elements);
+    copyArray(cache7, elements);
   }
 }
 function setValueM4(gl, v2) {
-  const cache6 = this.cache;
+  const cache7 = this.cache;
   const elements = v2.elements;
   if (elements === void 0) {
-    if (arraysEqual(cache6, v2))
+    if (arraysEqual(cache7, v2))
       return;
     gl.uniformMatrix4fv(this.addr, false, v2);
-    copyArray(cache6, v2);
+    copyArray(cache7, v2);
   } else {
-    if (arraysEqual(cache6, elements))
+    if (arraysEqual(cache7, elements))
       return;
     mat4array.set(elements);
     gl.uniformMatrix4fv(this.addr, false, mat4array);
-    copyArray(cache6, elements);
+    copyArray(cache7, elements);
   }
 }
 function setValueV1i(gl, v2) {
-  const cache6 = this.cache;
-  if (cache6[0] === v2)
+  const cache7 = this.cache;
+  if (cache7[0] === v2)
     return;
   gl.uniform1i(this.addr, v2);
-  cache6[0] = v2;
+  cache7[0] = v2;
 }
 function setValueV2i(gl, v2) {
-  const cache6 = this.cache;
-  if (arraysEqual(cache6, v2))
+  const cache7 = this.cache;
+  if (arraysEqual(cache7, v2))
     return;
   gl.uniform2iv(this.addr, v2);
-  copyArray(cache6, v2);
+  copyArray(cache7, v2);
 }
 function setValueV3i(gl, v2) {
-  const cache6 = this.cache;
-  if (arraysEqual(cache6, v2))
+  const cache7 = this.cache;
+  if (arraysEqual(cache7, v2))
     return;
   gl.uniform3iv(this.addr, v2);
-  copyArray(cache6, v2);
+  copyArray(cache7, v2);
 }
 function setValueV4i(gl, v2) {
-  const cache6 = this.cache;
-  if (arraysEqual(cache6, v2))
+  const cache7 = this.cache;
+  if (arraysEqual(cache7, v2))
     return;
   gl.uniform4iv(this.addr, v2);
-  copyArray(cache6, v2);
+  copyArray(cache7, v2);
 }
 function setValueV1ui(gl, v2) {
-  const cache6 = this.cache;
-  if (cache6[0] === v2)
+  const cache7 = this.cache;
+  if (cache7[0] === v2)
     return;
   gl.uniform1ui(this.addr, v2);
-  cache6[0] = v2;
+  cache7[0] = v2;
 }
 function setValueV2ui(gl, v2) {
-  const cache6 = this.cache;
-  if (arraysEqual(cache6, v2))
+  const cache7 = this.cache;
+  if (arraysEqual(cache7, v2))
     return;
   gl.uniform2uiv(this.addr, v2);
-  copyArray(cache6, v2);
+  copyArray(cache7, v2);
 }
 function setValueV3ui(gl, v2) {
-  const cache6 = this.cache;
-  if (arraysEqual(cache6, v2))
+  const cache7 = this.cache;
+  if (arraysEqual(cache7, v2))
     return;
   gl.uniform3uiv(this.addr, v2);
-  copyArray(cache6, v2);
+  copyArray(cache7, v2);
 }
 function setValueV4ui(gl, v2) {
-  const cache6 = this.cache;
-  if (arraysEqual(cache6, v2))
+  const cache7 = this.cache;
+  if (arraysEqual(cache7, v2))
     return;
   gl.uniform4uiv(this.addr, v2);
-  copyArray(cache6, v2);
+  copyArray(cache7, v2);
 }
 function setValueT1(gl, v2, textures) {
-  const cache6 = this.cache;
+  const cache7 = this.cache;
   const unit = textures.allocateTextureUnit();
-  if (cache6[0] !== unit) {
+  if (cache7[0] !== unit) {
     gl.uniform1i(this.addr, unit);
-    cache6[0] = unit;
+    cache7[0] = unit;
   }
   textures.safeSetTexture2D(v2 || emptyTexture, unit);
 }
 function setValueT3D1(gl, v2, textures) {
-  const cache6 = this.cache;
+  const cache7 = this.cache;
   const unit = textures.allocateTextureUnit();
-  if (cache6[0] !== unit) {
+  if (cache7[0] !== unit) {
     gl.uniform1i(this.addr, unit);
-    cache6[0] = unit;
+    cache7[0] = unit;
   }
   textures.setTexture3D(v2 || emptyTexture3d, unit);
 }
 function setValueT6(gl, v2, textures) {
-  const cache6 = this.cache;
+  const cache7 = this.cache;
   const unit = textures.allocateTextureUnit();
-  if (cache6[0] !== unit) {
+  if (cache7[0] !== unit) {
     gl.uniform1i(this.addr, unit);
-    cache6[0] = unit;
+    cache7[0] = unit;
   }
   textures.safeSetTextureCube(v2 || emptyCubeTexture, unit);
 }
 function setValueT2DArray1(gl, v2, textures) {
-  const cache6 = this.cache;
+  const cache7 = this.cache;
   const unit = textures.allocateTextureUnit();
-  if (cache6[0] !== unit) {
+  if (cache7[0] !== unit) {
     gl.uniform1i(this.addr, unit);
-    cache6[0] = unit;
+    cache7[0] = unit;
   }
   textures.setTexture2DArray(v2 || emptyTexture2dArray, unit);
 }
@@ -10447,12 +10438,28 @@ function setValueT1Array(gl, v2, textures) {
     textures.safeSetTexture2D(v2[i2] || emptyTexture, units[i2]);
   }
 }
+function setValueT3DArray(gl, v2, textures) {
+  const n2 = v2.length;
+  const units = allocTexUnits(textures, n2);
+  gl.uniform1iv(this.addr, units);
+  for (let i2 = 0; i2 !== n2; ++i2) {
+    textures.setTexture3D(v2[i2] || emptyTexture3d, units[i2]);
+  }
+}
 function setValueT6Array(gl, v2, textures) {
   const n2 = v2.length;
   const units = allocTexUnits(textures, n2);
   gl.uniform1iv(this.addr, units);
   for (let i2 = 0; i2 !== n2; ++i2) {
     textures.safeSetTextureCube(v2[i2] || emptyCubeTexture, units[i2]);
+  }
+}
+function setValueT2DArrayArray(gl, v2, textures) {
+  const n2 = v2.length;
+  const units = allocTexUnits(textures, n2);
+  gl.uniform1iv(this.addr, units);
+  for (let i2 = 0; i2 !== n2; ++i2) {
+    textures.setTexture2DArray(v2[i2] || emptyTexture2dArray, units[i2]);
   }
 }
 function getPureArraySetter(type) {
@@ -10497,11 +10504,20 @@ function getPureArraySetter(type) {
     case 36306:
     case 35682:
       return setValueT1Array;
+    case 35679:
+    case 36299:
+    case 36307:
+      return setValueT3DArray;
     case 35680:
     case 36300:
     case 36308:
     case 36293:
       return setValueT6Array;
+    case 36289:
+    case 36303:
+    case 36311:
+    case 36292:
+      return setValueT2DArrayArray;
   }
 }
 function SingleUniform(id, activeInfo, addr) {
@@ -10518,11 +10534,11 @@ function PureArrayUniform(id, activeInfo, addr) {
   this.setValue = getPureArraySetter(activeInfo.type);
 }
 PureArrayUniform.prototype.updateCache = function(data) {
-  const cache6 = this.cache;
-  if (data instanceof Float32Array && cache6.length !== data.length) {
+  const cache7 = this.cache;
+  if (data instanceof Float32Array && cache7.length !== data.length) {
     this.cache = new Float32Array(data.length);
   }
-  copyArray(cache6, data);
+  copyArray(cache7, data);
 };
 function StructuredUniform(id) {
   this.id = id;
@@ -10630,8 +10646,6 @@ function getEncodingComponents(encoding) {
       return ["RGBD", "( value, 256.0 )"];
     case GammaEncoding:
       return ["Gamma", "( value, float( GAMMA_FACTOR ) )"];
-    case LogLuvEncoding:
-      return ["LogLuv", "( value )"];
     default:
       console.warn("THREE.WebGLProgram: Unsupported encoding:", encoding);
       return ["Linear", "( value )"];
@@ -11267,9 +11281,6 @@ function WebGLPrograms(renderer2, cubemaps, cubeuvmaps, extensions2, capabilitie
     } else {
       encoding = LinearEncoding;
     }
-    if (isWebGL2 && map && map.isTexture && map.format === RGBAFormat && map.type === UnsignedByteType && map.encoding === sRGBEncoding) {
-      encoding = LinearEncoding;
-    }
     return encoding;
   }
   function getParameters(material, lights, shadows, scene2, object2) {
@@ -11353,7 +11364,7 @@ function WebGLPrograms(renderer2, cubemaps, cubeuvmaps, extensions2, capabilitie
       vertexColors: material.vertexColors,
       vertexAlphas: material.vertexColors === true && !!object2.geometry && !!object2.geometry.attributes.color && object2.geometry.attributes.color.itemSize === 4,
       vertexUvs: !!material.map || !!material.bumpMap || !!material.normalMap || !!material.specularMap || !!material.alphaMap || !!material.emissiveMap || !!material.roughnessMap || !!material.metalnessMap || !!material.clearcoatMap || !!material.clearcoatRoughnessMap || !!material.clearcoatNormalMap || !!material.displacementMap || !!material.transmissionMap || !!material.thicknessMap || !!material.specularIntensityMap || !!material.specularColorMap || !!material.sheenColorMap || material.sheenRoughnessMap,
-      uvsVertexOnly: !(!!material.map || !!material.bumpMap || !!material.normalMap || !!material.specularMap || !!material.alphaMap || !!material.emissiveMap || !!material.roughnessMap || !!material.metalnessMap || !!material.clearcoatNormalMap || material.transmission > 0 || !!material.transmissionMap || !!material.thicknessMap || !!material.specularIntensityMap || !!material.specularColorMap || !!material.sheen > 0 || !!material.sheenColorMap || !!material.sheenRoughnessMap) && !!material.displacementMap,
+      uvsVertexOnly: !(!!material.map || !!material.bumpMap || !!material.normalMap || !!material.specularMap || !!material.alphaMap || !!material.emissiveMap || !!material.roughnessMap || !!material.metalnessMap || !!material.clearcoatNormalMap || material.transmission > 0 || !!material.transmissionMap || !!material.thicknessMap || !!material.specularIntensityMap || !!material.specularColorMap || material.sheen > 0 || !!material.sheenColorMap || !!material.sheenRoughnessMap) && !!material.displacementMap,
       fog: !!fog,
       useFog: material.fog,
       fogExp2: fog && fog.isFogExp2,
@@ -11525,7 +11536,7 @@ function WebGLRenderList(properties) {
   const transmissive = [];
   const transparent = [];
   const defaultProgram = { id: -1 };
-  function init2() {
+  function init3() {
     renderItemsIndex = 0;
     opaque.length = 0;
     transmissive.length = 0;
@@ -11606,7 +11617,7 @@ function WebGLRenderList(properties) {
     opaque,
     transmissive,
     transparent,
-    init: init2,
+    init: init3,
     push,
     unshift,
     finish,
@@ -11739,7 +11750,7 @@ function shadowCastingLightsFirst(lightA, lightB) {
   return (lightB.castShadow ? 1 : 0) - (lightA.castShadow ? 1 : 0);
 }
 function WebGLLights(extensions2, capabilities) {
-  const cache6 = new UniformsCache();
+  const cache7 = new UniformsCache();
   const shadowCache = ShadowUniformsCache();
   const state = {
     version: 0,
@@ -11777,7 +11788,7 @@ function WebGLLights(extensions2, capabilities) {
   const vector3 = new Vector3();
   const matrix4 = new Matrix4();
   const matrix42 = new Matrix4();
-  function setup46(lights, physicallyCorrectLights) {
+  function setup49(lights, physicallyCorrectLights) {
     let r2 = 0, g2 = 0, b2 = 0;
     for (let i2 = 0; i2 < 9; i2++)
       state.probe[i2].set(0, 0, 0);
@@ -11806,7 +11817,7 @@ function WebGLLights(extensions2, capabilities) {
           state.probe[j2].addScaledVector(light2.sh.coefficients[j2], intensity);
         }
       } else if (light2.isDirectionalLight) {
-        const uniforms = cache6.get(light2);
+        const uniforms = cache7.get(light2);
         uniforms.color.copy(light2.color).multiplyScalar(light2.intensity * scaleFactor);
         if (light2.castShadow) {
           const shadow = light2.shadow;
@@ -11823,7 +11834,7 @@ function WebGLLights(extensions2, capabilities) {
         state.directional[directionalLength] = uniforms;
         directionalLength++;
       } else if (light2.isSpotLight) {
-        const uniforms = cache6.get(light2);
+        const uniforms = cache7.get(light2);
         uniforms.position.setFromMatrixPosition(light2.matrixWorld);
         uniforms.color.copy(color).multiplyScalar(intensity * scaleFactor);
         uniforms.distance = distance2;
@@ -11845,14 +11856,14 @@ function WebGLLights(extensions2, capabilities) {
         state.spot[spotLength] = uniforms;
         spotLength++;
       } else if (light2.isRectAreaLight) {
-        const uniforms = cache6.get(light2);
+        const uniforms = cache7.get(light2);
         uniforms.color.copy(color).multiplyScalar(intensity);
         uniforms.halfWidth.set(light2.width * 0.5, 0, 0);
         uniforms.halfHeight.set(0, light2.height * 0.5, 0);
         state.rectArea[rectAreaLength] = uniforms;
         rectAreaLength++;
       } else if (light2.isPointLight) {
-        const uniforms = cache6.get(light2);
+        const uniforms = cache7.get(light2);
         uniforms.color.copy(light2.color).multiplyScalar(light2.intensity * scaleFactor);
         uniforms.distance = light2.distance;
         uniforms.decay = light2.decay;
@@ -11873,7 +11884,7 @@ function WebGLLights(extensions2, capabilities) {
         state.point[pointLength] = uniforms;
         pointLength++;
       } else if (light2.isHemisphereLight) {
-        const uniforms = cache6.get(light2);
+        const uniforms = cache7.get(light2);
         uniforms.skyColor.copy(light2.color).multiplyScalar(intensity * scaleFactor);
         uniforms.groundColor.copy(light2.groundColor).multiplyScalar(intensity * scaleFactor);
         state.hemi[hemiLength] = uniforms;
@@ -11979,7 +11990,7 @@ function WebGLLights(extensions2, capabilities) {
     }
   }
   return {
-    setup: setup46,
+    setup: setup49,
     setupView,
     state
   };
@@ -11988,7 +11999,7 @@ function WebGLRenderState(extensions2, capabilities) {
   const lights = new WebGLLights(extensions2, capabilities);
   const lightsArray = [];
   const shadowsArray = [];
-  function init2() {
+  function init3() {
     lightsArray.length = 0;
     shadowsArray.length = 0;
   }
@@ -12010,7 +12021,7 @@ function WebGLRenderState(extensions2, capabilities) {
     lights
   };
   return {
-    init: init2,
+    init: init3,
     state,
     setupLights,
     setupLightsView,
@@ -12476,7 +12487,6 @@ function WebGLState(gl, extensions2, capabilities) {
   const depthBuffer = new DepthBuffer();
   const stencilBuffer = new StencilBuffer();
   let enabledCapabilities = {};
-  let xrFramebuffer = null;
   let currentBoundFramebuffers = {};
   let currentProgram = null;
   let currentBlendingEnabled = false;
@@ -12495,14 +12505,14 @@ function WebGLState(gl, extensions2, capabilities) {
   let currentPolygonOffsetUnits = null;
   const maxTextures = gl.getParameter(35661);
   let lineWidthAvailable = false;
-  let version9 = 0;
+  let version10 = 0;
   const glVersion = gl.getParameter(7938);
   if (glVersion.indexOf("WebGL") !== -1) {
-    version9 = parseFloat(/^WebGL (\d)/.exec(glVersion)[1]);
-    lineWidthAvailable = version9 >= 1;
+    version10 = parseFloat(/^WebGL (\d)/.exec(glVersion)[1]);
+    lineWidthAvailable = version10 >= 1;
   } else if (glVersion.indexOf("OpenGL ES") !== -1) {
-    version9 = parseFloat(/^OpenGL ES (\d)/.exec(glVersion)[1]);
-    lineWidthAvailable = version9 >= 2;
+    version10 = parseFloat(/^OpenGL ES (\d)/.exec(glVersion)[1]);
+    lineWidthAvailable = version10 >= 2;
   }
   let currentTextureSlot = null;
   let currentBoundTextures = {};
@@ -12545,15 +12555,7 @@ function WebGLState(gl, extensions2, capabilities) {
       enabledCapabilities[id] = false;
     }
   }
-  function bindXRFramebuffer(framebuffer) {
-    if (framebuffer !== xrFramebuffer) {
-      gl.bindFramebuffer(36160, framebuffer);
-      xrFramebuffer = framebuffer;
-    }
-  }
   function bindFramebuffer(target, framebuffer) {
-    if (framebuffer === null && xrFramebuffer !== null)
-      framebuffer = xrFramebuffer;
     if (currentBoundFramebuffers[target] !== framebuffer) {
       gl.bindFramebuffer(target, framebuffer);
       currentBoundFramebuffers[target] = framebuffer;
@@ -12800,6 +12802,20 @@ function WebGLState(gl, extensions2, capabilities) {
       console.error("THREE.WebGLState:", error);
     }
   }
+  function texSubImage2D() {
+    try {
+      gl.texSubImage2D.apply(gl, arguments);
+    } catch (error) {
+      console.error("THREE.WebGLState:", error);
+    }
+  }
+  function texStorage2D() {
+    try {
+      gl.texStorage2D.apply(gl, arguments);
+    } catch (error) {
+      console.error("THREE.WebGLState:", error);
+    }
+  }
   function texImage2D() {
     try {
       gl.texImage2D.apply(gl, arguments);
@@ -12862,7 +12878,6 @@ function WebGLState(gl, extensions2, capabilities) {
     enabledCapabilities = {};
     currentTextureSlot = null;
     currentBoundTextures = {};
-    xrFramebuffer = null;
     currentBoundFramebuffers = {};
     currentProgram = null;
     currentBlendingEnabled = false;
@@ -12894,7 +12909,6 @@ function WebGLState(gl, extensions2, capabilities) {
     enable,
     disable,
     bindFramebuffer,
-    bindXRFramebuffer,
     useProgram,
     setBlending,
     setMaterial,
@@ -12909,6 +12923,8 @@ function WebGLState(gl, extensions2, capabilities) {
     compressedTexImage2D,
     texImage2D,
     texImage3D,
+    texStorage2D,
+    texSubImage2D,
     scissor,
     viewport,
     reset: reset2
@@ -12920,6 +12936,8 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
   const maxCubemapSize = capabilities.maxCubemapSize;
   const maxTextureSize = capabilities.maxTextureSize;
   const maxSamples = capabilities.maxSamples;
+  const hasMultisampledRenderToTexture = extensions2.has("WEBGL_multisampled_render_to_texture");
+  const MultisampledRenderToTextureExtension = hasMultisampledRenderToTexture ? extensions2.get("WEBGL_multisampled_render_to_texture") : void 0;
   const _videoTextures = new WeakMap();
   let _canvas2;
   let useOffscreenCanvas = false;
@@ -12969,12 +12987,10 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
   function textureNeedsGenerateMipmaps(texture, supportsMips) {
     return texture.generateMipmaps && supportsMips && texture.minFilter !== NearestFilter && texture.minFilter !== LinearFilter;
   }
-  function generateMipmap(target, texture, width, height, depth = 1) {
+  function generateMipmap(target) {
     _gl.generateMipmap(target);
-    const textureProperties = properties.get(texture);
-    textureProperties.__maxMipLevel = Math.log2(Math.max(width, height, depth));
   }
-  function getInternalFormat(internalFormatName, glFormat, glType, encoding) {
+  function getInternalFormat(internalFormatName, glFormat, glType) {
     if (isWebGL2 === false)
       return glFormat;
     if (internalFormatName !== null) {
@@ -13005,12 +13021,21 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
       if (glType === 5131)
         internalFormat = 34842;
       if (glType === 5121)
-        internalFormat = encoding === sRGBEncoding ? 35907 : 32856;
+        internalFormat = 32856;
     }
     if (internalFormat === 33325 || internalFormat === 33326 || internalFormat === 34842 || internalFormat === 34836) {
       extensions2.get("EXT_color_buffer_float");
     }
     return internalFormat;
+  }
+  function getMipLevels(texture, image2, supportsMips) {
+    if (textureNeedsGenerateMipmaps(texture, supportsMips) === true) {
+      return Math.log2(Math.max(image2.width, image2.height)) + 1;
+    } else if (texture.mipmaps.length > 0) {
+      return texture.mipmaps.length;
+    } else {
+      return 1;
+    }
   }
   function filterFallback(f2) {
     if (f2 === NearestFilter || f2 === NearestMipmapNearestFilter || f2 === NearestMipmapLinearFilter) {
@@ -13256,10 +13281,8 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
           state.texImage2D(3553, i2, glInternalFormat, mipmap.width, mipmap.height, 0, glFormat, glType, mipmap.data);
         }
         texture.generateMipmaps = false;
-        textureProperties.__maxMipLevel = mipmaps.length - 1;
       } else {
         state.texImage2D(3553, 0, glInternalFormat, image2.width, image2.height, 0, glFormat, glType, image2.data);
-        textureProperties.__maxMipLevel = 0;
       }
     } else if (texture.isCompressedTexture) {
       for (let i2 = 0, il = mipmaps.length; i2 < il; i2++) {
@@ -13274,28 +13297,40 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
           state.texImage2D(3553, i2, glInternalFormat, mipmap.width, mipmap.height, 0, glFormat, glType, mipmap.data);
         }
       }
-      textureProperties.__maxMipLevel = mipmaps.length - 1;
     } else if (texture.isDataTexture2DArray) {
       state.texImage3D(35866, 0, glInternalFormat, image2.width, image2.height, image2.depth, 0, glFormat, glType, image2.data);
-      textureProperties.__maxMipLevel = 0;
     } else if (texture.isDataTexture3D) {
       state.texImage3D(32879, 0, glInternalFormat, image2.width, image2.height, image2.depth, 0, glFormat, glType, image2.data);
-      textureProperties.__maxMipLevel = 0;
     } else {
+      const levels = getMipLevels(texture, image2, supportsMips);
+      const useTexStorage = isWebGL2 && texture.isVideoTexture !== true;
+      const allocateMemory = textureProperties.__version === void 0;
       if (mipmaps.length > 0 && supportsMips) {
+        if (useTexStorage && allocateMemory) {
+          state.texStorage2D(3553, levels, glInternalFormat, mipmaps[0].width, mipmaps[0].height);
+        }
         for (let i2 = 0, il = mipmaps.length; i2 < il; i2++) {
           mipmap = mipmaps[i2];
-          state.texImage2D(3553, i2, glInternalFormat, glFormat, glType, mipmap);
+          if (useTexStorage) {
+            state.texSubImage2D(3553, i2, 0, 0, glFormat, glType, mipmap);
+          } else {
+            state.texImage2D(3553, i2, glInternalFormat, glFormat, glType, mipmap);
+          }
         }
         texture.generateMipmaps = false;
-        textureProperties.__maxMipLevel = mipmaps.length - 1;
       } else {
-        state.texImage2D(3553, 0, glInternalFormat, glFormat, glType, image2);
-        textureProperties.__maxMipLevel = 0;
+        if (useTexStorage) {
+          if (allocateMemory) {
+            state.texStorage2D(3553, levels, glInternalFormat, image2.width, image2.height);
+          }
+          state.texSubImage2D(3553, 0, 0, 0, glFormat, glType, image2);
+        } else {
+          state.texImage2D(3553, 0, glInternalFormat, glFormat, glType, image2);
+        }
       }
     }
     if (textureNeedsGenerateMipmaps(texture, supportsMips)) {
-      generateMipmap(textureType, texture, image2.width, image2.height);
+      generateMipmap(textureType);
     }
     textureProperties.__version = texture.version;
     if (texture.onUpdate)
@@ -13340,7 +13375,6 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
           }
         }
       }
-      textureProperties.__maxMipLevel = mipmaps.length - 1;
     } else {
       mipmaps = texture.mipmaps;
       for (let i2 = 0; i2 < 6; i2++) {
@@ -13359,10 +13393,9 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
           }
         }
       }
-      textureProperties.__maxMipLevel = mipmaps.length;
     }
     if (textureNeedsGenerateMipmaps(texture, supportsMips)) {
-      generateMipmap(34067, texture, image2.width, image2.height);
+      generateMipmap(34067);
     }
     textureProperties.__version = texture.version;
     if (texture.onUpdate)
@@ -13372,20 +13405,27 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
     const glFormat = utils.convert(texture.format);
     const glType = utils.convert(texture.type);
     const glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType, texture.encoding);
-    if (textureTarget === 32879 || textureTarget === 35866) {
-      state.texImage3D(textureTarget, 0, glInternalFormat, renderTarget.width, renderTarget.height, renderTarget.depth, 0, glFormat, glType, null);
-    } else {
-      state.texImage2D(textureTarget, 0, glInternalFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null);
+    const renderTargetProperties = properties.get(renderTarget);
+    if (!renderTargetProperties.__hasExternalTextures) {
+      if (textureTarget === 32879 || textureTarget === 35866) {
+        state.texImage3D(textureTarget, 0, glInternalFormat, renderTarget.width, renderTarget.height, renderTarget.depth, 0, glFormat, glType, null);
+      } else {
+        state.texImage2D(textureTarget, 0, glInternalFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null);
+      }
     }
     state.bindFramebuffer(36160, framebuffer);
-    _gl.framebufferTexture2D(36160, attachment, textureTarget, properties.get(texture).__webglTexture, 0);
+    if (renderTarget.useRenderToTexture) {
+      MultisampledRenderToTextureExtension.framebufferTexture2DMultisampleEXT(36160, attachment, textureTarget, properties.get(texture).__webglTexture, 0, getRenderTargetSamples(renderTarget));
+    } else {
+      _gl.framebufferTexture2D(36160, attachment, textureTarget, properties.get(texture).__webglTexture, 0);
+    }
     state.bindFramebuffer(36160, null);
   }
   function setupRenderBufferStorage(renderbuffer, renderTarget, isMultisample) {
     _gl.bindRenderbuffer(36161, renderbuffer);
     if (renderTarget.depthBuffer && !renderTarget.stencilBuffer) {
       let glInternalFormat = 33189;
-      if (isMultisample) {
+      if (isMultisample || renderTarget.useRenderToTexture) {
         const depthTexture = renderTarget.depthTexture;
         if (depthTexture && depthTexture.isDepthTexture) {
           if (depthTexture.type === FloatType) {
@@ -13395,15 +13435,21 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
           }
         }
         const samples = getRenderTargetSamples(renderTarget);
-        _gl.renderbufferStorageMultisample(36161, samples, glInternalFormat, renderTarget.width, renderTarget.height);
+        if (renderTarget.useRenderToTexture) {
+          MultisampledRenderToTextureExtension.renderbufferStorageMultisampleEXT(36161, samples, glInternalFormat, renderTarget.width, renderTarget.height);
+        } else {
+          _gl.renderbufferStorageMultisample(36161, samples, glInternalFormat, renderTarget.width, renderTarget.height);
+        }
       } else {
         _gl.renderbufferStorage(36161, glInternalFormat, renderTarget.width, renderTarget.height);
       }
       _gl.framebufferRenderbuffer(36160, 36096, 36161, renderbuffer);
     } else if (renderTarget.depthBuffer && renderTarget.stencilBuffer) {
-      if (isMultisample) {
-        const samples = getRenderTargetSamples(renderTarget);
+      const samples = getRenderTargetSamples(renderTarget);
+      if (isMultisample && renderTarget.useRenderbuffer) {
         _gl.renderbufferStorageMultisample(36161, samples, 35056, renderTarget.width, renderTarget.height);
+      } else if (renderTarget.useRenderToTexture) {
+        MultisampledRenderToTextureExtension.renderbufferStorageMultisampleEXT(36161, samples, 35056, renderTarget.width, renderTarget.height);
       } else {
         _gl.renderbufferStorage(36161, 34041, renderTarget.width, renderTarget.height);
       }
@@ -13413,9 +13459,11 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
       const glFormat = utils.convert(texture.format);
       const glType = utils.convert(texture.type);
       const glInternalFormat = getInternalFormat(texture.internalFormat, glFormat, glType, texture.encoding);
-      if (isMultisample) {
-        const samples = getRenderTargetSamples(renderTarget);
+      const samples = getRenderTargetSamples(renderTarget);
+      if (isMultisample && renderTarget.useRenderbuffer) {
         _gl.renderbufferStorageMultisample(36161, samples, glInternalFormat, renderTarget.width, renderTarget.height);
+      } else if (renderTarget.useRenderToTexture) {
+        MultisampledRenderToTextureExtension.renderbufferStorageMultisampleEXT(36161, samples, glInternalFormat, renderTarget.width, renderTarget.height);
       } else {
         _gl.renderbufferStorage(36161, glInternalFormat, renderTarget.width, renderTarget.height);
       }
@@ -13437,10 +13485,19 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
     }
     setTexture2D(renderTarget.depthTexture, 0);
     const webglDepthTexture = properties.get(renderTarget.depthTexture).__webglTexture;
+    const samples = getRenderTargetSamples(renderTarget);
     if (renderTarget.depthTexture.format === DepthFormat) {
-      _gl.framebufferTexture2D(36160, 36096, 3553, webglDepthTexture, 0);
+      if (renderTarget.useRenderToTexture) {
+        MultisampledRenderToTextureExtension.framebufferTexture2DMultisampleEXT(36160, 36096, 3553, webglDepthTexture, 0, samples);
+      } else {
+        _gl.framebufferTexture2D(36160, 36096, 3553, webglDepthTexture, 0);
+      }
     } else if (renderTarget.depthTexture.format === DepthStencilFormat) {
-      _gl.framebufferTexture2D(36160, 33306, 3553, webglDepthTexture, 0);
+      if (renderTarget.useRenderToTexture) {
+        MultisampledRenderToTextureExtension.framebufferTexture2DMultisampleEXT(36160, 33306, 3553, webglDepthTexture, 0, samples);
+      } else {
+        _gl.framebufferTexture2D(36160, 33306, 3553, webglDepthTexture, 0);
+      }
     } else {
       throw new Error("Unknown depthTexture format");
     }
@@ -13448,7 +13505,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
   function setupDepthRenderbuffer(renderTarget) {
     const renderTargetProperties = properties.get(renderTarget);
     const isCube = renderTarget.isWebGLCubeRenderTarget === true;
-    if (renderTarget.depthTexture) {
+    if (renderTarget.depthTexture && !renderTargetProperties.__autoAllocateDepthBuffer) {
       if (isCube)
         throw new Error("target.depthTexture not supported in Cube render targets");
       setupDepthTexture(renderTargetProperties.__webglFramebuffer, renderTarget);
@@ -13468,19 +13525,29 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
     }
     state.bindFramebuffer(36160, null);
   }
+  function rebindTextures(renderTarget, colorTexture, depthTexture) {
+    const renderTargetProperties = properties.get(renderTarget);
+    if (colorTexture !== void 0) {
+      setupFrameBufferTexture(renderTargetProperties.__webglFramebuffer, renderTarget, renderTarget.texture, 36064, 3553);
+    }
+    if (depthTexture !== void 0) {
+      setupDepthRenderbuffer(renderTarget);
+    }
+  }
   function setupRenderTarget(renderTarget) {
     const texture = renderTarget.texture;
     const renderTargetProperties = properties.get(renderTarget);
     const textureProperties = properties.get(texture);
     renderTarget.addEventListener("dispose", onRenderTargetDispose);
     if (renderTarget.isWebGLMultipleRenderTargets !== true) {
-      textureProperties.__webglTexture = _gl.createTexture();
+      if (textureProperties.__webglTexture === void 0) {
+        textureProperties.__webglTexture = _gl.createTexture();
+      }
       textureProperties.__version = texture.version;
       info.memory.textures++;
     }
     const isCube = renderTarget.isWebGLCubeRenderTarget === true;
     const isMultipleRenderTargets = renderTarget.isWebGLMultipleRenderTargets === true;
-    const isMultisample = renderTarget.isWebGLMultisampleRenderTarget === true;
     const isRenderTarget3D = texture.isDataTexture3D || texture.isDataTexture2DArray;
     const supportsMips = isPowerOfTwo$1(renderTarget) || isWebGL2;
     if (isWebGL2 && texture.format === RGBFormat && (texture.type === FloatType || texture.type === HalfFloatType)) {
@@ -13507,7 +13574,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
         } else {
           console.warn("THREE.WebGLRenderer: WebGLMultipleRenderTargets can only be used with WebGL2 or WEBGL_draw_buffers extension.");
         }
-      } else if (isMultisample) {
+      } else if (renderTarget.useRenderbuffer) {
         if (isWebGL2) {
           renderTargetProperties.__webglMultisampledFramebuffer = _gl.createFramebuffer();
           renderTargetProperties.__webglColorRenderbuffer = _gl.createRenderbuffer();
@@ -13537,7 +13604,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
         setupFrameBufferTexture(renderTargetProperties.__webglFramebuffer[i2], renderTarget, texture, 36064, 34069 + i2);
       }
       if (textureNeedsGenerateMipmaps(texture, supportsMips)) {
-        generateMipmap(34067, texture, renderTarget.width, renderTarget.height);
+        generateMipmap(34067);
       }
       state.unbindTexture();
     } else if (isMultipleRenderTargets) {
@@ -13549,7 +13616,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
         setTextureParameters(3553, attachment, supportsMips);
         setupFrameBufferTexture(renderTargetProperties.__webglFramebuffer, renderTarget, attachment, 36064 + i2, 3553);
         if (textureNeedsGenerateMipmaps(attachment, supportsMips)) {
-          generateMipmap(3553, attachment, renderTarget.width, renderTarget.height);
+          generateMipmap(3553);
         }
       }
       state.unbindTexture();
@@ -13567,7 +13634,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
       setTextureParameters(glTextureType, texture, supportsMips);
       setupFrameBufferTexture(renderTargetProperties.__webglFramebuffer, renderTarget, texture, 36064, glTextureType);
       if (textureNeedsGenerateMipmaps(texture, supportsMips)) {
-        generateMipmap(glTextureType, texture, renderTarget.width, renderTarget.height, renderTarget.depth);
+        generateMipmap(glTextureType);
       }
       state.unbindTexture();
     }
@@ -13584,25 +13651,37 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
         const target = renderTarget.isWebGLCubeRenderTarget ? 34067 : 3553;
         const webglTexture = properties.get(texture).__webglTexture;
         state.bindTexture(target, webglTexture);
-        generateMipmap(target, texture, renderTarget.width, renderTarget.height);
+        generateMipmap(target);
         state.unbindTexture();
       }
     }
   }
   function updateMultisampleRenderTarget(renderTarget) {
-    if (renderTarget.isWebGLMultisampleRenderTarget) {
+    if (renderTarget.useRenderbuffer) {
       if (isWebGL2) {
         const width = renderTarget.width;
         const height = renderTarget.height;
         let mask2 = 16384;
-        if (renderTarget.depthBuffer)
-          mask2 |= 256;
-        if (renderTarget.stencilBuffer)
-          mask2 |= 1024;
+        const invalidationArray = [36064];
+        const depthStyle = renderTarget.stencilBuffer ? 33306 : 36096;
+        if (renderTarget.depthBuffer) {
+          invalidationArray.push(depthStyle);
+        }
+        if (!renderTarget.ignoreDepthForMultisampleCopy) {
+          if (renderTarget.depthBuffer)
+            mask2 |= 256;
+          if (renderTarget.stencilBuffer)
+            mask2 |= 1024;
+        }
         const renderTargetProperties = properties.get(renderTarget);
         state.bindFramebuffer(36008, renderTargetProperties.__webglMultisampledFramebuffer);
         state.bindFramebuffer(36009, renderTargetProperties.__webglFramebuffer);
+        if (renderTarget.ignoreDepthForMultisampleCopy) {
+          _gl.invalidateFramebuffer(36008, [depthStyle]);
+          _gl.invalidateFramebuffer(36009, [depthStyle]);
+        }
         _gl.blitFramebuffer(0, 0, width, height, 0, 0, width, height, mask2, 9728);
+        _gl.invalidateFramebuffer(36008, invalidationArray);
         state.bindFramebuffer(36008, null);
         state.bindFramebuffer(36009, renderTargetProperties.__webglMultisampledFramebuffer);
       } else {
@@ -13611,7 +13690,7 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
     }
   }
   function getRenderTargetSamples(renderTarget) {
-    return isWebGL2 && renderTarget.isWebGLMultisampleRenderTarget ? Math.min(maxSamples, renderTarget.samples) : 0;
+    return isWebGL2 && (renderTarget.useRenderbuffer || renderTarget.useRenderToTexture) ? Math.min(maxSamples, renderTarget.samples) : 0;
   }
   function updateVideoTexture(texture) {
     const frame2 = info.render.frame;
@@ -13648,9 +13727,12 @@ function WebGLTextures(_gl, extensions2, state, properties, capabilities, utils,
   this.setTexture2DArray = setTexture2DArray;
   this.setTexture3D = setTexture3D;
   this.setTextureCube = setTextureCube;
+  this.rebindTextures = rebindTextures;
   this.setupRenderTarget = setupRenderTarget;
   this.updateRenderTargetMipmap = updateRenderTargetMipmap;
   this.updateMultisampleRenderTarget = updateMultisampleRenderTarget;
+  this.setupDepthRenderbuffer = setupDepthRenderbuffer;
+  this.setupFrameBufferTexture = setupFrameBufferTexture;
   this.safeSetTexture2D = safeSetTexture2D;
   this.safeSetTextureCube = safeSetTextureCube;
 }
@@ -13971,27 +14053,43 @@ var WebXRController = class {
     return this;
   }
 };
+var DepthTexture = class extends Texture {
+  constructor(width, height, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, format) {
+    format = format !== void 0 ? format : DepthFormat;
+    if (format !== DepthFormat && format !== DepthStencilFormat) {
+      throw new Error("DepthTexture format must be either THREE.DepthFormat or THREE.DepthStencilFormat");
+    }
+    if (type === void 0 && format === DepthFormat)
+      type = UnsignedShortType;
+    if (type === void 0 && format === DepthStencilFormat)
+      type = UnsignedInt248Type;
+    super(null, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy);
+    this.image = { width, height };
+    this.magFilter = magFilter !== void 0 ? magFilter : NearestFilter;
+    this.minFilter = minFilter !== void 0 ? minFilter : NearestFilter;
+    this.flipY = false;
+    this.generateMipmaps = false;
+  }
+};
+DepthTexture.prototype.isDepthTexture = true;
 var WebXRManager = class extends EventDispatcher {
   constructor(renderer2, gl) {
     super();
     const scope = this;
-    const state = renderer2.state;
     let session = null;
     let framebufferScaleFactor = 1;
     let referenceSpace = null;
     let referenceSpaceType = "local-floor";
+    const hasMultisampledRenderToTexture = renderer2.extensions.has("WEBGL_multisampled_render_to_texture");
     let pose = null;
     let glBinding = null;
-    let glFramebuffer = null;
     let glProjLayer = null;
     let glBaseLayer = null;
     let isMultisample = false;
-    let glMultisampledFramebuffer = null;
-    let glColorRenderbuffer = null;
-    let glDepthRenderbuffer = null;
     let xrFrame = null;
-    let depthStyle = null;
-    let clearStyle = null;
+    const attributes = gl.getContextAttributes();
+    let initialRenderTarget = null;
+    let newRenderTarget = null;
     const controllers = [];
     const inputSourcesMap = new Map();
     const cameraL = new PerspectiveCamera();
@@ -14046,24 +14144,12 @@ var WebXRManager = class extends EventDispatcher {
       inputSourcesMap.clear();
       _currentDepthNear = null;
       _currentDepthFar = null;
-      state.bindXRFramebuffer(null);
-      renderer2.setRenderTarget(renderer2.getRenderTarget());
-      if (glFramebuffer)
-        gl.deleteFramebuffer(glFramebuffer);
-      if (glMultisampledFramebuffer)
-        gl.deleteFramebuffer(glMultisampledFramebuffer);
-      if (glColorRenderbuffer)
-        gl.deleteRenderbuffer(glColorRenderbuffer);
-      if (glDepthRenderbuffer)
-        gl.deleteRenderbuffer(glDepthRenderbuffer);
-      glFramebuffer = null;
-      glMultisampledFramebuffer = null;
-      glColorRenderbuffer = null;
-      glDepthRenderbuffer = null;
+      renderer2.setRenderTarget(initialRenderTarget);
       glBaseLayer = null;
       glProjLayer = null;
       glBinding = null;
       session = null;
+      newRenderTarget = null;
       animation.stop();
       scope.isPresenting = false;
       scope.dispatchEvent({ type: "sessionend" });
@@ -14098,6 +14184,7 @@ var WebXRManager = class extends EventDispatcher {
     this.setSession = async function(value) {
       session = value;
       if (session !== null) {
+        initialRenderTarget = renderer2.getRenderTarget();
         session.addEventListener("select", onSessionEvent);
         session.addEventListener("selectstart", onSessionEvent);
         session.addEventListener("selectend", onSessionEvent);
@@ -14106,13 +14193,12 @@ var WebXRManager = class extends EventDispatcher {
         session.addEventListener("squeezeend", onSessionEvent);
         session.addEventListener("end", onSessionEnd);
         session.addEventListener("inputsourceschange", onInputSourcesChange);
-        const attributes = gl.getContextAttributes();
         if (attributes.xrCompatible !== true) {
           await gl.makeXRCompatible();
         }
-        if (session.renderState.layers === void 0) {
+        if (session.renderState.layers === void 0 || renderer2.capabilities.isWebGL2 === false) {
           const layerInit = {
-            antialias: attributes.antialias,
+            antialias: session.renderState.layers === void 0 ? attributes.antialias : true,
             alpha: attributes.alpha,
             depth: attributes.depth,
             stencil: attributes.stencil,
@@ -14120,53 +14206,45 @@ var WebXRManager = class extends EventDispatcher {
           };
           glBaseLayer = new XRWebGLLayer(session, gl, layerInit);
           session.updateRenderState({ baseLayer: glBaseLayer });
-        } else if (gl instanceof WebGLRenderingContext) {
-          const layerInit = {
-            antialias: true,
-            alpha: attributes.alpha,
-            depth: attributes.depth,
-            stencil: attributes.stencil,
-            framebufferScaleFactor
-          };
-          glBaseLayer = new XRWebGLLayer(session, gl, layerInit);
-          session.updateRenderState({ layers: [glBaseLayer] });
+          newRenderTarget = new WebGLRenderTarget(glBaseLayer.framebufferWidth, glBaseLayer.framebufferHeight);
         } else {
           isMultisample = attributes.antialias;
           let depthFormat = null;
+          let depthType = null;
+          let glDepthFormat = null;
           if (attributes.depth) {
-            clearStyle = 256;
-            if (attributes.stencil)
-              clearStyle |= 1024;
-            depthStyle = attributes.stencil ? 33306 : 36096;
-            depthFormat = attributes.stencil ? 35056 : 33190;
+            glDepthFormat = attributes.stencil ? 35056 : 33189;
+            depthFormat = attributes.stencil ? DepthStencilFormat : DepthFormat;
+            depthType = attributes.stencil ? UnsignedInt248Type : UnsignedShortType;
           }
           const projectionlayerInit = {
-            colorFormat: attributes.alpha ? 32856 : 32849,
-            depthFormat,
+            colorFormat: attributes.alpha || isMultisample ? 32856 : 32849,
+            depthFormat: glDepthFormat,
             scaleFactor: framebufferScaleFactor
           };
           glBinding = new XRWebGLBinding(session, gl);
           glProjLayer = glBinding.createProjectionLayer(projectionlayerInit);
-          glFramebuffer = gl.createFramebuffer();
           session.updateRenderState({ layers: [glProjLayer] });
           if (isMultisample) {
-            glMultisampledFramebuffer = gl.createFramebuffer();
-            glColorRenderbuffer = gl.createRenderbuffer();
-            gl.bindRenderbuffer(36161, glColorRenderbuffer);
-            gl.renderbufferStorageMultisample(36161, 4, 32856, glProjLayer.textureWidth, glProjLayer.textureHeight);
-            state.bindFramebuffer(36160, glMultisampledFramebuffer);
-            gl.framebufferRenderbuffer(36160, 36064, 36161, glColorRenderbuffer);
-            gl.bindRenderbuffer(36161, null);
-            if (depthFormat !== null) {
-              glDepthRenderbuffer = gl.createRenderbuffer();
-              gl.bindRenderbuffer(36161, glDepthRenderbuffer);
-              gl.renderbufferStorageMultisample(36161, 4, depthFormat, glProjLayer.textureWidth, glProjLayer.textureHeight);
-              gl.framebufferRenderbuffer(36160, depthStyle, 36161, glDepthRenderbuffer);
-              gl.bindRenderbuffer(36161, null);
-            }
-            state.bindFramebuffer(36160, null);
+            newRenderTarget = new WebGLMultisampleRenderTarget(glProjLayer.textureWidth, glProjLayer.textureHeight, {
+              format: RGBAFormat,
+              type: UnsignedByteType,
+              depthTexture: new DepthTexture(glProjLayer.textureWidth, glProjLayer.textureHeight, depthType, void 0, void 0, void 0, void 0, void 0, void 0, depthFormat),
+              stencilBuffer: attributes.stencil,
+              ignoreDepth: glProjLayer.ignoreDepthValues,
+              useRenderToTexture: hasMultisampledRenderToTexture
+            });
+          } else {
+            newRenderTarget = new WebGLRenderTarget(glProjLayer.textureWidth, glProjLayer.textureHeight, {
+              format: attributes.alpha ? RGBAFormat : RGBFormat,
+              type: UnsignedByteType,
+              depthTexture: new DepthTexture(glProjLayer.textureWidth, glProjLayer.textureHeight, depthType, void 0, void 0, void 0, void 0, void 0, void 0, depthFormat),
+              stencilBuffer: attributes.stencil,
+              ignoreDepth: glProjLayer.ignoreDepthValues
+            });
           }
         }
+        this.setFoveation(0);
         referenceSpace = await session.requestReferenceSpace(referenceSpaceType);
         animation.setContext(session);
         animation.start();
@@ -14296,7 +14374,8 @@ var WebXRManager = class extends EventDispatcher {
       if (pose !== null) {
         const views = pose.views;
         if (glBaseLayer !== null) {
-          state.bindXRFramebuffer(glBaseLayer.framebuffer);
+          renderer2.setRenderTargetFramebuffer(newRenderTarget, glBaseLayer.framebuffer);
+          renderer2.setRenderTarget(newRenderTarget);
         }
         let cameraVRNeedsUpdate = false;
         if (views.length !== cameraVR.cameras.length) {
@@ -14310,12 +14389,11 @@ var WebXRManager = class extends EventDispatcher {
             viewport = glBaseLayer.getViewport(view);
           } else {
             const glSubImage = glBinding.getViewSubImage(glProjLayer, view);
-            state.bindXRFramebuffer(glFramebuffer);
-            if (glSubImage.depthStencilTexture !== void 0) {
-              gl.framebufferTexture2D(36160, depthStyle, 3553, glSubImage.depthStencilTexture, 0);
-            }
-            gl.framebufferTexture2D(36160, 36064, 3553, glSubImage.colorTexture, 0);
             viewport = glSubImage.viewport;
+            if (i2 === 0) {
+              renderer2.setRenderTargetTextures(newRenderTarget, glSubImage.colorTexture, glProjLayer.ignoreDepthValues ? void 0 : glSubImage.depthStencilTexture);
+              renderer2.setRenderTarget(newRenderTarget);
+            }
           }
           const camera2 = cameras[i2];
           camera2.matrix.fromArray(view.transform.matrix);
@@ -14328,11 +14406,6 @@ var WebXRManager = class extends EventDispatcher {
             cameraVR.cameras.push(camera2);
           }
         }
-        if (isMultisample) {
-          state.bindXRFramebuffer(glMultisampledFramebuffer);
-          if (clearStyle !== null)
-            gl.clear(clearStyle);
-        }
       }
       const inputSources = session.inputSources;
       for (let i2 = 0; i2 < controllers.length; i2++) {
@@ -14342,19 +14415,6 @@ var WebXRManager = class extends EventDispatcher {
       }
       if (onAnimationFrameCallback)
         onAnimationFrameCallback(time2, frame2);
-      if (isMultisample) {
-        const width = glProjLayer.textureWidth;
-        const height = glProjLayer.textureHeight;
-        state.bindFramebuffer(36008, glMultisampledFramebuffer);
-        state.bindFramebuffer(36009, glFramebuffer);
-        gl.invalidateFramebuffer(36008, [depthStyle]);
-        gl.invalidateFramebuffer(36009, [depthStyle]);
-        gl.blitFramebuffer(0, 0, width, height, 0, 0, width, height, 16384, 9728);
-        gl.invalidateFramebuffer(36008, [36064]);
-        state.bindFramebuffer(36008, null);
-        state.bindFramebuffer(36009, null);
-        state.bindFramebuffer(36160, glMultisampledFramebuffer);
-      }
       xrFrame = null;
     }
     const animation = new WebGLAnimation();
@@ -14450,10 +14510,6 @@ function WebGLMaterials(properties) {
       uniforms.reflectivity.value = material.reflectivity;
       uniforms.ior.value = material.ior;
       uniforms.refractionRatio.value = material.refractionRatio;
-      const maxMipLevel = properties.get(envMap).__maxMipLevel;
-      if (maxMipLevel !== void 0) {
-        uniforms.maxMipLevel.value = maxMipLevel;
-      }
     }
     if (material.lightMap) {
       uniforms.lightMap.value = material.lightMap;
@@ -14869,6 +14925,8 @@ function WebGLRenderer(parameters = {}) {
       powerPreference: _powerPreference,
       failIfMajorPerformanceCaveat: _failIfMajorPerformanceCaveat
     };
+    if ("setAttribute" in _canvas2)
+      _canvas2.setAttribute("data-engine", `three.js r${REVISION}`);
     _canvas2.addEventListener("webglcontextlost", onContextLost, false);
     _canvas2.addEventListener("webglcontextrestored", onContextRestore, false);
     if (_gl === null) {
@@ -15399,7 +15457,8 @@ function WebGLRenderer(parameters = {}) {
         minFilter: LinearMipmapLinearFilter,
         magFilter: NearestFilter,
         wrapS: ClampToEdgeWrapping,
-        wrapT: ClampToEdgeWrapping
+        wrapT: ClampToEdgeWrapping,
+        useRenderToTexture: extensions2.has("WEBGL_multisampled_render_to_texture")
       });
     }
     const currentRenderTarget = _this.getRenderTarget();
@@ -15687,12 +15746,42 @@ function WebGLRenderer(parameters = {}) {
   this.getRenderTarget = function() {
     return _currentRenderTarget;
   };
+  this.setRenderTargetTextures = function(renderTarget, colorTexture, depthTexture) {
+    properties.get(renderTarget.texture).__webglTexture = colorTexture;
+    properties.get(renderTarget.depthTexture).__webglTexture = depthTexture;
+    const renderTargetProperties = properties.get(renderTarget);
+    renderTargetProperties.__hasExternalTextures = true;
+    if (renderTargetProperties.__hasExternalTextures) {
+      renderTargetProperties.__autoAllocateDepthBuffer = depthTexture === void 0;
+      if (!renderTargetProperties.__autoAllocateDepthBuffer) {
+        if (renderTarget.useRenderToTexture) {
+          console.warn("render-to-texture extension was disabled because an external texture was provided");
+          renderTarget.useRenderToTexture = false;
+          renderTarget.useRenderbuffer = true;
+        }
+      }
+    }
+  };
+  this.setRenderTargetFramebuffer = function(renderTarget, defaultFramebuffer) {
+    const renderTargetProperties = properties.get(renderTarget);
+    renderTargetProperties.__webglFramebuffer = defaultFramebuffer;
+    renderTargetProperties.__useDefaultFramebuffer = defaultFramebuffer === void 0;
+  };
   this.setRenderTarget = function(renderTarget, activeCubeFace = 0, activeMipmapLevel = 0) {
     _currentRenderTarget = renderTarget;
     _currentActiveCubeFace = activeCubeFace;
     _currentActiveMipmapLevel = activeMipmapLevel;
-    if (renderTarget && properties.get(renderTarget).__webglFramebuffer === void 0) {
-      textures.setupRenderTarget(renderTarget);
+    let useDefaultFramebuffer = true;
+    if (renderTarget) {
+      const renderTargetProperties = properties.get(renderTarget);
+      if (renderTargetProperties.__useDefaultFramebuffer !== void 0) {
+        state.bindFramebuffer(36160, null);
+        useDefaultFramebuffer = false;
+      } else if (renderTargetProperties.__webglFramebuffer === void 0) {
+        textures.setupRenderTarget(renderTarget);
+      } else if (renderTargetProperties.__hasExternalTextures) {
+        textures.rebindTextures(renderTarget, properties.get(renderTarget.texture).__webglTexture, properties.get(renderTarget.depthTexture).__webglTexture);
+      }
     }
     let framebuffer = null;
     let isCube = false;
@@ -15706,7 +15795,7 @@ function WebGLRenderer(parameters = {}) {
       if (renderTarget.isWebGLCubeRenderTarget) {
         framebuffer = __webglFramebuffer[activeCubeFace];
         isCube = true;
-      } else if (renderTarget.isWebGLMultisampleRenderTarget) {
+      } else if (renderTarget.useRenderbuffer) {
         framebuffer = properties.get(renderTarget).__webglMultisampledFramebuffer;
       } else {
         framebuffer = __webglFramebuffer;
@@ -15720,7 +15809,7 @@ function WebGLRenderer(parameters = {}) {
       _currentScissorTest = _scissorTest;
     }
     const framebufferBound = state.bindFramebuffer(36160, framebuffer);
-    if (framebufferBound && capabilities.drawBuffers) {
+    if (framebufferBound && capabilities.drawBuffers && useDefaultFramebuffer) {
       let needsUpdate = false;
       if (renderTarget) {
         if (renderTarget.isWebGLMultipleRenderTargets) {
@@ -17050,25 +17139,6 @@ var CanvasTexture = class extends Texture {
   }
 };
 CanvasTexture.prototype.isCanvasTexture = true;
-var DepthTexture = class extends Texture {
-  constructor(width, height, type, mapping, wrapS, wrapT, magFilter, minFilter, anisotropy, format) {
-    format = format !== void 0 ? format : DepthFormat;
-    if (format !== DepthFormat && format !== DepthStencilFormat) {
-      throw new Error("DepthTexture format must be either THREE.DepthFormat or THREE.DepthStencilFormat");
-    }
-    if (type === void 0 && format === DepthFormat)
-      type = UnsignedShortType;
-    if (type === void 0 && format === DepthStencilFormat)
-      type = UnsignedInt248Type;
-    super(null, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy);
-    this.image = { width, height };
-    this.magFilter = magFilter !== void 0 ? magFilter : NearestFilter;
-    this.minFilter = minFilter !== void 0 ? minFilter : NearestFilter;
-    this.flipY = false;
-    this.generateMipmaps = false;
-  }
-};
-DepthTexture.prototype.isDepthTexture = true;
 var _v0 = new Vector3();
 var _v1$1 = new Vector3();
 var _normal = new Vector3();
@@ -17109,18 +17179,18 @@ var Curve = class {
       return this.cacheArcLengths;
     }
     this.needsUpdate = false;
-    const cache6 = [];
+    const cache7 = [];
     let current, last10 = this.getPoint(0);
     let sum7 = 0;
-    cache6.push(0);
+    cache7.push(0);
     for (let p3 = 1; p3 <= divisions; p3++) {
       current = this.getPoint(p3 / divisions);
       sum7 += current.distanceTo(last10);
-      cache6.push(sum7);
+      cache7.push(sum7);
       last10 = current;
     }
-    this.cacheArcLengths = cache6;
-    return cache6;
+    this.cacheArcLengths = cache7;
+    return cache7;
   }
   updateArcLengths() {
     this.needsUpdate = true;
@@ -17357,7 +17427,7 @@ var ArcCurve = class extends EllipseCurve {
 ArcCurve.prototype.isArcCurve = true;
 function CubicPoly() {
   let c0 = 0, c1 = 0, c2 = 0, c3 = 0;
-  function init2(x0, x1, t0, t1) {
+  function init3(x0, x1, t0, t1) {
     c0 = x0;
     c1 = t0;
     c2 = -3 * x0 + 3 * x1 - 2 * t0 - t1;
@@ -17365,14 +17435,14 @@ function CubicPoly() {
   }
   return {
     initCatmullRom: function(x0, x1, x2, x3, tension) {
-      init2(x1, x2, tension * (x2 - x0), tension * (x3 - x1));
+      init3(x1, x2, tension * (x2 - x0), tension * (x3 - x1));
     },
     initNonuniformCatmullRom: function(x0, x1, x2, x3, dt0, dt1, dt2) {
       let t1 = (x1 - x0) / dt0 - (x2 - x0) / (dt0 + dt1) + (x2 - x1) / dt1;
       let t2 = (x2 - x1) / dt1 - (x3 - x1) / (dt1 + dt2) + (x3 - x2) / dt2;
       t1 *= dt1;
       t2 *= dt1;
-      init2(x1, x2, t1, t2);
+      init3(x1, x2, t1, t2);
     },
     calc: function(t2) {
       const t22 = t2 * t2;
@@ -19213,7 +19283,7 @@ var MeshPhysicalMaterial = class extends MeshStandardMaterial {
     this.sheenRoughness = 1;
     this.sheenRoughnessMap = null;
     this.transmissionMap = null;
-    this.thickness = 0.01;
+    this.thickness = 0;
     this.thicknessMap = null;
     this.attenuationDistance = 0;
     this.attenuationColor = new Color(1, 1, 1);
@@ -24318,7 +24388,7 @@ if (typeof window !== "undefined") {
   }
 }
 
-// node_modules/.pnpm/three@0.134.0/node_modules/three/examples/jsm/libs/stats.module.js
+// node_modules/.pnpm/three@0.135.0/node_modules/three/examples/jsm/libs/stats.module.js
 var Stats = function() {
   var mode = 0;
   var container = document.createElement("div");
@@ -24413,7 +24483,7 @@ Stats.Panel = function(name, fg, bg) {
 };
 var stats_module_default = Stats;
 
-// node_modules/.pnpm/three@0.134.0/node_modules/three/examples/jsm/controls/OrbitControls.js
+// node_modules/.pnpm/three@0.135.0/node_modules/three/examples/jsm/controls/OrbitControls.js
 var _changeEvent = { type: "change" };
 var _startEvent = { type: "start" };
 var _endEvent = { type: "end" };
@@ -24707,8 +24777,6 @@ var OrbitControls = class extends EventDispatcher {
       panStart.copy(panEnd);
       scope.update();
     }
-    function handleMouseUp() {
-    }
     function handleMouseWheel(event) {
       if (event.deltaY < 0) {
         dollyIn(getZoomScale());
@@ -24828,8 +24896,6 @@ var OrbitControls = class extends EventDispatcher {
       if (scope.enableRotate)
         handleTouchMoveRotate(event);
     }
-    function handleTouchEnd() {
-    }
     function onPointerDown(event) {
       if (scope.enabled === false)
         return;
@@ -24855,19 +24921,14 @@ var OrbitControls = class extends EventDispatcher {
       }
     }
     function onPointerUp(event) {
-      if (scope.enabled === false)
-        return;
-      if (event.pointerType === "touch") {
-        onTouchEnd();
-      } else {
-        onMouseUp(event);
-      }
       removePointer(event);
       if (pointers.length === 0) {
         scope.domElement.releasePointerCapture(event.pointerId);
         scope.domElement.removeEventListener("pointermove", onPointerMove);
         scope.domElement.removeEventListener("pointerup", onPointerUp);
       }
+      scope.dispatchEvent(_endEvent);
+      state = STATE.NONE;
     }
     function onPointerCancel(event) {
       removePointer(event);
@@ -24947,11 +25008,6 @@ var OrbitControls = class extends EventDispatcher {
           handleMouseMovePan(event);
           break;
       }
-    }
-    function onMouseUp(event) {
-      handleMouseUp(event);
-      scope.dispatchEvent(_endEvent);
-      state = STATE.NONE;
     }
     function onMouseWheel(event) {
       if (scope.enabled === false || scope.enableZoom === false || state !== STATE.NONE)
@@ -25043,11 +25099,6 @@ var OrbitControls = class extends EventDispatcher {
           state = STATE.NONE;
       }
     }
-    function onTouchEnd(event) {
-      handleTouchEnd(event);
-      scope.dispatchEvent(_endEvent);
-      state = STATE.NONE;
-    }
     function onContextMenu(event) {
       if (scope.enabled === false)
         return;
@@ -25085,7 +25136,7 @@ var OrbitControls = class extends EventDispatcher {
   }
 };
 
-// node_modules/.pnpm/three@0.134.0/node_modules/three/examples/jsm/loaders/GLTFLoader.js
+// node_modules/.pnpm/three@0.135.0/node_modules/three/examples/jsm/loaders/GLTFLoader.js
 var GLTFLoader = class extends Loader {
   constructor(manager) {
     super(manager);
@@ -25258,6 +25309,12 @@ var GLTFLoader = class extends Loader {
     parser.setExtensions(extensions2);
     parser.setPlugins(plugins);
     parser.parse(onLoad, onError);
+  }
+  parseAsync(data, path) {
+    const scope = this;
+    return new Promise(function(resolve, reject) {
+      scope.parse(data, path, resolve, reject);
+    });
   }
 };
 function GLTFRegistry() {
@@ -26147,9 +26204,9 @@ var ALPHA_MODES = {
   MASK: "MASK",
   BLEND: "BLEND"
 };
-function createDefaultMaterial(cache6) {
-  if (cache6["DefaultMaterial"] === void 0) {
-    cache6["DefaultMaterial"] = new MeshStandardMaterial({
+function createDefaultMaterial(cache7) {
+  if (cache7["DefaultMaterial"] === void 0) {
+    cache7["DefaultMaterial"] = new MeshStandardMaterial({
       color: 16777215,
       emissive: 0,
       metalness: 1,
@@ -26159,7 +26216,7 @@ function createDefaultMaterial(cache6) {
       side: FrontSide
     });
   }
-  return cache6["DefaultMaterial"];
+  return cache7["DefaultMaterial"];
 }
 function addUnknownExtensionsToUserData(knownExtensions, object2, objectDef) {
   for (const name in objectDef.extensions) {
@@ -26361,16 +26418,16 @@ var GLTFParser = class {
       }
     }
   }
-  _addNodeRef(cache6, index2) {
+  _addNodeRef(cache7, index2) {
     if (index2 === void 0)
       return;
-    if (cache6.refs[index2] === void 0) {
-      cache6.refs[index2] = cache6.uses[index2] = 0;
+    if (cache7.refs[index2] === void 0) {
+      cache7.refs[index2] = cache7.uses[index2] = 0;
     }
-    cache6.refs[index2]++;
+    cache7.refs[index2]++;
   }
-  _getNodeRef(cache6, index2, object2) {
-    if (cache6.refs[index2] <= 1)
+  _getNodeRef(cache7, index2, object2) {
+    if (cache7.refs[index2] <= 1)
       return object2;
     const ref = object2.clone();
     const updateMappings = (original, clone2) => {
@@ -26383,7 +26440,7 @@ var GLTFParser = class {
       }
     };
     updateMappings(object2, ref);
-    ref.name += "_instance_" + cache6.uses[index2]++;
+    ref.name += "_instance_" + cache7.uses[index2]++;
     return ref;
   }
   _invokeOne(func2) {
@@ -26827,7 +26884,7 @@ var GLTFParser = class {
   loadGeometries(primitives) {
     const parser = this;
     const extensions2 = this.extensions;
-    const cache6 = this.primitiveCache;
+    const cache7 = this.primitiveCache;
     function createDracoPrimitive(primitive) {
       return extensions2[EXTENSIONS.KHR_DRACO_MESH_COMPRESSION].decodePrimitive(primitive, parser).then(function(geometry) {
         return addPrimitiveAttributes(geometry, primitive, parser);
@@ -26837,7 +26894,7 @@ var GLTFParser = class {
     for (let i2 = 0, il = primitives.length; i2 < il; i2++) {
       const primitive = primitives[i2];
       const cacheKey = createPrimitiveKey(primitive);
-      const cached3 = cache6[cacheKey];
+      const cached3 = cache7[cacheKey];
       if (cached3) {
         pending.push(cached3.promise);
       } else {
@@ -26847,7 +26904,7 @@ var GLTFParser = class {
         } else {
           geometryPromise = addPrimitiveAttributes(new BufferGeometry(), primitive, parser);
         }
-        cache6[cacheKey] = { primitive, promise: geometryPromise };
+        cache7[cacheKey] = { primitive, promise: geometryPromise };
         pending.push(geometryPromise);
       }
     }
@@ -27014,7 +27071,7 @@ var GLTFParser = class {
         const targetNames = [];
         if (PATH_PROPERTIES[target.path] === PATH_PROPERTIES.weights) {
           node.traverse(function(object2) {
-            if (object2.isMesh === true && object2.morphTargetInfluences) {
+            if (object2.morphTargetInfluences) {
               targetNames.push(object2.name ? object2.name : object2.uuid);
             }
           });
@@ -27346,7 +27403,7 @@ function toTrianglesDrawMode(geometry, drawMode) {
   return newGeometry;
 }
 
-// node_modules/.pnpm/@pixiv+three-vrm@0.6.7_three@0.134.0/node_modules/@pixiv/three-vrm/lib/three-vrm.module.min.js
+// node_modules/.pnpm/@pixiv+three-vrm@0.6.7_three@0.135.0/node_modules/@pixiv/three-vrm/lib/three-vrm.module.min.js
 function t(e2, t2, n2, i2) {
   return new (n2 || (n2 = Promise))(function(r2, o2) {
     function s2(e3) {
@@ -28476,17 +28533,10 @@ var we = new Vector3();
 var Ae = new MeshBasicMaterial({ color: 16711935, wireframe: true, transparent: true, depthTest: false });
 var Oe = new Vector3();
 
-// node_modules/.pnpm/github.com+vladmandic+human@57f6262d3872ae219c3b0a11cf259392b80dc9d8/node_modules/@vladmandic/human/dist/human.esm.js
+// node_modules/.pnpm/@vladmandic+human@2.5.7/node_modules/@vladmandic/human/dist/human.esm.js
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
-var __require2 = /* @__PURE__ */ ((x2) => typeof __require !== "undefined" ? __require : typeof Proxy !== "undefined" ? new Proxy(x2, {
-  get: (a6, b2) => (typeof __require !== "undefined" ? __require : a6)[b2]
-}) : x2)(function(x2) {
-  if (typeof __require !== "undefined")
-    return __require.apply(this, arguments);
-  throw new Error('Dynamic require of "' + x2 + '" is not supported');
-});
 var __export = (target, all6) => {
   __markAsModule(target);
   for (var name in all6)
@@ -28610,7 +28660,6 @@ var config = {
       skipTime: 2500,
       minConfidence: 0.2,
       iouThreshold: 0.1,
-      cropFactor: 1.6,
       mask: false,
       return: false
     },
@@ -28652,9 +28701,6 @@ var config = {
   body: {
     enabled: true,
     modelPath: "movenet-lightning.json",
-    detector: {
-      modelPath: ""
-    },
     maxDetected: -1,
     minConfidence: 0.3,
     skipFrames: 1,
@@ -28949,7 +28995,7 @@ __export(tfjs_esm_exports, {
   cosineWindow: () => cosineWindow,
   cumsum: () => cumsum,
   customGrad: () => customGrad,
-  data: () => src_exports,
+  data: () => src_exports2,
   denseBincount: () => denseBincount,
   deprecationWarn: () => deprecationWarn,
   depthToSpace: () => depthToSpace,
@@ -29021,7 +29067,7 @@ __export(tfjs_esm_exports, {
   loadGraphModel: () => loadGraphModel,
   loadLayersModel: () => loadLayersModel,
   localResponseNormalization: () => localResponseNormalization,
-  log: () => log4,
+  log: () => log22,
   log1p: () => log1p,
   logSigmoid: () => logSigmoid,
   logSoftmax: () => logSoftmax,
@@ -29174,7 +29220,7 @@ __export(tfjs_esm_exports, {
   variableGrads: () => variableGrads,
   version: () => version8,
   version_converter: () => version3,
-  version_core: () => version_core,
+  version_core: () => version,
   version_cpu: () => version5,
   version_layers: () => version2,
   version_wasm: () => version7,
@@ -29187,13 +29233,6 @@ __export(tfjs_esm_exports, {
   zeros: () => zeros,
   zerosLike: () => zerosLike
 });
-var __require22 = ((x2) => typeof __require2 !== "undefined" ? __require2 : typeof Proxy !== "undefined" ? new Proxy(x2, {
-  get: (a6, b2) => (typeof __require2 !== "undefined" ? __require2 : a6)[b2]
-}) : x2)(function(x2) {
-  if (typeof __require2 !== "undefined")
-    return __require2.apply(this, arguments);
-  throw new Error('Dynamic require of "' + x2 + '" is not supported');
-});
 var __create = Object.create;
 var __defProp2 = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -29201,14 +29240,7 @@ var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __markAsModule2 = (target) => __defProp2(target, "__esModule", { value: true });
-var __require222 = ((x2) => typeof __require22 !== "undefined" ? __require22 : typeof Proxy !== "undefined" ? new Proxy(x2, {
-  get: (a6, b2) => (typeof __require22 !== "undefined" ? __require22 : a6)[b2]
-}) : x2)(function(x2) {
-  if (typeof __require22 !== "undefined")
-    return __require22.apply(this, arguments);
-  throw new Error('Dynamic require of "' + x2 + '" is not supported');
-});
-var __commonJS = (cb, mod4) => function __require2222() {
+var __commonJS = (cb, mod4) => function __require() {
   return mod4 || (0, cb[Object.keys(cb)[0]])((mod4 = { exports: {} }).exports, mod4), mod4.exports;
 };
 var __export2 = (target, all52) => {
@@ -29228,7 +29260,7 @@ var __toModule = (module) => {
   return __reExport(__markAsModule2(__defProp2(module != null ? __create(__getProtoOf(module)) : {}, "default", module && module.__esModule && "default" in module ? { get: () => module.default, enumerable: true } : { value: module, enumerable: true })), module);
 };
 var require_long = __commonJS({
-  "node_modules/.pnpm/long@4.0.0/node_modules/long/src/long.js"(exports, module) {
+  "src/node_modules/long/src/long.js"(exports, module) {
     module.exports = Long2;
     var wasm = null;
     try {
@@ -29536,27 +29568,27 @@ var require_long = __commonJS({
     var INT_CACHE = {};
     var UINT_CACHE = {};
     function fromInt(value, unsigned) {
-      var obj, cachedObj, cache6;
+      var obj, cachedObj, cache7;
       if (unsigned) {
         value >>>= 0;
-        if (cache6 = 0 <= value && value < 256) {
+        if (cache7 = 0 <= value && value < 256) {
           cachedObj = UINT_CACHE[value];
           if (cachedObj)
             return cachedObj;
         }
         obj = fromBits(value, (value | 0) < 0 ? -1 : 0, true);
-        if (cache6)
+        if (cache7)
           UINT_CACHE[value] = obj;
         return obj;
       } else {
         value |= 0;
-        if (cache6 = -128 <= value && value < 128) {
+        if (cache7 = -128 <= value && value < 128) {
           cachedObj = INT_CACHE[value];
           if (cachedObj)
             return cachedObj;
         }
         obj = fromBits(value, value < 0 ? -1 : 0, false);
-        if (cache6)
+        if (cache7)
           INT_CACHE[value] = obj;
         return obj;
       }
@@ -29916,7 +29948,7 @@ var require_long = __commonJS({
       rem = this;
       while (rem.gte(divisor)) {
         approx = Math.max(1, Math.floor(rem.toNumber() / divisor.toNumber()));
-        var log22 = Math.ceil(Math.log(approx) / Math.LN2), delta = log22 <= 48 ? 1 : pow_dbl(2, log22 - 48), approxRes = fromNumber(approx), approxRem = approxRes.mul(divisor);
+        var log222 = Math.ceil(Math.log(approx) / Math.LN2), delta = log222 <= 48 ? 1 : pow_dbl(2, log222 - 48), approxRes = fromNumber(approx), approxRem = approxRes.mul(divisor);
         while (approxRem.isNegative() || approxRem.gt(rem)) {
           approx -= delta;
           approxRes = fromNumber(approx, this.unsigned);
@@ -30050,8 +30082,8 @@ var require_long = __commonJS({
     };
   }
 });
-var require_node_fetch = __commonJS({
-  "(disabled):node-fetch"() {
+var require_browser = __commonJS({
+  "(disabled):src/node_modules/node-fetch/browser.js"() {
   }
 });
 var require_util = __commonJS({
@@ -30059,7 +30091,7 @@ var require_util = __commonJS({
   }
 });
 var require_alea = __commonJS({
-  "node_modules/.pnpm/seedrandom@3.0.5/node_modules/seedrandom/lib/alea.js"(exports, module) {
+  "src/node_modules/seedrandom/lib/alea.js"(exports, module) {
     (function(global2, module2, define2) {
       function Alea(seed) {
         var me2 = this, mash = Mash();
@@ -30143,7 +30175,7 @@ var require_alea = __commonJS({
   }
 });
 var require_xor128 = __commonJS({
-  "node_modules/.pnpm/seedrandom@3.0.5/node_modules/seedrandom/lib/xor128.js"(exports, module) {
+  "src/node_modules/seedrandom/lib/xor128.js"(exports, module) {
     (function(global2, module2, define2) {
       function XorGen(seed) {
         var me2 = this, strseed = "";
@@ -30209,7 +30241,7 @@ var require_xor128 = __commonJS({
   }
 });
 var require_xorwow = __commonJS({
-  "node_modules/.pnpm/seedrandom@3.0.5/node_modules/seedrandom/lib/xorwow.js"(exports, module) {
+  "src/node_modules/seedrandom/lib/xorwow.js"(exports, module) {
     (function(global2, module2, define2) {
       function XorGen(seed) {
         var me2 = this, strseed = "";
@@ -30282,7 +30314,7 @@ var require_xorwow = __commonJS({
   }
 });
 var require_xorshift7 = __commonJS({
-  "node_modules/.pnpm/seedrandom@3.0.5/node_modules/seedrandom/lib/xorshift7.js"(exports, module) {
+  "src/node_modules/seedrandom/lib/xorshift7.js"(exports, module) {
     (function(global2, module2, define2) {
       function XorGen(seed) {
         var me2 = this;
@@ -30304,7 +30336,7 @@ var require_xorshift7 = __commonJS({
           me2.i = i2 + 1 & 7;
           return v2;
         };
-        function init2(me22, seed2) {
+        function init22(me22, seed2) {
           var j2, w2, X2 = [];
           if (seed2 === (seed2 | 0)) {
             w2 = X2[0] = seed2;
@@ -30328,7 +30360,7 @@ var require_xorshift7 = __commonJS({
             me22.next();
           }
         }
-        init2(me2, seed);
+        init22(me2, seed);
       }
       function copy2(f2, t2) {
         t2.x = f2.x.slice();
@@ -30371,7 +30403,7 @@ var require_xorshift7 = __commonJS({
   }
 });
 var require_xor4096 = __commonJS({
-  "node_modules/.pnpm/seedrandom@3.0.5/node_modules/seedrandom/lib/xor4096.js"(exports, module) {
+  "src/node_modules/seedrandom/lib/xor4096.js"(exports, module) {
     (function(global2, module2, define2) {
       function XorGen(seed) {
         var me2 = this;
@@ -30388,7 +30420,7 @@ var require_xor4096 = __commonJS({
           me2.i = i2;
           return v2 + (w2 ^ w2 >>> 16) | 0;
         };
-        function init2(me22, seed2) {
+        function init22(me22, seed2) {
           var t2, v2, i2, j2, w2, X2 = [], limit = 128;
           if (seed2 === (seed2 | 0)) {
             v2 = seed2;
@@ -30430,7 +30462,7 @@ var require_xor4096 = __commonJS({
           me22.X = X2;
           me22.i = i2;
         }
-        init2(me2, seed);
+        init22(me2, seed);
       }
       function copy2(f2, t2) {
         t2.i = f2.i;
@@ -30475,7 +30507,7 @@ var require_xor4096 = __commonJS({
   }
 });
 var require_tychei = __commonJS({
-  "node_modules/.pnpm/seedrandom@3.0.5/node_modules/seedrandom/lib/tychei.js"(exports, module) {
+  "src/node_modules/seedrandom/lib/tychei.js"(exports, module) {
     (function(global2, module2, define2) {
       function XorGen(seed) {
         var me2 = this, strseed = "";
@@ -30551,7 +30583,7 @@ var require_crypto = __commonJS({
   }
 });
 var require_seedrandom = __commonJS({
-  "node_modules/.pnpm/seedrandom@3.0.5/node_modules/seedrandom/seedrandom.js"(exports, module) {
+  "src/node_modules/seedrandom/seedrandom.js"(exports, module) {
     (function(global2, pool3, math) {
       var width = 256, chunks = 6, digits = 52, rngname = "random", startdenom = math.pow(width, chunks), significance = math.pow(2, digits), overflow = significance * 2, mask3 = width - 1, nodecrypto;
       function seedrandom5(seed, options3, callback) {
@@ -30682,7 +30714,7 @@ var require_seedrandom = __commonJS({
   }
 });
 var require_seedrandom2 = __commonJS({
-  "node_modules/.pnpm/seedrandom@3.0.5/node_modules/seedrandom/index.js"(exports, module) {
+  "src/node_modules/seedrandom/index.js"(exports, module) {
     var alea5 = require_alea();
     var xor128 = require_xor128();
     var xorwow = require_xorwow();
@@ -30703,14 +30735,34 @@ var require_string_decoder = __commonJS({
   "(disabled):src/node_modules/string_decoder/index.js"() {
   }
 });
+var require_fs = __commonJS({
+  "(disabled):fs"() {
+  }
+});
+var require_path = __commonJS({
+  "(disabled):path"() {
+  }
+});
+var require_worker_threads = __commonJS({
+  "(disabled):worker_threads"() {
+  }
+});
+var require_perf_hooks = __commonJS({
+  "(disabled):perf_hooks"() {
+  }
+});
+var require_os = __commonJS({
+  "(disabled):os"() {
+  }
+});
 var require_tfjs_backend_wasm_threaded_simd = __commonJS({
   "src/tfjs-backend-wasm/wasm-out/tfjs-backend-wasm-threaded-simd.js"(exports, module) {
-    var WasmBackendModuleThreadedSimd = function() {
+    var WasmBackendModuleThreadedSimd2 = function() {
       var _scriptDir = typeof document !== "undefined" && document.currentScript ? document.currentScript.src : void 0;
       if (typeof __filename !== "undefined")
         _scriptDir = _scriptDir || __filename;
-      return function(WasmBackendModuleThreadedSimd2) {
-        WasmBackendModuleThreadedSimd2 = WasmBackendModuleThreadedSimd2 || {};
+      return function(WasmBackendModuleThreadedSimd3) {
+        WasmBackendModuleThreadedSimd3 = WasmBackendModuleThreadedSimd3 || {};
         function GROWABLE_HEAP_I8() {
           if (wasmMemory.buffer != buffer2) {
             updateGlobalBufferAndViews(wasmMemory.buffer);
@@ -30741,12 +30793,16 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
           }
           return HEAPF64;
         }
-        var Module = typeof WasmBackendModuleThreadedSimd2 !== "undefined" ? WasmBackendModuleThreadedSimd2 : {};
+        var Module = typeof WasmBackendModuleThreadedSimd3 !== "undefined" ? WasmBackendModuleThreadedSimd3 : {};
         var readyPromiseResolve, readyPromiseReject;
         Module["ready"] = new Promise(function(resolve, reject) {
           readyPromiseResolve = resolve;
           readyPromiseReject = reject;
         });
+        var beforeListeners;
+        if (typeof process !== "undefined" && process.listeners) {
+          beforeListeners = { uncaughtException: process.listeners("uncaughtException"), unhandledRejection: process.listeners("unhandledRejection") };
+        }
         var moduleOverrides = {};
         var key;
         for (key in Module) {
@@ -30783,15 +30839,15 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
         var nodePath;
         if (ENVIRONMENT_IS_NODE) {
           if (ENVIRONMENT_IS_WORKER) {
-            scriptDirectory = __require222("path").dirname(scriptDirectory) + "/";
+            scriptDirectory = require_path().dirname(scriptDirectory) + "/";
           } else {
             scriptDirectory = __dirname + "/";
           }
           read_ = function shell_read(filename, binary) {
             if (!nodeFS)
-              nodeFS = __require222("fs");
+              nodeFS = require_fs();
             if (!nodePath)
-              nodePath = __require222("path");
+              nodePath = require_path();
             filename = nodePath["normalize"](filename);
             return nodeFS["readFileSync"](filename, binary ? null : "utf8");
           };
@@ -30821,7 +30877,7 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
           };
           var nodeWorkerThreads;
           try {
-            nodeWorkerThreads = __require222("worker_threads");
+            nodeWorkerThreads = require_worker_threads();
           } catch (e2) {
             console.error('The "worker_threads" module is not supported in this node.js build - perhaps a newer version is needed?');
             throw e2;
@@ -30875,9 +30931,9 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
           if (ENVIRONMENT_IS_NODE) {
             read_ = function shell_read(filename, binary) {
               if (!nodeFS)
-                nodeFS = __require222("fs");
+                nodeFS = require_fs();
               if (!nodePath)
-                nodePath = __require222("path");
+                nodePath = require_path();
               filename = nodePath["normalize"](filename);
               return nodeFS["readFileSync"](filename, binary ? null : "utf8");
             };
@@ -30927,7 +30983,7 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
         }
         if (ENVIRONMENT_IS_NODE) {
           if (typeof performance === "undefined") {
-            global.performance = __require222("perf_hooks").performance;
+            global.performance = require_perf_hooks().performance;
           }
         }
         var out = Module["print"] || console.log.bind(console);
@@ -31328,7 +31384,7 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
           function receiveInstance(instance, module2) {
             var exports3 = instance.exports;
             Module["asm"] = exports3;
-            wasmTable = Module["asm"]["kb"];
+            wasmTable = Module["asm"]["nb"];
             wasmModule = module2;
             if (!ENVIRONMENT_IS_PTHREAD) {
               var numWorkersToLoad = PThread.unusedWorkers.length;
@@ -31380,9 +31436,9 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
           instantiateAsync().catch(readyPromiseReject);
           return {};
         }
-        var ASM_CONSTS = { 10072: function() {
+        var ASM_CONSTS = { 10216: function() {
           throw "Canceled!";
-        }, 10090: function($0, $1) {
+        }, 10234: function($0, $1) {
           setTimeout(function() {
             __emscripten_do_dispatch_to_thread($0, $1);
           }, 0);
@@ -31768,7 +31824,7 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
         }
         function _emscripten_num_logical_cores() {
           if (ENVIRONMENT_IS_NODE)
-            return __require222("os").cpus().length;
+            return require_os().cpus().length;
           return navigator["hardwareConcurrency"];
         }
         function _emscripten_proxy_to_main_thread_js(index2, sync) {
@@ -32087,11 +32143,11 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
             table[i2] = null;
           }
           return ret;
-        }, getSource: function(shader, count22, string3, length) {
+        }, getSource: function(shader, count22, string2, length) {
           var source = "";
           for (var i2 = 0; i2 < count22; ++i2) {
             var len = length ? GROWABLE_HEAP_I32()[length + i2 * 4 >> 2] : -1;
-            source += UTF8ToString(GROWABLE_HEAP_I32()[string3 + i2 * 4 >> 2], len < 0 ? void 0 : len);
+            source += UTF8ToString(GROWABLE_HEAP_I32()[string2 + i2 * 4 >> 2], len < 0 ? void 0 : len);
           }
           return source;
         }, createContext: function(canvas3, webGLContextAttributes) {
@@ -32788,113 +32844,122 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
         var _Softmax = Module["_Softmax"] = function() {
           return (_Softmax = Module["_Softmax"] = Module["asm"]["Ua"]).apply(null, arguments);
         };
+        var _SparseFillEmptyRows = Module["_SparseFillEmptyRows"] = function() {
+          return (_SparseFillEmptyRows = Module["_SparseFillEmptyRows"] = Module["asm"]["Va"]).apply(null, arguments);
+        };
+        var _SparseReshape = Module["_SparseReshape"] = function() {
+          return (_SparseReshape = Module["_SparseReshape"] = Module["asm"]["Wa"]).apply(null, arguments);
+        };
+        var _SparseSegmentReduction = Module["_SparseSegmentReduction"] = function() {
+          return (_SparseSegmentReduction = Module["_SparseSegmentReduction"] = Module["asm"]["Xa"]).apply(null, arguments);
+        };
         var _Sqrt = Module["_Sqrt"] = function() {
-          return (_Sqrt = Module["_Sqrt"] = Module["asm"]["Va"]).apply(null, arguments);
+          return (_Sqrt = Module["_Sqrt"] = Module["asm"]["Ya"]).apply(null, arguments);
         };
         var _Square = Module["_Square"] = function() {
-          return (_Square = Module["_Square"] = Module["asm"]["Wa"]).apply(null, arguments);
+          return (_Square = Module["_Square"] = Module["asm"]["Za"]).apply(null, arguments);
         };
         var _SquaredDifference = Module["_SquaredDifference"] = function() {
-          return (_SquaredDifference = Module["_SquaredDifference"] = Module["asm"]["Xa"]).apply(null, arguments);
+          return (_SquaredDifference = Module["_SquaredDifference"] = Module["asm"]["_a"]).apply(null, arguments);
         };
         var _Step = Module["_Step"] = function() {
-          return (_Step = Module["_Step"] = Module["asm"]["Ya"]).apply(null, arguments);
+          return (_Step = Module["_Step"] = Module["asm"]["$a"]).apply(null, arguments);
         };
         var _StridedSlice = Module["_StridedSlice"] = function() {
-          return (_StridedSlice = Module["_StridedSlice"] = Module["asm"]["Za"]).apply(null, arguments);
+          return (_StridedSlice = Module["_StridedSlice"] = Module["asm"]["ab"]).apply(null, arguments);
         };
         var _Sub = Module["_Sub"] = function() {
-          return (_Sub = Module["_Sub"] = Module["asm"]["_a"]).apply(null, arguments);
+          return (_Sub = Module["_Sub"] = Module["asm"]["bb"]).apply(null, arguments);
         };
         var _Sum = Module["_Sum"] = function() {
-          return (_Sum = Module["_Sum"] = Module["asm"]["$a"]).apply(null, arguments);
+          return (_Sum = Module["_Sum"] = Module["asm"]["cb"]).apply(null, arguments);
         };
         var _Tan = Module["_Tan"] = function() {
-          return (_Tan = Module["_Tan"] = Module["asm"]["ab"]).apply(null, arguments);
+          return (_Tan = Module["_Tan"] = Module["asm"]["db"]).apply(null, arguments);
         };
         var _Tanh = Module["_Tanh"] = function() {
-          return (_Tanh = Module["_Tanh"] = Module["asm"]["bb"]).apply(null, arguments);
+          return (_Tanh = Module["_Tanh"] = Module["asm"]["eb"]).apply(null, arguments);
         };
         var _Tile = Module["_Tile"] = function() {
-          return (_Tile = Module["_Tile"] = Module["asm"]["cb"]).apply(null, arguments);
+          return (_Tile = Module["_Tile"] = Module["asm"]["fb"]).apply(null, arguments);
         };
         var _TopK = Module["_TopK"] = function() {
-          return (_TopK = Module["_TopK"] = Module["asm"]["db"]).apply(null, arguments);
+          return (_TopK = Module["_TopK"] = Module["asm"]["gb"]).apply(null, arguments);
         };
         var _Transform = Module["_Transform"] = function() {
-          return (_Transform = Module["_Transform"] = Module["asm"]["eb"]).apply(null, arguments);
+          return (_Transform = Module["_Transform"] = Module["asm"]["hb"]).apply(null, arguments);
         };
         var _Transpose = Module["_Transpose"] = function() {
-          return (_Transpose = Module["_Transpose"] = Module["asm"]["fb"]).apply(null, arguments);
+          return (_Transpose = Module["_Transpose"] = Module["asm"]["ib"]).apply(null, arguments);
         };
         var __FusedMatMul = Module["__FusedMatMul"] = function() {
-          return (__FusedMatMul = Module["__FusedMatMul"] = Module["asm"]["gb"]).apply(null, arguments);
+          return (__FusedMatMul = Module["__FusedMatMul"] = Module["asm"]["jb"]).apply(null, arguments);
         };
         var _malloc = Module["_malloc"] = function() {
-          return (_malloc = Module["_malloc"] = Module["asm"]["hb"]).apply(null, arguments);
+          return (_malloc = Module["_malloc"] = Module["asm"]["kb"]).apply(null, arguments);
         };
         var _free = Module["_free"] = function() {
-          return (_free = Module["_free"] = Module["asm"]["ib"]).apply(null, arguments);
+          return (_free = Module["_free"] = Module["asm"]["lb"]).apply(null, arguments);
         };
         var ___errno_location = Module["___errno_location"] = function() {
-          return (___errno_location = Module["___errno_location"] = Module["asm"]["jb"]).apply(null, arguments);
+          return (___errno_location = Module["___errno_location"] = Module["asm"]["mb"]).apply(null, arguments);
         };
         var _emscripten_get_global_libc = Module["_emscripten_get_global_libc"] = function() {
-          return (_emscripten_get_global_libc = Module["_emscripten_get_global_libc"] = Module["asm"]["lb"]).apply(null, arguments);
+          return (_emscripten_get_global_libc = Module["_emscripten_get_global_libc"] = Module["asm"]["ob"]).apply(null, arguments);
         };
         var _pthread_self = Module["_pthread_self"] = function() {
-          return (_pthread_self = Module["_pthread_self"] = Module["asm"]["mb"]).apply(null, arguments);
+          return (_pthread_self = Module["_pthread_self"] = Module["asm"]["pb"]).apply(null, arguments);
         };
         var ___pthread_tsd_run_dtors = Module["___pthread_tsd_run_dtors"] = function() {
-          return (___pthread_tsd_run_dtors = Module["___pthread_tsd_run_dtors"] = Module["asm"]["nb"]).apply(null, arguments);
+          return (___pthread_tsd_run_dtors = Module["___pthread_tsd_run_dtors"] = Module["asm"]["qb"]).apply(null, arguments);
         };
         var _emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = function() {
-          return (_emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = Module["asm"]["ob"]).apply(null, arguments);
+          return (_emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = Module["asm"]["rb"]).apply(null, arguments);
         };
         var _emscripten_current_thread_process_queued_calls = Module["_emscripten_current_thread_process_queued_calls"] = function() {
-          return (_emscripten_current_thread_process_queued_calls = Module["_emscripten_current_thread_process_queued_calls"] = Module["asm"]["pb"]).apply(null, arguments);
+          return (_emscripten_current_thread_process_queued_calls = Module["_emscripten_current_thread_process_queued_calls"] = Module["asm"]["sb"]).apply(null, arguments);
         };
         var _emscripten_register_main_browser_thread_id = Module["_emscripten_register_main_browser_thread_id"] = function() {
-          return (_emscripten_register_main_browser_thread_id = Module["_emscripten_register_main_browser_thread_id"] = Module["asm"]["qb"]).apply(null, arguments);
+          return (_emscripten_register_main_browser_thread_id = Module["_emscripten_register_main_browser_thread_id"] = Module["asm"]["tb"]).apply(null, arguments);
         };
         var _emscripten_main_browser_thread_id = Module["_emscripten_main_browser_thread_id"] = function() {
-          return (_emscripten_main_browser_thread_id = Module["_emscripten_main_browser_thread_id"] = Module["asm"]["rb"]).apply(null, arguments);
+          return (_emscripten_main_browser_thread_id = Module["_emscripten_main_browser_thread_id"] = Module["asm"]["ub"]).apply(null, arguments);
         };
         var __emscripten_do_dispatch_to_thread = Module["__emscripten_do_dispatch_to_thread"] = function() {
-          return (__emscripten_do_dispatch_to_thread = Module["__emscripten_do_dispatch_to_thread"] = Module["asm"]["sb"]).apply(null, arguments);
+          return (__emscripten_do_dispatch_to_thread = Module["__emscripten_do_dispatch_to_thread"] = Module["asm"]["vb"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread_4 = Module["_emscripten_sync_run_in_main_thread_4"] = function() {
-          return (_emscripten_sync_run_in_main_thread_4 = Module["_emscripten_sync_run_in_main_thread_4"] = Module["asm"]["tb"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread_4 = Module["_emscripten_sync_run_in_main_thread_4"] = Module["asm"]["wb"]).apply(null, arguments);
         };
         var _emscripten_run_in_main_runtime_thread_js = Module["_emscripten_run_in_main_runtime_thread_js"] = function() {
-          return (_emscripten_run_in_main_runtime_thread_js = Module["_emscripten_run_in_main_runtime_thread_js"] = Module["asm"]["ub"]).apply(null, arguments);
+          return (_emscripten_run_in_main_runtime_thread_js = Module["_emscripten_run_in_main_runtime_thread_js"] = Module["asm"]["xb"]).apply(null, arguments);
         };
         var __emscripten_call_on_thread = Module["__emscripten_call_on_thread"] = function() {
-          return (__emscripten_call_on_thread = Module["__emscripten_call_on_thread"] = Module["asm"]["vb"]).apply(null, arguments);
+          return (__emscripten_call_on_thread = Module["__emscripten_call_on_thread"] = Module["asm"]["yb"]).apply(null, arguments);
         };
         var _emscripten_tls_init = Module["_emscripten_tls_init"] = function() {
-          return (_emscripten_tls_init = Module["_emscripten_tls_init"] = Module["asm"]["wb"]).apply(null, arguments);
+          return (_emscripten_tls_init = Module["_emscripten_tls_init"] = Module["asm"]["zb"]).apply(null, arguments);
         };
         var __emscripten_thread_init = Module["__emscripten_thread_init"] = function() {
-          return (__emscripten_thread_init = Module["__emscripten_thread_init"] = Module["asm"]["xb"]).apply(null, arguments);
+          return (__emscripten_thread_init = Module["__emscripten_thread_init"] = Module["asm"]["Ab"]).apply(null, arguments);
         };
         var stackSave = Module["stackSave"] = function() {
-          return (stackSave = Module["stackSave"] = Module["asm"]["yb"]).apply(null, arguments);
+          return (stackSave = Module["stackSave"] = Module["asm"]["Bb"]).apply(null, arguments);
         };
         var stackRestore = Module["stackRestore"] = function() {
-          return (stackRestore = Module["stackRestore"] = Module["asm"]["zb"]).apply(null, arguments);
+          return (stackRestore = Module["stackRestore"] = Module["asm"]["Cb"]).apply(null, arguments);
         };
         var stackAlloc = Module["stackAlloc"] = function() {
-          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["Ab"]).apply(null, arguments);
+          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["Db"]).apply(null, arguments);
         };
         var _emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = function() {
-          return (_emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = Module["asm"]["Bb"]).apply(null, arguments);
+          return (_emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = Module["asm"]["Eb"]).apply(null, arguments);
         };
         var _memalign = Module["_memalign"] = function() {
-          return (_memalign = Module["_memalign"] = Module["asm"]["Cb"]).apply(null, arguments);
+          return (_memalign = Module["_memalign"] = Module["asm"]["Fb"]).apply(null, arguments);
         };
-        var __emscripten_allow_main_runtime_queued_calls = Module["__emscripten_allow_main_runtime_queued_calls"] = 10064;
-        var __emscripten_main_thread_futex = Module["__emscripten_main_thread_futex"] = 10268;
+        var __emscripten_allow_main_runtime_queued_calls = Module["__emscripten_allow_main_runtime_queued_calls"] = 10208;
+        var __emscripten_main_thread_futex = Module["__emscripten_main_thread_futex"] = 10412;
         Module["cwrap"] = cwrap;
         Module["PThread"] = PThread;
         Module["PThread"] = PThread;
@@ -32988,33 +33053,65 @@ var require_tfjs_backend_wasm_threaded_simd = __commonJS({
           PThread.initWorker();
         }
         run();
-        return WasmBackendModuleThreadedSimd2.ready;
+        var listenersAdded;
+        if (beforeListeners) {
+          listenersAdded = { uncaughtException: process.listeners("uncaughtException").filter(function(listener) {
+            return !beforeListeners.uncaughtException.indexOf(listener) > -1;
+          }), unhandledRejection: process.listeners("unhandledRejection").filter(function(listener) {
+            return !beforeListeners.unhandledRejection.indexOf(listener) > -1;
+          }) };
+        }
+        var actualModule;
+        if (typeof WasmBackendModule !== "undefined") {
+          actualModule = WasmBackendModule;
+        } else if (typeof WasmBackendModuleThreadedSimd3 !== "undefined") {
+          actualModule = WasmBackendModuleThreadedSimd3;
+        } else {
+          throw new Error("Could not find wasm module in post.js");
+        }
+        if (listenersAdded) {
+          var tmpDispose = actualModule["_dispose"];
+          actualModule["_dispose"] = function() {
+            tmpDispose();
+            listenersAdded.uncaughtException.forEach(function(listener) {
+              process.removeListener("uncaughtException", listener);
+            });
+            listenersAdded.unhandledRejection.forEach(function(listener) {
+              process.removeListener("unhandledRejection", listener);
+            });
+          };
+        }
+        return WasmBackendModuleThreadedSimd3.ready;
       };
     }();
     if (typeof exports === "object" && typeof module === "object")
-      module.exports = WasmBackendModuleThreadedSimd;
+      module.exports = WasmBackendModuleThreadedSimd2;
     else if (typeof define === "function" && define["amd"])
       define([], function() {
-        return WasmBackendModuleThreadedSimd;
+        return WasmBackendModuleThreadedSimd2;
       });
     else if (typeof exports === "object")
-      exports["WasmBackendModuleThreadedSimd"] = WasmBackendModuleThreadedSimd;
+      exports["WasmBackendModuleThreadedSimd"] = WasmBackendModuleThreadedSimd2;
   }
 });
 var require_tfjs_backend_wasm = __commonJS({
   "src/tfjs-backend-wasm/wasm-out/tfjs-backend-wasm.js"(exports, module) {
-    var WasmBackendModule = function() {
+    var WasmBackendModule2 = function() {
       var _scriptDir = typeof document !== "undefined" && document.currentScript ? document.currentScript.src : void 0;
       if (typeof __filename !== "undefined")
         _scriptDir = _scriptDir || __filename;
-      return function(WasmBackendModule2) {
-        WasmBackendModule2 = WasmBackendModule2 || {};
-        var Module = typeof WasmBackendModule2 !== "undefined" ? WasmBackendModule2 : {};
+      return function(WasmBackendModule3) {
+        WasmBackendModule3 = WasmBackendModule3 || {};
+        var Module = typeof WasmBackendModule3 !== "undefined" ? WasmBackendModule3 : {};
         var readyPromiseResolve, readyPromiseReject;
         Module["ready"] = new Promise(function(resolve, reject) {
           readyPromiseResolve = resolve;
           readyPromiseReject = reject;
         });
+        var beforeListeners;
+        if (typeof process !== "undefined" && process.listeners) {
+          beforeListeners = { uncaughtException: process.listeners("uncaughtException"), unhandledRejection: process.listeners("unhandledRejection") };
+        }
         var moduleOverrides = {};
         var key;
         for (key in Module) {
@@ -33047,15 +33144,15 @@ var require_tfjs_backend_wasm = __commonJS({
         var nodePath;
         if (ENVIRONMENT_IS_NODE) {
           if (ENVIRONMENT_IS_WORKER) {
-            scriptDirectory = __require222("path").dirname(scriptDirectory) + "/";
+            scriptDirectory = require_path().dirname(scriptDirectory) + "/";
           } else {
             scriptDirectory = __dirname + "/";
           }
           read_ = function shell_read(filename, binary) {
             if (!nodeFS)
-              nodeFS = __require222("fs");
+              nodeFS = require_fs();
             if (!nodePath)
-              nodePath = __require222("path");
+              nodePath = require_path();
             filename = nodePath["normalize"](filename);
             return nodeFS["readFileSync"](filename, binary ? null : "utf8");
           };
@@ -33500,7 +33597,7 @@ var require_tfjs_backend_wasm = __commonJS({
             Module["asm"] = exports3;
             wasmMemory = Module["asm"]["h"];
             updateGlobalBufferAndViews(wasmMemory.buffer);
-            wasmTable = Module["asm"]["Sa"];
+            wasmTable = Module["asm"]["Va"];
             removeRunDependency("wasm-instantiate");
           }
           addRunDependency("wasm-instantiate");
@@ -33857,62 +33954,71 @@ var require_tfjs_backend_wasm = __commonJS({
         var _Softmax = Module["_Softmax"] = function() {
           return (_Softmax = Module["_Softmax"] = Module["asm"]["Ba"]).apply(null, arguments);
         };
+        var _SparseFillEmptyRows = Module["_SparseFillEmptyRows"] = function() {
+          return (_SparseFillEmptyRows = Module["_SparseFillEmptyRows"] = Module["asm"]["Ca"]).apply(null, arguments);
+        };
+        var _SparseReshape = Module["_SparseReshape"] = function() {
+          return (_SparseReshape = Module["_SparseReshape"] = Module["asm"]["Da"]).apply(null, arguments);
+        };
+        var _SparseSegmentReduction = Module["_SparseSegmentReduction"] = function() {
+          return (_SparseSegmentReduction = Module["_SparseSegmentReduction"] = Module["asm"]["Ea"]).apply(null, arguments);
+        };
         var _Sqrt = Module["_Sqrt"] = function() {
-          return (_Sqrt = Module["_Sqrt"] = Module["asm"]["Ca"]).apply(null, arguments);
+          return (_Sqrt = Module["_Sqrt"] = Module["asm"]["Fa"]).apply(null, arguments);
         };
         var _Square = Module["_Square"] = function() {
-          return (_Square = Module["_Square"] = Module["asm"]["Da"]).apply(null, arguments);
+          return (_Square = Module["_Square"] = Module["asm"]["Ga"]).apply(null, arguments);
         };
         var _SquaredDifference = Module["_SquaredDifference"] = function() {
-          return (_SquaredDifference = Module["_SquaredDifference"] = Module["asm"]["Ea"]).apply(null, arguments);
+          return (_SquaredDifference = Module["_SquaredDifference"] = Module["asm"]["Ha"]).apply(null, arguments);
         };
         var _Step = Module["_Step"] = function() {
-          return (_Step = Module["_Step"] = Module["asm"]["Fa"]).apply(null, arguments);
+          return (_Step = Module["_Step"] = Module["asm"]["Ia"]).apply(null, arguments);
         };
         var _StridedSlice = Module["_StridedSlice"] = function() {
-          return (_StridedSlice = Module["_StridedSlice"] = Module["asm"]["Ga"]).apply(null, arguments);
+          return (_StridedSlice = Module["_StridedSlice"] = Module["asm"]["Ja"]).apply(null, arguments);
         };
         var _Sub = Module["_Sub"] = function() {
-          return (_Sub = Module["_Sub"] = Module["asm"]["Ha"]).apply(null, arguments);
+          return (_Sub = Module["_Sub"] = Module["asm"]["Ka"]).apply(null, arguments);
         };
         var _Sum = Module["_Sum"] = function() {
-          return (_Sum = Module["_Sum"] = Module["asm"]["Ia"]).apply(null, arguments);
+          return (_Sum = Module["_Sum"] = Module["asm"]["La"]).apply(null, arguments);
         };
         var _Tan = Module["_Tan"] = function() {
-          return (_Tan = Module["_Tan"] = Module["asm"]["Ja"]).apply(null, arguments);
+          return (_Tan = Module["_Tan"] = Module["asm"]["Ma"]).apply(null, arguments);
         };
         var _Tanh = Module["_Tanh"] = function() {
-          return (_Tanh = Module["_Tanh"] = Module["asm"]["Ka"]).apply(null, arguments);
+          return (_Tanh = Module["_Tanh"] = Module["asm"]["Na"]).apply(null, arguments);
         };
         var _Tile = Module["_Tile"] = function() {
-          return (_Tile = Module["_Tile"] = Module["asm"]["La"]).apply(null, arguments);
+          return (_Tile = Module["_Tile"] = Module["asm"]["Oa"]).apply(null, arguments);
         };
         var _TopK = Module["_TopK"] = function() {
-          return (_TopK = Module["_TopK"] = Module["asm"]["Ma"]).apply(null, arguments);
+          return (_TopK = Module["_TopK"] = Module["asm"]["Pa"]).apply(null, arguments);
         };
         var _Transform = Module["_Transform"] = function() {
-          return (_Transform = Module["_Transform"] = Module["asm"]["Na"]).apply(null, arguments);
+          return (_Transform = Module["_Transform"] = Module["asm"]["Qa"]).apply(null, arguments);
         };
         var _Transpose = Module["_Transpose"] = function() {
-          return (_Transpose = Module["_Transpose"] = Module["asm"]["Oa"]).apply(null, arguments);
+          return (_Transpose = Module["_Transpose"] = Module["asm"]["Ra"]).apply(null, arguments);
         };
         var __FusedMatMul = Module["__FusedMatMul"] = function() {
-          return (__FusedMatMul = Module["__FusedMatMul"] = Module["asm"]["Pa"]).apply(null, arguments);
+          return (__FusedMatMul = Module["__FusedMatMul"] = Module["asm"]["Sa"]).apply(null, arguments);
         };
         var _malloc = Module["_malloc"] = function() {
-          return (_malloc = Module["_malloc"] = Module["asm"]["Qa"]).apply(null, arguments);
+          return (_malloc = Module["_malloc"] = Module["asm"]["Ta"]).apply(null, arguments);
         };
         var _free = Module["_free"] = function() {
-          return (_free = Module["_free"] = Module["asm"]["Ra"]).apply(null, arguments);
+          return (_free = Module["_free"] = Module["asm"]["Ua"]).apply(null, arguments);
         };
         var stackSave = Module["stackSave"] = function() {
-          return (stackSave = Module["stackSave"] = Module["asm"]["Ta"]).apply(null, arguments);
+          return (stackSave = Module["stackSave"] = Module["asm"]["Wa"]).apply(null, arguments);
         };
         var stackRestore = Module["stackRestore"] = function() {
-          return (stackRestore = Module["stackRestore"] = Module["asm"]["Ua"]).apply(null, arguments);
+          return (stackRestore = Module["stackRestore"] = Module["asm"]["Xa"]).apply(null, arguments);
         };
         var stackAlloc = Module["stackAlloc"] = function() {
-          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["Va"]).apply(null, arguments);
+          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["Ya"]).apply(null, arguments);
         };
         Module["cwrap"] = cwrap;
         var calledRun;
@@ -33971,17 +34077,45 @@ var require_tfjs_backend_wasm = __commonJS({
           }
         }
         run();
-        return WasmBackendModule2.ready;
+        var listenersAdded;
+        if (beforeListeners) {
+          listenersAdded = { uncaughtException: process.listeners("uncaughtException").filter(function(listener) {
+            return !beforeListeners.uncaughtException.indexOf(listener) > -1;
+          }), unhandledRejection: process.listeners("unhandledRejection").filter(function(listener) {
+            return !beforeListeners.unhandledRejection.indexOf(listener) > -1;
+          }) };
+        }
+        var actualModule;
+        if (typeof WasmBackendModule3 !== "undefined") {
+          actualModule = WasmBackendModule3;
+        } else if (typeof WasmBackendModuleThreadedSimd !== "undefined") {
+          actualModule = WasmBackendModuleThreadedSimd;
+        } else {
+          throw new Error("Could not find wasm module in post.js");
+        }
+        if (listenersAdded) {
+          var tmpDispose = actualModule["_dispose"];
+          actualModule["_dispose"] = function() {
+            tmpDispose();
+            listenersAdded.uncaughtException.forEach(function(listener) {
+              process.removeListener("uncaughtException", listener);
+            });
+            listenersAdded.unhandledRejection.forEach(function(listener) {
+              process.removeListener("unhandledRejection", listener);
+            });
+          };
+        }
+        return WasmBackendModule3.ready;
       };
     }();
     if (typeof exports === "object" && typeof module === "object")
-      module.exports = WasmBackendModule;
+      module.exports = WasmBackendModule2;
     else if (typeof define === "function" && define["amd"])
       define([], function() {
-        return WasmBackendModule;
+        return WasmBackendModule2;
       });
     else if (typeof exports === "object")
-      exports["WasmBackendModule"] = WasmBackendModule;
+      exports["WasmBackendModule"] = WasmBackendModule2;
   }
 });
 var EPSILON_FLOAT32 = 1e-7;
@@ -34402,12 +34536,12 @@ function computeStrides(shape) {
   if (rank < 2) {
     return [];
   }
-  const strides = new Array(rank - 1);
-  strides[rank - 2] = shape[rank - 1];
+  const strides2 = new Array(rank - 1);
+  strides2[rank - 2] = shape[rank - 1];
   for (let i2 = rank - 3; i2 >= 0; --i2) {
-    strides[i2] = strides[i2 + 1] * shape[i2 + 1];
+    strides2[i2] = strides2[i2 + 1] * shape[i2 + 1];
   }
-  return strides;
+  return strides2;
 }
 function createNestedArray(offset, shape, a6, isComplex = false) {
   const ret = new Array();
@@ -34474,7 +34608,7 @@ function assertNonNegativeIntegerDimensions(shape) {
     assert(Number.isInteger(dimSize) && dimSize >= 0, () => `Tensor must have a shape comprised of positive integers but got shape [${shape}].`);
   });
 }
-function locToIndex(locs, rank, strides) {
+function locToIndex(locs, rank, strides2) {
   if (rank === 0) {
     return 0;
   } else if (rank === 1) {
@@ -34482,11 +34616,11 @@ function locToIndex(locs, rank, strides) {
   }
   let index2 = locs[locs.length - 1];
   for (let i2 = 0; i2 < locs.length - 1; ++i2) {
-    index2 += strides[i2] * locs[i2];
+    index2 += strides2[i2] * locs[i2];
   }
   return index2;
 }
-function indexToLoc(index2, rank, strides) {
+function indexToLoc(index2, rank, strides2) {
   if (rank === 0) {
     return [];
   } else if (rank === 1) {
@@ -34494,8 +34628,8 @@ function indexToLoc(index2, rank, strides) {
   }
   const locs = new Array(rank);
   for (let i2 = 0; i2 < locs.length - 1; ++i2) {
-    locs[i2] = Math.floor(index2 / strides[i2]);
-    index2 -= locs[i2] * strides[i2];
+    locs[i2] = Math.floor(index2 / strides2[i2]);
+    index2 -= locs[i2] * strides2[i2];
   }
   locs[locs.length - 1] = index2;
   return locs;
@@ -34652,12 +34786,12 @@ function getGlobalMap() {
   }
   return ns._tfGlobals;
 }
-function getGlobal(key, init2) {
+function getGlobal(key, init22) {
   const globalMap = getGlobalMap();
   if (globalMap.has(key)) {
     return globalMap.get(key);
   } else {
-    const singleton = init2();
+    const singleton = init22();
     globalMap.set(key, singleton);
     return globalMap.get(key);
   }
@@ -35239,16 +35373,16 @@ function getFilteredNodesXToY(tape, xs, y2) {
     tensorsFromX[xs[i2].id] = true;
   }
   for (let i2 = 0; i2 < tape.length; i2++) {
-    const node2 = tape[i2];
-    const nodeInputs = node2.inputs;
+    const node = tape[i2];
+    const nodeInputs = node.inputs;
     for (const inputName in nodeInputs) {
       const input2 = nodeInputs[inputName];
       let anyInputFromX = false;
       for (let j2 = 0; j2 < xs.length; j2++) {
         if (tensorsFromX[input2.id]) {
-          node2.outputs.forEach((output) => tensorsFromX[output.id] = true);
+          node.outputs.forEach((output) => tensorsFromX[output.id] = true);
           anyInputFromX = true;
-          nodesFromX[node2.id] = true;
+          nodesFromX[node.id] = true;
           break;
         }
       }
@@ -35261,13 +35395,13 @@ function getFilteredNodesXToY(tape, xs, y2) {
   tensorsLeadToY[y2.id] = true;
   const nodesToY = {};
   for (let i2 = tape.length - 1; i2 >= 0; i2--) {
-    const node2 = tape[i2];
-    const nodeInputs = node2.inputs;
-    for (let j2 = 0; j2 < node2.outputs.length; j2++) {
-      if (tensorsLeadToY[node2.outputs[j2].id]) {
+    const node = tape[i2];
+    const nodeInputs = node.inputs;
+    for (let j2 = 0; j2 < node.outputs.length; j2++) {
+      if (tensorsLeadToY[node.outputs[j2].id]) {
         for (const inputName in nodeInputs) {
           tensorsLeadToY[nodeInputs[inputName].id] = true;
-          nodesToY[node2.id] = true;
+          nodesToY[node.id] = true;
         }
         break;
       }
@@ -35275,18 +35409,18 @@ function getFilteredNodesXToY(tape, xs, y2) {
   }
   const filteredTape = [];
   for (let i2 = 0; i2 < tape.length; i2++) {
-    const node2 = tape[i2];
-    if (nodesFromX[node2.id] && nodesToY[node2.id]) {
+    const node = tape[i2];
+    if (nodesFromX[node.id] && nodesToY[node.id]) {
       const prunedInputs = {};
-      for (const inputName in node2.inputs) {
-        const nodeInput = node2.inputs[inputName];
+      for (const inputName in node.inputs) {
+        const nodeInput = node.inputs[inputName];
         if (tensorsFromX[nodeInput.id]) {
           prunedInputs[inputName] = nodeInput;
         }
       }
-      const prunedNode = Object.assign({}, node2);
+      const prunedNode = Object.assign({}, node);
       prunedNode.inputs = prunedInputs;
-      prunedNode.outputs = node2.outputs;
+      prunedNode.outputs = node.outputs;
       filteredTape.push(prunedNode);
     }
   }
@@ -35294,9 +35428,9 @@ function getFilteredNodesXToY(tape, xs, y2) {
 }
 function backpropagateGradients(tensorAccumulatedGradientMap, filteredTape, tidy2, add5) {
   for (let i2 = filteredTape.length - 1; i2 >= 0; i2--) {
-    const node2 = filteredTape[i2];
+    const node = filteredTape[i2];
     const dys = [];
-    node2.outputs.forEach((o2) => {
+    node.outputs.forEach((o2) => {
       const gradTensor = tensorAccumulatedGradientMap[o2.id];
       if (gradTensor != null) {
         dys.push(gradTensor);
@@ -35304,21 +35438,21 @@ function backpropagateGradients(tensorAccumulatedGradientMap, filteredTape, tidy
         dys.push(null);
       }
     });
-    if (node2.gradient == null) {
-      throw new Error(`Cannot compute gradient: gradient function not found for ${node2.kernelName}.`);
+    if (node.gradient == null) {
+      throw new Error(`Cannot compute gradient: gradient function not found for ${node.kernelName}.`);
     }
-    const inputGradients = node2.gradient(dys);
-    for (const inputName in node2.inputs) {
+    const inputGradients = node.gradient(dys);
+    for (const inputName in node.inputs) {
       if (!(inputName in inputGradients)) {
         throw new Error(`Cannot backprop through input ${inputName}. Available gradients found: ${Object.keys(inputGradients)}.`);
       }
       const dx = tidy2(() => inputGradients[inputName]());
       if (dx.dtype !== "float32") {
-        throw new Error(`Error in gradient for op ${node2.kernelName}. The gradient of input ${inputName} must have 'float32' dtype, but has '${dx.dtype}'`);
+        throw new Error(`Error in gradient for op ${node.kernelName}. The gradient of input ${inputName} must have 'float32' dtype, but has '${dx.dtype}'`);
       }
-      const x2 = node2.inputs[inputName];
+      const x2 = node.inputs[inputName];
       if (!arraysEqual2(dx.shape, x2.shape)) {
-        throw new Error(`Error in gradient for op ${node2.kernelName}. The gradient of input '${inputName}' has shape '${dx.shape}', which does not match the shape of the input '${x2.shape}'`);
+        throw new Error(`Error in gradient for op ${node.kernelName}. The gradient of input '${inputName}' has shape '${dx.shape}', which does not match the shape of the input '${x2.shape}'`);
       }
       if (tensorAccumulatedGradientMap[x2.id] == null) {
         tensorAccumulatedGradientMap[x2.id] = dx;
@@ -35334,10 +35468,10 @@ var FORMAT_LIMIT_NUM_VALS = 20;
 var FORMAT_NUM_FIRST_LAST_VALS = 3;
 var FORMAT_NUM_SIG_DIGITS = 7;
 function tensorToString(vals, shape, dtype, verbose) {
-  const strides = computeStrides(shape);
-  const padPerCol = computeMaxSizePerColumn(vals, shape, dtype, strides);
+  const strides2 = computeStrides(shape);
+  const padPerCol = computeMaxSizePerColumn(vals, shape, dtype, strides2);
   const rank = shape.length;
-  const valsLines = subTensorToString(vals, shape, dtype, strides, padPerCol);
+  const valsLines = subTensorToString(vals, shape, dtype, strides2, padPerCol);
   const lines2 = ["Tensor"];
   if (verbose) {
     lines2.push(`  dtype: ${dtype}`);
@@ -35348,9 +35482,9 @@ function tensorToString(vals, shape, dtype, verbose) {
   lines2.push(valsLines.map((l3) => "    " + l3).join("\n"));
   return lines2.join("\n");
 }
-function computeMaxSizePerColumn(vals, shape, dtype, strides) {
+function computeMaxSizePerColumn(vals, shape, dtype, strides2) {
   const n2 = sizeFromShape(shape);
-  const numCols = strides[strides.length - 1];
+  const numCols = strides2[strides2.length - 1];
   const padPerCol = new Array(numCols).fill(0);
   const rank = shape.length;
   const valuesOrTuples = dtype === "complex64" ? createComplexTuples(vals) : vals;
@@ -35380,7 +35514,7 @@ function valToString(val, pad3, dtype) {
 function boolNumToString(v2) {
   return v2 === 0 ? "false" : "true";
 }
-function subTensorToString(vals, shape, dtype, strides, padPerCol, isLast = true) {
+function subTensorToString(vals, shape, dtype, strides2, padPerCol, isLast = true) {
   const storagePerElement = dtype === "complex64" ? 2 : 1;
   const size2 = shape[0];
   const rank = shape.length;
@@ -35413,8 +35547,8 @@ function subTensorToString(vals, shape, dtype, strides, padPerCol, isLast = true
     ];
   }
   const subshape = shape.slice(1);
-  const substrides = strides.slice(1);
-  const stride = strides[0] * storagePerElement;
+  const substrides = strides2.slice(1);
+  const stride = strides2[0] * storagePerElement;
   const lines2 = [];
   if (size2 > FORMAT_LIMIT_NUM_VALS) {
     for (let i2 = 0; i2 < FORMAT_NUM_FIRST_LAST_VALS; i2++) {
@@ -35683,8 +35817,7 @@ __export2(tensor_util_exports, {
   isTensorInList: () => isTensorInList,
   makeTypesMatch: () => makeTypesMatch
 });
-var Rank;
-(function(Rank18) {
+var Rank = ((Rank18) => {
   Rank18["R0"] = "R0";
   Rank18["R1"] = "R1";
   Rank18["R2"] = "R2";
@@ -35692,35 +35825,36 @@ var Rank;
   Rank18["R4"] = "R4";
   Rank18["R5"] = "R5";
   Rank18["R6"] = "R6";
-})(Rank || (Rank = {}));
-var UpcastInt32AndMap;
-(function(UpcastInt32AndMap2) {
+  return Rank18;
+})(Rank || {});
+var UpcastInt32AndMap = ((UpcastInt32AndMap2) => {
   UpcastInt32AndMap2["float32"] = "float32";
   UpcastInt32AndMap2["int32"] = "int32";
   UpcastInt32AndMap2["bool"] = "int32";
   UpcastInt32AndMap2["complex64"] = "complex64";
-})(UpcastInt32AndMap || (UpcastInt32AndMap = {}));
-var UpcastBoolAndMap;
-(function(UpcastBoolAndMap2) {
+  return UpcastInt32AndMap2;
+})(UpcastInt32AndMap || {});
+var UpcastBoolAndMap = ((UpcastBoolAndMap2) => {
   UpcastBoolAndMap2["float32"] = "float32";
   UpcastBoolAndMap2["int32"] = "int32";
   UpcastBoolAndMap2["bool"] = "bool";
   UpcastBoolAndMap2["complex64"] = "complex64";
-})(UpcastBoolAndMap || (UpcastBoolAndMap = {}));
-var UpcastFloat32AndMap;
-(function(UpcastFloat32AndMap2) {
+  return UpcastBoolAndMap2;
+})(UpcastBoolAndMap || {});
+var UpcastFloat32AndMap = ((UpcastFloat32AndMap2) => {
   UpcastFloat32AndMap2["float32"] = "float32";
   UpcastFloat32AndMap2["int32"] = "float32";
   UpcastFloat32AndMap2["bool"] = "float32";
   UpcastFloat32AndMap2["complex64"] = "complex64";
-})(UpcastFloat32AndMap || (UpcastFloat32AndMap = {}));
-var UpcastComplex64AndMap;
-(function(UpcastComplex64AndMap2) {
+  return UpcastFloat32AndMap2;
+})(UpcastFloat32AndMap || {});
+var UpcastComplex64AndMap = ((UpcastComplex64AndMap2) => {
   UpcastComplex64AndMap2["float32"] = "complex64";
   UpcastComplex64AndMap2["int32"] = "complex64";
   UpcastComplex64AndMap2["bool"] = "complex64";
   UpcastComplex64AndMap2["complex64"] = "complex64";
-})(UpcastComplex64AndMap || (UpcastComplex64AndMap = {}));
+  return UpcastComplex64AndMap2;
+})(UpcastComplex64AndMap || {});
 var upcastTypeMap = {
   "float32": UpcastFloat32AndMap,
   "int32": UpcastInt32AndMap,
@@ -36418,8 +36552,8 @@ var _Engine = class {
       backpropagateGradients(accumulatedGradientMap, filteredTape, (f22) => this.tidy(f22), add);
       const grads2 = xs.map((x2) => accumulatedGradientMap[x2.id]);
       if (this.state.gradientDepth === 0) {
-        this.state.activeTape.forEach((node2) => {
-          for (const tensor2 of node2.saved) {
+        this.state.activeTape.forEach((node) => {
+          for (const tensor2 of node.saved) {
             tensor2.dispose();
           }
         });
@@ -36838,13 +36972,13 @@ function decodeWeights(buffer2, specs) {
       } else if (dtype === "complex64") {
         values = new Float32Array(byteBuffer);
         const real5 = new Float32Array(values.length / 2);
-        const image32 = new Float32Array(values.length / 2);
+        const image22 = new Float32Array(values.length / 2);
         for (let i2 = 0; i2 < real5.length; i2++) {
           real5[i2] = values[i2 * 2];
-          image32[i2] = values[i2 * 2 + 1];
+          image22[i2] = values[i2 * 2 + 1];
         }
         const realTensor = tensor(real5, shape, "float32");
-        const imageTensor = tensor(image32, shape, "float32");
+        const imageTensor = tensor(image22, shape, "float32");
         out[name] = complex(realTensor, imageTensor);
         realTensor.dispose();
         imageTensor.dispose();
@@ -37550,8 +37684,8 @@ async function moveModel(sourceURL, destURL) {
   return cloneModelInternal(sourceURL, destURL, deleteSource);
 }
 var PlatformBrowser = class {
-  fetch(path, init2) {
-    return fetch(path, init2);
+  fetch(path, init22) {
+    return fetch(path, init22);
   }
   now() {
     return performance.now();
@@ -37581,7 +37715,7 @@ if (env().get("IS_BROWSER")) {
   }
 }
 var getNodeFetch = {
-  importFetch: () => require_node_fetch()
+  importFetch: () => require_browser()
 };
 var systemFetch;
 var PlatformNode = class {
@@ -37984,18 +38118,18 @@ var HTTPRequest = class {
     if (modelArtifacts.modelTopology instanceof ArrayBuffer) {
       throw new Error("BrowserHTTPRequest.save() does not support saving model topology in binary formats yet.");
     }
-    const init2 = Object.assign({ method: this.DEFAULT_METHOD }, this.requestInit);
-    init2.body = new FormData();
+    const init22 = Object.assign({ method: this.DEFAULT_METHOD }, this.requestInit);
+    init22.body = new FormData();
     const weightsManifest = [{
       paths: ["./model.weights.bin"],
       weights: modelArtifacts.weightSpecs
     }];
     const modelTopologyAndWeightManifest = getModelJSONForModelArtifacts(modelArtifacts, weightsManifest);
-    init2.body.append("model.json", new Blob([JSON.stringify(modelTopologyAndWeightManifest)], { type: JSON_TYPE }), "model.json");
+    init22.body.append("model.json", new Blob([JSON.stringify(modelTopologyAndWeightManifest)], { type: JSON_TYPE }), "model.json");
     if (modelArtifacts.weightData != null) {
-      init2.body.append("model.weights.bin", new Blob([modelArtifacts.weightData], { type: OCTET_STREAM_MIME_TYPE }), "model.weights.bin");
+      init22.body.append("model.weights.bin", new Blob([modelArtifacts.weightData], { type: OCTET_STREAM_MIME_TYPE }), "model.weights.bin");
     }
-    const response = await this.fetch(this.path, init2);
+    const response = await this.fetch(this.path, init22);
     if (response.ok) {
       return {
         modelArtifactsInfo: getModelArtifactsInfoForJSON(modelArtifacts),
@@ -38473,11 +38607,11 @@ function prepareAndValidate(tensor2, indices) {
     sliceSize *= inputShape[i2];
     resultShape.push(inputShape[i2]);
   }
-  const strides = [
+  const strides2 = [
     ...computeStrides(tensor2.shape).map((stride) => stride / sliceSize),
     1
   ].slice(0, sliceRank);
-  return [resultShape, nResult, sliceSize, strides];
+  return [resultShape, nResult, sliceSize, strides2];
 }
 var scatter_nd_util_exports = {};
 __export2(scatter_nd_util_exports, {
@@ -38542,9 +38676,9 @@ function calculateShapes(updates, indices, shape) {
   }
   const safeSliceDim = sliceRank < 1 ? 1 : sliceRank;
   const numUpdates = sizeFromShape(indices.shape) / safeSliceDim;
-  const strides = [...computeStrides(shape.slice(0, sliceRank)), 1];
+  const strides2 = [...computeStrides(shape.slice(0, sliceRank)), 1];
   const outputSize2 = sizeFromShape(shape);
-  return { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 };
+  return { sliceRank, numUpdates, sliceSize, strides: strides2, outputSize: outputSize2 };
 }
 var slice_util_exports = {};
 __export2(slice_util_exports, {
@@ -38585,15 +38719,15 @@ function maskToAxes(mask3) {
   }
   return axes;
 }
-function computeOutShape(begin, end, strides) {
+function computeOutShape(begin, end, strides2) {
   const size2 = [];
   for (let axis = 0; axis < begin.length; axis++) {
-    size2[axis] = Math.ceil((end[axis] - begin[axis]) / strides[axis]);
+    size2[axis] = Math.ceil((end[axis] - begin[axis]) / strides2[axis]);
   }
   return size2;
 }
-function stridesWithElidedDims(strides, ellipsisInsertionIndex, numElidedAxes, inputShape) {
-  const newStrides = [...strides];
+function stridesWithElidedDims(strides2, ellipsisInsertionIndex, numElidedAxes, inputShape) {
+  const newStrides = [...strides2];
   for (let i2 = newStrides.length; i2 < inputShape.length; i2++) {
     newStrides.push(1);
   }
@@ -38620,7 +38754,7 @@ function getElidedAxes(numElidedAxes, ellipsisInsertionIndex) {
   }
   return elidedAxes;
 }
-function getNormalizedAxes(inputShape, ellipsisAxes, numInterpolatedAxes, begin, end, strides, beginMask, endMask, ellipsisMask) {
+function getNormalizedAxes(inputShape, ellipsisAxes, numInterpolatedAxes, begin, end, strides2, beginMask, endMask, ellipsisMask) {
   const inputRank = inputShape.length;
   let normalizedBegin = new Array(inputRank), normalizedEnd = new Array(inputRank), normalizedStrides = new Array(inputRank);
   if (ellipsisAxes.length && numInterpolatedAxes > 0) {
@@ -38628,12 +38762,12 @@ function getNormalizedAxes(inputShape, ellipsisAxes, numInterpolatedAxes, begin,
     const numElidedAxes = numInterpolatedAxes + 1;
     normalizedBegin = startIndicesWithElidedDims(beginMask, fullIndex, numElidedAxes, begin, inputShape);
     normalizedEnd = stopIndicesWithElidedDims(endMask, fullIndex, numElidedAxes, end, inputShape);
-    normalizedStrides = stridesWithElidedDims(strides, fullIndex, numElidedAxes, inputShape);
+    normalizedStrides = stridesWithElidedDims(strides2, fullIndex, numElidedAxes, inputShape);
   } else {
     for (let axis = 0; axis < inputRank; axis++) {
-      normalizedBegin[axis] = startForAxis(beginMask, begin, strides, inputShape, axis, ellipsisMask);
-      normalizedEnd[axis] = stopForAxis(endMask, end, strides, inputShape, axis, ellipsisMask);
-      normalizedStrides[axis] = stridesForAxis(strides, axis, ellipsisMask);
+      normalizedBegin[axis] = startForAxis(beginMask, begin, strides2, inputShape, axis, ellipsisMask);
+      normalizedEnd[axis] = stopForAxis(endMask, end, strides2, inputShape, axis, ellipsisMask);
+      normalizedStrides[axis] = stridesForAxis(strides2, axis, ellipsisMask);
     }
   }
   return {
@@ -38683,16 +38817,16 @@ function stopIndicesWithElidedDims(endMask, ellipsisInsertionIndex, numElidedAxe
   }
   return newIndices;
 }
-function stridesForAxis(strides, axis, ellipsisMask) {
-  let stride = strides[axis];
+function stridesForAxis(strides2, axis, ellipsisMask) {
+  let stride = strides2[axis];
   if (ellipsisMask & 1 << axis || stride == null) {
     stride = 1;
   }
   return stride;
 }
-function startForAxis(beginMask, startIndices, strides, inputShape, axis, ellipsisMask) {
+function startForAxis(beginMask, startIndices, strides2, inputShape, axis, ellipsisMask) {
   let start = startIndices[axis];
-  const stride = strides[axis] || 1;
+  const stride = strides2[axis] || 1;
   if (beginMask & 1 << axis || ellipsisMask & 1 << axis || start == null) {
     if (stride > 0) {
       start = Number.MIN_SAFE_INTEGER;
@@ -38707,9 +38841,9 @@ function startForAxis(beginMask, startIndices, strides, inputShape, axis, ellips
   start = clamp2(0, start, axisSize - 1);
   return start;
 }
-function stopForAxis(endMask, stopIndices, strides, inputShape, axis, ellipsisMask) {
+function stopForAxis(endMask, stopIndices, strides2, inputShape, axis, ellipsisMask) {
   let stop = stopIndices[axis];
-  const stride = strides[axis] || 1;
+  const stride = strides2[axis] || 1;
   if (endMask & 1 << axis || ellipsisMask & 1 << axis || stop == null) {
     if (stride > 0) {
       stop = Number.MAX_SAFE_INTEGER;
@@ -38743,10 +38877,10 @@ function isSliceContinous(shape, begin, size2) {
   }
   return true;
 }
-function computeFlatOffset(begin, strides) {
+function computeFlatOffset(begin, strides2) {
   let flatOffset = begin.length > 0 ? begin[begin.length - 1] : 1;
   for (let i2 = 0; i2 < begin.length - 1; i2++) {
-    flatOffset += begin[i2] * strides[i2];
+    flatOffset += begin[i2] * strides2[i2];
   }
   return flatOffset;
 }
@@ -38783,13 +38917,13 @@ function parseSliceParams(x2, begin, size2) {
   });
   return [begin_, size_];
 }
-function sliceInfo(xShape, begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask) {
+function sliceInfo(xShape, begin, end, strides2, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask) {
   let stridesNonNull;
-  if (strides == null) {
+  if (strides2 == null) {
     stridesNonNull = new Array(begin.length);
     stridesNonNull.fill(1);
   } else {
-    stridesNonNull = strides;
+    stridesNonNull = strides2;
   }
   if (ellipsisMask != null && (ellipsisMask & ellipsisMask - 1) !== 0) {
     throw new Error("Multiple ellipses in slice is not allowed.");
@@ -38921,22 +39055,22 @@ function sliceInfo(xShape, begin, end, strides, beginMask, endMask, ellipsisMask
     strides: denseSpec.strides
   };
 }
-function buildDenseSpec(sparse3, dense2) {
+function buildDenseSpec(sparse2, dense2) {
   dense2.beginMask = 0;
   dense2.endMask = 0;
   dense2.shrinkAxisMask = 0;
   let fullIndex = 0;
-  dense2.beginValid = sparse3.begin != null;
-  dense2.endValid = sparse3.end != null;
+  dense2.beginValid = sparse2.begin != null;
+  dense2.endValid = sparse2.end != null;
   dense2.begin = new Array(dense2.dims);
   dense2.end = new Array(dense2.dims);
   dense2.strides = new Array(dense2.dims);
   dense2.finalShapeGatherIndices = [];
   dense2.finalShapeGatherIndicesSparse = [];
   dense2.inputShapeGatherIndicesSparse = new Array(dense2.dims);
-  for (let i2 = 0; i2 < sparse3.dims; i2++) {
-    if (1 << i2 & sparse3.ellipsisMask) {
-      const nextIndex = Math.min(dense2.dims - (sparse3.dims - i2) + 1 + sparse3.numAddAxisAfterEllipsis, dense2.dims);
+  for (let i2 = 0; i2 < sparse2.dims; i2++) {
+    if (1 << i2 & sparse2.ellipsisMask) {
+      const nextIndex = Math.min(dense2.dims - (sparse2.dims - i2) + 1 + sparse2.numAddAxisAfterEllipsis, dense2.dims);
       for (; fullIndex < nextIndex; fullIndex++) {
         dense2.begin[fullIndex] = 0;
         dense2.end[fullIndex] = 0;
@@ -38947,27 +39081,27 @@ function buildDenseSpec(sparse3, dense2) {
         dense2.finalShapeGatherIndicesSparse.push(-1);
         dense2.inputShapeGatherIndicesSparse[fullIndex] = i2;
       }
-    } else if (1 << i2 & sparse3.newAxisMask) {
+    } else if (1 << i2 & sparse2.newAxisMask) {
       dense2.finalShapeGatherIndices.push(NEW_AXIS);
       dense2.finalShapeGatherIndicesSparse.push(-1);
     } else {
       if (fullIndex === dense2.begin.length) {
         throw Error(`Index out of range using input dim ${fullIndex}; input has only ${dense2.dims} dims, ${dense2.begin.length}.`);
       }
-      if (sparse3.begin != null) {
-        dense2.begin[fullIndex] = sparse3.begin[i2];
+      if (sparse2.begin != null) {
+        dense2.begin[fullIndex] = sparse2.begin[i2];
       }
-      if (sparse3.end != null) {
-        dense2.end[fullIndex] = sparse3.end[i2];
+      if (sparse2.end != null) {
+        dense2.end[fullIndex] = sparse2.end[i2];
       }
-      dense2.strides[fullIndex] = sparse3.strides[i2];
-      if (sparse3.beginMask & 1 << i2) {
+      dense2.strides[fullIndex] = sparse2.strides[i2];
+      if (sparse2.beginMask & 1 << i2) {
         dense2.beginMask |= 1 << fullIndex;
       }
-      if (sparse3.endMask & 1 << i2) {
+      if (sparse2.endMask & 1 << i2) {
         dense2.endMask |= 1 << fullIndex;
       }
-      if (sparse3.shrinkAxisMask & 1 << i2) {
+      if (sparse2.shrinkAxisMask & 1 << i2) {
         dense2.finalShapeGatherIndices.push(SHRINK_AXIS);
         dense2.finalShapeGatherIndicesSparse.push(-1);
         dense2.shrinkAxisMask |= 1 << fullIndex;
@@ -39132,6 +39266,7 @@ function encodeStrings(a6) {
   }
   return a6;
 }
+var version = "0.0.0";
 function enableProdMode() {
   env().set("PROD", true);
 }
@@ -39338,13 +39473,13 @@ function atanh_(x2) {
   return ENGINE.runKernel(Atanh, inputs);
 }
 var atanh = op({ atanh_ });
-function computeDilation2DInfo(inputShape, filterShape, strides, pad3, dataFormat = "NHWC", dilations) {
+function computeDilation2DInfo(inputShape, filterShape, strides2, pad3, dataFormat = "NHWC", dilations) {
   const inputChannels = inputShape[3];
   const $filterShape = [...filterShape, inputChannels];
   const $dataFormat = convertConv2DDataFormat(dataFormat);
-  return computeConv2DInfo(inputShape, $filterShape, strides, dilations, pad3, null, null, $dataFormat);
+  return computeConv2DInfo(inputShape, $filterShape, strides2, dilations, pad3, null, null, $dataFormat);
 }
-function computePool2DInfo(inShape, filterSize, strides, dilations, pad3, roundingMode, dataFormat = "channelsLast") {
+function computePool2DInfo(inShape, filterSize, strides2, dilations, pad3, roundingMode, dataFormat = "channelsLast") {
   const [filterHeight, filterWidth] = parseTupleParam(filterSize);
   let filterShape;
   if (dataFormat === "channelsLast") {
@@ -39354,9 +39489,9 @@ function computePool2DInfo(inShape, filterSize, strides, dilations, pad3, roundi
   } else {
     throw new Error(`Unknown dataFormat ${dataFormat}`);
   }
-  return computeConv2DInfo(inShape, filterShape, strides, dilations, pad3, roundingMode, false, dataFormat);
+  return computeConv2DInfo(inShape, filterShape, strides2, dilations, pad3, roundingMode, false, dataFormat);
 }
-function computePool3DInfo(inShape, filterSize, strides, dilations, pad3, roundingMode, dataFormat = "NDHWC") {
+function computePool3DInfo(inShape, filterSize, strides2, dilations, pad3, roundingMode, dataFormat = "NDHWC") {
   const [filterDepth, filterHeight, filterWidth] = parse3TupleParam(filterSize);
   let filterShape;
   let $dataFormat;
@@ -39369,9 +39504,9 @@ function computePool3DInfo(inShape, filterSize, strides, dilations, pad3, roundi
   } else {
     throw new Error(`Unknown dataFormat ${dataFormat}`);
   }
-  return computeConv3DInfo(inShape, filterShape, strides, dilations, pad3, false, $dataFormat, roundingMode);
+  return computeConv3DInfo(inShape, filterShape, strides2, dilations, pad3, false, $dataFormat, roundingMode);
 }
-function computeConv2DInfo(inShape, filterShape, strides, dilations, pad3, roundingMode, depthwise = false, dataFormat = "channelsLast") {
+function computeConv2DInfo(inShape, filterShape, strides2, dilations, pad3, roundingMode, depthwise = false, dataFormat = "channelsLast") {
   let [batchSize, inHeight, inWidth, inChannels] = [-1, -1, -1, -1];
   if (dataFormat === "channelsLast") {
     [batchSize, inHeight, inWidth, inChannels] = inShape;
@@ -39381,7 +39516,7 @@ function computeConv2DInfo(inShape, filterShape, strides, dilations, pad3, round
     throw new Error(`Unknown dataFormat ${dataFormat}`);
   }
   const [filterHeight, filterWidth, , filterChannels] = filterShape;
-  const [strideHeight, strideWidth] = parseTupleParam(strides);
+  const [strideHeight, strideWidth] = parseTupleParam(strides2);
   const [dilationHeight, dilationWidth] = parseTupleParam(dilations);
   const effectiveFilterHeight = getEffectiveFilterSize(filterHeight, dilationHeight);
   const effectiveFilterWidth = getEffectiveFilterSize(filterWidth, dilationWidth);
@@ -39416,7 +39551,7 @@ function computeConv2DInfo(inShape, filterShape, strides, dilations, pad3, round
     filterShape
   };
 }
-function computeConv3DInfo(inShape, filterShape, strides, dilations, pad3, depthwise = false, dataFormat = "channelsLast", roundingMode) {
+function computeConv3DInfo(inShape, filterShape, strides2, dilations, pad3, depthwise = false, dataFormat = "channelsLast", roundingMode) {
   let [batchSize, inDepth, inHeight, inWidth, inChannels] = [-1, -1, -1, -1, -1];
   if (dataFormat === "channelsLast") {
     [batchSize, inDepth, inHeight, inWidth, inChannels] = inShape;
@@ -39426,7 +39561,7 @@ function computeConv3DInfo(inShape, filterShape, strides, dilations, pad3, depth
     throw new Error(`Unknown dataFormat ${dataFormat}`);
   }
   const [filterDepth, filterHeight, filterWidth, , filterChannels] = filterShape;
-  const [strideDepth, strideHeight, strideWidth] = parse3TupleParam(strides);
+  const [strideDepth, strideHeight, strideWidth] = parse3TupleParam(strides2);
   const [dilationDepth, dilationHeight, dilationWidth] = parse3TupleParam(dilations);
   const effectiveFilterDepth = getEffectiveFilterSize(filterDepth, dilationDepth);
   const effectiveFilterHeight = getEffectiveFilterSize(filterHeight, dilationHeight);
@@ -39621,8 +39756,8 @@ function tupleValuesAreOne(param) {
   const [dimA, dimB, dimC] = parseTupleParam(param);
   return dimA === 1 && dimB === 1 && dimC === 1;
 }
-function eitherStridesOrDilationsAreOne(strides, dilations) {
-  return tupleValuesAreOne(strides) || tupleValuesAreOne(dilations);
+function eitherStridesOrDilationsAreOne(strides2, dilations) {
+  return tupleValuesAreOne(strides2) || tupleValuesAreOne(dilations);
 }
 function convertConv2DDataFormat(dataFormat) {
   if (dataFormat === "NHWC") {
@@ -39633,6 +39768,23 @@ function convertConv2DDataFormat(dataFormat) {
     throw new Error(`Unknown dataFormat ${dataFormat}`);
   }
 }
+function checkPadOnDimRoundingMode(opDesc, pad3, dimRoundingMode) {
+  if (dimRoundingMode != null) {
+    if (typeof pad3 === "string") {
+      throw Error(`Error in ${opDesc}: pad must be an integer when using dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
+    } else if (typeof pad3 === "number") {
+      assert(isInt(pad3), () => `Error in ${opDesc}: pad must be an integer when using dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
+    } else if (typeof pad3 === "object") {
+      pad3.forEach((p22) => {
+        p22.forEach((v2) => {
+          assert(isInt(v2), () => `Error in ${opDesc}: pad must be an integer when using dimRoundingMode ${dimRoundingMode} but got pad ${v2}.`);
+        });
+      });
+    } else {
+      throw Error(`Error in ${opDesc}: Unknown padding parameter: ${pad3}`);
+    }
+  }
+}
 function reshape_(x2, shape) {
   const $x = convertToTensor(x2, "x", "reshape", "string_or_numeric");
   const inputs = { x: $x };
@@ -39640,10 +39792,10 @@ function reshape_(x2, shape) {
   return ENGINE.runKernel(Reshape, inputs, attrs);
 }
 var reshape = op({ reshape_ });
-function avgPool_(x2, filterSize, strides, pad3, dimRoundingMode) {
+function avgPool_(x2, filterSize, strides2, pad3, dimRoundingMode) {
   const $x = convertToTensor(x2, "x", "avgPool", "float32");
   const dilations = 1;
-  assert(eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in avgPool: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
+  assert(eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in avgPool: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
   let x4D = $x;
   let reshapedTo4D = false;
   if ($x.rank === 3) {
@@ -39651,11 +39803,9 @@ function avgPool_(x2, filterSize, strides, pad3, dimRoundingMode) {
     x4D = reshape($x, [1, $x.shape[0], $x.shape[1], $x.shape[2]]);
   }
   assert(x4D.rank === 4, () => `Error in avgPool: x must be rank 4 but got rank ${x4D.rank}.`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in avgPool: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("avgPool", pad3, dimRoundingMode);
   const inputs = { x: x4D };
-  const attrs = { filterSize, strides, pad: pad3, dimRoundingMode };
+  const attrs = { filterSize, strides: strides2, pad: pad3, dimRoundingMode };
   let res2 = ENGINE.runKernel(AvgPool, inputs, attrs);
   res2 = cast(res2, $x.dtype);
   if (reshapedTo4D) {
@@ -39664,7 +39814,7 @@ function avgPool_(x2, filterSize, strides, pad3, dimRoundingMode) {
   return res2;
 }
 var avgPool = op({ avgPool_ });
-function avgPool3d_(x2, filterSize, strides, pad3, dimRoundingMode, dataFormat = "NDHWC") {
+function avgPool3d_(x2, filterSize, strides2, pad3, dimRoundingMode, dataFormat = "NDHWC") {
   const $x = convertToTensor(x2, "x", "avgPool3d", "float32");
   let x5D = $x;
   let reshapedTo5D = false;
@@ -39674,11 +39824,9 @@ function avgPool3d_(x2, filterSize, strides, pad3, dimRoundingMode, dataFormat =
   }
   assert(x5D.rank === 5, () => `Error in avgPool3d: x must be rank 5 but got rank ${x5D.rank}.`);
   assert(dataFormat === "NDHWC", () => `Error in avgPool3d: Only NDHWC is currently supported, but got dataFormat of ${dataFormat}`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in avgPool3d: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("avgPool3d", pad3, dimRoundingMode);
   const inputs = { x: x5D };
-  const attrs = { filterSize, strides, pad: pad3, dimRoundingMode, dataFormat };
+  const attrs = { filterSize, strides: strides2, pad: pad3, dimRoundingMode, dataFormat };
   let res2 = ENGINE.runKernel(AvgPool3D, inputs, attrs);
   res2 = cast(res2, x5D.dtype);
   if (reshapedTo5D) {
@@ -39965,7 +40113,7 @@ function concat4d_(tensors, axis) {
   return concat(tensors, axis);
 }
 var concat4d = op({ concat4d_ });
-function conv2d_(x2, filter, strides, pad3, dataFormat = "NHWC", dilations = [1, 1], dimRoundingMode) {
+function conv2d_(x2, filter, strides2, pad3, dataFormat = "NHWC", dilations = [1, 1], dimRoundingMode) {
   const $x = convertToTensor(x2, "x", "conv2d", "float32");
   const $filter = convertToTensor(filter, "filter", "conv2d", "float32");
   let x4D = $x;
@@ -39976,14 +40124,12 @@ function conv2d_(x2, filter, strides, pad3, dataFormat = "NHWC", dilations = [1,
   }
   assert(x4D.rank === 4, () => `Error in conv2d: input must be rank 4, but got rank ${x4D.rank}.`);
   assert($filter.rank === 4, () => `Error in conv2d: filter must be rank 4, but got rank ${$filter.rank}.`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in conv2d: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("conv2d", pad3, dimRoundingMode);
   const inDepth = dataFormat === "NHWC" ? x4D.shape[3] : x4D.shape[1];
   assert(inDepth === $filter.shape[2], () => `Error in conv2d: depth of input (${inDepth}) must match input depth for filter ${$filter.shape[2]}.`);
-  assert(eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in conv2D: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
+  assert(eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in conv2D: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
   const inputs = { x: x4D, filter: $filter };
-  const attrs = { strides, pad: pad3, dataFormat, dilations, dimRoundingMode };
+  const attrs = { strides: strides2, pad: pad3, dataFormat, dilations, dimRoundingMode };
   const res2 = ENGINE.runKernel(Conv2D, inputs, attrs);
   if (reshapedTo4D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3]]);
@@ -40002,25 +40148,23 @@ function conv1d_(x2, filter, stride, pad3, dataFormat = "NWC", dilation = 1, dim
   }
   assert(x3D.rank === 3, () => `Error in conv1d: input must be rank 3, but got rank ${x3D.rank}.`);
   assert($filter.rank === 3, () => `Error in conv1d: filter must be rank 3, but got rank ${$filter.rank}.`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in conv1d: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("conv1d", pad3, dimRoundingMode);
   assert(x3D.shape[2] === $filter.shape[1], () => `Error in conv1d: depth of input (${x3D.shape[2]}) must match input depth for filter ${$filter.shape[1]}.`);
   assert(eitherStridesOrDilationsAreOne(stride, dilation), () => `Error in conv1D: Either stride or dilation must be 1. Got stride ${stride} and dilation '${dilation}'`);
   assert(dataFormat === "NWC", () => `Error in conv1d: got dataFormat of ${dataFormat} but only NWC is currently supported.`);
   const filter4D = reshape($filter, [1, $filter.shape[0], $filter.shape[1], $filter.shape[2]]);
   const input4D = reshape(x3D, [x3D.shape[0], 1, x3D.shape[1], x3D.shape[2]]);
-  const strides = [1, stride];
+  const strides2 = [1, stride];
   const dilations = [1, dilation];
   const conv2dDataFormat = "NHWC";
-  const res2 = conv2d(input4D, filter4D, strides, pad3, conv2dDataFormat, dilations, dimRoundingMode);
+  const res2 = conv2d(input4D, filter4D, strides2, pad3, conv2dDataFormat, dilations, dimRoundingMode);
   if (reshapedTo3D) {
     return reshape(res2, [res2.shape[2], res2.shape[3]]);
   }
   return reshape(res2, [res2.shape[0], res2.shape[2], res2.shape[3]]);
 }
 var conv1d = op({ conv1d_ });
-function conv2DBackpropInput_(xShape, dy, filter, strides, pad3, dataFormat = "NHWC", dimRoundingMode) {
+function conv2DBackpropInput_(xShape, dy, filter, strides2, pad3, dataFormat = "NHWC", dimRoundingMode) {
   assert(xShape.length === dy.rank, () => `Length of inShape (${xShape.length}) and rank of dy (${dy.rank}) must match`);
   let xShape4D = xShape;
   let dy4D = dy;
@@ -40037,11 +40181,9 @@ function conv2DBackpropInput_(xShape, dy, filter, strides, pad3, dataFormat = "N
   const outDepth = dataFormat === "NHWC" ? dy4D.shape[3] : dy4D.shape[1];
   assert(inDepth === filter.shape[2], () => `Error in conv2dDerInput: depth of input (${inDepth}) must match input depth for filter ${filter.shape[2]}.`);
   assert(outDepth === filter.shape[3], () => `Error in conv2dDerInput: depth of output (${outDepth}) must match output depth for filter ${filter.shape[3]}.`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in conv2dDerInput: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("conv2dDerInput", pad3, dimRoundingMode);
   const inputs = { dy: dy4D, filter };
-  const attrs = { strides, pad: pad3, dataFormat, dimRoundingMode, inputShape: xShape4D };
+  const attrs = { strides: strides2, pad: pad3, dataFormat, dimRoundingMode, inputShape: xShape4D };
   const res2 = ENGINE.runKernel(Conv2DBackpropInput, inputs, attrs);
   if (reshapedTo4D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3]]);
@@ -40049,13 +40191,13 @@ function conv2DBackpropInput_(xShape, dy, filter, strides, pad3, dataFormat = "N
   return res2;
 }
 var conv2DBackpropInput = op({ conv2DBackpropInput_ });
-function conv2dTranspose_(x2, filter, outputShape, strides, pad3, dimRoundingMode) {
+function conv2dTranspose_(x2, filter, outputShape, strides2, pad3, dimRoundingMode) {
   const $x = convertToTensor(x2, "x", "conv2dTranspose");
   const $filter = convertToTensor(filter, "filter", "conv2dTranspose");
-  return conv2DBackpropInput(outputShape, $x, $filter, strides, pad3, "NHWC", dimRoundingMode);
+  return conv2DBackpropInput(outputShape, $x, $filter, strides2, pad3, "NHWC", dimRoundingMode);
 }
 var conv2dTranspose = op({ conv2dTranspose_ });
-function conv3d_(x2, filter, strides, pad3, dataFormat = "NDHWC", dilations = [1, 1, 1]) {
+function conv3d_(x2, filter, strides2, pad3, dataFormat = "NDHWC", dilations = [1, 1, 1]) {
   const $x = convertToTensor(x2, "x", "conv3d");
   const $filter = convertToTensor(filter, "filter", "conv3d");
   let x5D = $x;
@@ -40067,10 +40209,10 @@ function conv3d_(x2, filter, strides, pad3, dataFormat = "NDHWC", dilations = [1
   assert(x5D.rank === 5, () => `Error in conv3d: input must be rank 5, but got rank ${x5D.rank}.`);
   assert($filter.rank === 5, () => `Error in conv3d: filter must be rank 5, but got rank ${$filter.rank}.`);
   assert(x5D.shape[4] === $filter.shape[3], () => `Error in conv3d: depth of input (${x5D.shape[4]}) must match input depth for filter ${$filter.shape[3]}.`);
-  assert(eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in conv3D: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
+  assert(eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in conv3D: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
   assert(dataFormat === "NDHWC", () => `Error in conv3d: got dataFormat of ${dataFormat} but only NDHWC is currently supported.`);
   const inputs = { x: x5D, filter: $filter };
-  const attrs = { strides, pad: pad3, dataFormat, dilations };
+  const attrs = { strides: strides2, pad: pad3, dataFormat, dilations };
   const res2 = ENGINE.runKernel(Conv3D, inputs, attrs);
   if (reshapedTo5D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3], res2.shape[4]]);
@@ -40078,7 +40220,7 @@ function conv3d_(x2, filter, strides, pad3, dataFormat = "NDHWC", dilations = [1
   return res2;
 }
 var conv3d = op({ conv3d_ });
-function conv3DBackpropInput_(xShape, dy, filter, strides, pad3) {
+function conv3DBackpropInput_(xShape, dy, filter, strides2, pad3) {
   assert(xShape.length === dy.rank, () => `Length of inShape (${xShape.length}) and rank of dy (${dy.rank}) must match`);
   let xShape5D = xShape;
   let dy5D = dy;
@@ -40096,7 +40238,7 @@ function conv3DBackpropInput_(xShape, dy, filter, strides, pad3) {
   assert(inDepth === filter.shape[3], () => `Error in conv3dDerInput: depth of input (${inDepth}) must match input depth for filter ${filter.shape[3]}.`);
   assert(outDepth === filter.shape[4], () => `Error in conv3dDerInput: depth of output (${outDepth}) must match output depth for filter ${filter.shape[4]}.`);
   const inputs = { dy: dy5D, filter };
-  const attrs = { pad: pad3, strides, inputShape: xShape5D };
+  const attrs = { pad: pad3, strides: strides2, inputShape: xShape5D };
   const res2 = ENGINE.runKernel(Conv3DBackpropInputV2, inputs, attrs);
   if (reshapedTo5D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3], res2.shape[4]]);
@@ -40104,10 +40246,10 @@ function conv3DBackpropInput_(xShape, dy, filter, strides, pad3) {
   return res2;
 }
 var conv3DBackpropInput = op({ conv3DBackpropInput_ });
-function conv3dTranspose_(x2, filter, outputShape, strides, pad3) {
+function conv3dTranspose_(x2, filter, outputShape, strides2, pad3) {
   const $x = convertToTensor(x2, "x", "conv3dTranspose");
   const $filter = convertToTensor(filter, "filter", "conv3dTranspose");
-  return conv3DBackpropInput(outputShape, $x, $filter, strides, pad3);
+  return conv3DBackpropInput(outputShape, $x, $filter, strides2, pad3);
 }
 var conv3dTranspose = op({ conv3dTranspose_ });
 function cos_(x2) {
@@ -40159,7 +40301,7 @@ function depthToSpace_(x2, blockSize, dataFormat = "NHWC") {
   return ENGINE.runKernel(DepthToSpace, inputs, attrs);
 }
 var depthToSpace = op({ depthToSpace_ });
-function depthwiseConv2d_(x2, filter, strides, pad3, dataFormat = "NHWC", dilations = [1, 1], dimRoundingMode) {
+function depthwiseConv2d_(x2, filter, strides2, pad3, dataFormat = "NHWC", dilations = [1, 1], dimRoundingMode) {
   const $x = convertToTensor(x2, "x", "depthwiseConv2d", "float32");
   const $filter = convertToTensor(filter, "filter", "depthwiseConv2d", "float32");
   let x4D = $x;
@@ -40171,11 +40313,9 @@ function depthwiseConv2d_(x2, filter, strides, pad3, dataFormat = "NHWC", dilati
   assert(x4D.rank === 4, () => `Error in depthwiseConv2d: input must be rank 4, but got rank ${x4D.rank}.`);
   assert($filter.rank === 4, () => `Error in depthwiseConv2d: filter must be rank 4, but got rank ${$filter.rank}.`);
   assert(x4D.shape[3] === $filter.shape[2], () => `Error in depthwiseConv2d: number of input channels (${x4D.shape[3]}) must match the inChannels dimension in filter ${$filter.shape[2]}.`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in depthwiseConv2d: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("depthwiseConv2d", pad3, dimRoundingMode);
   const inputs = { x: x4D, filter: $filter };
-  const attrs = { strides, pad: pad3, dataFormat, dilations, dimRoundingMode };
+  const attrs = { strides: strides2, pad: pad3, dataFormat, dilations, dimRoundingMode };
   const res2 = ENGINE.runKernel(DepthwiseConv2dNative, inputs, attrs);
   if (reshapedTo4D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3]]);
@@ -40189,7 +40329,7 @@ function diag_(x2) {
   return ENGINE.runKernel(Diag, inputs);
 }
 var diag = op({ diag_ });
-function dilation2d_(x2, filter, strides, pad3, dilations = [1, 1], dataFormat = "NHWC") {
+function dilation2d_(x2, filter, strides2, pad3, dilations = [1, 1], dataFormat = "NHWC") {
   const $x = convertToTensor(x2, "x", "dilation2d");
   const $filter = convertToTensor(filter, "filter", "dilation2d");
   assert($x.rank === 3 || $x.rank === 4, () => `Error in dilation2d: input must be rank 3 or 4, but got rank ${$x.rank}.`);
@@ -40202,7 +40342,7 @@ function dilation2d_(x2, filter, strides, pad3, dilations = [1, 1], dataFormat =
     reshapedTo4D = true;
   }
   const inputs = { x: x4D, filter: $filter };
-  const attrs = { strides, pad: pad3, dilations };
+  const attrs = { strides: strides2, pad: pad3, dilations };
   const res2 = ENGINE.runKernel(Dilation2D, inputs, attrs);
   if (reshapedTo4D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3]]);
@@ -40478,7 +40618,7 @@ function log_(x2) {
   const inputs = { x: $x };
   return ENGINE.runKernel(Log, inputs);
 }
-var log4 = op({ log_ });
+var log22 = op({ log_ });
 function log1p_(x2) {
   const $x = convertToTensor(x2, "x", "log1p");
   const inputs = { x: $x };
@@ -40640,7 +40780,7 @@ function logSoftmax_(logits, axis = -1) {
     const keepDims = true;
     const xMax = max(logits2, axis, true);
     const shifted = sub(logits2, xMax);
-    const value = sub(cast(shifted, "float32"), log4(sum2(exp(shifted), axis, keepDims)));
+    const value = sub(cast(shifted, "float32"), log22(sum2(exp(shifted), axis, keepDims)));
     save([value]);
     const gradFunc = (dy, saved) => {
       const [value2] = saved;
@@ -40723,7 +40863,7 @@ function logSumExp_(x2, axis = null, keepDims = false) {
   const a6 = sub($x, xMax);
   const b2 = exp(a6);
   const c2 = sum2(b2, axes);
-  const d2 = log4(c2);
+  const d2 = log22(c2);
   const res2 = add2(reshape(xMax, d2.shape), d2);
   if (keepDims) {
     const newShape = expandShapeToKeepDim(res2.shape, axes);
@@ -40761,7 +40901,7 @@ function logicalXor_(a6, b2) {
   return logicalAnd(logicalOr(a6, b2), logicalNot(logicalAnd(a6, b2)));
 }
 var logicalXor = op({ logicalXor_ });
-function maxPool_(x2, filterSize, strides, pad3, dimRoundingMode) {
+function maxPool_(x2, filterSize, strides2, pad3, dimRoundingMode) {
   const $x = convertToTensor(x2, "x", "maxPool");
   const dilations = 1;
   let x4D = $x;
@@ -40771,12 +40911,10 @@ function maxPool_(x2, filterSize, strides, pad3, dimRoundingMode) {
     x4D = reshape($x, [1, $x.shape[0], $x.shape[1], $x.shape[2]]);
   }
   assert(x4D.rank === 4, () => `Error in maxPool: input must be rank 4 but got rank ${x4D.rank}.`);
-  assert(eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in maxPool: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in maxPool: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  assert(eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in maxPool: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
+  checkPadOnDimRoundingMode("maxPool", pad3, dimRoundingMode);
   const inputs = { x: x4D };
-  const attrs = { filterSize, strides, pad: pad3, dimRoundingMode };
+  const attrs = { filterSize, strides: strides2, pad: pad3, dimRoundingMode };
   const res2 = ENGINE.runKernel(MaxPool, inputs, attrs);
   if (reshapedTo4D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3]]);
@@ -40784,7 +40922,7 @@ function maxPool_(x2, filterSize, strides, pad3, dimRoundingMode) {
   return res2;
 }
 var maxPool = op({ maxPool_ });
-function maxPool3d_(x2, filterSize = [1, 1, 1], strides, pad3, dimRoundingMode, dataFormat = "NDHWC") {
+function maxPool3d_(x2, filterSize = [1, 1, 1], strides2, pad3, dimRoundingMode, dataFormat = "NDHWC") {
   const $x = convertToTensor(x2, "x", "maxPool3d");
   let x5D = $x;
   let reshapedTo5D = false;
@@ -40794,11 +40932,9 @@ function maxPool3d_(x2, filterSize = [1, 1, 1], strides, pad3, dimRoundingMode, 
   }
   assert(x5D.rank === 5, () => `Error in maxPool3d: x must be rank 5 but got rank ${x5D.rank}.`);
   assert(dataFormat === "NDHWC", () => `Error in maxPool3d: Only NDHWC is currently supported, but got dataFormat of ${dataFormat}`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in maxPool3d: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("maxPool3d", pad3, dimRoundingMode);
   const inputs = { x: x5D };
-  const attrs = { filterSize, strides, pad: pad3, dimRoundingMode, dataFormat };
+  const attrs = { filterSize, strides: strides2, pad: pad3, dimRoundingMode, dataFormat };
   const res2 = ENGINE.runKernel(MaxPool3D, inputs, attrs);
   if (reshapedTo5D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3], res2.shape[4]]);
@@ -40806,10 +40942,10 @@ function maxPool3d_(x2, filterSize = [1, 1, 1], strides, pad3, dimRoundingMode, 
   return res2;
 }
 var maxPool3d = op({ maxPool3d_ });
-function maxPoolWithArgmax_(x2, filterSize, strides, pad3, includeBatchInIndex = false) {
+function maxPoolWithArgmax_(x2, filterSize, strides2, pad3, includeBatchInIndex = false) {
   const $x = convertToTensor(x2, "x", "maxPoolWithArgmax");
   const inputs = { x: $x };
-  const attrs = { filterSize, strides, pad: pad3, includeBatchInIndex };
+  const attrs = { filterSize, strides: strides2, pad: pad3, includeBatchInIndex };
   const result = ENGINE.runKernel(MaxPoolWithArgmax, inputs, attrs);
   return { result: result[0], indexes: result[1] };
 }
@@ -41053,12 +41189,12 @@ function spaceToBatchND_(x2, blockShape, paddings) {
   return ENGINE.runKernel(SpaceToBatchND, inputs, attrs);
 }
 var spaceToBatchND = op({ spaceToBatchND_ });
-function pool_(input2, windowShape, poolingType, pad3, dilations, strides) {
+function pool_(input2, windowShape, poolingType, pad3, dilations, strides2, dimRoundingMode) {
   if (dilations == null) {
     dilations = [1, 1];
   }
-  if (strides == null) {
-    strides = 1;
+  if (strides2 == null) {
+    strides2 = 1;
   }
   if (pad3 === 0) {
     pad3 = "valid";
@@ -41070,8 +41206,8 @@ function pool_(input2, windowShape, poolingType, pad3, dilations, strides) {
     reshapedTo4D = true;
     x4D = reshape($x, [1, $x.shape[0], $x.shape[1], $x.shape[2]]);
   }
-  assert(eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in pool: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
-  const convInfo = computePool2DInfo(x4D.shape, windowShape, strides, dilations, pad3);
+  assert(eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in pool: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
+  const convInfo = computePool2DInfo(x4D.shape, windowShape, strides2, dilations, pad3);
   const dilation = [convInfo.dilationHeight, convInfo.dilationWidth];
   let basePadding;
   if (pad3 === "same") {
@@ -41083,7 +41219,7 @@ function pool_(input2, windowShape, poolingType, pad3, dilations, strides) {
   const [adjustedPadding, adjustedCrops] = requiredSpaceToBatchPaddings([convInfo.inHeight, convInfo.inWidth], dilation, basePadding);
   const convertedPad = isDilationOne ? pad3 : "valid";
   const convertedX = isDilationOne ? x4D : spaceToBatchND(x4D, dilation, adjustedPadding);
-  const forwardOp = poolingType === "avg" ? () => avgPool(convertedX, windowShape, strides, convertedPad) : () => maxPool(convertedX, windowShape, strides, convertedPad);
+  const forwardOp = poolingType === "avg" ? () => avgPool(convertedX, windowShape, strides2, convertedPad, dimRoundingMode) : () => maxPool(convertedX, windowShape, strides2, convertedPad, dimRoundingMode);
   const y2 = forwardOp();
   const res2 = isDilationOne ? y2 : batchToSpaceND(y2, dilation, adjustedCrops);
   if (reshapedTo4D) {
@@ -41113,8 +41249,8 @@ function withSpaceToBatchBasePaddings(filterShape, dilation) {
   });
 }
 var pool = op({ pool_ });
-function pow_(base2, exp5) {
-  let $base = convertToTensor(base2, "base", "pow");
+function pow_(base, exp5) {
+  let $base = convertToTensor(base, "base", "pow");
   let $exp = convertToTensor(exp5, "exp", "pow");
   [$base, $exp] = makeTypesMatch($base, $exp);
   const inputs = { a: $base, b: $exp };
@@ -41409,7 +41545,7 @@ function selu_(x2) {
   return ENGINE.runKernel(Selu, inputs);
 }
 var selu = op({ selu_ });
-function separableConv2d_(x2, depthwiseFilter, pointwiseFilter, strides, pad3, dilation = [1, 1], dataFormat = "NHWC") {
+function separableConv2d_(x2, depthwiseFilter, pointwiseFilter, strides2, pad3, dilation = [1, 1], dataFormat = "NHWC") {
   const $x = convertToTensor(x2, "x", "separableConv2d");
   const $depthwiseFilter = convertToTensor(depthwiseFilter, "depthwiseFilter", "separableConv2d");
   const $pointwiseFilter = convertToTensor(pointwiseFilter, "pointwiseFilter", "separableConv2d");
@@ -41430,7 +41566,7 @@ function separableConv2d_(x2, depthwiseFilter, pointwiseFilter, strides, pad3, d
   const inChannels = $depthwiseFilter.shape[2];
   const channelMultiplier = $depthwiseFilter.shape[3];
   assert($pointwiseFilter.shape[2] === inChannels * channelMultiplier, () => `Error in separableConv2d: the third dimension of pointwise filter must be ${inChannels * channelMultiplier}, but got ${$pointwiseFilter.shape[2]}.`);
-  const depthwise = depthwiseConv2d(x4D, $depthwiseFilter, strides, pad3, dataFormat, dilation);
+  const depthwise = depthwiseConv2d(x4D, $depthwiseFilter, strides2, pad3, dataFormat, dilation);
   const pointwiseStride = 1;
   const res2 = conv2d(depthwise, $pointwiseFilter, pointwiseStride, "valid", dataFormat);
   if (reshapedTo4D) {
@@ -41639,13 +41775,13 @@ function step_(x2, alpha2 = 0) {
   return ENGINE.runKernel(Step, inputs, attrs);
 }
 var step = op({ step_ });
-function stridedSlice_(x2, begin, end, strides, beginMask = 0, endMask = 0, ellipsisMask = 0, newAxisMask = 0, shrinkAxisMask = 0) {
+function stridedSlice_(x2, begin, end, strides2, beginMask = 0, endMask = 0, ellipsisMask = 0, newAxisMask = 0, shrinkAxisMask = 0) {
   const $x = convertToTensor(x2, "x", "stridedSlice", "string_or_numeric");
   const inputs = { x: $x };
   const attrs = {
     begin,
     end,
-    strides,
+    strides: strides2,
     beginMask,
     endMask,
     ellipsisMask,
@@ -42048,7 +42184,7 @@ __export2(fused_ops_exports, {
   depthwiseConv2d: () => depthwiseConv2d2,
   matMul: () => matMul2
 });
-function conv2DBackpropFilter_(x2, dy, filterShape, strides, pad3, dataFormat = "NHWC", dimRoundingMode) {
+function conv2DBackpropFilter_(x2, dy, filterShape, strides2, pad3, dataFormat = "NHWC", dimRoundingMode) {
   let x4D = x2;
   if (x2.rank === 3) {
     x4D = reshape(x2, [1, x2.shape[0], x2.shape[1], x2.shape[2]]);
@@ -42064,11 +42200,9 @@ function conv2DBackpropFilter_(x2, dy, filterShape, strides, pad3, dataFormat = 
   const outDepth = dataFormat === "NHWC" ? dy4D.shape[3] : dy4D.shape[1];
   assert(inDepth === filterShape[2], () => `Error in conv2dDerFilter: depth of input ${inDepth}) must match input depth in filter (${filterShape[2]}.`);
   assert(outDepth === filterShape[3], () => `Error in conv2dDerFilter: depth of dy (${outDepth}) must match output depth for filter (${filterShape[3]}).`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in conv2dDerFilter: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("conv2dDerFilter", pad3, dimRoundingMode);
   const inputs = { x: x4D, dy: dy4D };
-  const attrs = { strides, pad: pad3, dataFormat, dimRoundingMode, filterShape };
+  const attrs = { strides: strides2, pad: pad3, dataFormat, dimRoundingMode, filterShape };
   return ENGINE.runKernel(Conv2DBackpropFilter, inputs, attrs);
 }
 var conv2DBackpropFilter = op({ conv2DBackpropFilter_ });
@@ -42114,7 +42248,7 @@ var shouldFuse = (gradientDepth, activation2) => {
 function fusedConv2d_({
   x: x2,
   filter,
-  strides,
+  strides: strides2,
   pad: pad3,
   dataFormat = "NHWC",
   dilations = [1, 1],
@@ -42126,7 +42260,7 @@ function fusedConv2d_({
 }) {
   activation2 = activation2 || "linear";
   if (shouldFuse(ENGINE.state.gradientDepth, activation2) === false) {
-    let result = conv2d(x2, filter, strides, pad3, dataFormat, dilations, dimRoundingMode);
+    let result = conv2d(x2, filter, strides2, pad3, dataFormat, dilations, dimRoundingMode);
     if (bias != null) {
       result = add2(result, bias);
     }
@@ -42142,13 +42276,11 @@ function fusedConv2d_({
   }
   assert(x4D.rank === 4, () => `Error in fused conv2d: input must be rank 4, but got rank ${x4D.rank}.`);
   assert($filter.rank === 4, () => `Error in fused conv2d: filter must be rank 4, but got rank ${$filter.rank}.`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in fused conv2d: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("fused conv2d", pad3, dimRoundingMode);
   assert(x4D.shape[3] === $filter.shape[2], () => `Error in conv2d: depth of input (${x4D.shape[3]}) must match input depth for filter ${$filter.shape[2]}.`);
-  assert(eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in conv2D: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
+  assert(eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in conv2D: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
   assert(dataFormat === "NHWC", () => `Error in conv2d: got dataFormat of ${dataFormat} but only NHWC is currently supported.`);
-  const convInfo = computeConv2DInfo(x4D.shape, $filter.shape, strides, dilations, pad3, dimRoundingMode);
+  const convInfo = computeConv2DInfo(x4D.shape, $filter.shape, strides2, dilations, pad3, dimRoundingMode);
   let $bias;
   if (bias != null) {
     $bias = convertToTensor(bias, "bias", "fused conv2d");
@@ -42163,8 +42295,8 @@ function fusedConv2d_({
     const [$filter2, x4D2, y2, $bias2] = saved;
     const dyActivation = getFusedDyActivation(dy, y2, activation2);
     assert(tupleValuesAreOne(dilations), () => `Error in gradient of fused conv2D: dilation rates greater than 1 are not yet supported in gradients. Got dilations '${dilations}'`);
-    const xDer = conv2DBackpropInput(x4D2.shape, dyActivation, $filter2, strides, pad3);
-    const filterDer = conv2DBackpropFilter(x4D2, dyActivation, $filter2.shape, strides, pad3);
+    const xDer = conv2DBackpropInput(x4D2.shape, dyActivation, $filter2, strides2, pad3);
+    const filterDer = conv2DBackpropFilter(x4D2, dyActivation, $filter2.shape, strides2, pad3);
     const der = [xDer, filterDer];
     if ($bias2 != null) {
       const biasDer = getFusedBiasGradient($bias2, dyActivation);
@@ -42179,7 +42311,7 @@ function fusedConv2d_({
     preluActivationWeights: $preluActivationWeights
   };
   const attrs = {
-    strides,
+    strides: strides2,
     pad: pad3,
     dataFormat,
     dilations,
@@ -42210,7 +42342,7 @@ function fusedConv2d_({
   }
 }
 var conv2d2 = op({ fusedConv2d_ });
-function depthwiseConv2dNativeBackpropFilter_(x2, dy, filterShape, strides, pad3, dilations = [1, 1], dimRoundingMode) {
+function depthwiseConv2dNativeBackpropFilter_(x2, dy, filterShape, strides2, pad3, dilations = [1, 1], dimRoundingMode) {
   let x4D = x2;
   if (x2.rank === 3) {
     x4D = reshape(x2, [1, x2.shape[0], x2.shape[1], x2.shape[2]]);
@@ -42220,11 +42352,11 @@ function depthwiseConv2dNativeBackpropFilter_(x2, dy, filterShape, strides, pad3
     dy4D = reshape(dy, [1, dy.shape[0], dy.shape[1], dy.shape[2]]);
   }
   const inputs = { x: x4D, dy: dy4D };
-  const attrs = { strides, pad: pad3, dimRoundingMode, dilations, filterShape };
+  const attrs = { strides: strides2, pad: pad3, dimRoundingMode, dilations, filterShape };
   return ENGINE.runKernel(DepthwiseConv2dNativeBackpropFilter, inputs, attrs);
 }
 var depthwiseConv2dNativeBackpropFilter = op({ depthwiseConv2dNativeBackpropFilter_ });
-function depthwiseConv2dNativeBackpropInput_(xShape, dy, filter, strides, pad3, dilations = [1, 1], dimRoundingMode) {
+function depthwiseConv2dNativeBackpropInput_(xShape, dy, filter, strides2, pad3, dilations = [1, 1], dimRoundingMode) {
   let dy4D = dy;
   let reshapedTo4D = false;
   if (dy.rank === 3) {
@@ -42232,7 +42364,7 @@ function depthwiseConv2dNativeBackpropInput_(xShape, dy, filter, strides, pad3, 
     dy4D = reshape(dy, [1, dy.shape[0], dy.shape[1], dy.shape[2]]);
   }
   const inputs = { dy: dy4D, filter };
-  const attrs = { strides, pad: pad3, dimRoundingMode, dilations, inputShape: xShape };
+  const attrs = { strides: strides2, pad: pad3, dimRoundingMode, dilations, inputShape: xShape };
   const res2 = ENGINE.runKernel(DepthwiseConv2dNativeBackpropInput, inputs, attrs);
   if (reshapedTo4D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3]]);
@@ -42243,7 +42375,7 @@ var depthwiseConv2dNativeBackpropInput = op({ depthwiseConv2dNativeBackpropInput
 function fusedDepthwiseConv2d_({
   x: x2,
   filter,
-  strides,
+  strides: strides2,
   pad: pad3,
   dataFormat = "NHWC",
   dilations = [1, 1],
@@ -42254,7 +42386,7 @@ function fusedDepthwiseConv2d_({
   leakyreluAlpha
 }) {
   if (shouldFuse(ENGINE.state.gradientDepth, activation2) === false) {
-    let result = depthwiseConv2d(x2, filter, strides, pad3, dataFormat, dilations, dimRoundingMode);
+    let result = depthwiseConv2d(x2, filter, strides2, pad3, dataFormat, dilations, dimRoundingMode);
     if (bias != null) {
       result = add2(result, bias);
     }
@@ -42274,11 +42406,9 @@ function fusedDepthwiseConv2d_({
   if (dilations == null) {
     dilations = [1, 1];
   }
-  assert(eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in fused depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in fused depthwiseConv2d: pad must be an integer when using dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
-  const convInfo = computeConv2DInfo(x4D.shape, $filter.shape, strides, dilations, pad3, dimRoundingMode, true);
+  assert(eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in fused depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
+  checkPadOnDimRoundingMode("fused depthwiseConv2d", pad3, dimRoundingMode);
+  const convInfo = computeConv2DInfo(x4D.shape, $filter.shape, strides2, dilations, pad3, dimRoundingMode, true);
   let $bias;
   if (bias != null) {
     $bias = convertToTensor(bias, "bias", "fused conv2d");
@@ -42293,8 +42423,8 @@ function fusedDepthwiseConv2d_({
     assert(tupleValuesAreOne(dilations), () => `Error in gradient of fused depthwiseConv2d: dilation rates greater than 1 are not yet supported. Got dilations '${dilations}'`);
     const [$filter2, x4D2, y2, bias2] = saved;
     const dyActivation = getFusedDyActivation(dy, y2, activation2);
-    const xDer = depthwiseConv2dNativeBackpropInput(x4D2.shape, dyActivation, $filter2, strides, pad3, dilations, dimRoundingMode);
-    const filterDer = depthwiseConv2dNativeBackpropFilter(x4D2, dyActivation, $filter2.shape, strides, pad3, dilations, dimRoundingMode);
+    const xDer = depthwiseConv2dNativeBackpropInput(x4D2.shape, dyActivation, $filter2, strides2, pad3, dilations, dimRoundingMode);
+    const filterDer = depthwiseConv2dNativeBackpropFilter(x4D2, dyActivation, $filter2.shape, strides2, pad3, dilations, dimRoundingMode);
     if (bias2 != null) {
       const biasDer = getFusedBiasGradient($bias, dyActivation);
       return [xDer, filterDer, biasDer];
@@ -42308,7 +42438,7 @@ function fusedDepthwiseConv2d_({
     preluActivationWeights: $preluActivationWeights
   };
   const attrs = {
-    strides,
+    strides: strides2,
     pad: pad3,
     dataFormat,
     dilations,
@@ -42472,8 +42602,8 @@ function stft_(signal2, frameLength, frameStep, fftLength, windowFn = hannWindow
   return rfft(windowedSignal, fftLength);
 }
 var stft = op({ stft_ });
-function cropAndResize_(image32, boxes, boxInd, cropSize, method = "bilinear", extrapolationValue = 0) {
-  const $image = convertToTensor(image32, "image", "cropAndResize");
+function cropAndResize_(image22, boxes, boxInd, cropSize, method = "bilinear", extrapolationValue = 0) {
+  const $image = convertToTensor(image22, "image", "cropAndResize");
   const $boxes = convertToTensor(boxes, "boxes", "cropAndResize", "float32");
   const $boxInd = convertToTensor(boxInd, "boxInd", "cropAndResize", "int32");
   const numBoxes = $boxes.shape[0];
@@ -42489,16 +42619,16 @@ function cropAndResize_(image32, boxes, boxInd, cropSize, method = "bilinear", e
   return res2;
 }
 var cropAndResize = op({ cropAndResize_ });
-function flipLeftRight_(image32) {
-  const $image = convertToTensor(image32, "image", "flipLeftRight", "float32");
+function flipLeftRight_(image22) {
+  const $image = convertToTensor(image22, "image", "flipLeftRight", "float32");
   assert($image.rank === 4, () => `Error in flipLeftRight: image must be rank 4,but got rank ${$image.rank}.`);
   const inputs = { image: $image };
   const res2 = ENGINE.runKernel(FlipLeftRight, inputs, {});
   return res2;
 }
 var flipLeftRight = op({ flipLeftRight_ });
-function grayscaleToRGB_(image32) {
-  const $image = convertToTensor(image32, "image", "grayscaleToRGB");
+function grayscaleToRGB_(image22) {
+  const $image = convertToTensor(image22, "image", "grayscaleToRGB");
   const lastDimsIdx = $image.rank - 1;
   const lastDims = $image.shape[lastDimsIdx];
   assert($image.rank >= 2, () => `Error in grayscaleToRGB: images must be at least rank 2, but got rank ${$image.rank}.`);
@@ -42509,8 +42639,8 @@ function grayscaleToRGB_(image32) {
   return tile($image, reps);
 }
 var grayscaleToRGB = op({ grayscaleToRGB_ });
-function rotateWithOffset_(image32, radians, fillValue = 0, center = 0.5) {
-  const $image = convertToTensor(image32, "image", "rotateWithOffset", "float32");
+function rotateWithOffset_(image22, radians, fillValue = 0, center = 0.5) {
+  const $image = convertToTensor(image22, "image", "rotateWithOffset", "float32");
   assert($image.rank === 4, () => `Error in rotateWithOffset: image must be rank 4,but got rank ${$image.rank}.`);
   const inputs = { image: $image };
   const attrs = { radians, fillValue, center };
@@ -42810,8 +42940,8 @@ function resizeNearestNeighbor_(images, size2, alignCorners = false, halfPixelCe
   return res2;
 }
 var resizeNearestNeighbor = op({ resizeNearestNeighbor_ });
-function threshold_(image32, method = "binary", inverted = false, threshValue = 0.5) {
-  const $image = convertToTensor(image32, "image", "threshold");
+function threshold_(image22, method = "binary", inverted = false, threshValue = 0.5) {
+  const $image = convertToTensor(image22, "image", "threshold");
   const RED_INTENCITY_COEF = 0.2989;
   const GREEN_INTENCITY_COEF = 0.587;
   const BLUE_INTENCITY_COEF = 0.114;
@@ -42829,7 +42959,7 @@ function threshold_(image32, method = "binary", inverted = false, threshValue = 
     const $b = mul(b2, BLUE_INTENCITY_COEF);
     grayscale = add2(add2($r, $g), $b);
   } else {
-    grayscale = image32;
+    grayscale = image22;
   }
   if (method === "otsu") {
     const $histogram = bincount(cast(round2(grayscale), "int32"), tensor([]), 256);
@@ -42866,8 +42996,8 @@ function otsu(histogram, total) {
   return bestThresh;
 }
 var threshold = op({ threshold_ });
-function transform_(image32, transforms, interpolation = "nearest", fillMode = "constant", fillValue = 0, outputShape) {
-  const $image = convertToTensor(image32, "image", "transform", "float32");
+function transform_(image22, transforms, interpolation = "nearest", fillMode = "constant", fillValue = 0, outputShape) {
+  const $image = convertToTensor(image22, "image", "transform", "float32");
   const $transforms = convertToTensor(transforms, "transforms", "transform", "float32");
   assert($image.rank === 4, () => `Error in transform: image must be rank 4,but got rank ${$image.rank}.`);
   assert($transforms.rank === 2 && ($transforms.shape[0] === $image.shape[0] || $transforms.shape[0] === 1) && $transforms.shape[1] === 8, () => `Error in transform: Input transform should be batch x 8 or 1 x 8`);
@@ -43021,27 +43151,27 @@ function qr2d(x2, fullMatrices = false) {
   });
 }
 var qr = op({ qr_ });
-var Reduction;
-(function(Reduction2) {
+var Reduction = ((Reduction2) => {
   Reduction2[Reduction2["NONE"] = 0] = "NONE";
   Reduction2[Reduction2["MEAN"] = 1] = "MEAN";
   Reduction2[Reduction2["SUM"] = 2] = "SUM";
   Reduction2[Reduction2["SUM_BY_NONZERO_WEIGHTS"] = 3] = "SUM_BY_NONZERO_WEIGHTS";
-})(Reduction || (Reduction = {}));
-function computeWeightedLoss_(losses4, weights, reduction2 = Reduction.SUM_BY_NONZERO_WEIGHTS) {
-  const $losses = convertToTensor(losses4, "losses", "computeWeightedLoss");
+  return Reduction2;
+})(Reduction || {});
+function computeWeightedLoss_(losses2, weights, reduction = Reduction.SUM_BY_NONZERO_WEIGHTS) {
+  const $losses = convertToTensor(losses2, "losses", "computeWeightedLoss");
   let $weights = null;
   if (weights != null) {
     $weights = convertToTensor(weights, "weights", "computeWeightedLoss");
   }
   const weightedLoss = $weights == null ? $losses : mul($losses, $weights);
-  if (reduction2 === Reduction.NONE) {
+  if (reduction === Reduction.NONE) {
     return weightedLoss;
   }
-  if (reduction2 === Reduction.SUM) {
+  if (reduction === Reduction.SUM) {
     return sum2(weightedLoss);
   }
-  if (reduction2 === Reduction.MEAN) {
+  if (reduction === Reduction.MEAN) {
     if ($weights == null) {
       return mean(weightedLoss);
     } else {
@@ -43050,7 +43180,7 @@ function computeWeightedLoss_(losses4, weights, reduction2 = Reduction.SUM_BY_NO
       return broadcastFactor > 1 ? div(result, scalar(broadcastFactor)) : result;
     }
   }
-  if (reduction2 === Reduction.SUM_BY_NONZERO_WEIGHTS) {
+  if (reduction === Reduction.SUM_BY_NONZERO_WEIGHTS) {
     if ($weights == null) {
       return div(sum2(weightedLoss), scalar($losses.size));
     } else {
@@ -43059,10 +43189,10 @@ function computeWeightedLoss_(losses4, weights, reduction2 = Reduction.SUM_BY_NO
       return div(sum2(weightedLoss), numNonZeros);
     }
   }
-  throw Error(`Unknown reduction: ${reduction2}`);
+  throw Error(`Unknown reduction: ${reduction}`);
 }
 var computeWeightedLoss = op({ computeWeightedLoss_ });
-function absoluteDifference_(labels2, predictions, weights, reduction2 = Reduction.SUM_BY_NONZERO_WEIGHTS) {
+function absoluteDifference_(labels2, predictions, weights, reduction = Reduction.SUM_BY_NONZERO_WEIGHTS) {
   const $labels = convertToTensor(labels2, "labels", "absoluteDifference");
   const $predictions = convertToTensor(predictions, "predictions", "absoluteDifference");
   let $weights = null;
@@ -43070,11 +43200,11 @@ function absoluteDifference_(labels2, predictions, weights, reduction2 = Reducti
     $weights = convertToTensor(weights, "weights", "absoluteDifference");
   }
   assertShapesMatch($labels.shape, $predictions.shape, "Error in absoluteDifference: ");
-  const losses4 = abs(sub($labels, $predictions));
-  return computeWeightedLoss(losses4, $weights, reduction2);
+  const losses2 = abs(sub($labels, $predictions));
+  return computeWeightedLoss(losses2, $weights, reduction);
 }
 var absoluteDifference = op({ absoluteDifference_ });
-function cosineDistance_(labels2, predictions, axis, weights, reduction2 = Reduction.SUM_BY_NONZERO_WEIGHTS) {
+function cosineDistance_(labels2, predictions, axis, weights, reduction = Reduction.SUM_BY_NONZERO_WEIGHTS) {
   const $labels = convertToTensor(labels2, "labels", "cosineDistance");
   const $predictions = convertToTensor(predictions, "predictions", "cosineDistance");
   let $weights = null;
@@ -43083,11 +43213,11 @@ function cosineDistance_(labels2, predictions, axis, weights, reduction2 = Reduc
   }
   assertShapesMatch($labels.shape, $predictions.shape, "Error in cosineDistance: ");
   const one = scalar(1);
-  const losses4 = sub(one, sum2(mul($labels, $predictions), axis, true));
-  return computeWeightedLoss(losses4, $weights, reduction2);
+  const losses2 = sub(one, sum2(mul($labels, $predictions), axis, true));
+  return computeWeightedLoss(losses2, $weights, reduction);
 }
 var cosineDistance = op({ cosineDistance_ });
-function hingeLoss_(labels2, predictions, weights, reduction2 = Reduction.SUM_BY_NONZERO_WEIGHTS) {
+function hingeLoss_(labels2, predictions, weights, reduction = Reduction.SUM_BY_NONZERO_WEIGHTS) {
   let $labels = convertToTensor(labels2, "labels", "hingeLoss");
   const $predictions = convertToTensor(predictions, "predictions", "hingeLoss");
   let $weights = null;
@@ -43097,11 +43227,11 @@ function hingeLoss_(labels2, predictions, weights, reduction2 = Reduction.SUM_BY
   assertShapesMatch($labels.shape, $predictions.shape, "Error in hingeLoss: ");
   const one = scalar(1);
   $labels = sub(mul(scalar(2), $labels), one);
-  const losses4 = relu(sub(one, mul($labels, $predictions)));
-  return computeWeightedLoss(losses4, $weights, reduction2);
+  const losses2 = relu(sub(one, mul($labels, $predictions)));
+  return computeWeightedLoss(losses2, $weights, reduction);
 }
 var hingeLoss = op({ hingeLoss_ });
-function huberLoss_(labels2, predictions, weights, delta = 1, reduction2 = Reduction.SUM_BY_NONZERO_WEIGHTS) {
+function huberLoss_(labels2, predictions, weights, delta = 1, reduction = Reduction.SUM_BY_NONZERO_WEIGHTS) {
   const $labels = convertToTensor(labels2, "labels", "huberLoss");
   const $predictions = convertToTensor(predictions, "predictions", "huberLoss");
   let $weights = null;
@@ -43113,11 +43243,11 @@ function huberLoss_(labels2, predictions, weights, delta = 1, reduction2 = Reduc
   const error = abs(sub($predictions, $labels));
   const quadratic = minimum(error, deltaScalar);
   const linear = sub(error, quadratic);
-  const losses4 = add2(mul(scalar(0.5), square(quadratic)), mul(deltaScalar, linear));
-  return computeWeightedLoss(losses4, $weights, reduction2);
+  const losses2 = add2(mul(scalar(0.5), square(quadratic)), mul(deltaScalar, linear));
+  return computeWeightedLoss(losses2, $weights, reduction);
 }
 var huberLoss = op({ huberLoss_ });
-function logLoss_(labels2, predictions, weights, epsilon3 = 1e-7, reduction2 = Reduction.SUM_BY_NONZERO_WEIGHTS) {
+function logLoss_(labels2, predictions, weights, epsilon3 = 1e-7, reduction = Reduction.SUM_BY_NONZERO_WEIGHTS) {
   const $labels = convertToTensor(labels2, "labels", "logLoss");
   const $predictions = convertToTensor(predictions, "predictions", "logLoss");
   let $weights = null;
@@ -43127,13 +43257,13 @@ function logLoss_(labels2, predictions, weights, epsilon3 = 1e-7, reduction2 = R
   assertShapesMatch($labels.shape, $predictions.shape, "Error in logLoss: ");
   const one = scalar(1);
   const epsilonScalar = scalar(epsilon3);
-  const l13 = neg(mul($labels, log4(add2($predictions, epsilonScalar))));
-  const l23 = mul(sub(one, $labels), log4(add2(sub(one, $predictions), epsilonScalar)));
-  const losses4 = sub(l13, l23);
-  return computeWeightedLoss(losses4, $weights, reduction2);
+  const l13 = neg(mul($labels, log22(add2($predictions, epsilonScalar))));
+  const l23 = mul(sub(one, $labels), log22(add2(sub(one, $predictions), epsilonScalar)));
+  const losses2 = sub(l13, l23);
+  return computeWeightedLoss(losses2, $weights, reduction);
 }
 var logLoss = op({ logLoss_ });
-function meanSquaredError_(labels2, predictions, weights, reduction2 = Reduction.SUM_BY_NONZERO_WEIGHTS) {
+function meanSquaredError_(labels2, predictions, weights, reduction = Reduction.SUM_BY_NONZERO_WEIGHTS) {
   const $labels = convertToTensor(labels2, "labels", "meanSquaredError");
   const $predictions = convertToTensor(predictions, "predictions", "meanSquaredError");
   let $weights = null;
@@ -43141,8 +43271,8 @@ function meanSquaredError_(labels2, predictions, weights, reduction2 = Reduction
     $weights = convertToTensor(weights, "weights", "meanSquaredError");
   }
   assertShapesMatch($labels.shape, $predictions.shape, "Error in meanSquaredError: ");
-  const losses4 = squaredDifference($labels, $predictions);
-  return computeWeightedLoss(losses4, $weights, reduction2);
+  const losses2 = squaredDifference($labels, $predictions);
+  return computeWeightedLoss(losses2, $weights, reduction);
 }
 var meanSquaredError = op({ meanSquaredError_ });
 function sigmoidCrossEntropyWithLogits_(labels2, logits) {
@@ -43154,7 +43284,7 @@ function sigmoidCrossEntropyWithLogits_(labels2, logits) {
   const sigmoidOutput = log1p(exp(neg(abs($logits))));
   return add2(sub(maxOutput, outputXTarget), sigmoidOutput);
 }
-function sigmoidCrossEntropy_(multiClassLabels, logits, weights, labelSmoothing = 0, reduction2 = Reduction.SUM_BY_NONZERO_WEIGHTS) {
+function sigmoidCrossEntropy_(multiClassLabels, logits, weights, labelSmoothing = 0, reduction = Reduction.SUM_BY_NONZERO_WEIGHTS) {
   let $multiClassLabels = convertToTensor(multiClassLabels, "multiClassLabels", "sigmoidCrossEntropy");
   const $logits = convertToTensor(logits, "logits", "sigmoidCrossEntropy");
   let $weights = null;
@@ -43168,8 +43298,8 @@ function sigmoidCrossEntropy_(multiClassLabels, logits, weights, labelSmoothing 
     const half2 = scalar(0.5);
     $multiClassLabels = add2(mul($multiClassLabels, sub(one, labelSmoothingScalar)), mul(half2, labelSmoothingScalar));
   }
-  const losses4 = sigmoidCrossEntropyWithLogits_($multiClassLabels, $logits);
-  return computeWeightedLoss(losses4, $weights, reduction2);
+  const losses2 = sigmoidCrossEntropyWithLogits_($multiClassLabels, $logits);
+  return computeWeightedLoss(losses2, $weights, reduction);
 }
 var sigmoidCrossEntropy = op({ sigmoidCrossEntropy_ });
 function softmaxCrossEntropyWithLogits_(labels2, logits, dim = -1) {
@@ -43198,7 +43328,7 @@ function softmaxCrossEntropyWithLogits_(labels2, logits, dim = -1) {
   });
   return customOp(labels2, logits);
 }
-function softmaxCrossEntropy_(onehotLabels, logits, weights, labelSmoothing = 0, reduction2 = Reduction.SUM_BY_NONZERO_WEIGHTS) {
+function softmaxCrossEntropy_(onehotLabels, logits, weights, labelSmoothing = 0, reduction = Reduction.SUM_BY_NONZERO_WEIGHTS) {
   let $onehotLabels = convertToTensor(onehotLabels, "onehotLabels", "softmaxCrossEntropy");
   const $logits = convertToTensor(logits, "logits", "softmaxCrossEntropy");
   let $weights = null;
@@ -43212,14 +43342,14 @@ function softmaxCrossEntropy_(onehotLabels, logits, weights, labelSmoothing = 0,
     const numClasses = scalar($onehotLabels.shape[1]);
     $onehotLabels = add2(mul($onehotLabels, sub(one, labelSmoothingScalar)), div(labelSmoothingScalar, numClasses));
   }
-  const losses4 = softmaxCrossEntropyWithLogits_($onehotLabels, $logits);
-  return computeWeightedLoss(losses4, $weights, reduction2);
+  const losses2 = softmaxCrossEntropyWithLogits_($onehotLabels, $logits);
+  return computeWeightedLoss(losses2, $weights, reduction);
 }
 var softmaxCrossEntropy = op({ softmaxCrossEntropy_ });
 function sparseFillEmptyRows_(indices, values, denseShape, defaultValue) {
-  const $indices = convertToTensor(indices, "indices", "sparseFillEmptyRows");
+  const $indices = convertToTensor(indices, "indices", "sparseFillEmptyRows", "int32");
   const $values = convertToTensor(values, "values", "sparseFillEmptyRows");
-  const $denseShape = convertToTensor(denseShape, "denseShape", "sparseFillEmptyRows");
+  const $denseShape = convertToTensor(denseShape, "denseShape", "sparseFillEmptyRows", "int32");
   const $defaultValue = convertToTensor(defaultValue, "defaultValue", "sparseFillEmptyRows", $values.dtype);
   if ($indices.rank !== 2) {
     throw new Error(`Indices should be Tensor2D but received shape
@@ -43250,9 +43380,9 @@ function sparseFillEmptyRows_(indices, values, denseShape, defaultValue) {
 }
 var sparseFillEmptyRows = op({ sparseFillEmptyRows_ });
 function sparseReshape_(inputIndices, inputShape, newShape) {
-  const $inputIndices = convertToTensor(inputIndices, "inputIndices", "sparseReshape");
-  const $inputShape = convertToTensor(inputShape, "inputShape", "sparseReshape");
-  const $newShape = convertToTensor(newShape, "newShape", "sparseReshape");
+  const $inputIndices = convertToTensor(inputIndices, "inputIndices", "sparseReshape", "int32");
+  const $inputShape = convertToTensor(inputShape, "inputShape", "sparseReshape", "int32");
+  const $newShape = convertToTensor(newShape, "newShape", "sparseReshape", "int32");
   if ($inputIndices.rank !== 2) {
     throw new Error(`Input indices should be Tensor2D but received shape
         ${$inputIndices.shape}`);
@@ -43274,8 +43404,8 @@ function sparseReshape_(inputIndices, inputShape, newShape) {
 var sparseReshape = op({ sparseReshape_ });
 function sparseSegmentMean_(data, indices, segmentIds) {
   const $data = convertToTensor(data, "data", "sparseSegmentMean");
-  const $indices = convertToTensor(indices, "indices", "sparseSegmentMean");
-  const $segmentIds = convertToTensor(segmentIds, "segmentIds", "sparseSegmentMean");
+  const $indices = convertToTensor(indices, "indices", "sparseSegmentMean", "int32");
+  const $segmentIds = convertToTensor(segmentIds, "segmentIds", "sparseSegmentMean", "int32");
   if ($data.rank < 1) {
     throw new Error(`Data should be at least 1 dimensional but received scalar`);
   }
@@ -43297,8 +43427,8 @@ function sparseSegmentMean_(data, indices, segmentIds) {
 var sparseSegmentMean = op({ sparseSegmentMean_ });
 function sparseSegmentSum_(data, indices, segmentIds) {
   const $data = convertToTensor(data, "data", "sparseSegmentSum");
-  const $indices = convertToTensor(indices, "indices", "sparseSegmentSum");
-  const $segmentIds = convertToTensor(segmentIds, "segmentIds", "sparseSegmentSum");
+  const $indices = convertToTensor(indices, "indices", "sparseSegmentSum", "int32");
+  const $segmentIds = convertToTensor(segmentIds, "segmentIds", "sparseSegmentSum", "int32");
   if ($data.rank < 1) {
     throw new Error(`Data should be at least 1 dimensional but received scalar`);
   }
@@ -44116,6 +44246,7 @@ __export2(backend_util_exports, {
   axesAreInnerMostDims: () => axesAreInnerMostDims,
   calculateShapes: () => calculateShapes,
   checkEinsumDimSizes: () => checkEinsumDimSizes,
+  checkPadOnDimRoundingMode: () => checkPadOnDimRoundingMode,
   combineLocations: () => combineLocations,
   complexWithEvenIndex: () => complexWithEvenIndex,
   complexWithOddIndex: () => complexWithOddIndex,
@@ -44151,6 +44282,18 @@ __export2(backend_util_exports, {
   getReshapedPermuted: () => getReshapedPermuted,
   getSliceBeginCoords: () => getSliceBeginCoords,
   getSliceSize: () => getSliceSize,
+  getSparseFillEmptyRowsIndicesDenseShapeMismatch: () => getSparseFillEmptyRowsIndicesDenseShapeMismatch,
+  getSparseFillEmptyRowsNegativeIndexErrorMessage: () => getSparseFillEmptyRowsNegativeIndexErrorMessage,
+  getSparseFillEmptyRowsOutOfRangeIndexErrorMessage: () => getSparseFillEmptyRowsOutOfRangeIndexErrorMessage,
+  getSparseReshapeEmptyTensorZeroOutputDimErrorMessage: () => getSparseReshapeEmptyTensorZeroOutputDimErrorMessage,
+  getSparseReshapeInputOutputMismatchErrorMessage: () => getSparseReshapeInputOutputMismatchErrorMessage,
+  getSparseReshapeInputOutputMultipleErrorMessage: () => getSparseReshapeInputOutputMultipleErrorMessage,
+  getSparseReshapeMultipleNegativeOneOutputDimErrorMessage: () => getSparseReshapeMultipleNegativeOneOutputDimErrorMessage,
+  getSparseReshapeNegativeOutputDimErrorMessage: () => getSparseReshapeNegativeOutputDimErrorMessage,
+  getSparseSegmentReductionIndicesOutOfRangeErrorMessage: () => getSparseSegmentReductionIndicesOutOfRangeErrorMessage,
+  getSparseSegmentReductionNegativeSegmentIdsErrorMessage: () => getSparseSegmentReductionNegativeSegmentIdsErrorMessage,
+  getSparseSegmentReductionNonIncreasingSegmentIdsErrorMessage: () => getSparseSegmentReductionNonIncreasingSegmentIdsErrorMessage,
+  getSparseSegmentReductionSegmentIdOutOfRangeErrorMessage: () => getSparseSegmentReductionSegmentIdOutOfRangeErrorMessage,
   getUndoAxesPermutation: () => getUndoAxesPermutation,
   isIdentityPermutation: () => isIdentityPermutation,
   log: () => log2,
@@ -44493,6 +44636,48 @@ function prepareSplitSize(x2, numOrSizeSplits, axis = 0) {
   }
   return splitSizes;
 }
+function getSparseFillEmptyRowsIndicesDenseShapeMismatch(indicesLength) {
+  return `Received SparseTensor with denseShape[0] = 0 but
+  indices.shape[0] = ${indicesLength}`;
+}
+function getSparseFillEmptyRowsNegativeIndexErrorMessage(index2, value) {
+  return `indices(${index2}, 0) is invalid: ${value} < 0`;
+}
+function getSparseFillEmptyRowsOutOfRangeIndexErrorMessage(index2, value, limit) {
+  return `indices(${index2}, 0) is invalid: ${value} >= ${limit}`;
+}
+function getSparseReshapeMultipleNegativeOneOutputDimErrorMessage(dim1, dim2) {
+  return `only one output dimension may be -1, not both ${dim1} and ${dim2}`;
+}
+function getSparseReshapeNegativeOutputDimErrorMessage(dim, value) {
+  return `size ${dim} must be non-negative, not ${value}`;
+}
+function getSparseReshapeEmptyTensorZeroOutputDimErrorMessage() {
+  return "reshape cannot infer the missing input size for an empty tensor unless all specified input sizes are non-zero";
+}
+function getSparseReshapeInputOutputMultipleErrorMessage(inputShape, outputShape) {
+  const inputSize9 = sizeFromShape(inputShape);
+  const outputSize2 = sizeFromShape(outputShape);
+  return `Input to reshape is a SparseTensor with ${inputSize9}
+  dense values, but the requested shape requires a multiple of ${outputSize2}. inputShape=${inputShape} outputShape= ${outputShape}`;
+}
+function getSparseReshapeInputOutputMismatchErrorMessage(inputShape, outputShape) {
+  const inputSize9 = sizeFromShape(inputShape);
+  const outputSize2 = sizeFromShape(outputShape);
+  return `Input to reshape is a tensor with ${inputSize9} dense values, but the requested shape has ${outputSize2}. inputShape=${inputShape} outputShape=${outputShape}`;
+}
+function getSparseSegmentReductionNegativeSegmentIdsErrorMessage() {
+  return `segment ids must be >= 0`;
+}
+function getSparseSegmentReductionNonIncreasingSegmentIdsErrorMessage() {
+  return `segment ids are not increasing`;
+}
+function getSparseSegmentReductionSegmentIdOutOfRangeErrorMessage(segmentId, outputRows) {
+  return `Segment id ${segmentId} out of range [0, ${outputRows}), possibly because segmentIds input is not sorted.`;
+}
+function getSparseSegmentReductionIndicesOutOfRangeErrorMessage(index2, indexValue, inputRows) {
+  return `Bad: indices[${index2}] == ${indexValue} out of range [0, ${inputRows})`;
+}
 var segment_util_exports = {};
 __export2(segment_util_exports, {
   collectGatherOpShapeInfo: () => collectGatherOpShapeInfo,
@@ -44742,7 +44927,7 @@ var atanhGradConfig = {
     return { x: () => div(dy, sub(scalar(1), square(cast(x2, "float32")))) };
   }
 };
-function avgPool3dGrad_(dy, input2, filterSize, strides, pad3, dimRoundingMode) {
+function avgPool3dGrad_(dy, input2, filterSize, strides2, pad3, dimRoundingMode) {
   const $dy = convertToTensor(dy, "dy", "avgPool3dGrad");
   const $input = convertToTensor(input2, "input", "avgPool3dGrad");
   let dy5D = $dy;
@@ -44761,11 +44946,9 @@ function avgPool3dGrad_(dy, input2, filterSize, strides, pad3, dimRoundingMode) 
   }
   assert(dy5D.rank === 5, () => `Error in avgPool3dGrad: dy must be rank 5 but got rank ${dy5D.rank}.`);
   assert(input5D.rank === 5, () => `Error in avgPool3dGrad: input must be rank 5 but got rank ${input5D.rank}.`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in avgPool3dGrad: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("avgPool3dGrad", pad3, dimRoundingMode);
   const inputs = { dy: dy5D, input: input5D };
-  const attrs = { filterSize, strides, pad: pad3, dimRoundingMode };
+  const attrs = { filterSize, strides: strides2, pad: pad3, dimRoundingMode };
   const res2 = ENGINE.runKernel(AvgPool3DGrad, inputs, attrs);
   if (reshapedTo5D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3], res2.shape[4]]);
@@ -44778,13 +44961,13 @@ var avgPool3DGradConfig = {
   inputsToSave: ["x"],
   gradFunc: (dy, saved, attrs) => {
     const [x2] = saved;
-    const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+    const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
     return {
-      x: () => avgPool3dGrad(dy, x2, filterSize, strides, pad3, dimRoundingMode)
+      x: () => avgPool3dGrad(dy, x2, filterSize, strides2, pad3, dimRoundingMode)
     };
   }
 };
-function avgPoolGrad_(dy, input2, filterSize, strides, pad3) {
+function avgPoolGrad_(dy, input2, filterSize, strides2, pad3) {
   const $dy = convertToTensor(dy, "dy", "avgPoolGrad");
   const $input = convertToTensor(input2, "input", "avgPoolGrad");
   assert($input.rank === $dy.rank, () => `Rank of input (${$input.rank}) does not match rank of dy (${$dy.rank})`);
@@ -44799,7 +44982,7 @@ function avgPoolGrad_(dy, input2, filterSize, strides, pad3) {
   assert(dy4D.rank === 4, () => `Error in avgPoolGrad: dy must be rank 4 but got rank ${dy4D.rank}.`);
   assert(input4D.rank === 4, () => `Error in avgPoolGrad: input must be rank 4 but got rank ${input4D.rank}.`);
   const inputs = { dy: dy4D, input: input4D };
-  const attrs = { filterSize, strides, pad: pad3 };
+  const attrs = { filterSize, strides: strides2, pad: pad3 };
   const res2 = ENGINE.runKernel(AvgPoolGrad, inputs, attrs);
   if (reshapedTo4D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3]]);
@@ -44812,8 +44995,8 @@ var avgPoolGradConfig = {
   inputsToSave: ["x"],
   gradFunc: (dy, saved, attrs) => {
     const [x2] = saved;
-    const { filterSize, strides, pad: pad3 } = attrs;
-    return { x: () => avgPoolGrad(dy, x2, filterSize, strides, pad3) };
+    const { filterSize, strides: strides2, pad: pad3 } = attrs;
+    return { x: () => avgPoolGrad(dy, x2, filterSize, strides2, pad3) };
   }
 };
 var batchMatMulGradConfig = {
@@ -44920,11 +45103,11 @@ var conv2DGradConfig = {
   inputsToSave: ["x", "filter"],
   gradFunc: (dy, saved, attrs) => {
     const [x4D, $filter] = saved;
-    const { dilations, strides, pad: pad3, dataFormat } = attrs;
+    const { dilations, strides: strides2, pad: pad3, dataFormat } = attrs;
     assert(tupleValuesAreOne(dilations), () => `Error in gradient of conv2D: dilation rates greater than 1 are not yet supported in gradients. Got dilations '${dilations}'`);
     return {
-      x: () => conv2DBackpropInput(x4D.shape, dy, $filter, strides, pad3, dataFormat),
-      filter: () => conv2DBackpropFilter(x4D, dy, $filter.shape, strides, pad3, dataFormat)
+      x: () => conv2DBackpropInput(x4D.shape, dy, $filter, strides2, pad3, dataFormat),
+      filter: () => conv2DBackpropFilter(x4D, dy, $filter.shape, strides2, pad3, dataFormat)
     };
   }
 };
@@ -44933,14 +45116,14 @@ var conv2DBackpropInputGradConfig = {
   inputsToSave: ["dy", "filter"],
   gradFunc: (ddx, saved, attrs) => {
     const [dy, filter] = saved;
-    const { strides, pad: pad3, dataFormat, dimRoundingMode } = attrs;
+    const { strides: strides2, pad: pad3, dataFormat, dimRoundingMode } = attrs;
     return {
-      dy: () => conv2d(ddx, filter, strides, pad3, dataFormat, 1, dimRoundingMode),
-      filter: () => conv2DBackpropFilter(ddx, dy, filter.shape, strides, pad3, dataFormat, dimRoundingMode)
+      dy: () => conv2d(ddx, filter, strides2, pad3, dataFormat, 1, dimRoundingMode),
+      filter: () => conv2DBackpropFilter(ddx, dy, filter.shape, strides2, pad3, dataFormat, dimRoundingMode)
     };
   }
 };
-function conv3DBackpropFilter_(x2, dy, filterShape, strides, pad3) {
+function conv3DBackpropFilter_(x2, dy, filterShape, strides2, pad3) {
   let x5D = x2;
   if (x2.rank === 4) {
     x5D = reshape(x2, [1, x2.shape[0], x2.shape[1], x2.shape[2], x2.shape[3]]);
@@ -44955,7 +45138,7 @@ function conv3DBackpropFilter_(x2, dy, filterShape, strides, pad3) {
   assert(x5D.shape[4] === filterShape[3], () => `Error in conv3dDerFilter: depth of input ${x5D.shape[4]}) must match input depth in filter (${filterShape[3]}.`);
   assert(dy5D.shape[4] === filterShape[4], () => `Error in conv3dDerFilter: depth of dy (${dy5D.shape[4]}) must match output depth for filter (${filterShape[4]}).`);
   const inputs = { x: x5D, dy: dy5D };
-  const attrs = { strides, pad: pad3, filterShape };
+  const attrs = { strides: strides2, pad: pad3, filterShape };
   return ENGINE.runKernel(Conv3DBackpropFilterV2, inputs, attrs);
 }
 var conv3DBackpropFilter = op({ conv3DBackpropFilter_ });
@@ -44963,12 +45146,12 @@ var conv3DGradConfig = {
   kernelName: Conv3D,
   inputsToSave: ["x", "filter"],
   gradFunc: (dy, saved, attrs) => {
-    const { dilations, strides, pad: pad3 } = attrs;
+    const { dilations, strides: strides2, pad: pad3 } = attrs;
     assert(tupleValuesAreOne(dilations), () => `Error in gradient of conv3D: dilation rates greater than 1 are not yet supported in gradients. Got dilations '${dilations}'`);
     const [x5D, $filter] = saved;
     return {
-      x: () => conv3DBackpropInput(x5D.shape, dy, $filter, strides, pad3),
-      filter: () => conv3DBackpropFilter(x5D, dy, $filter.shape, strides, pad3)
+      x: () => conv3DBackpropInput(x5D.shape, dy, $filter, strides2, pad3),
+      filter: () => conv3DBackpropFilter(x5D, dy, $filter.shape, strides2, pad3)
     };
   }
 };
@@ -45010,20 +45193,18 @@ var depthwiseConv2dNativeGradConfig = {
   kernelName: DepthwiseConv2dNative,
   inputsToSave: ["x", "filter"],
   gradFunc: (dy, saved, attrs) => {
-    const { dilations, strides, pad: pad3, dimRoundingMode } = attrs;
+    const { dilations, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
     const $dilations = dilations == null ? [1, 1] : dilations;
     assert(tupleValuesAreOne($dilations), () => `Error in gradient of depthwiseConv2dNative: dilation rates greater than 1 are not yet supported. Got dilations '${$dilations}'`);
     const [x2, filter] = saved;
     assert(x2.rank === 4, () => `Error in gradient of depthwiseConv2dNative: input must be rank 4, but got rank ${x2.rank}.`);
     assert(filter.rank === 4, () => `Error in gradient of depthwiseConv2dNative: filter must be rank 4, but got rank ${filter.rank}.`);
     assert(x2.shape[3] === filter.shape[2], () => `Error in gradient of depthwiseConv2d: number of input channels (${x2.shape[3]}) must match the inChannels dimension in filter ${filter.shape[2]}.`);
-    assert(eitherStridesOrDilationsAreOne(strides, $dilations), () => `Error in gradient of depthwiseConv2d: Either strides or dilations must be  1. Got strides ${strides} and dilations '${$dilations}'.`);
-    if (dimRoundingMode != null) {
-      assert(isInt(pad3), () => `Error in depthwiseConv2d: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-    }
+    assert(eitherStridesOrDilationsAreOne(strides2, $dilations), () => `Error in gradient of depthwiseConv2d: Either strides or dilations must be  1. Got strides ${strides2} and dilations '${$dilations}'.`);
+    checkPadOnDimRoundingMode("depthwiseConv2d", pad3, dimRoundingMode);
     return {
-      x: () => depthwiseConv2dNativeBackpropInput(x2.shape, dy, filter, strides, pad3, $dilations, dimRoundingMode),
-      filter: () => depthwiseConv2dNativeBackpropFilter(x2, dy, filter.shape, strides, pad3, $dilations, dimRoundingMode)
+      x: () => depthwiseConv2dNativeBackpropInput(x2.shape, dy, filter, strides2, pad3, $dilations, dimRoundingMode),
+      filter: () => depthwiseConv2dNativeBackpropFilter(x2, dy, filter.shape, strides2, pad3, $dilations, dimRoundingMode)
     };
   }
 };
@@ -45357,7 +45538,7 @@ var maximumGradConfig = {
     return { a: derA, b: derB };
   }
 };
-function maxPool3dGrad_(dy, input2, output, filterSize, strides, pad3, dimRoundingMode) {
+function maxPool3dGrad_(dy, input2, output, filterSize, strides2, pad3, dimRoundingMode) {
   const $dy = convertToTensor(dy, "dy", "maxPool3dGrad");
   const $input = convertToTensor(input2, "input", "maxPool3dGrad");
   const $output = convertToTensor(output, "output", "maxPool3dGrad");
@@ -45386,11 +45567,9 @@ function maxPool3dGrad_(dy, input2, output, filterSize, strides, pad3, dimRoundi
   assert(dy5D.rank === 5, () => `Error in maxPool3dGrad: dy must be rank 5 but got rank ${dy5D.rank}.`);
   assert(input5D.rank === 5, () => `Error in maxPool3dGrad: input must be rank 5 but got rank ${input5D.rank}.`);
   assert(output5D.rank === 5, () => `Error in maxPool3dGrad: output must be rank 5 but got rank ${output5D.rank}.`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in maxPool3dGrad: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("maxPool3dGrad", pad3, dimRoundingMode);
   const inputs = { dy: dy5D, input: input5D, output: output5D };
-  const attrs = { filterSize, strides, pad: pad3, dimRoundingMode };
+  const attrs = { filterSize, strides: strides2, pad: pad3, dimRoundingMode };
   const res2 = ENGINE.runKernel(MaxPool3DGrad, inputs, attrs);
   if (reshapedTo5D) {
     return reshape(res2, [res2.shape[1], res2.shape[2], res2.shape[3], res2.shape[4]]);
@@ -45404,24 +45583,22 @@ var maxPool3DGradConfig = {
   outputsToSave: [true],
   gradFunc: (dy, saved, attrs) => {
     const [x2, y2] = saved;
-    const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+    const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
     return {
-      x: () => maxPool3dGrad(dy, x2, y2, filterSize, strides, pad3, dimRoundingMode)
+      x: () => maxPool3dGrad(dy, x2, y2, filterSize, strides2, pad3, dimRoundingMode)
     };
   }
 };
-function maxPoolGrad_(dy, input2, output, filterSize, strides, pad3, dimRoundingMode) {
+function maxPoolGrad_(dy, input2, output, filterSize, strides2, pad3, dimRoundingMode) {
   const $dy = convertToTensor(dy, "dy", "maxPoolGrad");
   const $input = convertToTensor(input2, "input", "maxPoolGrad");
   const $output = convertToTensor(output, "output", "maxPoolGrad");
   assert($input.rank === $dy.rank, () => `Rank of input (${$input.rank}) does not match rank of dy (${$dy.rank})`);
   assert($dy.rank === 4, () => `Error in maxPoolGrad: dy must be rank 4 but got rank ${$dy.rank}.`);
   assert($input.rank === 4, () => `Error in maxPoolGrad: input must be rank 4 but got rank ${$input.rank}.`);
-  if (dimRoundingMode != null) {
-    assert(isInt(pad3), () => `Error in maxPoolGrad: pad must be an integer when using, dimRoundingMode ${dimRoundingMode} but got pad ${pad3}.`);
-  }
+  checkPadOnDimRoundingMode("maxPoolGrad", pad3, dimRoundingMode);
   const inputs = { dy: $dy, input: $input, output: $output };
-  const attrs = { filterSize, strides, pad: pad3, dimRoundingMode };
+  const attrs = { filterSize, strides: strides2, pad: pad3, dimRoundingMode };
   return ENGINE.runKernel(MaxPoolGrad, inputs, attrs);
 }
 var maxPoolGrad = op({ maxPoolGrad_ });
@@ -45431,9 +45608,9 @@ var maxPoolGradConfig = {
   outputsToSave: [true],
   gradFunc: (dy, saved, attrs) => {
     const [x2, y2] = saved;
-    const { filterSize, strides, pad: pad3 } = attrs;
+    const { filterSize, strides: strides2, pad: pad3 } = attrs;
     return {
-      x: () => maxPoolGrad(dy, x2, y2, filterSize, strides, pad3)
+      x: () => maxPoolGrad(dy, x2, y2, filterSize, strides2, pad3)
     };
   }
 };
@@ -45590,21 +45767,21 @@ var powGradConfig = {
   outputsToSave: [true],
   gradFunc: (dy, saved) => {
     const [a6, b2, y2] = saved;
-    const base2 = a6;
+    const base = a6;
     const exp5 = b2;
-    const outShape = assertAndGetBroadcastShape(base2.shape, exp5.shape);
+    const outShape = assertAndGetBroadcastShape(base.shape, exp5.shape);
     const derBase = () => {
       const expFloat = cast(exp5, "float32");
-      let res2 = mul(dy, mul(expFloat, pow(base2, sub(expFloat, scalar(1)))));
-      const reduceAxes = getReductionAxes(base2.shape, outShape);
+      let res2 = mul(dy, mul(expFloat, pow(base, sub(expFloat, scalar(1)))));
+      const reduceAxes = getReductionAxes(base.shape, outShape);
       if (reduceAxes.length > 0) {
         res2 = sum2(res2, reduceAxes);
       }
-      return reshape(res2, base2.shape);
+      return reshape(res2, base.shape);
     };
     const derExp = () => {
-      const condition = greater(base2, 0);
-      const logBase = where(condition, log4(base2), zerosLike(base2));
+      const condition = greater(base, 0);
+      const logBase = where(condition, log22(base), zerosLike(base));
       let res2 = mul(dy, mul(y2, logBase));
       const reduceAxes = getReductionAxes(exp5.shape, outShape);
       if (reduceAxes.length > 0) {
@@ -46401,14 +46578,14 @@ function formatAsFriendlyString(value) {
   }
 }
 function debounce(f2, waitMs, nowFunc) {
-  let lastTime16 = nowFunc != null ? nowFunc() : util_exports.now();
+  let lastTime15 = nowFunc != null ? nowFunc() : util_exports.now();
   let lastResult;
   const f22 = (...args) => {
     const now222 = nowFunc != null ? nowFunc() : util_exports.now();
-    if (now222 - lastTime16 < waitMs) {
+    if (now222 - lastTime15 < waitMs) {
       return lastResult;
     }
-    lastTime16 = now222;
+    lastTime15 = now222;
     lastResult = f2(...args);
     return lastResult;
   };
@@ -47994,8 +48171,8 @@ var Layer = class extends serialization_exports.Serializable {
       throw new AttributeError(`The layer ${this.name} has never been called and thus has no defined output shape.`);
     }
     const allOutputShapes = [];
-    for (const node2 of this.inboundNodes) {
-      const shapeString = JSON.stringify(node2.outputShapes);
+    for (const node of this.inboundNodes) {
+      const shapeString = JSON.stringify(node.outputShapes);
       if (allOutputShapes.indexOf(shapeString) === -1) {
         allOutputShapes.push(shapeString);
       }
@@ -48076,13 +48253,13 @@ var Layer = class extends serialization_exports.Serializable {
   setFastWeightInitDuringBuild(value) {
     this.fastWeightInitDuringBuild = value;
   }
-  addLoss(losses4) {
-    if (losses4 == null || Array.isArray(losses4) && losses4.length === 0) {
+  addLoss(losses2) {
+    if (losses2 == null || Array.isArray(losses2) && losses2.length === 0) {
       return;
     }
-    losses4 = toList(losses4);
+    losses2 = toList(losses2);
     if (this._losses !== void 0 && this._losses !== null) {
-      this.losses.push(...losses4);
+      this.losses.push(...losses2);
     }
   }
   computeOutputShape(inputShape) {
@@ -48191,15 +48368,15 @@ function getSourceInputs(tensor2, layer, nodeIndex) {
   if (layer.inboundNodes.length === 0) {
     return [tensor2];
   } else {
-    const node2 = layer.inboundNodes[nodeIndex];
-    if (node2.inboundLayers.length === 0) {
-      return node2.inputTensors;
+    const node = layer.inboundNodes[nodeIndex];
+    if (node.inboundLayers.length === 0) {
+      return node.inputTensors;
     } else {
       const sourceTensors = [];
-      for (let i2 = 0; i2 < node2.inboundLayers.length; i2++) {
-        const x2 = node2.inputTensors[i2];
-        const layer2 = node2.inboundLayers[i2];
-        const nodeIndex2 = node2.nodeIndices[i2];
+      for (let i2 = 0; i2 < node.inboundLayers.length; i2++) {
+        const x2 = node.inputTensors[i2];
+        const layer2 = node.inboundLayers[i2];
+        const nodeIndex2 = node.nodeIndices[i2];
         const previousSources = getSourceInputs(x2, layer2, nodeIndex2);
         for (const x22 of previousSources) {
           if (sourceTensors.indexOf(x22) === -1) {
@@ -48337,11 +48514,6 @@ function disposeTensorsInLogs(logs) {
     }
   }
 }
-var ModelLoggingVerbosity;
-(function(ModelLoggingVerbosity4) {
-  ModelLoggingVerbosity4[ModelLoggingVerbosity4["SILENT"] = 0] = "SILENT";
-  ModelLoggingVerbosity4[ModelLoggingVerbosity4["VERBOSE"] = 1] = "VERBOSE";
-})(ModelLoggingVerbosity || (ModelLoggingVerbosity = {}));
 var DEFAULT_YIELD_EVERY_MS = 125;
 var BaseCallback = class {
   constructor() {
@@ -48481,8 +48653,8 @@ var BaseLogger = class extends BaseCallback {
           logs[key] = this.totals[key] / this.seen;
         } else {
           tidy(() => {
-            const log8 = mul(div(1, this.seen), this.totals[key]);
-            logs[key] = log8;
+            const log62 = mul(div(1, this.seen), this.totals[key]);
+            logs[key] = log62;
             this.totals[key].dispose();
             keep(logs[key]);
           });
@@ -48718,9 +48890,9 @@ function meanAbsolutePercentageError(yTrue, yPred) {
 function meanSquaredLogarithmicError(yTrue, yPred) {
   return tidy(() => {
     const clippedPred = clipByValue(yPred, epsilon(), Number.MAX_VALUE);
-    const firstLog = log4(add2(1, clippedPred));
+    const firstLog = log22(add2(1, clippedPred));
     const clippedTrue = clipByValue(yTrue, epsilon(), Number.MAX_VALUE);
-    const secondLog = log4(add2(1, clippedTrue));
+    const secondLog = log22(add2(1, clippedTrue));
     return mean(square2(sub(firstLog, secondLog)), -1);
   });
 }
@@ -48745,9 +48917,9 @@ function categoricalHinge(yTrue, yPred) {
 }
 function logcosh(yTrue, yPred) {
   return tidy(() => {
-    const log22 = Math.log(2);
+    const log222 = Math.log(2);
     const predictionDiff = sub(yPred, yTrue);
-    const logcoshResult = sub(add2(predictionDiff, softplus(mul(-2, predictionDiff))), log22);
+    const logcoshResult = sub(add2(predictionDiff, softplus(mul(-2, predictionDiff))), log222);
     return mean(logcoshResult, -1);
   });
 }
@@ -48760,7 +48932,7 @@ function categoricalCrossentropy(target, output, fromLogits = false) {
       output = div(output, outputSum);
     }
     output = clipByValue(output, epsilon(), 1 - epsilon());
-    return neg(sum2(mul(cast(target, "float32"), log4(output)), output.shape.length - 1));
+    return neg(sum2(mul(cast(target, "float32"), log22(output)), output.shape.length - 1));
   });
 }
 function sparseCategoricalCrossentropy(target, output, fromLogits = false) {
@@ -48786,7 +48958,7 @@ function binaryCrossentropy(yTrue, yPred) {
   return tidy(() => {
     let y2;
     y2 = clipByValue(yPred, epsilon(), 1 - epsilon());
-    y2 = log4(div(y2, sub(1, y2)));
+    y2 = log22(div(y2, sub(1, y2)));
     return mean(sigmoidCrossEntropyWithLogits(yTrue, y2), -1);
   });
 }
@@ -48794,12 +48966,12 @@ function kullbackLeiblerDivergence(yTrue, yPred) {
   return tidy(() => {
     const clippedTrue = clipByValue(yTrue, epsilon(), 1);
     const clippedPred = clipByValue(yPred, epsilon(), 1);
-    return sum2(mul(yTrue, log4(div(clippedTrue, clippedPred))), -1);
+    return sum2(mul(yTrue, log22(div(clippedTrue, clippedPred))), -1);
   });
 }
 function poisson(yTrue, yPred) {
   return tidy(() => {
-    const logPred = log4(add2(epsilon(), yPred));
+    const logPred = log22(add2(epsilon(), yPred));
     return mean(sub(yPred, mul(yTrue, logPred)), -1);
   });
 }
@@ -49085,8 +49257,8 @@ function isModelSequentialLike(model22) {
   if (sequentialLike) {
     for (const layer of model22.layers) {
       let flag = false;
-      for (const node2 of layer.inboundNodes) {
-        if (nodes.indexOf(node2) !== -1) {
+      for (const node of layer.inboundNodes) {
+        if (nodes.indexOf(node) !== -1) {
           if (flag) {
             sequentialLike = false;
             break;
@@ -49134,14 +49306,14 @@ function printLayerSummaryWithConnections(layer, positions, relevantNodes, print
     outputShape = "multiple";
   }
   const connections = [];
-  for (const node2 of layer.inboundNodes) {
-    if (relevantNodes != null && relevantNodes.length > 0 && relevantNodes.indexOf(node2) === -1) {
+  for (const node of layer.inboundNodes) {
+    if (relevantNodes != null && relevantNodes.length > 0 && relevantNodes.indexOf(node) === -1) {
       continue;
     }
-    for (let i2 = 0; i2 < node2.inboundLayers.length; ++i2) {
-      const inboundLayer = node2.inboundLayers[i2].name;
-      const inboundLayerIndex = node2.nodeIndices[i2];
-      const inboundTensorIndex = node2.tensorIndices[i2];
+    for (let i2 = 0; i2 < node.inboundLayers.length; ++i2) {
+      const inboundLayer = node.inboundLayers[i2].name;
+      const inboundLayerIndex = node.nodeIndices[i2];
+      const inboundTensorIndex = node.tensorIndices[i2];
       connections.push(`${inboundLayer}[${inboundLayerIndex}][${inboundTensorIndex}]`);
     }
   }
@@ -49594,33 +49766,33 @@ var Container = class extends Layer {
         nodeIndex = tensor2.nodeIndex;
         tensorIndex = tensor2.tensorIndex;
       }
-      const node2 = layer.inboundNodes[nodeIndex];
-      if (nodesInProgress2.indexOf(node2) !== -1) {
+      const node = layer.inboundNodes[nodeIndex];
+      if (nodesInProgress2.indexOf(node) !== -1) {
         throw new RuntimeError(`The tensor ${tensor2.name} at layer "${layer.name}" is part of a cycle.`);
       }
-      if (finishedNodes2.indexOf(node2) !== -1) {
+      if (finishedNodes2.indexOf(node) !== -1) {
         return;
       }
       this.containerNodes.add(Container.nodeKey(layer, nodeIndex));
       if (!(layer.id in layerIndices)) {
         layerIndices[layer.id] = Object.keys(layerIndices).length;
       }
-      if (nodesInProgress2.indexOf(node2) === -1) {
-        nodesInProgress2.push(node2);
+      if (nodesInProgress2.indexOf(node) === -1) {
+        nodesInProgress2.push(node);
       }
-      const numInboundLayers = node2.inboundLayers.length;
+      const numInboundLayers = node.inboundLayers.length;
       for (let i2 = 0; i2 < numInboundLayers; i2++) {
-        const x2 = node2.inputTensors[i2];
-        const layer2 = node2.inboundLayers[i2];
-        const nodeIndex2 = node2.nodeIndices[i2];
-        const tensorIndex2 = node2.tensorIndices[i2];
+        const x2 = node.inputTensors[i2];
+        const layer2 = node.inboundLayers[i2];
+        const nodeIndex2 = node.nodeIndices[i2];
+        const tensorIndex2 = node.tensorIndices[i2];
         buildMapOfGraph(x2, finishedNodes2, nodesInProgress2, layer2, nodeIndex2, tensorIndex2);
       }
-      finishedNodes2.push(node2);
-      while (nodesInProgress2.indexOf(node2) >= 0) {
-        nodesInProgress2.splice(nodesInProgress2.indexOf(node2), 1);
+      finishedNodes2.push(node);
+      while (nodesInProgress2.indexOf(node) >= 0) {
+        nodesInProgress2.splice(nodesInProgress2.indexOf(node), 1);
       }
-      nodesInDecreasingDepth.push(node2);
+      nodesInDecreasingDepth.push(node);
     };
     const finishedNodes = [];
     const nodesInProgress = [];
@@ -49628,20 +49800,20 @@ var Container = class extends Layer {
       buildMapOfGraph(x2, finishedNodes, nodesInProgress);
     }
     const reversedNodesInDecreasingDepth = nodesInDecreasingDepth.slice().reverse();
-    for (const node2 of reversedNodesInDecreasingDepth) {
-      nodeIDToNode[node2.id] = node2;
-      if (!(node2.id in nodesDepths)) {
-        nodesDepths[node2.id] = 0;
+    for (const node of reversedNodesInDecreasingDepth) {
+      nodeIDToNode[node.id] = node;
+      if (!(node.id in nodesDepths)) {
+        nodesDepths[node.id] = 0;
       }
-      let depth = nodesDepths[node2.id];
-      const previousDepth = layersDepths[node2.outboundLayer.id] == null ? 0 : layersDepths[node2.outboundLayer.id];
+      let depth = nodesDepths[node.id];
+      const previousDepth = layersDepths[node.outboundLayer.id] == null ? 0 : layersDepths[node.outboundLayer.id];
       depth = Math.max(depth, previousDepth);
-      layersDepths[node2.outboundLayer.id] = depth;
-      layerIDToLayer[node2.outboundLayer.id] = node2.outboundLayer;
-      nodesDepths[node2.id] = depth;
-      for (let i2 = 0; i2 < node2.inboundLayers.length; i2++) {
-        const inboundLayer = node2.inboundLayers[i2];
-        const nodeIndex = node2.nodeIndices[i2];
+      layersDepths[node.outboundLayer.id] = depth;
+      layerIDToLayer[node.outboundLayer.id] = node.outboundLayer;
+      nodesDepths[node.id] = depth;
+      for (let i2 = 0; i2 < node.inboundLayers.length; i2++) {
+        const inboundLayer = node.inboundLayers[i2];
+        const nodeIndex = node.nodeIndices[i2];
         const inboundNode = inboundLayer.inboundNodes[nodeIndex];
         const previousDepth2 = nodesDepths[inboundNode.id] == null ? 0 : nodesDepths[inboundNode.id];
         nodesDepths[inboundNode.id] = Math.max(depth + 1, previousDepth2);
@@ -49691,15 +49863,15 @@ var Container = class extends Layer {
     const computableTensors = this.inputs.slice();
     const layersWithCompleteInput = [];
     for (const depth of depthKeys) {
-      for (const node2 of nodesByDepth[depth]) {
-        const layer = node2.outboundLayer;
+      for (const node of nodesByDepth[depth]) {
+        const layer = node.outboundLayer;
         if (layer != null) {
-          for (const x2 of node2.inputTensors) {
+          for (const x2 of node.inputTensors) {
             if (computableTensors.indexOf(x2) === -1) {
               throw new RuntimeError(`Graph disconnected: cannot obtain value for tensor ${x2} at layer "${layer.name}". The following previous layers were accessed without issue: ${layersWithCompleteInput}`);
             }
           }
-          for (const x2 of node2.outputTensors) {
+          for (const x2 of node.outputTensors) {
             computableTensors.push(x2);
           }
           layersWithCompleteInput.push(layer.name);
@@ -49878,23 +50050,23 @@ var Container = class extends Layer {
     if (depthKeys.length > 1) {
       for (const depth of depthKeys) {
         const nodes = this.nodesByDepth[depth];
-        for (const node2 of nodes) {
-          const layer = node2.outboundLayer;
+        for (const node of nodes) {
+          const layer = node.outboundLayer;
           if (this.inputLayers.map((x2) => x2.id).indexOf(layer.id) !== -1) {
             continue;
           }
           const inputShapes2 = [];
-          for (let j2 = 0; j2 < node2.inboundLayers.length; j2++) {
-            const inboundLayer = node2.inboundLayers[j2];
-            const nodeIndex2 = node2.nodeIndices[j2];
-            const tensorIndex = node2.tensorIndices[j2];
+          for (let j2 = 0; j2 < node.inboundLayers.length; j2++) {
+            const inboundLayer = node.inboundLayers[j2];
+            const nodeIndex2 = node.nodeIndices[j2];
+            const tensorIndex = node.tensorIndices[j2];
             const shapeKey = `${inboundLayer.name}_${nodeIndex2}_${tensorIndex}`;
             const inputShape2 = layersToOutputShapes[shapeKey];
             inputShapes2.push(inputShape2);
           }
           const outputShape = layer.computeOutputShape(singletonOrArray(inputShapes2));
           const outputShapes2 = normalizeShapeList(outputShape);
-          const nodeIndex = layer.inboundNodes.indexOf(node2);
+          const nodeIndex = layer.inboundNodes.indexOf(node);
           for (let j2 = 0; j2 < outputShapes2.length; j2++) {
             const shapeKey = `${layer.name}_${nodeIndex}_${j2}`;
             layersToOutputShapes[shapeKey] = outputShapes2[j2];
@@ -49932,10 +50104,10 @@ var Container = class extends Layer {
     const depthKeys = Object.keys(this.nodesByDepth).map((x2) => parseInt(x2, 10)).sort(reverseNumberCompare);
     for (const depth of depthKeys) {
       const nodes = this.nodesByDepth[depth];
-      for (const node2 of nodes) {
-        const layer = node2.outboundLayer;
-        const referenceInputTensors = node2.inputTensors;
-        const referenceOutputTensors = node2.outputTensors;
+      for (const node of nodes) {
+        const layer = node.outboundLayer;
+        const referenceInputTensors = node.inputTensors;
+        const referenceOutputTensors = node.outputTensors;
         const computedData = new Array();
         for (const x2 of referenceInputTensors) {
           if (x2.id in tensorMap) {
@@ -49948,8 +50120,8 @@ var Container = class extends Layer {
           let computedMasks;
           let outputTensors2;
           let outputMasks2;
-          if (node2.callArgs != null) {
-            kwargs = node2.callArgs;
+          if (node.callArgs != null) {
+            kwargs = node.callArgs;
           }
           if (computedData.length === 1) {
             const [computedTensor, computedMask] = computedData[0];
@@ -50029,16 +50201,16 @@ var Container = class extends Layer {
   }
   calculateLosses() {
     return tidy(() => {
-      const losses4 = [];
+      const losses2 = [];
       for (const layer of this.layers) {
         for (let nodeIndex = 0; nodeIndex < layer.inboundNodes.length; ++nodeIndex) {
           const nodeKey = Container.nodeKey(layer, nodeIndex);
           if (this.containerNodes.has(nodeKey)) {
-            losses4.push(...layer.calculateLosses());
+            losses2.push(...layer.calculateLosses());
           }
         }
       }
-      return losses4;
+      return losses2;
     });
   }
   getConfig() {
@@ -50050,25 +50222,25 @@ var Container = class extends Layer {
       const layerConfig = layer.getConfig();
       const filteredInboundNodes = [];
       for (let originalNodeIndex = 0; originalNodeIndex < layer.inboundNodes.length; originalNodeIndex++) {
-        const node2 = layer.inboundNodes[originalNodeIndex];
+        const node = layer.inboundNodes[originalNodeIndex];
         const nodeKey = Container.nodeKey(layer, originalNodeIndex);
         let kwargs = {};
         if (this.containerNodes.has(nodeKey)) {
-          if (node2.callArgs) {
+          if (node.callArgs) {
             try {
-              JSON.stringify(node2.callArgs);
-              kwargs = node2.callArgs;
+              JSON.stringify(node.callArgs);
+              kwargs = node.callArgs;
             } catch (err) {
-              console.warn(`Layer ${layer.name} was passed non-serializable keyword arguments: ${node2.callArgs}. They will not be included in the serialized model (and thus will be missing at deserialization time).`);
+              console.warn(`Layer ${layer.name} was passed non-serializable keyword arguments: ${node.callArgs}. They will not be included in the serialized model (and thus will be missing at deserialization time).`);
               kwargs = {};
             }
           }
-          if (node2.inboundLayers.length > 0) {
+          if (node.inboundLayers.length > 0) {
             const nodeData = [];
-            for (let i2 = 0; i2 < node2.inboundLayers.length; i2++) {
-              const inboundLayer = node2.inboundLayers[i2];
-              const nodeIndex = node2.nodeIndices[i2];
-              const tensorIndex = node2.tensorIndices[i2];
+            for (let i2 = 0; i2 < node.inboundLayers.length; i2++) {
+              const inboundLayer = node.inboundLayers[i2];
+              const nodeIndex = node.nodeIndices[i2];
+              const tensorIndex = node.tensorIndices[i2];
               const nodeKey2 = Container.nodeKey(inboundLayer, nodeIndex);
               let newNodeIndex = nodeConversionMap[nodeKey2];
               if (newNodeIndex == null) {
@@ -50303,8 +50475,8 @@ async function standardizeWeights(y2, sampleWeight, classWeight, sampleWeightMod
     return null;
   }
 }
-function computeWeightedLoss2(losses4, sampleWeights) {
-  return mul(losses4, sampleWeights);
+function computeWeightedLoss2(losses2, sampleWeights) {
+  return mul(losses2, sampleWeights);
 }
 var DEFAULT_VALIDATION_BATCH_SIZE = 32;
 function standardizeDataIteratorOutput(model22, iteratorOut) {
@@ -50966,17 +51138,17 @@ function checkInputData(data, names, shapes, checkBatchAxis = true, exceptionPre
     }
   }
 }
-function collectMetrics(metrics2, outputNames) {
-  if (metrics2 == null || Array.isArray(metrics2) && metrics2.length === 0) {
+function collectMetrics(metrics, outputNames) {
+  if (metrics == null || Array.isArray(metrics) && metrics.length === 0) {
     return outputNames.map((name) => []);
   }
   let wrappedMetrics;
-  if (typeof metrics2 === "string" || typeof metrics2 === "function") {
-    wrappedMetrics = [metrics2];
-  } else if (Array.isArray(metrics2) || typeof metrics2 === "object") {
-    wrappedMetrics = metrics2;
+  if (typeof metrics === "string" || typeof metrics === "function") {
+    wrappedMetrics = [metrics];
+  } else if (Array.isArray(metrics) || typeof metrics === "object") {
+    wrappedMetrics = metrics;
   } else {
-    throw new TypeError(`Type of metrics argument not understood. Expected an string,function, Array, or Object, found: ${metrics2}`);
+    throw new TypeError(`Type of metrics argument not understood. Expected an string,function, Array, or Object, found: ${metrics}`);
   }
   if (Array.isArray(wrappedMetrics)) {
     return outputNames.map((name) => wrappedMetrics);
@@ -51086,12 +51258,12 @@ var LayersModel = class extends Container {
           continue;
         }
         const outputMetrics = nestedMetrics[i2];
-        const handleMetrics = (metrics2) => {
+        const handleMetrics = (metrics) => {
           const metricNamePrefix = "";
           let metricName;
           let accFn;
           let weightedMetricFn;
-          for (const metric of metrics2) {
+          for (const metric of metrics) {
             if (typeof metric === "string" && ["accuracy", "acc", "crossentropy", "ce"].indexOf(metric) !== -1) {
               const outputShape = this.internalOutputShapes[i2];
               if (outputShape[outputShape.length - 1] === 1 || this.lossFunctions[i2] === binaryCrossentropy) {
@@ -51476,13 +51648,13 @@ var LayersModel = class extends Container {
     const inputs = standardizeOut[0];
     const targets = standardizeOut[1];
     const trainFunction = this.makeTrainFunction();
-    const losses4 = trainFunction(inputs.concat(targets));
+    const losses2 = trainFunction(inputs.concat(targets));
     const lossValues = [];
-    for (const loss of losses4) {
+    for (const loss of losses2) {
       const v2 = await loss.data();
       lossValues.push(v2[0]);
     }
-    dispose(losses4);
+    dispose(losses2);
     return singletonOrArray(lossValues);
   }
   getNamedWeights(config3) {
@@ -51536,10 +51708,10 @@ var LayersModel = class extends Container {
     } else {
       const outputNames = Object.keys(this.loss);
       lossNames = {};
-      const losses4 = this.loss;
+      const losses2 = this.loss;
       for (const outputName of outputNames) {
-        if (typeof losses4[outputName] === "string") {
-          lossNames[outputName] = toSnakeCase(losses4[outputName]);
+        if (typeof losses2[outputName] === "string") {
+          lossNames[outputName] = toSnakeCase(losses2[outputName]);
         } else {
           throw new Error("Serialization of non-string loss is not supported.");
         }
@@ -51593,16 +51765,16 @@ var LayersModel = class extends Container {
         loss[key] = toCamelCase(trainingConfig.loss[key]);
       }
     }
-    let metrics2;
+    let metrics;
     if (Array.isArray(trainingConfig.metrics)) {
-      metrics2 = trainingConfig.metrics.map((metric) => toCamelCase(metric));
+      metrics = trainingConfig.metrics.map((metric) => toCamelCase(metric));
     } else if (trainingConfig.metrics != null) {
-      metrics2 = {};
+      metrics = {};
       for (const key in trainingConfig.metrics) {
-        metrics2[key] = toCamelCase(trainingConfig.metrics[key]);
+        metrics[key] = toCamelCase(trainingConfig.metrics[key]);
       }
     }
-    this.compile({ loss, metrics: metrics2, optimizer });
+    this.compile({ loss, metrics, optimizer });
   }
   async save(handlerOrURL, config3) {
     if (typeof handlerOrURL === "string") {
@@ -52468,7 +52640,7 @@ function preprocessConv3DInput(x2, dataFormat) {
     }
   });
 }
-function conv1dWithBias(x2, kernel, bias, strides = 1, padding2 = "valid", dataFormat, dilationRate = 1) {
+function conv1dWithBias(x2, kernel, bias, strides2 = 1, padding2 = "valid", dataFormat, dilationRate = 1) {
   return tidy(() => {
     if (dataFormat == null) {
       dataFormat = imageDataFormat();
@@ -52489,14 +52661,14 @@ function conv1dWithBias(x2, kernel, bias, strides = 1, padding2 = "valid", dataF
     if (padding2 === "causal") {
       throw new NotImplementedError("The support for CAUSAL padding mode in conv1dWithBias is not implemented yet.");
     }
-    let y2 = conv1d(x2, kernel, strides, padding2 === "same" ? "same" : "valid", "NWC", dilationRate);
+    let y2 = conv1d(x2, kernel, strides2, padding2 === "same" ? "same" : "valid", "NWC", dilationRate);
     if (bias != null) {
       y2 = biasAdd(y2, bias);
     }
     return y2;
   });
 }
-function conv2dWithBiasActivation(x2, kernel, bias, strides = [1, 1], padding2 = "valid", dataFormat, dilationRate, activation2 = null) {
+function conv2dWithBiasActivation(x2, kernel, bias, strides2 = [1, 1], padding2 = "valid", dataFormat, dilationRate, activation2 = null) {
   return tidy(() => {
     if (dataFormat == null) {
       dataFormat = imageDataFormat();
@@ -52515,7 +52687,7 @@ function conv2dWithBiasActivation(x2, kernel, bias, strides = [1, 1], padding2 =
     y2 = fused_ops_exports.conv2d({
       x: y2,
       filter: kernel,
-      strides,
+      strides: strides2,
       pad: padding2 === "same" ? "same" : "valid",
       dilations: dilationRate,
       dataFormat: "NHWC",
@@ -52528,7 +52700,7 @@ function conv2dWithBiasActivation(x2, kernel, bias, strides = [1, 1], padding2 =
     return y2;
   });
 }
-function conv3dWithBias(x2, kernel, bias, strides = [1, 1, 1], padding2 = "valid", dataFormat, dilationRate) {
+function conv3dWithBias(x2, kernel, bias, strides2 = [1, 1, 1], padding2 = "valid", dataFormat, dilationRate) {
   return tidy(() => {
     if (dataFormat == null) {
       dataFormat = imageDataFormat();
@@ -52544,7 +52716,7 @@ function conv3dWithBias(x2, kernel, bias, strides = [1, 1, 1], padding2 = "valid
     if (padding2 === "causal") {
       throw new NotImplementedError("The support for CAUSAL padding mode in conv3dWithBias is not implemented yet.");
     }
-    y2 = conv3d(y2, kernel, strides, padding2 === "same" ? "same" : "valid", "NDHWC", dilationRate);
+    y2 = conv3d(y2, kernel, strides2, padding2 === "same" ? "same" : "valid", "NDHWC", dilationRate);
     if (bias != null) {
       y2 = biasAdd(y2, bias);
     }
@@ -53180,7 +53352,7 @@ var UpSampling2D = class extends Layer {
 };
 UpSampling2D.className = "UpSampling2D";
 serialization_exports.registerClass(UpSampling2D);
-function depthwiseConv2d3(x2, depthwiseKernel, strides = [1, 1], padding2 = "valid", dataFormat, dilationRate) {
+function depthwiseConv2d3(x2, depthwiseKernel, strides2 = [1, 1], padding2 = "valid", dataFormat, dilationRate) {
   return tidy(() => {
     if (dataFormat == null) {
       dataFormat = imageDataFormat();
@@ -53193,7 +53365,7 @@ function depthwiseConv2d3(x2, depthwiseKernel, strides = [1, 1], padding2 = "val
     if (depthwiseKernel.rank !== 4) {
       throw new ValueError(`depthwiseKernel is required to be 4-D, but is instead ${depthwiseKernel.rank}-D`);
     }
-    y2 = depthwiseConv2d(y2, depthwiseKernel, strides, padding2 === "same" ? "same" : "valid", "NHWC", dilationRate);
+    y2 = depthwiseConv2d(y2, depthwiseKernel, strides2, padding2 === "same" ? "same" : "valid", "NHWC", dilationRate);
     if (dataFormat === "channelsFirst") {
       y2 = transpose(y2, [0, 3, 1, 2]);
     }
@@ -53270,13 +53442,13 @@ var DepthwiseConv2D = class extends BaseConv {
 };
 DepthwiseConv2D.className = "DepthwiseConv2D";
 serialization_exports.registerClass(DepthwiseConv2D);
-function standardizeArgs(inputs, initialState, constants, numConstants) {
+function standardizeArgs(inputs, initialState, constants3, numConstants) {
   if (Array.isArray(inputs)) {
-    if (initialState != null || constants != null) {
+    if (initialState != null || constants3 != null) {
       throw new ValueError("When inputs is an array, neither initialState or constants should be provided");
     }
     if (numConstants != null) {
-      constants = inputs.slice(inputs.length - numConstants, inputs.length);
+      constants3 = inputs.slice(inputs.length - numConstants, inputs.length);
       inputs = inputs.slice(0, inputs.length - numConstants);
     }
     if (inputs.length > 1) {
@@ -53292,10 +53464,10 @@ function standardizeArgs(inputs, initialState, constants, numConstants) {
     }
   }
   initialState = toListOrNull(initialState);
-  constants = toListOrNull(constants);
-  return { inputs, initialState, constants };
+  constants3 = toListOrNull(constants3);
+  return { inputs, initialState, constants: constants3 };
 }
-function rnn(stepFunction, inputs, initialStates, goBackwards = false, mask3, constants, unroll = false, needPerStepOutputs = false) {
+function rnn(stepFunction, inputs, initialStates, goBackwards = false, mask3, constants3, unroll = false, needPerStepOutputs = false) {
   return tidy(() => {
     const ndim = inputs.shape.length;
     if (ndim < 3) {
@@ -53303,7 +53475,7 @@ function rnn(stepFunction, inputs, initialStates, goBackwards = false, mask3, co
     }
     const axes = [1, 0].concat(range2(2, ndim));
     inputs = transpose(inputs, axes);
-    if (constants != null) {
+    if (constants3 != null) {
       throw new NotImplementedError("The rnn() functoin of the deeplearn.js backend does not support constants yet.");
     }
     if (unroll) {
@@ -53543,14 +53715,14 @@ var _RNN = class extends Layer {
   }
   apply(inputs, kwargs) {
     let initialState = kwargs == null ? null : kwargs["initialState"];
-    let constants = kwargs == null ? null : kwargs["constants"];
+    let constants3 = kwargs == null ? null : kwargs["constants"];
     if (kwargs == null) {
       kwargs = {};
     }
-    const standardized = standardizeArgs(inputs, initialState, constants, this.numConstants);
+    const standardized = standardizeArgs(inputs, initialState, constants3, this.numConstants);
     inputs = standardized.inputs;
     initialState = standardized.initialState;
-    constants = standardized.constants;
+    constants3 = standardized.constants;
     let additionalInputs = [];
     let additionalSpecs = [];
     if (initialState != null) {
@@ -53562,10 +53734,10 @@ var _RNN = class extends Layer {
       }
       additionalSpecs = additionalSpecs.concat(this.stateSpec);
     }
-    if (constants != null) {
-      kwargs["constants"] = constants;
-      additionalInputs = additionalInputs.concat(constants);
-      this.numConstants = constants.length;
+    if (constants3 != null) {
+      kwargs["constants"] = constants3;
+      additionalInputs = additionalInputs.concat(constants3);
+      this.numConstants = constants3.length;
     }
     const isTensor = additionalInputs[0] instanceof SymbolicTensor;
     if (isTensor) {
@@ -54408,12 +54580,12 @@ var ConvRNN2D = class extends RNN {
     });
   }
   computeSingleOutputShape(inputShape) {
-    const { dataFormat, filters, kernelSize, padding: padding2, strides, dilationRate } = this.cell;
+    const { dataFormat, filters, kernelSize, padding: padding2, strides: strides2, dilationRate } = this.cell;
     const isChannelsFirst = dataFormat === "channelsFirst";
     const h2 = inputShape[isChannelsFirst ? 3 : 2];
     const w2 = inputShape[isChannelsFirst ? 4 : 3];
-    const hOut = convOutputLength(h2, kernelSize[0], padding2, strides[0], dilationRate[0]);
-    const wOut = convOutputLength(w2, kernelSize[1], padding2, strides[1], dilationRate[1]);
+    const hOut = convOutputLength(h2, kernelSize[0], padding2, strides2[0], dilationRate[0]);
+    const wOut = convOutputLength(w2, kernelSize[1], padding2, strides2[1], dilationRate[1]);
     const outShape = [
       ...inputShape.slice(0, 2),
       ...isChannelsFirst ? [filters, hOut, wOut] : [hOut, wOut, filters]
@@ -54427,7 +54599,7 @@ var ConvLSTM2DCell = class extends LSTMCell {
     const {
       filters,
       kernelSize,
-      strides,
+      strides: strides2,
       padding: padding2,
       dataFormat,
       dilationRate
@@ -54437,7 +54609,7 @@ var ConvLSTM2DCell = class extends LSTMCell {
     assertPositiveInteger(this.filters, "filters");
     this.kernelSize = normalizeArray(kernelSize, 2, "kernelSize");
     this.kernelSize.forEach((size2) => assertPositiveInteger(size2, "kernelSize"));
-    this.strides = normalizeArray(strides || 1, 2, "strides");
+    this.strides = normalizeArray(strides2 || 1, 2, "strides");
     this.strides.forEach((stride) => assertPositiveInteger(stride, "strides"));
     this.padding = padding2 || "valid";
     checkPaddingMode(this.padding);
@@ -54462,13 +54634,13 @@ var ConvLSTM2DCell = class extends LSTMCell {
     if (this.useBias) {
       let biasInitializer;
       if (this.unitForgetBias) {
-        const init2 = this.biasInitializer;
+        const init22 = this.biasInitializer;
         const filters = this.filters;
         biasInitializer = new (_a = class extends Initializer {
           apply(shape, dtype) {
-            const biasI = init2.apply([filters]);
+            const biasI = init22.apply([filters]);
             const biasF = ones2([filters]);
-            const biasCAndO = init2.apply([filters * 2]);
+            const biasCAndO = init22.apply([filters * 2]);
             return concatenate([biasI, biasF, biasCAndO]);
           }
         }, _a.className = "CustomInit", _a)();
@@ -54562,8 +54734,8 @@ var ConvLSTM2DCell = class extends LSTMCell {
     return out;
   }
   recurrentConv(x2, w2) {
-    const strides = 1;
-    return conv2d(x2, w2, strides, "same", this.dataFormat === "channelsFirst" ? "NCHW" : "NHWC");
+    const strides2 = 1;
+    return conv2d(x2, w2, strides2, "same", this.dataFormat === "channelsFirst" ? "NCHW" : "NHWC");
   }
 };
 ConvLSTM2DCell.className = "ConvLSTM2DCell";
@@ -56082,13 +56254,13 @@ var ZeroPadding2D = class extends Layer {
 };
 ZeroPadding2D.className = "ZeroPadding2D";
 serialization_exports.registerClass(ZeroPadding2D);
-function pool2d(x2, poolSize, strides, padding2, dataFormat, poolMode) {
+function pool2d(x2, poolSize, strides2, padding2, dataFormat, poolMode) {
   return tidy(() => {
     checkDataFormat(dataFormat);
     checkPoolMode(poolMode);
     checkPaddingMode(padding2);
-    if (strides == null) {
-      strides = [1, 1];
+    if (strides2 == null) {
+      strides2 = [1, 1];
     }
     if (padding2 == null) {
       padding2 = "valid";
@@ -56103,9 +56275,9 @@ function pool2d(x2, poolSize, strides, padding2, dataFormat, poolMode) {
     let y2;
     const paddingString = padding2 === "same" ? "same" : "valid";
     if (poolMode === "max") {
-      y2 = maxPool(x2, poolSize, strides, paddingString);
+      y2 = maxPool(x2, poolSize, strides2, paddingString);
     } else {
-      y2 = avgPool(x2, poolSize, strides, paddingString);
+      y2 = avgPool(x2, poolSize, strides2, paddingString);
     }
     if (dataFormat === "channelsFirst") {
       y2 = transpose(y2, [0, 3, 1, 2]);
@@ -56113,13 +56285,13 @@ function pool2d(x2, poolSize, strides, padding2, dataFormat, poolMode) {
     return y2;
   });
 }
-function pool3d(x2, poolSize, strides, padding2, dataFormat, poolMode) {
+function pool3d(x2, poolSize, strides2, padding2, dataFormat, poolMode) {
   return tidy(() => {
     checkDataFormat(dataFormat);
     checkPoolMode(poolMode);
     checkPaddingMode(padding2);
-    if (strides == null) {
-      strides = [1, 1, 1];
+    if (strides2 == null) {
+      strides2 = [1, 1, 1];
     }
     if (padding2 == null) {
       padding2 = "valid";
@@ -56134,9 +56306,9 @@ function pool3d(x2, poolSize, strides, padding2, dataFormat, poolMode) {
     let y2;
     const paddingString = padding2 === "same" ? "same" : "valid";
     if (poolMode === "max") {
-      y2 = maxPool3d(x2, poolSize, strides, paddingString);
+      y2 = maxPool3d(x2, poolSize, strides2, paddingString);
     } else {
-      y2 = avgPool3d(x2, poolSize, strides, paddingString);
+      y2 = avgPool3d(x2, poolSize, strides2, paddingString);
     }
     if (dataFormat === "channelsFirst") {
       y2 = transpose(y2, [0, 4, 1, 2, 3]);
@@ -56202,10 +56374,10 @@ var MaxPooling1D = class extends Pooling1D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
+  poolingFunction(inputs, poolSize, strides2, padding2, dataFormat) {
     checkDataFormat(dataFormat);
     checkPaddingMode(padding2);
-    return pool2d(inputs, poolSize, strides, padding2, dataFormat, "max");
+    return pool2d(inputs, poolSize, strides2, padding2, dataFormat, "max");
   }
 };
 MaxPooling1D.className = "MaxPooling1D";
@@ -56214,10 +56386,10 @@ var AveragePooling1D = class extends Pooling1D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
+  poolingFunction(inputs, poolSize, strides2, padding2, dataFormat) {
     checkDataFormat(dataFormat);
     checkPaddingMode(padding2);
-    return pool2d(inputs, poolSize, strides, padding2, dataFormat, "avg");
+    return pool2d(inputs, poolSize, strides2, padding2, dataFormat, "avg");
   }
 };
 AveragePooling1D.className = "AveragePooling1D";
@@ -56281,10 +56453,10 @@ var MaxPooling2D = class extends Pooling2D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
+  poolingFunction(inputs, poolSize, strides2, padding2, dataFormat) {
     checkDataFormat(dataFormat);
     checkPaddingMode(padding2);
-    return pool2d(inputs, poolSize, strides, padding2, dataFormat, "max");
+    return pool2d(inputs, poolSize, strides2, padding2, dataFormat, "max");
   }
 };
 MaxPooling2D.className = "MaxPooling2D";
@@ -56293,10 +56465,10 @@ var AveragePooling2D = class extends Pooling2D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
+  poolingFunction(inputs, poolSize, strides2, padding2, dataFormat) {
     checkDataFormat(dataFormat);
     checkPaddingMode(padding2);
-    return pool2d(inputs, poolSize, strides, padding2, dataFormat, "avg");
+    return pool2d(inputs, poolSize, strides2, padding2, dataFormat, "avg");
   }
 };
 AveragePooling2D.className = "AveragePooling2D";
@@ -56362,10 +56534,10 @@ var MaxPooling3D = class extends Pooling3D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
+  poolingFunction(inputs, poolSize, strides2, padding2, dataFormat) {
     checkDataFormat(dataFormat);
     checkPaddingMode(padding2);
-    return pool3d(inputs, poolSize, strides, padding2, dataFormat, "max");
+    return pool3d(inputs, poolSize, strides2, padding2, dataFormat, "max");
   }
 };
 MaxPooling3D.className = "MaxPooling3D";
@@ -56374,10 +56546,10 @@ var AveragePooling3D = class extends Pooling3D {
   constructor(args) {
     super(args);
   }
-  poolingFunction(inputs, poolSize, strides, padding2, dataFormat) {
+  poolingFunction(inputs, poolSize, strides2, padding2, dataFormat) {
     checkDataFormat(dataFormat);
     checkPaddingMode(padding2);
-    return pool3d(inputs, poolSize, strides, padding2, dataFormat, "avg");
+    return pool3d(inputs, poolSize, strides2, padding2, dataFormat, "avg");
   }
 };
 AveragePooling3D.className = "AveragePooling3D";
@@ -56664,19 +56836,19 @@ var Bidirectional = class extends Wrapper {
   }
   apply(inputs, kwargs) {
     let initialState = kwargs == null ? null : kwargs["initialState"];
-    let constants = kwargs == null ? null : kwargs["constants"];
+    let constants3 = kwargs == null ? null : kwargs["constants"];
     if (kwargs == null) {
       kwargs = {};
     }
-    const standardized = standardizeArgs(inputs, initialState, constants, this.numConstants);
+    const standardized = standardizeArgs(inputs, initialState, constants3, this.numConstants);
     inputs = standardized.inputs;
     initialState = standardized.initialState;
-    constants = standardized.constants;
+    constants3 = standardized.constants;
     if (Array.isArray(inputs)) {
       initialState = inputs.slice(1);
       inputs = inputs[0];
     }
-    if ((initialState == null || initialState.length === 0) && constants == null) {
+    if ((initialState == null || initialState.length === 0) && constants3 == null) {
       return super.apply(inputs, kwargs);
     }
     const additionalInputs = [];
@@ -56693,7 +56865,7 @@ var Bidirectional = class extends Wrapper {
       this.backwardLayer.stateSpec = stateSpecs.slice(numStates / 2);
       additionalSpecs.push(...stateSpecs);
     }
-    if (constants != null) {
+    if (constants3 != null) {
       throw new NotImplementedError("Support for constants in Bidirectional layers is not implemented yet.");
     }
     const isSymbolicTensor = additionalInputs[0] instanceof SymbolicTensor;
@@ -57231,42 +57403,60 @@ ENV3.registerFlag("KEEP_INTERMEDIATE_TENSORS", () => false, (debugValue) => {
     console.warn("Keep intermediate tensors is ON. This will print the values of all intermediate tensors during model inference. Not all models support this mode. For details, check e2e/benchmarks/ model_config.js. This significantly impacts performance.");
   }
 });
-var DataType8;
-(function(DataType49) {
-  DataType49[DataType49["DT_INVALID"] = 0] = "DT_INVALID";
-  DataType49[DataType49["DT_FLOAT"] = 1] = "DT_FLOAT";
-  DataType49[DataType49["DT_DOUBLE"] = 2] = "DT_DOUBLE";
-  DataType49[DataType49["DT_INT32"] = 3] = "DT_INT32";
-  DataType49[DataType49["DT_UINT8"] = 4] = "DT_UINT8";
-  DataType49[DataType49["DT_INT16"] = 5] = "DT_INT16";
-  DataType49[DataType49["DT_INT8"] = 6] = "DT_INT8";
-  DataType49[DataType49["DT_STRING"] = 7] = "DT_STRING";
-  DataType49[DataType49["DT_COMPLEX64"] = 8] = "DT_COMPLEX64";
-  DataType49[DataType49["DT_INT64"] = 9] = "DT_INT64";
-  DataType49[DataType49["DT_BOOL"] = 10] = "DT_BOOL";
-  DataType49[DataType49["DT_QINT8"] = 11] = "DT_QINT8";
-  DataType49[DataType49["DT_QUINT8"] = 12] = "DT_QUINT8";
-  DataType49[DataType49["DT_QINT32"] = 13] = "DT_QINT32";
-  DataType49[DataType49["DT_BFLOAT16"] = 14] = "DT_BFLOAT16";
-  DataType49[DataType49["DT_FLOAT_REF"] = 101] = "DT_FLOAT_REF";
-  DataType49[DataType49["DT_DOUBLE_REF"] = 102] = "DT_DOUBLE_REF";
-  DataType49[DataType49["DT_INT32_REF"] = 103] = "DT_INT32_REF";
-  DataType49[DataType49["DT_UINT8_REF"] = 104] = "DT_UINT8_REF";
-  DataType49[DataType49["DT_INT16_REF"] = 105] = "DT_INT16_REF";
-  DataType49[DataType49["DT_INT8_REF"] = 106] = "DT_INT8_REF";
-  DataType49[DataType49["DT_STRING_REF"] = 107] = "DT_STRING_REF";
-  DataType49[DataType49["DT_COMPLEX64_REF"] = 108] = "DT_COMPLEX64_REF";
-  DataType49[DataType49["DT_INT64_REF"] = 109] = "DT_INT64_REF";
-  DataType49[DataType49["DT_BOOL_REF"] = 110] = "DT_BOOL_REF";
-  DataType49[DataType49["DT_QINT8_REF"] = 111] = "DT_QINT8_REF";
-  DataType49[DataType49["DT_QUINT8_REF"] = 112] = "DT_QUINT8_REF";
-  DataType49[DataType49["DT_QINT32_REF"] = 113] = "DT_QINT32_REF";
-  DataType49[DataType49["DT_BFLOAT16_REF"] = 114] = "DT_BFLOAT16_REF";
-})(DataType8 || (DataType8 = {}));
+var DataType8 = ((DataType48) => {
+  DataType48[DataType48["DT_INVALID"] = 0] = "DT_INVALID";
+  DataType48[DataType48["DT_FLOAT"] = 1] = "DT_FLOAT";
+  DataType48[DataType48["DT_DOUBLE"] = 2] = "DT_DOUBLE";
+  DataType48[DataType48["DT_INT32"] = 3] = "DT_INT32";
+  DataType48[DataType48["DT_UINT8"] = 4] = "DT_UINT8";
+  DataType48[DataType48["DT_INT16"] = 5] = "DT_INT16";
+  DataType48[DataType48["DT_INT8"] = 6] = "DT_INT8";
+  DataType48[DataType48["DT_STRING"] = 7] = "DT_STRING";
+  DataType48[DataType48["DT_COMPLEX64"] = 8] = "DT_COMPLEX64";
+  DataType48[DataType48["DT_INT64"] = 9] = "DT_INT64";
+  DataType48[DataType48["DT_BOOL"] = 10] = "DT_BOOL";
+  DataType48[DataType48["DT_QINT8"] = 11] = "DT_QINT8";
+  DataType48[DataType48["DT_QUINT8"] = 12] = "DT_QUINT8";
+  DataType48[DataType48["DT_QINT32"] = 13] = "DT_QINT32";
+  DataType48[DataType48["DT_BFLOAT16"] = 14] = "DT_BFLOAT16";
+  DataType48[DataType48["DT_QINT16"] = 15] = "DT_QINT16";
+  DataType48[DataType48["DT_QUINT16"] = 16] = "DT_QUINT16";
+  DataType48[DataType48["DT_UINT16"] = 17] = "DT_UINT16";
+  DataType48[DataType48["DT_COMPLEX128"] = 18] = "DT_COMPLEX128";
+  DataType48[DataType48["DT_HALF"] = 19] = "DT_HALF";
+  DataType48[DataType48["DT_RESOURCE"] = 20] = "DT_RESOURCE";
+  DataType48[DataType48["DT_VARIANT"] = 21] = "DT_VARIANT";
+  DataType48[DataType48["DT_UINT32"] = 22] = "DT_UINT32";
+  DataType48[DataType48["DT_UINT64"] = 23] = "DT_UINT64";
+  DataType48[DataType48["DT_FLOAT_REF"] = 101] = "DT_FLOAT_REF";
+  DataType48[DataType48["DT_DOUBLE_REF"] = 102] = "DT_DOUBLE_REF";
+  DataType48[DataType48["DT_INT32_REF"] = 103] = "DT_INT32_REF";
+  DataType48[DataType48["DT_UINT8_REF"] = 104] = "DT_UINT8_REF";
+  DataType48[DataType48["DT_INT16_REF"] = 105] = "DT_INT16_REF";
+  DataType48[DataType48["DT_INT8_REF"] = 106] = "DT_INT8_REF";
+  DataType48[DataType48["DT_STRING_REF"] = 107] = "DT_STRING_REF";
+  DataType48[DataType48["DT_COMPLEX64_REF"] = 108] = "DT_COMPLEX64_REF";
+  DataType48[DataType48["DT_INT64_REF"] = 109] = "DT_INT64_REF";
+  DataType48[DataType48["DT_BOOL_REF"] = 110] = "DT_BOOL_REF";
+  DataType48[DataType48["DT_QINT8_REF"] = 111] = "DT_QINT8_REF";
+  DataType48[DataType48["DT_QUINT8_REF"] = 112] = "DT_QUINT8_REF";
+  DataType48[DataType48["DT_QINT32_REF"] = 113] = "DT_QINT32_REF";
+  DataType48[DataType48["DT_BFLOAT16_REF"] = 114] = "DT_BFLOAT16_REF";
+  DataType48[DataType48["DT_QINT16_REF"] = 115] = "DT_QINT16_REF";
+  DataType48[DataType48["DT_QUINT16_REF"] = 116] = "DT_QUINT16_REF";
+  DataType48[DataType48["DT_UINT16_REF"] = 117] = "DT_UINT16_REF";
+  DataType48[DataType48["DT_COMPLEX128_REF"] = 118] = "DT_COMPLEX128_REF";
+  DataType48[DataType48["DT_HALF_REF"] = 119] = "DT_HALF_REF";
+  DataType48[DataType48["DT_RESOURCE_REF"] = 120] = "DT_RESOURCE_REF";
+  DataType48[DataType48["DT_VARIANT_REF"] = 121] = "DT_VARIANT_REF";
+  DataType48[DataType48["DT_UINT32_REF"] = 122] = "DT_UINT32_REF";
+  DataType48[DataType48["DT_UINT64_REF"] = 123] = "DT_UINT64_REF";
+  return DataType48;
+})(DataType8 || {});
 var SaverDef;
-(function(SaverDef2) {
+((SaverDef2) => {
   let CheckpointFormatVersion;
-  (function(CheckpointFormatVersion2) {
+  ((CheckpointFormatVersion2) => {
     CheckpointFormatVersion2[CheckpointFormatVersion2["LEGACY"] = 0] = "LEGACY";
     CheckpointFormatVersion2[CheckpointFormatVersion2["V1"] = 1] = "V1";
     CheckpointFormatVersion2[CheckpointFormatVersion2["V2"] = 2] = "V2";
@@ -57289,23 +57479,23 @@ function getRegisteredOp(name) {
 function deregisterOp(name) {
   delete CUSTOM_OPS[name];
 }
-function getParamValue(paramName, node2, tensorMap, context, resourceManager) {
-  const inputParam = node2.inputParams[paramName];
+function getParamValue(paramName, node, tensorMap, context, resourceManager) {
+  const inputParam = node.inputParams[paramName];
   if (inputParam && inputParam.inputIndexStart !== void 0) {
     const start = inputParam.inputIndexStart;
     const end = inputParam.inputIndexEnd === 0 ? void 0 : inputParam.inputIndexEnd === void 0 ? start + 1 : inputParam.inputIndexEnd;
     if (inputParam.type === "tensor") {
-      return getTensor(node2.inputNames[inputParam.inputIndexStart], tensorMap, context, resourceManager);
+      return getTensor(node.inputNames[inputParam.inputIndexStart], tensorMap, context, resourceManager);
     }
     if (inputParam.type === "tensors") {
-      const inputs = node2.inputNames.slice(start, end);
+      const inputs = node.inputNames.slice(start, end);
       return inputs.map((name) => getTensor(name, tensorMap, context, resourceManager));
     }
-    const tensor2 = getTensor(node2.inputNames.slice(start)[0], tensorMap, context, resourceManager);
+    const tensor2 = getTensor(node.inputNames.slice(start)[0], tensorMap, context, resourceManager);
     const data = tensor2.dataSync();
     return inputParam.type === "number" ? data[0] : util_exports.toNestedArray(tensor2.shape, data);
   }
-  const attrParam = node2.attrParams[paramName];
+  const attrParam = node.attrParams[paramName];
   return attrParam && attrParam.value;
 }
 function getTensor(name, tensorsMap, context, resourceManager) {
@@ -57345,10 +57535,10 @@ function parseNodeName(name) {
   const index2 = Number(parts[parts.length - 1]);
   return [nodeName, index2, outputName];
 }
-function getPadding(node2, tensorMap, context) {
-  let pad3 = getParamValue("pad", node2, tensorMap, context);
+function getPadding(node, tensorMap, context) {
+  let pad3 = getParamValue("pad", node, tensorMap, context);
   if (pad3 === "explicit") {
-    pad3 = getParamValue("explicitPaddings", node2, tensorMap, context);
+    pad3 = getParamValue("explicitPaddings", node, tensorMap, context);
     const explicitPadding = [[0, 0], [0, 0], [0, 0], [0, 0]];
     for (let i2 = 0; i2 < 4; i2++) {
       explicitPadding[i2][0] = pad3[i2 * 2];
@@ -63217,19 +63407,19 @@ var OperationMapper = class {
       return map;
     }, {});
   }
-  transformGraph(graph2, signature = {}) {
-    const tfNodes = graph2.node;
+  transformGraph(graph, signature = {}) {
+    const tfNodes = graph.node;
     const placeholders = [];
     const weights = [];
     const initNodes = [];
-    const nodes = tfNodes.reduce((map, node2) => {
-      map[node2.name] = this.mapNode(node2);
-      if (node2.op.startsWith("Placeholder")) {
-        placeholders.push(map[node2.name]);
-      } else if (node2.op === "Const") {
-        weights.push(map[node2.name]);
-      } else if (node2.input == null || node2.input.length === 0) {
-        initNodes.push(map[node2.name]);
+    const nodes = tfNodes.reduce((map, node) => {
+      map[node.name] = this.mapNode(node);
+      if (node.op.startsWith("Placeholder")) {
+        placeholders.push(map[node.name]);
+      } else if (node.op === "Const") {
+        weights.push(map[node.name]);
+      } else if (node.input == null || node.input.length === 0) {
+        initNodes.push(map[node.name]);
       }
       return map;
     }, {});
@@ -63243,53 +63433,53 @@ var OperationMapper = class {
     }
     const allNodes = Object.keys(nodes);
     allNodes.forEach((key) => {
-      const node2 = nodes[key];
-      node2.inputNames.forEach((name, index2) => {
+      const node = nodes[key];
+      node.inputNames.forEach((name, index2) => {
         const [nodeName, , outputName] = getNodeNameAndIndex(name);
         const inputNode = nodes[nodeName];
         if (inputNode.outputs != null) {
           const outputIndex = inputNode.outputs.indexOf(outputName);
           if (outputIndex !== -1) {
             const inputName = `${nodeName}:${outputIndex}`;
-            node2.inputNames[index2] = inputName;
+            node.inputNames[index2] = inputName;
           }
         }
-        node2.inputs.push(inputNode);
-        inputNode.children.push(node2);
+        node.inputs.push(inputNode);
+        inputNode.children.push(node);
       });
     });
     if (Object.keys(outputNodeNameToKey).length === 0) {
       allNodes.forEach((key) => {
-        const node2 = nodes[key];
-        if (node2.children.length === 0) {
-          outputs.push(node2);
+        const node = nodes[key];
+        if (node.children.length === 0) {
+          outputs.push(node);
         }
       });
     } else {
       Object.keys(outputNodeNameToKey).forEach((name) => {
         const [nodeName] = getNodeNameAndIndex(name);
-        const node2 = nodes[nodeName];
-        if (node2 != null) {
-          node2.signatureKey = outputNodeNameToKey[name];
-          outputs.push(node2);
+        const node = nodes[nodeName];
+        if (node != null) {
+          node.signatureKey = outputNodeNameToKey[name];
+          outputs.push(node);
         }
       });
     }
     if (Object.keys(inputNodeNameToKey).length > 0) {
       Object.keys(inputNodeNameToKey).forEach((name) => {
         const [nodeName] = getNodeNameAndIndex(name);
-        const node2 = nodes[nodeName];
-        if (node2) {
-          node2.signatureKey = inputNodeNameToKey[name];
-          inputs.push(node2);
+        const node = nodes[nodeName];
+        if (node) {
+          node.signatureKey = inputNodeNameToKey[name];
+          inputs.push(node);
         }
       });
     } else {
       inputs = placeholders;
     }
     let functions = {};
-    if (graph2.library != null && graph2.library.function != null) {
-      functions = graph2.library.function.reduce((functions2, func2) => {
+    if (graph.library != null && graph.library.function != null) {
+      functions = graph.library.function.reduce((functions2, func2) => {
         functions2[func2.signature.name] = this.mapFunction(func2);
         return functions2;
       }, {});
@@ -63306,21 +63496,21 @@ var OperationMapper = class {
       return prev;
     }, {});
   }
-  mapNode(node2) {
-    const mapper = getRegisteredOp(node2.op) || this.opMappers[node2.op] || {};
-    if (node2.attr == null) {
-      node2.attr = {};
+  mapNode(node) {
+    const mapper = getRegisteredOp(node.op) || this.opMappers[node.op] || {};
+    if (node.attr == null) {
+      node.attr = {};
     }
     const newNode = {
-      name: node2.name,
-      op: node2.op,
+      name: node.name,
+      op: node.op,
       category: mapper.category,
-      inputNames: (node2.input || []).map((input2) => input2.startsWith("^") ? input2.substr(1) : input2),
+      inputNames: (node.input || []).map((input2) => input2.startsWith("^") ? input2.substr(1) : input2),
       inputs: [],
       children: [],
       inputParams: {},
       attrParams: {},
-      rawAttrs: node2.attr,
+      rawAttrs: node.attr,
       outputs: mapper.outputs
     };
     if (mapper.inputs != null) {
@@ -63339,76 +63529,76 @@ var OperationMapper = class {
         let value = void 0;
         switch (param.type) {
           case "string":
-            value = getStringParam(node2.attr, param.tfName, param.defaultValue);
+            value = getStringParam(node.attr, param.tfName, param.defaultValue);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getStringParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getStringParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "string[]":
-            value = getStringArrayParam(node2.attr, param.tfName, param.defaultValue);
+            value = getStringArrayParam(node.attr, param.tfName, param.defaultValue);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getStringArrayParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getStringArrayParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "number":
-            value = getNumberParam(node2.attr, param.tfName, param.defaultValue || 0);
+            value = getNumberParam(node.attr, param.tfName, param.defaultValue || 0);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getNumberParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getNumberParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "number[]":
-            value = getNumericArrayParam(node2.attr, param.tfName, param.defaultValue);
+            value = getNumericArrayParam(node.attr, param.tfName, param.defaultValue);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getNumericArrayParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getNumericArrayParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "bool":
-            value = getBoolParam(node2.attr, param.tfName, param.defaultValue);
+            value = getBoolParam(node.attr, param.tfName, param.defaultValue);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getBoolParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getBoolParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "bool[]":
-            value = getBoolArrayParam(node2.attr, param.tfName, param.defaultValue);
+            value = getBoolArrayParam(node.attr, param.tfName, param.defaultValue);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getBoolArrayParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getBoolArrayParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "shape":
-            value = getTensorShapeParam(node2.attr, param.tfName, param.defaultValue);
+            value = getTensorShapeParam(node.attr, param.tfName, param.defaultValue);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getTensorShapeParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getTensorShapeParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "shape[]":
-            value = getTensorShapeArrayParam(node2.attr, param.tfName, param.defaultValue);
+            value = getTensorShapeArrayParam(node.attr, param.tfName, param.defaultValue);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getTensorShapeArrayParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getTensorShapeArrayParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "dtype":
-            value = getDtypeParam(node2.attr, param.tfName, param.defaultValue);
+            value = getDtypeParam(node.attr, param.tfName, param.defaultValue);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getDtypeParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getDtypeParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "dtype[]":
-            value = getDtypeArrayParam(node2.attr, param.tfName, param.defaultValue);
+            value = getDtypeArrayParam(node.attr, param.tfName, param.defaultValue);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getDtypeArrayParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getDtypeArrayParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "func":
-            value = getFuncParam(node2.attr, param.tfName, param.defaultValue);
+            value = getFuncParam(node.attr, param.tfName, param.defaultValue);
             if (value === void 0 && !!param.tfDeprecatedName) {
-              value = getFuncParam(node2.attr, param.tfDeprecatedName, param.defaultValue);
+              value = getFuncParam(node.attr, param.tfDeprecatedName, param.defaultValue);
             }
             break;
           case "tensor":
           case "tensors":
             break;
           default:
-            throw new Error(`Unsupported param type: ${param.type} for op: ${node2.op}`);
+            throw new Error(`Unsupported param type: ${param.type} for op: ${node.op}`);
         }
         map[param.name] = { value, type };
         return map;
@@ -63422,10 +63612,10 @@ var OperationMapper = class {
     const weights = [];
     let nodes = {};
     if (tfNodes != null) {
-      nodes = tfNodes.reduce((map, node2) => {
-        map[node2.name] = this.mapNode(node2);
-        if (node2.op === "Const") {
-          weights.push(map[node2.name]);
+      nodes = tfNodes.reduce((map, node) => {
+        map[node.name] = this.mapNode(node);
+        if (node.op === "Const") {
+          weights.push(map[node.name]);
         }
         return map;
       }, {});
@@ -63434,7 +63624,7 @@ var OperationMapper = class {
     const outputs = [];
     functionDef.signature.inputArg.forEach((arg) => {
       const [nodeName] = getNodeNameAndIndex(arg.name);
-      const node2 = {
+      const node = {
         name: nodeName,
         op: "Placeholder",
         inputs: [],
@@ -63444,34 +63634,34 @@ var OperationMapper = class {
         attrParams: { dtype: { value: parseDtypeParam(arg.type), type: "dtype" } },
         children: []
       };
-      node2.signatureKey = arg.name;
-      inputs.push(node2);
-      nodes[nodeName] = node2;
+      node.signatureKey = arg.name;
+      inputs.push(node);
+      nodes[nodeName] = node;
     });
     const allNodes = Object.keys(nodes);
     allNodes.forEach((key) => {
-      const node2 = nodes[key];
-      node2.inputNames.forEach((name, index2) => {
+      const node = nodes[key];
+      node.inputNames.forEach((name, index2) => {
         const [nodeName, , outputName] = getNodeNameAndIndex(name);
         const inputNode = nodes[nodeName];
         if (inputNode.outputs != null) {
           const outputIndex = inputNode.outputs.indexOf(outputName);
           if (outputIndex !== -1) {
             const inputName = `${nodeName}:${outputIndex}`;
-            node2.inputNames[index2] = inputName;
+            node.inputNames[index2] = inputName;
           }
         }
-        node2.inputs.push(inputNode);
-        inputNode.children.push(node2);
+        node.inputs.push(inputNode);
+        inputNode.children.push(node);
       });
     });
     const returnNodeMap = functionDef.ret;
     functionDef.signature.outputArg.forEach((output) => {
       const [nodeName, index2] = getNodeNameAndIndex(returnNodeMap[output.name]);
-      const node2 = nodes[nodeName];
-      if (node2 != null) {
-        node2.defaultOutput = index2;
-        outputs.push(node2);
+      const node = nodes[nodeName];
+      if (node != null) {
+        node.defaultOutput = index2;
+        outputs.push(node);
       }
     });
     const signature = this.mapArgsToSignature(functionDef);
@@ -63534,6 +63724,7 @@ function parseDtypeParam(value) {
   }
   switch (value) {
     case DataType8.DT_FLOAT:
+    case DataType8.DT_HALF:
       return "float32";
     case DataType8.DT_INT32:
     case DataType8.DT_INT64:
@@ -63620,15 +63811,15 @@ function getBoolArrayParam(attrs, name, def) {
   return def;
 }
 var NodeValueImpl = class {
-  constructor(node2, tensorMap, context) {
-    this.node = node2;
+  constructor(node, tensorMap, context) {
+    this.node = node;
     this.tensorMap = tensorMap;
     this.context = context;
     this.inputs = [];
     this.attrs = {};
-    this.inputs = node2.inputNames.map((name) => this.getInput(name));
-    if (node2.rawAttrs != null) {
-      this.attrs = Object.keys(node2.rawAttrs).reduce((attrs, key) => {
+    this.inputs = node.inputNames.map((name) => this.getInput(name));
+    if (node.rawAttrs != null) {
+      this.attrs = Object.keys(node.rawAttrs).reduce((attrs, key) => {
         attrs[key] = this.getAttr(key);
         return attrs;
       }, {});
@@ -63677,149 +63868,149 @@ var NodeValueImpl = class {
     return defaultValue;
   }
 };
-var executeOp = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp = (node, tensorMap, context) => {
+  switch (node.op) {
     case "BiasAdd":
     case "AddV2":
     case "Add": {
-      return [add2(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [add2(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "AddN": {
-      return [addN(getParamValue("tensors", node2, tensorMap, context))];
+      return [addN(getParamValue("tensors", node, tensorMap, context))];
     }
     case "FloorMod":
     case "Mod":
-      return [mod(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [mod(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     case "Mul":
-      return [mul(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [mul(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     case "RealDiv":
     case "Div": {
-      return [div(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [div(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "DivNoNan": {
-      return [divNoNan(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [divNoNan(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "FloorDiv": {
-      return [floorDiv(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [floorDiv(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "Sub": {
-      return [sub(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [sub(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "Minimum": {
-      return [minimum(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [minimum(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "Maximum": {
-      return [maximum(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [maximum(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "Pow": {
-      return [pow(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [pow(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "SquaredDifference": {
-      return [squaredDifference(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [squaredDifference(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp2 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp2 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "Abs":
     case "ComplexAbs":
-      return [abs(getParamValue("x", node2, tensorMap, context))];
+      return [abs(getParamValue("x", node, tensorMap, context))];
     case "Acos":
-      return [acos(getParamValue("x", node2, tensorMap, context))];
+      return [acos(getParamValue("x", node, tensorMap, context))];
     case "Acosh":
-      return [acosh(getParamValue("x", node2, tensorMap, context))];
+      return [acosh(getParamValue("x", node, tensorMap, context))];
     case "Asin":
-      return [asin(getParamValue("x", node2, tensorMap, context))];
+      return [asin(getParamValue("x", node, tensorMap, context))];
     case "Asinh":
-      return [asinh(getParamValue("x", node2, tensorMap, context))];
+      return [asinh(getParamValue("x", node, tensorMap, context))];
     case "Atan":
-      return [atan(getParamValue("x", node2, tensorMap, context))];
+      return [atan(getParamValue("x", node, tensorMap, context))];
     case "Atan2":
-      return [atan2(getParamValue("x", node2, tensorMap, context), getParamValue("y", node2, tensorMap, context))];
+      return [atan2(getParamValue("x", node, tensorMap, context), getParamValue("y", node, tensorMap, context))];
     case "Atanh":
-      return [atanh(getParamValue("x", node2, tensorMap, context))];
+      return [atanh(getParamValue("x", node, tensorMap, context))];
     case "Ceil":
-      return [ceil(getParamValue("x", node2, tensorMap, context))];
+      return [ceil(getParamValue("x", node, tensorMap, context))];
     case "Complex":
-      return [complex(getParamValue("real", node2, tensorMap, context), getParamValue("imag", node2, tensorMap, context))];
+      return [complex(getParamValue("real", node, tensorMap, context), getParamValue("imag", node, tensorMap, context))];
     case "Cos":
-      return [cos(getParamValue("x", node2, tensorMap, context))];
+      return [cos(getParamValue("x", node, tensorMap, context))];
     case "Cosh":
-      return [cosh(getParamValue("x", node2, tensorMap, context))];
+      return [cosh(getParamValue("x", node, tensorMap, context))];
     case "Elu":
-      return [elu(getParamValue("x", node2, tensorMap, context))];
+      return [elu(getParamValue("x", node, tensorMap, context))];
     case "Erf":
-      return [erf(getParamValue("x", node2, tensorMap, context))];
+      return [erf(getParamValue("x", node, tensorMap, context))];
     case "Exp":
-      return [exp(getParamValue("x", node2, tensorMap, context))];
+      return [exp(getParamValue("x", node, tensorMap, context))];
     case "Expm1": {
-      return [expm1(getParamValue("x", node2, tensorMap, context))];
+      return [expm1(getParamValue("x", node, tensorMap, context))];
     }
     case "Floor":
-      return [floor(getParamValue("x", node2, tensorMap, context))];
+      return [floor(getParamValue("x", node, tensorMap, context))];
     case "Log":
-      return [log4(getParamValue("x", node2, tensorMap, context))];
+      return [log22(getParamValue("x", node, tensorMap, context))];
     case "Log1p": {
-      return [log1p(getParamValue("x", node2, tensorMap, context))];
+      return [log1p(getParamValue("x", node, tensorMap, context))];
     }
     case "Imag":
-      return [imag(getParamValue("x", node2, tensorMap, context))];
+      return [imag(getParamValue("x", node, tensorMap, context))];
     case "Neg":
-      return [neg(getParamValue("x", node2, tensorMap, context))];
+      return [neg(getParamValue("x", node, tensorMap, context))];
     case "Reciprocal": {
-      return [reciprocal(getParamValue("x", node2, tensorMap, context))];
+      return [reciprocal(getParamValue("x", node, tensorMap, context))];
     }
     case "Real":
-      return [real(getParamValue("x", node2, tensorMap, context))];
+      return [real(getParamValue("x", node, tensorMap, context))];
     case "Relu":
-      return [relu(getParamValue("x", node2, tensorMap, context))];
+      return [relu(getParamValue("x", node, tensorMap, context))];
     case "Round": {
-      return [round2(getParamValue("x", node2, tensorMap, context))];
+      return [round2(getParamValue("x", node, tensorMap, context))];
     }
     case "Selu":
-      return [selu(getParamValue("x", node2, tensorMap, context))];
+      return [selu(getParamValue("x", node, tensorMap, context))];
     case "Sigmoid":
-      return [sigmoid(getParamValue("x", node2, tensorMap, context))];
+      return [sigmoid(getParamValue("x", node, tensorMap, context))];
     case "Sin":
-      return [sin(getParamValue("x", node2, tensorMap, context))];
+      return [sin(getParamValue("x", node, tensorMap, context))];
     case "Sign": {
-      return [sign2(getParamValue("x", node2, tensorMap, context))];
+      return [sign2(getParamValue("x", node, tensorMap, context))];
     }
     case "Sinh": {
-      return [sinh(getParamValue("x", node2, tensorMap, context))];
+      return [sinh(getParamValue("x", node, tensorMap, context))];
     }
     case "Softplus": {
-      return [softplus(getParamValue("x", node2, tensorMap, context))];
+      return [softplus(getParamValue("x", node, tensorMap, context))];
     }
     case "Sqrt": {
-      return [sqrt(getParamValue("x", node2, tensorMap, context))];
+      return [sqrt(getParamValue("x", node, tensorMap, context))];
     }
     case "Square": {
-      return [square(getParamValue("x", node2, tensorMap, context))];
+      return [square(getParamValue("x", node, tensorMap, context))];
     }
     case "Tanh": {
-      return [tanh2(getParamValue("x", node2, tensorMap, context))];
+      return [tanh2(getParamValue("x", node, tensorMap, context))];
     }
     case "Tan":
-      return [tan(getParamValue("x", node2, tensorMap, context))];
+      return [tan(getParamValue("x", node, tensorMap, context))];
     case "ClipByValue":
-      return [clipByValue(getParamValue("x", node2, tensorMap, context), getParamValue("clipValueMin", node2, tensorMap, context), getParamValue("clipValueMax", node2, tensorMap, context))];
+      return [clipByValue(getParamValue("x", node, tensorMap, context), getParamValue("clipValueMin", node, tensorMap, context), getParamValue("clipValueMax", node, tensorMap, context))];
     case "Relu6":
-      return [relu6(getParamValue("x", node2, tensorMap, context))];
+      return [relu6(getParamValue("x", node, tensorMap, context))];
     case "Rsqrt":
-      return [rsqrt(getTensor(node2.inputNames[0], tensorMap, context))];
+      return [rsqrt(getTensor(node.inputNames[0], tensorMap, context))];
     case "Prod":
-      return [prod(getParamValue("x", node2, tensorMap, context), getParamValue("axes", node2, tensorMap, context))];
+      return [prod(getParamValue("x", node, tensorMap, context), getParamValue("axes", node, tensorMap, context))];
     case "LeakyRelu":
-      return [leakyRelu(getParamValue("x", node2, tensorMap, context), getParamValue("alpha", node2, tensorMap, context))];
+      return [leakyRelu(getParamValue("x", node, tensorMap, context), getParamValue("alpha", node, tensorMap, context))];
     case "Prelu":
-      return [prelu(getParamValue("x", node2, tensorMap, context), getParamValue("alpha", node2, tensorMap, context))];
+      return [prelu(getParamValue("x", node, tensorMap, context), getParamValue("alpha", node, tensorMap, context))];
     case "IsNan":
-      return [isNaN2(getTensor(node2.inputNames[0], tensorMap, context))];
+      return [isNaN2(getTensor(node.inputNames[0], tensorMap, context))];
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
 function assertShapesMatchAllowUndefinedSize(shapeA, shapeB, errorMessagePrefix = "") {
@@ -64245,14 +64436,14 @@ function split2(tensor2, length, elementShape) {
   }
   return list;
 }
-var executeOp3 = async (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp3 = async (node, tensorMap, context) => {
+  switch (node.op) {
     case "If":
     case "StatelessIf": {
-      const thenFunc = getParamValue("thenBranch", node2, tensorMap, context);
-      const elseFunc = getParamValue("elseBranch", node2, tensorMap, context);
-      const cond = getParamValue("cond", node2, tensorMap, context);
-      const args = getParamValue("args", node2, tensorMap, context);
+      const thenFunc = getParamValue("thenBranch", node, tensorMap, context);
+      const elseFunc = getParamValue("elseBranch", node, tensorMap, context);
+      const cond = getParamValue("cond", node, tensorMap, context);
+      const args = getParamValue("args", node, tensorMap, context);
       const condValue = await cond.data();
       if (condValue[0]) {
         return context.functionMap[thenFunc].executeFunctionAsync(args, context.tensorArrayMap, context.tensorListMap);
@@ -64262,9 +64453,9 @@ var executeOp3 = async (node2, tensorMap, context) => {
     }
     case "While":
     case "StatelessWhile": {
-      const bodyFunc = getParamValue("body", node2, tensorMap, context);
-      const condFunc = getParamValue("cond", node2, tensorMap, context);
-      const args = getParamValue("args", node2, tensorMap, context);
+      const bodyFunc = getParamValue("body", node, tensorMap, context);
+      const condFunc = getParamValue("cond", node, tensorMap, context);
+      const args = getParamValue("args", node, tensorMap, context);
       const condResult = await context.functionMap[condFunc].executeFunctionAsync(args, context.tensorArrayMap, context.tensorListMap);
       const argIds = args.map((tensor2) => tensor2.id);
       let condValue = await condResult[0].data();
@@ -64294,19 +64485,19 @@ var executeOp3 = async (node2, tensorMap, context) => {
       return result;
     }
     case "LoopCond": {
-      const pred = getParamValue("pred", node2, tensorMap, context);
+      const pred = getParamValue("pred", node, tensorMap, context);
       return [cloneTensor(pred)];
     }
     case "Switch": {
-      const pred = getParamValue("pred", node2, tensorMap, context);
-      let data = getParamValue("data", node2, tensorMap, context);
+      const pred = getParamValue("pred", node, tensorMap, context);
+      let data = getParamValue("data", node, tensorMap, context);
       if (!data.kept) {
         data = cloneTensor(data);
       }
       return (await pred.data())[0] ? [void 0, data] : [data, void 0];
     }
     case "Merge": {
-      const inputName = node2.inputNames.find((name) => getTensor(name, tensorMap, context) !== void 0);
+      const inputName = node.inputNames.find((name) => getTensor(name, tensorMap, context) !== void 0);
       if (inputName) {
         const data = getTensor(inputName, tensorMap, context);
         return [cloneTensor(data)];
@@ -64314,192 +64505,192 @@ var executeOp3 = async (node2, tensorMap, context) => {
       return void 0;
     }
     case "Enter": {
-      const frameId = getParamValue("frameName", node2, tensorMap, context);
-      const data = getParamValue("tensor", node2, tensorMap, context);
+      const frameId = getParamValue("frameName", node, tensorMap, context);
+      const data = getParamValue("tensor", node, tensorMap, context);
       context.enterFrame(frameId);
       return [cloneTensor(data)];
     }
     case "Exit": {
-      const data = getParamValue("tensor", node2, tensorMap, context);
+      const data = getParamValue("tensor", node, tensorMap, context);
       context.exitFrame();
       return [cloneTensor(data)];
     }
     case "NextIteration": {
-      const data = getParamValue("tensor", node2, tensorMap, context);
+      const data = getParamValue("tensor", node, tensorMap, context);
       context.nextIteration();
       return [cloneTensor(data)];
     }
     case "TensorArrayV3": {
-      const size2 = getParamValue("size", node2, tensorMap, context);
-      const dtype = getParamValue("dtype", node2, tensorMap, context);
-      const elementShape = getParamValue("elementShape", node2, tensorMap, context);
-      const dynamicSize = getParamValue("dynamicSize", node2, tensorMap, context);
-      const clearAfterRead = getParamValue("clearAfterRead", node2, tensorMap, context);
-      const identicalElementShapes = getParamValue("identicalElementShapes", node2, tensorMap, context);
-      const name = getParamValue("name", node2, tensorMap, context);
+      const size2 = getParamValue("size", node, tensorMap, context);
+      const dtype = getParamValue("dtype", node, tensorMap, context);
+      const elementShape = getParamValue("elementShape", node, tensorMap, context);
+      const dynamicSize = getParamValue("dynamicSize", node, tensorMap, context);
+      const clearAfterRead = getParamValue("clearAfterRead", node, tensorMap, context);
+      const identicalElementShapes = getParamValue("identicalElementShapes", node, tensorMap, context);
+      const name = getParamValue("name", node, tensorMap, context);
       const tensorArray = new TensorArray(name, dtype, size2, elementShape, identicalElementShapes, dynamicSize, clearAfterRead);
       context.addTensorArray(tensorArray);
       return [tensorArray.idTensor, scalar(1)];
     }
     case "TensorArrayWriteV3": {
-      const id = getParamValue("tensorArrayId", node2, tensorMap, context);
-      const index2 = getParamValue("index", node2, tensorMap, context);
-      const writeTensor = getParamValue("tensor", node2, tensorMap, context);
+      const id = getParamValue("tensorArrayId", node, tensorMap, context);
+      const index2 = getParamValue("index", node, tensorMap, context);
+      const writeTensor = getParamValue("tensor", node, tensorMap, context);
       const writeTensorArray = context.getTensorArray(id.id);
       writeTensorArray.write(index2, writeTensor);
       return [writeTensorArray.idTensor];
     }
     case "TensorArrayReadV3": {
-      const readId = getParamValue("tensorArrayId", node2, tensorMap, context);
-      const readIndex = getParamValue("index", node2, tensorMap, context);
+      const readId = getParamValue("tensorArrayId", node, tensorMap, context);
+      const readIndex = getParamValue("index", node, tensorMap, context);
       const readTensorArray = context.getTensorArray(readId.id);
       return [readTensorArray.read(readIndex)];
     }
     case "TensorArrayGatherV3": {
-      const gatherId = getParamValue("tensorArrayId", node2, tensorMap, context);
-      const gatherIndices = getParamValue("indices", node2, tensorMap, context);
-      const gatherDtype = getParamValue("dtype", node2, tensorMap, context);
+      const gatherId = getParamValue("tensorArrayId", node, tensorMap, context);
+      const gatherIndices = getParamValue("indices", node, tensorMap, context);
+      const gatherDtype = getParamValue("dtype", node, tensorMap, context);
       const gatherTensorArray = context.getTensorArray(gatherId.id);
       return [gatherTensorArray.gather(gatherIndices, gatherDtype)];
     }
     case "TensorArrayScatterV3": {
-      const scatterId = getParamValue("tensorArrayId", node2, tensorMap, context);
-      const scatterIndices = getParamValue("indices", node2, tensorMap, context);
-      const scatterTensor = getParamValue("tensor", node2, tensorMap, context);
+      const scatterId = getParamValue("tensorArrayId", node, tensorMap, context);
+      const scatterIndices = getParamValue("indices", node, tensorMap, context);
+      const scatterTensor = getParamValue("tensor", node, tensorMap, context);
       const scatterTensorArray = context.getTensorArray(scatterId.id);
       scatterTensorArray.scatter(scatterIndices, scatterTensor);
       return [scatterTensorArray.idTensor];
     }
     case "TensorArrayConcatV3": {
-      const concatId = getParamValue("tensorArrayId", node2, tensorMap, context);
+      const concatId = getParamValue("tensorArrayId", node, tensorMap, context);
       const concatTensorArray = context.getTensorArray(concatId.id);
-      const concatDtype = getParamValue("dtype", node2, tensorMap, context);
+      const concatDtype = getParamValue("dtype", node, tensorMap, context);
       return [concatTensorArray.concat(concatDtype)];
     }
     case "TensorArraySplitV3": {
-      const splitId = getParamValue("tensorArrayId", node2, tensorMap, context);
-      const splitTensor = getParamValue("tensor", node2, tensorMap, context);
-      const lengths = getParamValue("lengths", node2, tensorMap, context);
+      const splitId = getParamValue("tensorArrayId", node, tensorMap, context);
+      const splitTensor = getParamValue("tensor", node, tensorMap, context);
+      const lengths = getParamValue("lengths", node, tensorMap, context);
       const splitTensorArray = context.getTensorArray(splitId.id);
       splitTensorArray.split(lengths, splitTensor);
       return [splitTensorArray.idTensor];
     }
     case "TensorArraySizeV3": {
-      const sizeId = getParamValue("tensorArrayId", node2, tensorMap, context);
+      const sizeId = getParamValue("tensorArrayId", node, tensorMap, context);
       const sizeTensorArray = context.getTensorArray(sizeId.id);
       return [scalar(sizeTensorArray.size(), "int32")];
     }
     case "TensorArrayCloseV3": {
-      const closeId = getParamValue("tensorArrayId", node2, tensorMap, context);
+      const closeId = getParamValue("tensorArrayId", node, tensorMap, context);
       const closeTensorArray = context.getTensorArray(closeId.id);
       closeTensorArray.clearAndClose();
       return [closeTensorArray.idTensor];
     }
     case "TensorListSetItem": {
-      const idTensor = getParamValue("tensorListId", node2, tensorMap, context);
-      const index2 = getParamValue("index", node2, tensorMap, context);
-      const writeTensor = getParamValue("tensor", node2, tensorMap, context);
+      const idTensor = getParamValue("tensorListId", node, tensorMap, context);
+      const index2 = getParamValue("index", node, tensorMap, context);
+      const writeTensor = getParamValue("tensor", node, tensorMap, context);
       const tensorList = context.getTensorList(idTensor.id);
       tensorList.setItem(index2, writeTensor);
       return [tensorList.idTensor];
     }
     case "TensorListGetItem": {
-      const idTensor = getParamValue("tensorListId", node2, tensorMap, context);
-      const readIndex = getParamValue("index", node2, tensorMap, context);
-      const elementShape = getParamValue("elementShape", node2, tensorMap, context);
-      const elementDType = getParamValue("elementDType", node2, tensorMap, context);
+      const idTensor = getParamValue("tensorListId", node, tensorMap, context);
+      const readIndex = getParamValue("index", node, tensorMap, context);
+      const elementShape = getParamValue("elementShape", node, tensorMap, context);
+      const elementDType = getParamValue("elementDType", node, tensorMap, context);
       const tensorList = context.getTensorList(idTensor.id);
       return [tensorList.getItem(readIndex, elementShape, elementDType)];
     }
     case "TensorListScatterV2":
     case "TensorListScatter": {
-      const scatterIndices = getParamValue("indices", node2, tensorMap, context);
-      const scatterTensor = getParamValue("tensor", node2, tensorMap, context);
-      const elementShape = getParamValue("elementShape", node2, tensorMap, context);
-      const numElements = getParamValue("numElements", node2, tensorMap, context);
+      const scatterIndices = getParamValue("indices", node, tensorMap, context);
+      const scatterTensor = getParamValue("tensor", node, tensorMap, context);
+      const elementShape = getParamValue("elementShape", node, tensorMap, context);
+      const numElements = getParamValue("numElements", node, tensorMap, context);
       const tensorList = scatter(scatterTensor, scatterIndices, elementShape, numElements);
       context.addTensorList(tensorList);
       return [tensorList.idTensor];
     }
     case "TensorListReserve":
     case "EmptyTensorList": {
-      const elementShape = getParamValue("elementShape", node2, tensorMap, context);
-      const elementDtype = getParamValue("elementDType", node2, tensorMap, context);
+      const elementShape = getParamValue("elementShape", node, tensorMap, context);
+      const elementDtype = getParamValue("elementDType", node, tensorMap, context);
       let numElementsParam;
-      if (node2.op === "TensorListReserve") {
+      if (node.op === "TensorListReserve") {
         numElementsParam = "numElements";
       } else {
         numElementsParam = "maxNumElements";
       }
-      const numElements = getParamValue(numElementsParam, node2, tensorMap, context);
+      const numElements = getParamValue(numElementsParam, node, tensorMap, context);
       const tensorList = reserve(elementShape, elementDtype, numElements);
       context.addTensorList(tensorList);
       return [tensorList.idTensor];
     }
     case "TensorListGather": {
-      const gatherId = getParamValue("tensorListId", node2, tensorMap, context);
-      const gatherIndices = getParamValue("indices", node2, tensorMap, context);
-      const elementShape = getParamValue("elementShape", node2, tensorMap, context);
-      const elementDtype = getParamValue("elementDType", node2, tensorMap, context);
+      const gatherId = getParamValue("tensorListId", node, tensorMap, context);
+      const gatherIndices = getParamValue("indices", node, tensorMap, context);
+      const elementShape = getParamValue("elementShape", node, tensorMap, context);
+      const elementDtype = getParamValue("elementDType", node, tensorMap, context);
       const tensorList = context.getTensorList(gatherId.id);
       return [tensorList.gather(gatherIndices, elementDtype, elementShape)];
     }
     case "TensorListStack": {
-      const idTensor = getParamValue("tensorListId", node2, tensorMap, context);
-      const elementShape = getParamValue("elementShape", node2, tensorMap, context);
-      const elementDtype = getParamValue("elementDType", node2, tensorMap, context);
-      const numElements = getParamValue("numElements", node2, tensorMap, context);
+      const idTensor = getParamValue("tensorListId", node, tensorMap, context);
+      const elementShape = getParamValue("elementShape", node, tensorMap, context);
+      const elementDtype = getParamValue("elementDType", node, tensorMap, context);
+      const numElements = getParamValue("numElements", node, tensorMap, context);
       const tensorList = context.getTensorList(idTensor.id);
       return [tensorList.stack(elementShape, elementDtype, numElements)];
     }
     case "TensorListFromTensor": {
-      const tensor2 = getParamValue("tensor", node2, tensorMap, context);
-      const elementShape = getParamValue("elementShape", node2, tensorMap, context);
-      const elementDtype = getParamValue("elementDType", node2, tensorMap, context);
+      const tensor2 = getParamValue("tensor", node, tensorMap, context);
+      const elementShape = getParamValue("elementShape", node, tensorMap, context);
+      const elementDtype = getParamValue("elementDType", node, tensorMap, context);
       const tensorList = fromTensor(tensor2, elementShape, elementDtype);
       context.addTensorList(tensorList);
       return [tensorList.idTensor];
     }
     case "TensorListConcat": {
-      const concatId = getParamValue("tensorListId", node2, tensorMap, context);
+      const concatId = getParamValue("tensorListId", node, tensorMap, context);
       const tensorList = context.getTensorList(concatId.id);
-      const concatDtype = getParamValue("dtype", node2, tensorMap, context);
-      const elementShape = getParamValue("elementShape", node2, tensorMap, context);
+      const concatDtype = getParamValue("dtype", node, tensorMap, context);
+      const elementShape = getParamValue("elementShape", node, tensorMap, context);
       return [tensorList.concat(concatDtype, elementShape)];
     }
     case "TensorListPushBack": {
-      const idTensor = getParamValue("tensorListId", node2, tensorMap, context);
-      const writeTensor = getParamValue("tensor", node2, tensorMap, context);
+      const idTensor = getParamValue("tensorListId", node, tensorMap, context);
+      const writeTensor = getParamValue("tensor", node, tensorMap, context);
       const tensorList = context.getTensorList(idTensor.id);
       tensorList.pushBack(writeTensor);
       return [tensorList.idTensor];
     }
     case "TensorListPopBack": {
-      const idTensor = getParamValue("tensorListId", node2, tensorMap, context);
-      const elementShape = getParamValue("elementShape", node2, tensorMap, context);
-      const elementDType = getParamValue("elementDType", node2, tensorMap, context);
+      const idTensor = getParamValue("tensorListId", node, tensorMap, context);
+      const elementShape = getParamValue("elementShape", node, tensorMap, context);
+      const elementDType = getParamValue("elementDType", node, tensorMap, context);
       const tensorList = context.getTensorList(idTensor.id);
       return [tensorList.popBack(elementShape, elementDType)];
     }
     case "TensorListSplit": {
-      const splitTensor = getParamValue("tensor", node2, tensorMap, context);
-      const elementShape = getParamValue("elementShape", node2, tensorMap, context);
-      const lengths = getParamValue("lengths", node2, tensorMap, context);
+      const splitTensor = getParamValue("tensor", node, tensorMap, context);
+      const elementShape = getParamValue("elementShape", node, tensorMap, context);
+      const lengths = getParamValue("lengths", node, tensorMap, context);
       const tensorList = split2(splitTensor, lengths, elementShape);
       context.addTensorList(tensorList);
       return [tensorList.idTensor];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-function fusedConvAndDepthWiseParams(node2, tensorMap, context) {
-  const [extraOp, activationFunc] = getParamValue("fusedOps", node2, tensorMap, context);
+function fusedConvAndDepthWiseParams(node, tensorMap, context) {
+  const [extraOp, activationFunc] = getParamValue("fusedOps", node, tensorMap, context);
   const isBiasAdd = extraOp === "biasadd";
   const noBiasAdd = !isBiasAdd;
   const isPrelu = activationFunc === "prelu";
   const isBatchNorm = extraOp === "fusedbatchnorm";
-  const numArgs = getParamValue("numArgs", node2, tensorMap, context);
+  const numArgs = getParamValue("numArgs", node, tensorMap, context);
   if (isBiasAdd) {
     if (isPrelu && numArgs !== 2) {
       throw new Error("FusedConv2d and DepthwiseConv2d with BiasAdd and Prelu must have two extra arguments: bias and alpha.");
@@ -64511,16 +64702,16 @@ function fusedConvAndDepthWiseParams(node2, tensorMap, context) {
   if (isBatchNorm) {
     throw new Error("FusedConv2d and DepthwiseConv2d with FusedBatchNorm is not supported");
   }
-  const stride = getParamValue("strides", node2, tensorMap, context);
-  const pad3 = getPadding(node2, tensorMap, context);
-  const dataFormat = getParamValue("dataFormat", node2, tensorMap, context).toUpperCase();
-  const dilations = getParamValue("dilations", node2, tensorMap, context);
-  let [biasArg, preluArg] = getParamValue("args", node2, tensorMap, context);
+  const stride = getParamValue("strides", node, tensorMap, context);
+  const pad3 = getPadding(node, tensorMap, context);
+  const dataFormat = getParamValue("dataFormat", node, tensorMap, context).toUpperCase();
+  const dilations = getParamValue("dilations", node, tensorMap, context);
+  let [biasArg, preluArg] = getParamValue("args", node, tensorMap, context);
   if (noBiasAdd) {
     preluArg = biasArg;
     biasArg = void 0;
   }
-  const leakyreluAlpha = getParamValue("leakyreluAlpha", node2, tensorMap, context);
+  const leakyreluAlpha = getParamValue("leakyreluAlpha", node, tensorMap, context);
   return {
     stride,
     pad: pad3,
@@ -64532,21 +64723,21 @@ function fusedConvAndDepthWiseParams(node2, tensorMap, context) {
     leakyreluAlpha
   };
 }
-var executeOp4 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp4 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "Conv1D": {
-      const stride = getParamValue("stride", node2, tensorMap, context);
-      const pad3 = getParamValue("pad", node2, tensorMap, context);
-      const dataFormat = getParamValue("dataFormat", node2, tensorMap, context).toUpperCase();
-      const dilation = getParamValue("dilation", node2, tensorMap, context);
-      return [conv1d(getParamValue("x", node2, tensorMap, context), getParamValue("filter", node2, tensorMap, context), stride, pad3, dataFormat, dilation)];
+      const stride = getParamValue("stride", node, tensorMap, context);
+      const pad3 = getParamValue("pad", node, tensorMap, context);
+      const dataFormat = getParamValue("dataFormat", node, tensorMap, context).toUpperCase();
+      const dilation = getParamValue("dilation", node, tensorMap, context);
+      return [conv1d(getParamValue("x", node, tensorMap, context), getParamValue("filter", node, tensorMap, context), stride, pad3, dataFormat, dilation)];
     }
     case "Conv2D": {
-      const stride = getParamValue("strides", node2, tensorMap, context);
-      const pad3 = getPadding(node2, tensorMap, context);
-      const dataFormat = getParamValue("dataFormat", node2, tensorMap, context).toUpperCase();
-      const dilations = getParamValue("dilations", node2, tensorMap, context);
-      return [conv2d(getParamValue("x", node2, tensorMap, context), getParamValue("filter", node2, tensorMap, context), [stride[1], stride[2]], pad3, dataFormat, [dilations[1], dilations[2]])];
+      const stride = getParamValue("strides", node, tensorMap, context);
+      const pad3 = getPadding(node, tensorMap, context);
+      const dataFormat = getParamValue("dataFormat", node, tensorMap, context).toUpperCase();
+      const dilations = getParamValue("dilations", node, tensorMap, context);
+      return [conv2d(getParamValue("x", node, tensorMap, context), getParamValue("filter", node, tensorMap, context), [stride[1], stride[2]], pad3, dataFormat, [dilations[1], dilations[2]])];
     }
     case "_FusedConv2D": {
       const {
@@ -64558,10 +64749,10 @@ var executeOp4 = (node2, tensorMap, context) => {
         preluArg,
         activationFunc,
         leakyreluAlpha
-      } = fusedConvAndDepthWiseParams(node2, tensorMap, context);
+      } = fusedConvAndDepthWiseParams(node, tensorMap, context);
       return [fused_ops_exports.conv2d({
-        x: getParamValue("x", node2, tensorMap, context),
-        filter: getParamValue("filter", node2, tensorMap, context),
+        x: getParamValue("x", node, tensorMap, context),
+        filter: getParamValue("filter", node, tensorMap, context),
         strides: [stride[1], stride[2]],
         pad: pad3,
         dataFormat,
@@ -64582,10 +64773,10 @@ var executeOp4 = (node2, tensorMap, context) => {
         preluArg,
         activationFunc,
         leakyreluAlpha
-      } = fusedConvAndDepthWiseParams(node2, tensorMap, context);
+      } = fusedConvAndDepthWiseParams(node, tensorMap, context);
       return [fused_ops_exports.depthwiseConv2d({
-        x: getParamValue("x", node2, tensorMap, context),
-        filter: getParamValue("filter", node2, tensorMap, context),
+        x: getParamValue("x", node, tensorMap, context),
+        filter: getParamValue("filter", node, tensorMap, context),
         strides: [stride[1], stride[2]],
         pad: pad3,
         dataFormat,
@@ -64598,138 +64789,138 @@ var executeOp4 = (node2, tensorMap, context) => {
     }
     case "Conv2DBackpropInput":
     case "Conv2dTranspose": {
-      const shape = getParamValue("outputShape", node2, tensorMap, context);
-      const stride = getParamValue("strides", node2, tensorMap, context);
-      const pad3 = getPadding(node2, tensorMap, context);
-      return [conv2dTranspose(getParamValue("x", node2, tensorMap, context), getParamValue("filter", node2, tensorMap, context), shape, [stride[1], stride[2]], pad3)];
+      const shape = getParamValue("outputShape", node, tensorMap, context);
+      const stride = getParamValue("strides", node, tensorMap, context);
+      const pad3 = getPadding(node, tensorMap, context);
+      return [conv2dTranspose(getParamValue("x", node, tensorMap, context), getParamValue("filter", node, tensorMap, context), shape, [stride[1], stride[2]], pad3)];
     }
     case "DepthwiseConv2dNative":
     case "DepthwiseConv2d": {
-      const stride = getParamValue("strides", node2, tensorMap, context);
-      const pad3 = getPadding(node2, tensorMap, context);
-      const dilations = getParamValue("dilations", node2, tensorMap, context);
-      const dataFormat = getParamValue("dataFormat", node2, tensorMap, context).toUpperCase();
-      return [depthwiseConv2d(getParamValue("input", node2, tensorMap, context), getParamValue("filter", node2, tensorMap, context), [stride[1], stride[2]], pad3, dataFormat, [dilations[1], dilations[2]])];
+      const stride = getParamValue("strides", node, tensorMap, context);
+      const pad3 = getPadding(node, tensorMap, context);
+      const dilations = getParamValue("dilations", node, tensorMap, context);
+      const dataFormat = getParamValue("dataFormat", node, tensorMap, context).toUpperCase();
+      return [depthwiseConv2d(getParamValue("input", node, tensorMap, context), getParamValue("filter", node, tensorMap, context), [stride[1], stride[2]], pad3, dataFormat, [dilations[1], dilations[2]])];
     }
     case "Conv3D": {
-      const stride = getParamValue("strides", node2, tensorMap, context);
-      const pad3 = getParamValue("pad", node2, tensorMap, context);
-      const dataFormat = getParamValue("dataFormat", node2, tensorMap, context).toUpperCase();
-      const dilations = getParamValue("dilations", node2, tensorMap, context);
-      return [conv3d(getParamValue("x", node2, tensorMap, context), getParamValue("filter", node2, tensorMap, context), [stride[1], stride[2], stride[3]], pad3, dataFormat, [dilations[1], dilations[2], dilations[3]])];
+      const stride = getParamValue("strides", node, tensorMap, context);
+      const pad3 = getParamValue("pad", node, tensorMap, context);
+      const dataFormat = getParamValue("dataFormat", node, tensorMap, context).toUpperCase();
+      const dilations = getParamValue("dilations", node, tensorMap, context);
+      return [conv3d(getParamValue("x", node, tensorMap, context), getParamValue("filter", node, tensorMap, context), [stride[1], stride[2], stride[3]], pad3, dataFormat, [dilations[1], dilations[2], dilations[3]])];
     }
     case "AvgPool": {
-      const stride = getParamValue("strides", node2, tensorMap, context);
-      const pad3 = getParamValue("pad", node2, tensorMap, context);
-      const kernelSize = getParamValue("kernelSize", node2, tensorMap, context);
-      return [avgPool(getParamValue("x", node2, tensorMap, context), [kernelSize[1], kernelSize[2]], [stride[1], stride[2]], pad3)];
+      const stride = getParamValue("strides", node, tensorMap, context);
+      const pad3 = getParamValue("pad", node, tensorMap, context);
+      const kernelSize = getParamValue("kernelSize", node, tensorMap, context);
+      return [avgPool(getParamValue("x", node, tensorMap, context), [kernelSize[1], kernelSize[2]], [stride[1], stride[2]], pad3)];
     }
     case "MaxPool": {
-      const stride = getParamValue("strides", node2, tensorMap, context);
-      const pad3 = getParamValue("pad", node2, tensorMap, context);
-      const kernelSize = getParamValue("kernelSize", node2, tensorMap, context);
-      return [maxPool(getParamValue("x", node2, tensorMap, context), [kernelSize[1], kernelSize[2]], [stride[1], stride[2]], pad3)];
+      const stride = getParamValue("strides", node, tensorMap, context);
+      const pad3 = getParamValue("pad", node, tensorMap, context);
+      const kernelSize = getParamValue("kernelSize", node, tensorMap, context);
+      return [maxPool(getParamValue("x", node, tensorMap, context), [kernelSize[1], kernelSize[2]], [stride[1], stride[2]], pad3)];
     }
     case "MaxPoolWithArgmax": {
-      const stride = getParamValue("strides", node2, tensorMap, context);
-      const pad3 = getParamValue("pad", node2, tensorMap, context);
-      const kernelSize = getParamValue("kernelSize", node2, tensorMap, context);
-      const includeBatchInIndex = getParamValue("includeBatchInIndex", node2, tensorMap, context);
-      const { result, indexes } = maxPoolWithArgmax(getParamValue("x", node2, tensorMap, context), [kernelSize[1], kernelSize[2]], [stride[1], stride[2]], pad3, includeBatchInIndex);
+      const stride = getParamValue("strides", node, tensorMap, context);
+      const pad3 = getParamValue("pad", node, tensorMap, context);
+      const kernelSize = getParamValue("kernelSize", node, tensorMap, context);
+      const includeBatchInIndex = getParamValue("includeBatchInIndex", node, tensorMap, context);
+      const { result, indexes } = maxPoolWithArgmax(getParamValue("x", node, tensorMap, context), [kernelSize[1], kernelSize[2]], [stride[1], stride[2]], pad3, includeBatchInIndex);
       return [result, indexes];
     }
     case "AvgPool3D": {
-      const stride = getParamValue("strides", node2, tensorMap, context);
-      const pad3 = getParamValue("pad", node2, tensorMap, context);
-      const kernelSize = getParamValue("kernelSize", node2, tensorMap, context);
-      return [avgPool3d(getParamValue("x", node2, tensorMap, context), [kernelSize[1], kernelSize[2], kernelSize[3]], [stride[1], stride[2], stride[3]], pad3)];
+      const stride = getParamValue("strides", node, tensorMap, context);
+      const pad3 = getParamValue("pad", node, tensorMap, context);
+      const kernelSize = getParamValue("kernelSize", node, tensorMap, context);
+      return [avgPool3d(getParamValue("x", node, tensorMap, context), [kernelSize[1], kernelSize[2], kernelSize[3]], [stride[1], stride[2], stride[3]], pad3)];
     }
     case "MaxPool3D": {
-      const stride = getParamValue("strides", node2, tensorMap, context);
-      const pad3 = getParamValue("pad", node2, tensorMap, context);
-      const kernelSize = getParamValue("kernelSize", node2, tensorMap, context);
-      return [maxPool3d(getParamValue("x", node2, tensorMap, context), [kernelSize[1], kernelSize[2], kernelSize[3]], [stride[1], stride[2], stride[3]], pad3)];
+      const stride = getParamValue("strides", node, tensorMap, context);
+      const pad3 = getParamValue("pad", node, tensorMap, context);
+      const kernelSize = getParamValue("kernelSize", node, tensorMap, context);
+      return [maxPool3d(getParamValue("x", node, tensorMap, context), [kernelSize[1], kernelSize[2], kernelSize[3]], [stride[1], stride[2], stride[3]], pad3)];
     }
     case "Dilation2D": {
-      const strides = getParamValue("strides", node2, tensorMap, context);
-      const pad3 = getParamValue("pad", node2, tensorMap, context);
-      const dilations = getParamValue("dilations", node2, tensorMap, context);
-      const strideHeight = strides[1];
-      const strideWidth = strides[2];
+      const strides2 = getParamValue("strides", node, tensorMap, context);
+      const pad3 = getParamValue("pad", node, tensorMap, context);
+      const dilations = getParamValue("dilations", node, tensorMap, context);
+      const strideHeight = strides2[1];
+      const strideWidth = strides2[2];
       const dilationHeight = dilations[1];
       const dilationWidth = dilations[2];
-      return [dilation2d(getParamValue("x", node2, tensorMap, context), getParamValue("filter", node2, tensorMap, context), [strideHeight, strideWidth], pad3, [dilationHeight, dilationWidth], "NHWC")];
+      return [dilation2d(getParamValue("x", node, tensorMap, context), getParamValue("filter", node, tensorMap, context), [strideHeight, strideWidth], pad3, [dilationHeight, dilationWidth], "NHWC")];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp5 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp5 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "Fill": {
-      const shape = getParamValue("shape", node2, tensorMap, context);
-      const dtype = getParamValue("dtype", node2, tensorMap, context);
-      const value = getParamValue("value", node2, tensorMap, context);
+      const shape = getParamValue("shape", node, tensorMap, context);
+      const dtype = getParamValue("dtype", node, tensorMap, context);
+      const value = getParamValue("value", node, tensorMap, context);
       return [fill(shape, value, dtype)];
     }
     case "LinSpace": {
-      const start = getParamValue("start", node2, tensorMap, context);
-      const stop = getParamValue("stop", node2, tensorMap, context);
-      const num = getParamValue("num", node2, tensorMap, context);
+      const start = getParamValue("start", node, tensorMap, context);
+      const stop = getParamValue("stop", node, tensorMap, context);
+      const num = getParamValue("num", node, tensorMap, context);
       return [linspace(start, stop, num)];
     }
     case "Multinomial": {
-      const logits = getParamValue("logits", node2, tensorMap, context);
-      const numSamples = getParamValue("numSamples", node2, tensorMap, context);
-      const seed = getParamValue("seed", node2, tensorMap, context);
+      const logits = getParamValue("logits", node, tensorMap, context);
+      const numSamples = getParamValue("numSamples", node, tensorMap, context);
+      const seed = getParamValue("seed", node, tensorMap, context);
       return [multinomial(logits, numSamples, seed)];
     }
     case "OneHot": {
-      const indices = getParamValue("indices", node2, tensorMap, context);
-      const depth = getParamValue("depth", node2, tensorMap, context);
-      const onValue = getParamValue("onValue", node2, tensorMap, context);
-      const offValue = getParamValue("offValue", node2, tensorMap, context);
+      const indices = getParamValue("indices", node, tensorMap, context);
+      const depth = getParamValue("depth", node, tensorMap, context);
+      const onValue = getParamValue("onValue", node, tensorMap, context);
+      const offValue = getParamValue("offValue", node, tensorMap, context);
       return [oneHot(indices, depth, onValue, offValue)];
     }
     case "Ones": {
-      return [ones2(getParamValue("shape", node2, tensorMap, context), getParamValue("dtype", node2, tensorMap, context))];
+      return [ones2(getParamValue("shape", node, tensorMap, context), getParamValue("dtype", node, tensorMap, context))];
     }
     case "OnesLike": {
-      return [onesLike(getParamValue("x", node2, tensorMap, context))];
+      return [onesLike(getParamValue("x", node, tensorMap, context))];
     }
     case "RandomUniform": {
-      return [randomUniform(getParamValue("shape", node2, tensorMap, context), getParamValue("minval", node2, tensorMap, context), getParamValue("maxval", node2, tensorMap, context), getParamValue("dtype", node2, tensorMap, context))];
+      return [randomUniform(getParamValue("shape", node, tensorMap, context), getParamValue("minval", node, tensorMap, context), getParamValue("maxval", node, tensorMap, context), getParamValue("dtype", node, tensorMap, context))];
     }
     case "Range": {
-      const start = getParamValue("start", node2, tensorMap, context);
-      const stop = getParamValue("stop", node2, tensorMap, context);
-      const step5 = getParamValue("step", node2, tensorMap, context);
-      return [range(start, stop, step5, getParamValue("dtype", node2, tensorMap, context))];
+      const start = getParamValue("start", node, tensorMap, context);
+      const stop = getParamValue("stop", node, tensorMap, context);
+      const step5 = getParamValue("step", node, tensorMap, context);
+      return [range(start, stop, step5, getParamValue("dtype", node, tensorMap, context))];
     }
     case "TruncatedNormal": {
-      const shape = getParamValue("shape", node2, tensorMap, context);
-      const mean5 = getParamValue("mean", node2, tensorMap, context);
-      const stdDev = getParamValue("stdDev", node2, tensorMap, context);
-      const seed = getParamValue("seed", node2, tensorMap, context);
-      return [truncatedNormal(shape, mean5, stdDev, getParamValue("dtype", node2, tensorMap, context), seed)];
+      const shape = getParamValue("shape", node, tensorMap, context);
+      const mean5 = getParamValue("mean", node, tensorMap, context);
+      const stdDev = getParamValue("stdDev", node, tensorMap, context);
+      const seed = getParamValue("seed", node, tensorMap, context);
+      return [truncatedNormal(shape, mean5, stdDev, getParamValue("dtype", node, tensorMap, context), seed)];
     }
     case "Zeros": {
-      return [zeros(getParamValue("shape", node2, tensorMap, context), getParamValue("dtype", node2, tensorMap, context))];
+      return [zeros(getParamValue("shape", node, tensorMap, context), getParamValue("dtype", node, tensorMap, context))];
     }
     case "ZerosLike": {
-      return [zerosLike(getParamValue("x", node2, tensorMap, context))];
+      return [zerosLike(getParamValue("x", node, tensorMap, context))];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-function nmsParams(node2, tensorMap, context) {
-  const boxes = getParamValue("boxes", node2, tensorMap, context);
-  const scores = getParamValue("scores", node2, tensorMap, context);
-  const maxOutputSize = getParamValue("maxOutputSize", node2, tensorMap, context);
-  const iouThreshold = getParamValue("iouThreshold", node2, tensorMap, context);
-  const scoreThreshold = getParamValue("scoreThreshold", node2, tensorMap, context);
-  const softNmsSigma = getParamValue("softNmsSigma", node2, tensorMap, context);
+function nmsParams(node, tensorMap, context) {
+  const boxes = getParamValue("boxes", node, tensorMap, context);
+  const scores = getParamValue("scores", node, tensorMap, context);
+  const maxOutputSize = getParamValue("maxOutputSize", node, tensorMap, context);
+  const iouThreshold = getParamValue("iouThreshold", node, tensorMap, context);
+  const scoreThreshold = getParamValue("scoreThreshold", node, tensorMap, context);
+  const softNmsSigma = getParamValue("softNmsSigma", node, tensorMap, context);
   return {
     boxes,
     scores,
@@ -64739,8 +64930,8 @@ function nmsParams(node2, tensorMap, context) {
     softNmsSigma
   };
 }
-var executeOp6 = async (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp6 = async (node, tensorMap, context) => {
+  switch (node.op) {
     case "NonMaxSuppressionV5": {
       const {
         boxes,
@@ -64749,94 +64940,94 @@ var executeOp6 = async (node2, tensorMap, context) => {
         iouThreshold,
         scoreThreshold,
         softNmsSigma
-      } = nmsParams(node2, tensorMap, context);
+      } = nmsParams(node, tensorMap, context);
       const result = await image.nonMaxSuppressionWithScoreAsync(boxes, scores, maxOutputSize, iouThreshold, scoreThreshold, softNmsSigma);
       return [result.selectedIndices, result.selectedScores];
     }
     case "NonMaxSuppressionV4": {
-      const { boxes, scores, maxOutputSize, iouThreshold, scoreThreshold } = nmsParams(node2, tensorMap, context);
-      const padToMaxOutputSize = getParamValue("padToMaxOutputSize", node2, tensorMap, context);
+      const { boxes, scores, maxOutputSize, iouThreshold, scoreThreshold } = nmsParams(node, tensorMap, context);
+      const padToMaxOutputSize = getParamValue("padToMaxOutputSize", node, tensorMap, context);
       const result = await image.nonMaxSuppressionPaddedAsync(boxes, scores, maxOutputSize, iouThreshold, scoreThreshold, padToMaxOutputSize);
       return [result.selectedIndices, result.validOutputs];
     }
     case "NonMaxSuppressionV3":
     case "NonMaxSuppressionV2": {
-      const { boxes, scores, maxOutputSize, iouThreshold, scoreThreshold } = nmsParams(node2, tensorMap, context);
+      const { boxes, scores, maxOutputSize, iouThreshold, scoreThreshold } = nmsParams(node, tensorMap, context);
       return [await image.nonMaxSuppressionAsync(boxes, scores, maxOutputSize, iouThreshold, scoreThreshold)];
     }
     case "Where": {
-      const condition = cast(getParamValue("condition", node2, tensorMap, context), "bool");
+      const condition = cast(getParamValue("condition", node, tensorMap, context), "bool");
       const result = [await whereAsync(condition)];
       condition.dispose();
       return result;
     }
     case "ListDiff": {
-      return setdiff1dAsync(getParamValue("x", node2, tensorMap, context), getParamValue("y", node2, tensorMap, context));
+      return setdiff1dAsync(getParamValue("x", node, tensorMap, context), getParamValue("y", node, tensorMap, context));
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp7 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp7 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "TopKV2": {
-      const x2 = getParamValue("x", node2, tensorMap, context);
-      const k3 = getParamValue("k", node2, tensorMap, context);
-      const sorted = getParamValue("sorted", node2, tensorMap, context);
+      const x2 = getParamValue("x", node, tensorMap, context);
+      const k3 = getParamValue("k", node, tensorMap, context);
+      const sorted = getParamValue("sorted", node, tensorMap, context);
       const result = topk(x2, k3, sorted);
       return [result.values, result.indices];
     }
     case "Unique": {
-      const x2 = getParamValue("x", node2, tensorMap, context);
+      const x2 = getParamValue("x", node, tensorMap, context);
       const result = unique(x2);
       return [result.values, result.indices];
     }
     case "UniqueV2": {
-      const x2 = getParamValue("x", node2, tensorMap, context);
-      const axis = getParamValue("axis", node2, tensorMap, context);
+      const x2 = getParamValue("x", node, tensorMap, context);
+      const axis = getParamValue("axis", node, tensorMap, context);
       const result = unique(x2, axis);
       return [result.values, result.indices];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp8 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp8 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "Const": {
-      return tensorMap[node2.name];
+      return tensorMap[node.name];
     }
     case "PlaceholderWithDefault":
-      const def = getParamValue("default", node2, tensorMap, context);
-      return [getTensor(node2.name, tensorMap, context) || def];
+      const def = getParamValue("default", node, tensorMap, context);
+      return [getTensor(node.name, tensorMap, context) || def];
     case "Placeholder":
-      return [getTensor(node2.name, tensorMap, context)];
+      return [getTensor(node.name, tensorMap, context)];
     case "Identity":
     case "StopGradient":
     case "FakeQuantWithMinMaxVars": {
-      const data2 = getParamValue("x", node2, tensorMap, context);
+      const data2 = getParamValue("x", node, tensorMap, context);
       return [cloneTensor(data2)];
     }
     case "IdentityN":
-      return getParamValue("x", node2, tensorMap, context).map((t2) => cloneTensor(t2));
+      return getParamValue("x", node, tensorMap, context).map((t2) => cloneTensor(t2));
     case "Snapshot":
-      const snapshot = getParamValue("x", node2, tensorMap, context);
+      const snapshot = getParamValue("x", node, tensorMap, context);
       return [cloneTensor(snapshot)];
     case "Shape":
-      return [tensor1d(getParamValue("x", node2, tensorMap, context).shape, "int32")];
+      return [tensor1d(getParamValue("x", node, tensorMap, context).shape, "int32")];
     case "ShapeN":
-      return getParamValue("x", node2, tensorMap, context).map((t2) => tensor1d(t2.shape));
+      return getParamValue("x", node, tensorMap, context).map((t2) => tensor1d(t2.shape));
     case "Size":
-      return [scalar(getParamValue("x", node2, tensorMap, context).size, "int32")];
+      return [scalar(getParamValue("x", node, tensorMap, context).size, "int32")];
     case "Rank":
-      return [scalar(getParamValue("x", node2, tensorMap, context).rank, "int32")];
+      return [scalar(getParamValue("x", node, tensorMap, context).rank, "int32")];
     case "NoOp":
       return [scalar(1)];
     case "Print":
-      const input2 = getParamValue("x", node2, tensorMap, context);
-      const data = getParamValue("data", node2, tensorMap, context);
-      const message = getParamValue("message", node2, tensorMap, context);
-      const summarize = getParamValue("summarize", node2, tensorMap, context);
+      const input2 = getParamValue("x", node, tensorMap, context);
+      const data = getParamValue("data", node, tensorMap, context);
+      const message = getParamValue("message", node, tensorMap, context);
+      const summarize = getParamValue("summarize", node, tensorMap, context);
       console.warn("The graph has a tf.print() operation,usually used for debugging, which slows down performance.");
       console.log(message);
       for (let i2 = 0; i2 < data.length; i2++) {
@@ -64844,7 +65035,7 @@ var executeOp8 = (node2, tensorMap, context) => {
       }
       return [input2];
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
 var HashTable = class {
@@ -64914,124 +65105,124 @@ var HashTable = class {
     }
   }
 };
-var executeOp9 = async (node2, tensorMap, context, resourceManager) => {
-  switch (node2.op) {
+var executeOp9 = async (node, tensorMap, context, resourceManager) => {
+  switch (node.op) {
     case "HashTable":
     case "HashTableV2": {
-      const keyDType = getParamValue("keyDType", node2, tensorMap, context);
-      const valueDType = getParamValue("valueDType", node2, tensorMap, context);
-      const hashTable2 = new HashTable(keyDType, valueDType);
-      resourceManager.addHashTable(node2.name, hashTable2);
-      return [hashTable2.handle];
+      const keyDType = getParamValue("keyDType", node, tensorMap, context);
+      const valueDType = getParamValue("valueDType", node, tensorMap, context);
+      const hashTable = new HashTable(keyDType, valueDType);
+      resourceManager.addHashTable(node.name, hashTable);
+      return [hashTable.handle];
     }
     case "LookupTableImport":
     case "LookupTableImportV2": {
-      const handle = getParamValue("tableHandle", node2, tensorMap, context, resourceManager);
-      const keys = getParamValue("keys", node2, tensorMap, context);
-      const values = getParamValue("values", node2, tensorMap, context);
-      const hashTable2 = resourceManager.getHashTableById(handle.id);
-      return [await hashTable2.import(keys, values)];
+      const handle = getParamValue("tableHandle", node, tensorMap, context, resourceManager);
+      const keys = getParamValue("keys", node, tensorMap, context);
+      const values = getParamValue("values", node, tensorMap, context);
+      const hashTable = resourceManager.getHashTableById(handle.id);
+      return [await hashTable.import(keys, values)];
     }
     case "LookupTableFind":
     case "LookupTableFindV2": {
-      const handle = getParamValue("tableHandle", node2, tensorMap, context, resourceManager);
-      const keys = getParamValue("keys", node2, tensorMap, context);
-      const defaultValue = getParamValue("defaultValue", node2, tensorMap, context);
-      const hashTable2 = resourceManager.getHashTableById(handle.id);
-      return [await hashTable2.find(keys, defaultValue)];
+      const handle = getParamValue("tableHandle", node, tensorMap, context, resourceManager);
+      const keys = getParamValue("keys", node, tensorMap, context);
+      const defaultValue = getParamValue("defaultValue", node, tensorMap, context);
+      const hashTable = resourceManager.getHashTableById(handle.id);
+      return [await hashTable.find(keys, defaultValue)];
     }
     case "LookupTableSize":
     case "LookupTableSizeV2": {
-      const handle = getParamValue("tableHandle", node2, tensorMap, context, resourceManager);
-      const hashTable2 = resourceManager.getHashTableById(handle.id);
-      return [hashTable2.tensorSize()];
+      const handle = getParamValue("tableHandle", node, tensorMap, context, resourceManager);
+      const hashTable = resourceManager.getHashTableById(handle.id);
+      return [hashTable.tensorSize()];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp10 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp10 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "ResizeBilinear": {
-      const images = getParamValue("images", node2, tensorMap, context);
-      const size2 = getParamValue("size", node2, tensorMap, context);
-      const alignCorners = getParamValue("alignCorners", node2, tensorMap, context);
-      const halfPixelCenters = getParamValue("halfPixelCenters", node2, tensorMap, context);
+      const images = getParamValue("images", node, tensorMap, context);
+      const size2 = getParamValue("size", node, tensorMap, context);
+      const alignCorners = getParamValue("alignCorners", node, tensorMap, context);
+      const halfPixelCenters = getParamValue("halfPixelCenters", node, tensorMap, context);
       return [image.resizeBilinear(images, [size2[0], size2[1]], alignCorners, halfPixelCenters)];
     }
     case "ResizeNearestNeighbor": {
-      const images = getParamValue("images", node2, tensorMap, context);
-      const size2 = getParamValue("size", node2, tensorMap, context);
-      const alignCorners = getParamValue("alignCorners", node2, tensorMap, context);
-      const halfPixelCenters = getParamValue("halfPixelCenters", node2, tensorMap, context);
+      const images = getParamValue("images", node, tensorMap, context);
+      const size2 = getParamValue("size", node, tensorMap, context);
+      const alignCorners = getParamValue("alignCorners", node, tensorMap, context);
+      const halfPixelCenters = getParamValue("halfPixelCenters", node, tensorMap, context);
       return [image.resizeNearestNeighbor(images, [size2[0], size2[1]], alignCorners, halfPixelCenters)];
     }
     case "CropAndResize": {
-      const image32 = getParamValue("image", node2, tensorMap, context);
-      const boxes = getParamValue("boxes", node2, tensorMap, context);
-      const boxInd = getParamValue("boxInd", node2, tensorMap, context);
-      const cropSize = getParamValue("cropSize", node2, tensorMap, context);
-      const method = getParamValue("method", node2, tensorMap, context);
-      const extrapolationValue = getParamValue("extrapolationValue", node2, tensorMap, context);
-      return [image.cropAndResize(image32, boxes, boxInd, cropSize, method, extrapolationValue)];
+      const image22 = getParamValue("image", node, tensorMap, context);
+      const boxes = getParamValue("boxes", node, tensorMap, context);
+      const boxInd = getParamValue("boxInd", node, tensorMap, context);
+      const cropSize = getParamValue("cropSize", node, tensorMap, context);
+      const method = getParamValue("method", node, tensorMap, context);
+      const extrapolationValue = getParamValue("extrapolationValue", node, tensorMap, context);
+      return [image.cropAndResize(image22, boxes, boxInd, cropSize, method, extrapolationValue)];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp11 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp11 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "Equal": {
-      return [equal(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [equal(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "NotEqual": {
-      return [notEqual(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [notEqual(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "Greater": {
-      return [greater(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [greater(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "GreaterEqual": {
-      return [greaterEqual(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [greaterEqual(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "Less": {
-      return [less(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [less(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "LessEqual": {
-      return [lessEqual(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [lessEqual(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "LogicalAnd": {
-      return [logicalAnd(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [logicalAnd(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "LogicalNot": {
-      return [logicalNot(getParamValue("a", node2, tensorMap, context))];
+      return [logicalNot(getParamValue("a", node, tensorMap, context))];
     }
     case "LogicalOr": {
-      return [logicalOr(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [logicalOr(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     case "Select":
     case "SelectV2": {
-      return [where(getParamValue("condition", node2, tensorMap, context), getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context))];
+      return [where(getParamValue("condition", node, tensorMap, context), getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context))];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp12 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp12 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "BatchMatMul":
     case "BatchMatMulV2":
     case "MatMul":
-      return [matMul(getParamValue("a", node2, tensorMap, context), getParamValue("b", node2, tensorMap, context), getParamValue("transposeA", node2, tensorMap, context), getParamValue("transposeB", node2, tensorMap, context))];
+      return [matMul(getParamValue("a", node, tensorMap, context), getParamValue("b", node, tensorMap, context), getParamValue("transposeA", node, tensorMap, context), getParamValue("transposeB", node, tensorMap, context))];
     case "Einsum":
-      return [einsum(getParamValue("equation", node2, tensorMap, context), ...getParamValue("tensors", node2, tensorMap, context))];
+      return [einsum(getParamValue("equation", node, tensorMap, context), ...getParamValue("tensors", node, tensorMap, context))];
     case "Transpose":
-      return [transpose(getParamValue("x", node2, tensorMap, context), getParamValue("perm", node2, tensorMap, context))];
+      return [transpose(getParamValue("x", node, tensorMap, context), getParamValue("perm", node, tensorMap, context))];
     case "_FusedMatMul":
-      const [extraOp, activationFunc] = getParamValue("fusedOps", node2, tensorMap, context);
+      const [extraOp, activationFunc] = getParamValue("fusedOps", node, tensorMap, context);
       const isBiasAdd = extraOp === "biasadd";
       const isPrelu = activationFunc === "prelu";
-      const numArgs = getParamValue("numArgs", node2, tensorMap, context);
-      const leakyreluAlpha = getParamValue("leakyreluAlpha", node2, tensorMap, context);
+      const numArgs = getParamValue("numArgs", node, tensorMap, context);
+      const leakyreluAlpha = getParamValue("leakyreluAlpha", node, tensorMap, context);
       if (isBiasAdd) {
         if (isPrelu && numArgs !== 2) {
           throw new Error("Fused MatMul with BiasAdd and Prelu must have two extra arguments: bias and alpha.");
@@ -65040,172 +65231,172 @@ var executeOp12 = (node2, tensorMap, context) => {
           throw new Error("Fused MatMul with BiasAdd must have one extra argument: bias.");
         }
       }
-      const [biasArg, preluArg] = getParamValue("args", node2, tensorMap, context);
+      const [biasArg, preluArg] = getParamValue("args", node, tensorMap, context);
       return [fused_ops_exports.matMul({
-        a: getParamValue("a", node2, tensorMap, context),
-        b: getParamValue("b", node2, tensorMap, context),
-        transposeA: getParamValue("transposeA", node2, tensorMap, context),
-        transposeB: getParamValue("transposeB", node2, tensorMap, context),
+        a: getParamValue("a", node, tensorMap, context),
+        b: getParamValue("b", node, tensorMap, context),
+        transposeA: getParamValue("transposeA", node, tensorMap, context),
+        transposeB: getParamValue("transposeB", node, tensorMap, context),
         bias: biasArg,
         activation: activationFunc,
         preluActivationWeights: preluArg,
         leakyreluAlpha
       })];
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp13 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp13 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "FusedBatchNorm":
     case "FusedBatchNormV2": {
-      return [batchNorm(getParamValue("x", node2, tensorMap, context), getParamValue("mean", node2, tensorMap, context), getParamValue("variance", node2, tensorMap, context), getParamValue("offset", node2, tensorMap, context), getParamValue("scale", node2, tensorMap, context), getParamValue("epsilon", node2, tensorMap, context))];
+      return [batchNorm(getParamValue("x", node, tensorMap, context), getParamValue("mean", node, tensorMap, context), getParamValue("variance", node, tensorMap, context), getParamValue("offset", node, tensorMap, context), getParamValue("scale", node, tensorMap, context), getParamValue("epsilon", node, tensorMap, context))];
     }
     case "FusedBatchNormV3": {
-      return [batchNorm(getParamValue("x", node2, tensorMap, context), getParamValue("mean", node2, tensorMap, context), getParamValue("variance", node2, tensorMap, context), getParamValue("offset", node2, tensorMap, context), getParamValue("scale", node2, tensorMap, context), getParamValue("epsilon", node2, tensorMap, context))];
+      return [batchNorm(getParamValue("x", node, tensorMap, context), getParamValue("mean", node, tensorMap, context), getParamValue("variance", node, tensorMap, context), getParamValue("offset", node, tensorMap, context), getParamValue("scale", node, tensorMap, context), getParamValue("epsilon", node, tensorMap, context))];
     }
     case "LRN": {
-      return [localResponseNormalization(getParamValue("x", node2, tensorMap, context), getParamValue("radius", node2, tensorMap, context), getParamValue("bias", node2, tensorMap, context), getParamValue("alpha", node2, tensorMap, context), getParamValue("beta", node2, tensorMap, context))];
+      return [localResponseNormalization(getParamValue("x", node, tensorMap, context), getParamValue("radius", node, tensorMap, context), getParamValue("bias", node, tensorMap, context), getParamValue("alpha", node, tensorMap, context), getParamValue("beta", node, tensorMap, context))];
     }
     case "Softmax": {
-      return [softmax(getParamValue("x", node2, tensorMap, context))];
+      return [softmax(getParamValue("x", node, tensorMap, context))];
     }
     case "LogSoftmax": {
-      return [logSoftmax(getParamValue("x", node2, tensorMap, context))];
+      return [logSoftmax(getParamValue("x", node, tensorMap, context))];
     }
     case "SparseToDense": {
-      return [sparseToDense(getParamValue("sparseIndices", node2, tensorMap, context), getParamValue("outputShape", node2, tensorMap, context), getParamValue("sparseValues", node2, tensorMap, context), getParamValue("defaultValue", node2, tensorMap, context))];
+      return [sparseToDense(getParamValue("sparseIndices", node, tensorMap, context), getParamValue("outputShape", node, tensorMap, context), getParamValue("sparseValues", node, tensorMap, context), getParamValue("defaultValue", node, tensorMap, context))];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp14 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp14 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "Max": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const keepDims = getParamValue("keepDims", node2, tensorMap, context);
-      return [max(getParamValue("x", node2, tensorMap, context), axis, keepDims)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const keepDims = getParamValue("keepDims", node, tensorMap, context);
+      return [max(getParamValue("x", node, tensorMap, context), axis, keepDims)];
     }
     case "Mean": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const keepDims = getParamValue("keepDims", node2, tensorMap, context);
-      return [mean(getParamValue("x", node2, tensorMap, context), axis, keepDims)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const keepDims = getParamValue("keepDims", node, tensorMap, context);
+      return [mean(getParamValue("x", node, tensorMap, context), axis, keepDims)];
     }
     case "Min": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const keepDims = getParamValue("keepDims", node2, tensorMap, context);
-      return [min(getParamValue("x", node2, tensorMap, context), axis, keepDims)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const keepDims = getParamValue("keepDims", node, tensorMap, context);
+      return [min(getParamValue("x", node, tensorMap, context), axis, keepDims)];
     }
     case "Sum": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const keepDims = getParamValue("keepDims", node2, tensorMap, context);
-      return [sum2(getParamValue("x", node2, tensorMap, context), axis, keepDims)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const keepDims = getParamValue("keepDims", node, tensorMap, context);
+      return [sum2(getParamValue("x", node, tensorMap, context), axis, keepDims)];
     }
     case "All": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const keepDims = getParamValue("keepDims", node2, tensorMap, context);
-      return [all(getParamValue("x", node2, tensorMap, context), axis, keepDims)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const keepDims = getParamValue("keepDims", node, tensorMap, context);
+      return [all(getParamValue("x", node, tensorMap, context), axis, keepDims)];
     }
     case "Any": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const keepDims = getParamValue("keepDims", node2, tensorMap, context);
-      return [any(getParamValue("x", node2, tensorMap, context), axis, keepDims)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const keepDims = getParamValue("keepDims", node, tensorMap, context);
+      return [any(getParamValue("x", node, tensorMap, context), axis, keepDims)];
     }
     case "ArgMax": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      return [argMax(getParamValue("x", node2, tensorMap, context), axis)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      return [argMax(getParamValue("x", node, tensorMap, context), axis)];
     }
     case "ArgMin": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      return [argMin(getParamValue("x", node2, tensorMap, context), axis)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      return [argMin(getParamValue("x", node, tensorMap, context), axis)];
     }
     case "Prod": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const keepDims = getParamValue("keepDims", node2, tensorMap, context);
-      return [prod(getParamValue("x", node2, tensorMap, context), axis, keepDims)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const keepDims = getParamValue("keepDims", node, tensorMap, context);
+      return [prod(getParamValue("x", node, tensorMap, context), axis, keepDims)];
     }
     case "Cumsum": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const exclusive = getParamValue("exclusive", node2, tensorMap, context);
-      const reverse5 = getParamValue("reverse", node2, tensorMap, context);
-      return [cumsum(getParamValue("x", node2, tensorMap, context), axis, exclusive, reverse5)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const exclusive = getParamValue("exclusive", node, tensorMap, context);
+      const reverse5 = getParamValue("reverse", node, tensorMap, context);
+      return [cumsum(getParamValue("x", node, tensorMap, context), axis, exclusive, reverse5)];
     }
     case "Bincount":
-      const x2 = getParamValue("x", node2, tensorMap, context);
-      const weights = getParamValue("weights", node2, tensorMap, context);
-      const size2 = getParamValue("size", node2, tensorMap, context);
+      const x2 = getParamValue("x", node, tensorMap, context);
+      const weights = getParamValue("weights", node, tensorMap, context);
+      const size2 = getParamValue("size", node, tensorMap, context);
       return [bincount(x2, weights, size2)];
     case "DenseBincount": {
-      const x22 = getParamValue("x", node2, tensorMap, context);
-      const weights2 = getParamValue("weights", node2, tensorMap, context);
-      const size22 = getParamValue("size", node2, tensorMap, context);
-      const binaryOutput = getParamValue("binaryOutput", node2, tensorMap, context);
+      const x22 = getParamValue("x", node, tensorMap, context);
+      const weights2 = getParamValue("weights", node, tensorMap, context);
+      const size22 = getParamValue("size", node, tensorMap, context);
+      const binaryOutput = getParamValue("binaryOutput", node, tensorMap, context);
       return [denseBincount(x22, weights2, size22, binaryOutput)];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp15 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp15 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "ConcatV2":
     case "Concat": {
-      const n2 = getParamValue("n", node2, tensorMap, context);
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      let inputs = getParamValue("tensors", node2, tensorMap, context);
+      const n2 = getParamValue("n", node, tensorMap, context);
+      const axis = getParamValue("axis", node, tensorMap, context);
+      let inputs = getParamValue("tensors", node, tensorMap, context);
       inputs = inputs.slice(0, n2);
       return [concat(inputs, axis)];
     }
     case "Gather": {
-      const input2 = getParamValue("x", node2, tensorMap, context);
-      const indices = getParamValue("indices", node2, tensorMap, context);
+      const input2 = getParamValue("x", node, tensorMap, context);
+      const indices = getParamValue("indices", node, tensorMap, context);
       return [gather(input2, cast(indices, "int32"), 0)];
     }
     case "GatherV2": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const batchDims = getParamValue("batchDims", node2, tensorMap, context);
-      const input2 = getParamValue("x", node2, tensorMap, context);
-      const indices = getParamValue("indices", node2, tensorMap, context);
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const batchDims = getParamValue("batchDims", node, tensorMap, context);
+      const input2 = getParamValue("x", node, tensorMap, context);
+      const indices = getParamValue("indices", node, tensorMap, context);
       return [gather(input2, cast(indices, "int32"), axis, batchDims)];
     }
     case "Reverse": {
-      const dims = getParamValue("dims", node2, tensorMap, context);
+      const dims = getParamValue("dims", node, tensorMap, context);
       const axis = [];
       for (let i2 = 0; i2 < dims.length; i2++) {
         if (dims[i2]) {
           axis.push(i2);
         }
       }
-      const input2 = getParamValue("x", node2, tensorMap, context);
+      const input2 = getParamValue("x", node, tensorMap, context);
       return [reverse(input2, axis)];
     }
     case "ReverseV2": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const input2 = getParamValue("x", node2, tensorMap, context);
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const input2 = getParamValue("x", node, tensorMap, context);
       return [reverse(input2, axis)];
     }
     case "Slice": {
-      const begin = getParamValue("begin", node2, tensorMap, context);
-      const size2 = getParamValue("size", node2, tensorMap, context);
-      return [slice(getParamValue("x", node2, tensorMap, context), begin, size2)];
+      const begin = getParamValue("begin", node, tensorMap, context);
+      const size2 = getParamValue("size", node, tensorMap, context);
+      return [slice(getParamValue("x", node, tensorMap, context), begin, size2)];
     }
     case "StridedSlice": {
-      const begin = getParamValue("begin", node2, tensorMap, context);
-      const end = getParamValue("end", node2, tensorMap, context);
-      const strides = getParamValue("strides", node2, tensorMap, context);
-      const beginMask = getParamValue("beginMask", node2, tensorMap, context);
-      const endMask = getParamValue("endMask", node2, tensorMap, context);
-      const ellipsisMask = getParamValue("ellipsisMask", node2, tensorMap, context);
-      const newAxisMask = getParamValue("newAxisMask", node2, tensorMap, context);
-      const shrinkAxisMask = getParamValue("shrinkAxisMask", node2, tensorMap, context);
-      const tensor2 = getParamValue("x", node2, tensorMap, context);
-      return [stridedSlice(tensor2, begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask)];
+      const begin = getParamValue("begin", node, tensorMap, context);
+      const end = getParamValue("end", node, tensorMap, context);
+      const strides2 = getParamValue("strides", node, tensorMap, context);
+      const beginMask = getParamValue("beginMask", node, tensorMap, context);
+      const endMask = getParamValue("endMask", node, tensorMap, context);
+      const ellipsisMask = getParamValue("ellipsisMask", node, tensorMap, context);
+      const newAxisMask = getParamValue("newAxisMask", node, tensorMap, context);
+      const shrinkAxisMask = getParamValue("shrinkAxisMask", node, tensorMap, context);
+      const tensor2 = getParamValue("x", node, tensorMap, context);
+      return [stridedSlice(tensor2, begin, end, strides2, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask)];
     }
     case "Pack": {
       return tidy(() => {
-        const axis = getParamValue("axis", node2, tensorMap, context);
-        const tensors = getParamValue("tensors", node2, tensorMap, context);
+        const axis = getParamValue("axis", node, tensorMap, context);
+        const tensors = getParamValue("tensors", node, tensorMap, context);
         const shape = tensors[0].shape;
         const squeezedShape = squeeze(tensors[0]).shape;
         const mapped = tensors.map((tensor2) => {
@@ -65219,52 +65410,52 @@ var executeOp15 = (node2, tensorMap, context) => {
       });
     }
     case "Unpack": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const tensor2 = getParamValue("tensor", node2, tensorMap, context);
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const tensor2 = getParamValue("tensor", node, tensorMap, context);
       return unstack(tensor2, axis);
     }
     case "Tile": {
-      const reps = getParamValue("reps", node2, tensorMap, context);
-      return [tile(getParamValue("x", node2, tensorMap, context), reps)];
+      const reps = getParamValue("reps", node, tensorMap, context);
+      return [tile(getParamValue("x", node, tensorMap, context), reps)];
     }
     case "Split":
     case "SplitV": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      const numOrSizeSplits = getParamValue("numOrSizeSplits", node2, tensorMap, context);
-      const tensor2 = getParamValue("x", node2, tensorMap, context);
+      const axis = getParamValue("axis", node, tensorMap, context);
+      const numOrSizeSplits = getParamValue("numOrSizeSplits", node, tensorMap, context);
+      const tensor2 = getParamValue("x", node, tensorMap, context);
       return split(tensor2, numOrSizeSplits, axis);
     }
     case "ScatterNd": {
-      const indices = getParamValue("indices", node2, tensorMap, context);
-      const values = getParamValue("values", node2, tensorMap, context);
-      const shape = getParamValue("shape", node2, tensorMap, context);
+      const indices = getParamValue("indices", node, tensorMap, context);
+      const values = getParamValue("values", node, tensorMap, context);
+      const shape = getParamValue("shape", node, tensorMap, context);
       return [scatterND(indices, values, shape)];
     }
     case "GatherNd": {
-      const x2 = getParamValue("x", node2, tensorMap, context);
-      const indices = getParamValue("indices", node2, tensorMap, context);
+      const x2 = getParamValue("x", node, tensorMap, context);
+      const indices = getParamValue("indices", node, tensorMap, context);
       return [gatherND(x2, indices)];
     }
     case "SparseToDense": {
-      const indices = getParamValue("sparseIndices", node2, tensorMap, context);
-      const shape = getParamValue("outputShape", node2, tensorMap, context);
-      const sparseValues = getParamValue("sparseValues", node2, tensorMap, context);
-      const defaultValue = getParamValue("defaultValue", node2, tensorMap, context);
+      const indices = getParamValue("sparseIndices", node, tensorMap, context);
+      const shape = getParamValue("outputShape", node, tensorMap, context);
+      const sparseValues = getParamValue("sparseValues", node, tensorMap, context);
+      const defaultValue = getParamValue("defaultValue", node, tensorMap, context);
       return [sparseToDense(indices, sparseValues, shape, sparseValues.dtype === defaultValue.dtype ? defaultValue : cast(defaultValue, sparseValues.dtype))];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp16 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp16 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "SparseFillEmptyRows": {
       const {
         outputIndices,
         outputValues,
         emptyRowIndicator,
         reverseIndexMap
-      } = sparse.sparseFillEmptyRows(getParamValue("indices", node2, tensorMap, context), getParamValue("values", node2, tensorMap, context), getParamValue("denseShape", node2, tensorMap, context), getParamValue("defaultValue", node2, tensorMap, context));
+      } = sparse.sparseFillEmptyRows(getParamValue("indices", node, tensorMap, context), getParamValue("values", node, tensorMap, context), getParamValue("denseShape", node, tensorMap, context), getParamValue("defaultValue", node, tensorMap, context));
       return [
         outputIndices,
         outputValues,
@@ -65273,157 +65464,157 @@ var executeOp16 = (node2, tensorMap, context) => {
       ];
     }
     case "SparseReshape": {
-      const { outputIndices, outputShape } = sparse.sparseReshape(getParamValue("inputIndices", node2, tensorMap, context), getParamValue("inputShape", node2, tensorMap, context), getParamValue("newShape", node2, tensorMap, context));
+      const { outputIndices, outputShape } = sparse.sparseReshape(getParamValue("inputIndices", node, tensorMap, context), getParamValue("inputShape", node, tensorMap, context), getParamValue("newShape", node, tensorMap, context));
       return [outputIndices, outputShape];
     }
     case "SparseSegmentMean": {
-      const outputData = sparse.sparseSegmentMean(getParamValue("data", node2, tensorMap, context), getParamValue("indices", node2, tensorMap, context), getParamValue("segmentIds", node2, tensorMap, context));
+      const outputData = sparse.sparseSegmentMean(getParamValue("data", node, tensorMap, context), getParamValue("indices", node, tensorMap, context), getParamValue("segmentIds", node, tensorMap, context));
       return [outputData];
     }
     case "SparseSegmentSum": {
-      const outputData = sparse.sparseSegmentSum(getParamValue("data", node2, tensorMap, context), getParamValue("indices", node2, tensorMap, context), getParamValue("segmentIds", node2, tensorMap, context));
+      const outputData = sparse.sparseSegmentSum(getParamValue("data", node, tensorMap, context), getParamValue("indices", node, tensorMap, context), getParamValue("segmentIds", node, tensorMap, context));
       return [outputData];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp17 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp17 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "FFT": {
-      return [fft(getParamValue("x", node2, tensorMap, context))];
+      return [fft(getParamValue("x", node, tensorMap, context))];
     }
     case "IFFT": {
-      return [ifft(getParamValue("x", node2, tensorMap, context))];
+      return [ifft(getParamValue("x", node, tensorMap, context))];
     }
     case "RFFT": {
-      return [rfft(getParamValue("x", node2, tensorMap, context))];
+      return [rfft(getParamValue("x", node, tensorMap, context))];
     }
     case "IRFFT": {
-      return [irfft(getParamValue("x", node2, tensorMap, context))];
+      return [irfft(getParamValue("x", node, tensorMap, context))];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp18 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp18 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "StringNGrams": {
-      const { nGrams, nGramsSplits } = string.stringNGrams(getParamValue("data", node2, tensorMap, context), getParamValue("dataSplits", node2, tensorMap, context), getParamValue("separator", node2, tensorMap, context), getParamValue("nGramWidths", node2, tensorMap, context), getParamValue("leftPad", node2, tensorMap, context), getParamValue("rightPad", node2, tensorMap, context), getParamValue("padWidth", node2, tensorMap, context), getParamValue("preserveShortSequences", node2, tensorMap, context));
+      const { nGrams, nGramsSplits } = string.stringNGrams(getParamValue("data", node, tensorMap, context), getParamValue("dataSplits", node, tensorMap, context), getParamValue("separator", node, tensorMap, context), getParamValue("nGramWidths", node, tensorMap, context), getParamValue("leftPad", node, tensorMap, context), getParamValue("rightPad", node, tensorMap, context), getParamValue("padWidth", node, tensorMap, context), getParamValue("preserveShortSequences", node, tensorMap, context));
       return [nGrams, nGramsSplits];
     }
     case "StringSplit": {
-      const { indices, values, shape } = string.stringSplit(getParamValue("input", node2, tensorMap, context), getParamValue("delimiter", node2, tensorMap, context), getParamValue("skipEmpty", node2, tensorMap, context));
+      const { indices, values, shape } = string.stringSplit(getParamValue("input", node, tensorMap, context), getParamValue("delimiter", node, tensorMap, context), getParamValue("skipEmpty", node, tensorMap, context));
       return [indices, values, shape];
     }
     case "StringToHashBucketFast": {
-      const output = string.stringToHashBucketFast(getParamValue("input", node2, tensorMap, context), getParamValue("numBuckets", node2, tensorMap, context));
+      const output = string.stringToHashBucketFast(getParamValue("input", node, tensorMap, context), getParamValue("numBuckets", node, tensorMap, context));
       return [output];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-var executeOp19 = (node2, tensorMap, context) => {
-  switch (node2.op) {
+var executeOp19 = (node, tensorMap, context) => {
+  switch (node.op) {
     case "Cast": {
-      return [cast(getParamValue("x", node2, tensorMap, context), getParamValue("dtype", node2, tensorMap, context))];
+      return [cast(getParamValue("x", node, tensorMap, context), getParamValue("dtype", node, tensorMap, context))];
     }
     case "ExpandDims": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      return [expandDims(getParamValue("x", node2, tensorMap, context), axis)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      return [expandDims(getParamValue("x", node, tensorMap, context), axis)];
     }
     case "Squeeze": {
-      const axis = getParamValue("axis", node2, tensorMap, context);
-      return [squeeze(getParamValue("x", node2, tensorMap, context), axis)];
+      const axis = getParamValue("axis", node, tensorMap, context);
+      return [squeeze(getParamValue("x", node, tensorMap, context), axis)];
     }
     case "Reshape": {
-      return [reshape(getParamValue("x", node2, tensorMap, context), getParamValue("shape", node2, tensorMap, context))];
+      return [reshape(getParamValue("x", node, tensorMap, context), getParamValue("shape", node, tensorMap, context))];
     }
     case "MirrorPad": {
-      return [mirrorPad(getParamValue("x", node2, tensorMap, context), getParamValue("padding", node2, tensorMap, context), getParamValue("mode", node2, tensorMap, context))];
+      return [mirrorPad(getParamValue("x", node, tensorMap, context), getParamValue("padding", node, tensorMap, context), getParamValue("mode", node, tensorMap, context))];
     }
     case "PadV2":
     case "Pad": {
-      return [pad(getParamValue("x", node2, tensorMap, context), getParamValue("padding", node2, tensorMap, context), getParamValue("constantValue", node2, tensorMap, context))];
+      return [pad(getParamValue("x", node, tensorMap, context), getParamValue("padding", node, tensorMap, context), getParamValue("constantValue", node, tensorMap, context))];
     }
     case "SpaceToBatchND": {
-      const blockShape = getParamValue("blockShape", node2, tensorMap, context);
-      const paddings = getParamValue("paddings", node2, tensorMap, context);
-      return [spaceToBatchND(getParamValue("x", node2, tensorMap, context), blockShape, paddings)];
+      const blockShape = getParamValue("blockShape", node, tensorMap, context);
+      const paddings = getParamValue("paddings", node, tensorMap, context);
+      return [spaceToBatchND(getParamValue("x", node, tensorMap, context), blockShape, paddings)];
     }
     case "BatchToSpaceND": {
-      const blockShape = getParamValue("blockShape", node2, tensorMap, context);
-      const crops = getParamValue("crops", node2, tensorMap, context);
-      return [batchToSpaceND(getParamValue("x", node2, tensorMap, context), blockShape, crops)];
+      const blockShape = getParamValue("blockShape", node, tensorMap, context);
+      const crops = getParamValue("crops", node, tensorMap, context);
+      return [batchToSpaceND(getParamValue("x", node, tensorMap, context), blockShape, crops)];
     }
     case "DepthToSpace": {
-      const blockSize = getParamValue("blockSize", node2, tensorMap, context);
-      const dataFormat = getParamValue("dataFormat", node2, tensorMap, context).toUpperCase();
-      return [depthToSpace(getParamValue("x", node2, tensorMap, context), blockSize, dataFormat)];
+      const blockSize = getParamValue("blockSize", node, tensorMap, context);
+      const dataFormat = getParamValue("dataFormat", node, tensorMap, context).toUpperCase();
+      return [depthToSpace(getParamValue("x", node, tensorMap, context), blockSize, dataFormat)];
     }
     case "BroadcastTo": {
-      return [broadcastTo(getParamValue("x", node2, tensorMap, context), getParamValue("shape", node2, tensorMap, context))];
+      return [broadcastTo(getParamValue("x", node, tensorMap, context), getParamValue("shape", node, tensorMap, context))];
     }
     case "BroadcastArgs": {
-      return [broadcastArgs(getParamValue("s0", node2, tensorMap, context), getParamValue("s1", node2, tensorMap, context))];
+      return [broadcastArgs(getParamValue("s0", node, tensorMap, context), getParamValue("s1", node, tensorMap, context))];
     }
     default:
-      throw TypeError(`Node type ${node2.op} is not implemented`);
+      throw TypeError(`Node type ${node.op} is not implemented`);
   }
 };
-function executeOp20(node2, tensorMap, context, resourceManager) {
-  const value = ((node22, tensorMap2, context2) => {
-    switch (node22.category) {
+function executeOp20(node, tensorMap, context, resourceManager) {
+  const value = ((node2, tensorMap2, context2) => {
+    switch (node2.category) {
       case "arithmetic":
-        return tidy(() => executeOp(node22, tensorMap2, context2));
+        return tidy(() => executeOp(node2, tensorMap2, context2));
       case "basic_math":
-        return tidy(() => executeOp2(node22, tensorMap2, context2));
+        return tidy(() => executeOp2(node2, tensorMap2, context2));
       case "control":
-        return executeOp3(node22, tensorMap2, context2);
+        return executeOp3(node2, tensorMap2, context2);
       case "convolution":
-        return tidy(() => executeOp4(node22, tensorMap2, context2));
+        return tidy(() => executeOp4(node2, tensorMap2, context2));
       case "creation":
-        return tidy(() => executeOp5(node22, tensorMap2, context2));
+        return tidy(() => executeOp5(node2, tensorMap2, context2));
       case "dynamic":
-        return executeOp6(node22, tensorMap2, context2);
+        return executeOp6(node2, tensorMap2, context2);
       case "evaluation":
-        return tidy(() => executeOp7(node22, tensorMap2, context2));
+        return tidy(() => executeOp7(node2, tensorMap2, context2));
       case "image":
-        return tidy(() => executeOp10(node22, tensorMap2, context2));
+        return tidy(() => executeOp10(node2, tensorMap2, context2));
       case "graph":
-        return tidy(() => executeOp8(node22, tensorMap2, context2));
+        return tidy(() => executeOp8(node2, tensorMap2, context2));
       case "logical":
-        return tidy(() => executeOp11(node22, tensorMap2, context2));
+        return tidy(() => executeOp11(node2, tensorMap2, context2));
       case "matrices":
-        return tidy(() => executeOp12(node22, tensorMap2, context2));
+        return tidy(() => executeOp12(node2, tensorMap2, context2));
       case "normalization":
-        return tidy(() => executeOp13(node22, tensorMap2, context2));
+        return tidy(() => executeOp13(node2, tensorMap2, context2));
       case "reduction":
-        return tidy(() => executeOp14(node22, tensorMap2, context2));
+        return tidy(() => executeOp14(node2, tensorMap2, context2));
       case "slice_join":
-        return tidy(() => executeOp15(node22, tensorMap2, context2));
+        return tidy(() => executeOp15(node2, tensorMap2, context2));
       case "sparse":
-        return tidy(() => executeOp16(node22, tensorMap2, context2));
+        return tidy(() => executeOp16(node2, tensorMap2, context2));
       case "spectral":
-        return tidy(() => executeOp17(node22, tensorMap2, context2));
+        return tidy(() => executeOp17(node2, tensorMap2, context2));
       case "string":
-        return tidy(() => executeOp18(node22, tensorMap2, context2));
+        return tidy(() => executeOp18(node2, tensorMap2, context2));
       case "transformation":
-        return tidy(() => executeOp19(node22, tensorMap2, context2));
+        return tidy(() => executeOp19(node2, tensorMap2, context2));
       case "hash_table":
-        return executeOp9(node22, tensorMap2, context2, resourceManager);
+        return executeOp9(node2, tensorMap2, context2, resourceManager);
       case "custom":
-        const opMapper = getRegisteredOp(node22.op);
+        const opMapper = getRegisteredOp(node2.op);
         if (opMapper && opMapper.customExecutor) {
-          return opMapper.customExecutor(new NodeValueImpl(node22, tensorMap2, context2));
+          return opMapper.customExecutor(new NodeValueImpl(node2, tensorMap2, context2));
         } else {
-          throw TypeError(`Custom op ${node22.op} is not registered.`);
+          throw TypeError(`Custom op ${node2.op} is not registered.`);
         }
       default:
-        throw TypeError(`Unknown op '${node22.op}'. File an issue at https://github.com/tensorflow/tfjs/issues so we can add it, or register a custom execution with tf.registerOp()`);
+        throw TypeError(`Unknown op '${node2.op}'. File an issue at https://github.com/tensorflow/tfjs/issues so we can add it, or register a custom execution with tf.registerOp()`);
     }
-  })(node2, tensorMap, context);
+  })(node, tensorMap, context);
   if (util_exports.isPromise(value)) {
     return value.then((data) => [].concat(data));
   }
@@ -65533,32 +65724,32 @@ function getExecutionSubgraph(inputs, outputs, weightMap, initNodes) {
   const inputNodeNames = Object.keys(inputs).map((name) => parseNodeName(name)[0]);
   let initNodeNames = [];
   if (initNodes != null) {
-    initNodeNames = initNodes.map((node2) => parseNodeName(node2.name)[0]);
+    initNodeNames = initNodes.map((node) => parseNodeName(node.name)[0]);
   }
   const frontier = [...outputs];
   while (frontier.length > 0) {
-    const node2 = frontier.pop();
-    if (isControlFlow(node2) || isDynamicShape(node2) || isHashTable(node2)) {
+    const node = frontier.pop();
+    if (isControlFlow(node) || isDynamicShape(node) || isHashTable(node)) {
       if (dynamicNode == null) {
-        dynamicNode = node2;
+        dynamicNode = node;
         syncInputs = dynamicNode.children.map((child) => child.name).filter((name) => usedNodes.has(name));
       }
     }
-    usedNodes.add(node2.name);
-    if (weightMap[node2.name] != null) {
+    usedNodes.add(node.name);
+    if (weightMap[node.name] != null) {
       continue;
     }
-    if (inputNodeNames.indexOf(node2.name) !== -1) {
+    if (inputNodeNames.indexOf(node.name) !== -1) {
       continue;
     }
-    if (initNodeNames.indexOf(node2.name) !== -1) {
+    if (initNodeNames.indexOf(node.name) !== -1) {
       continue;
     }
-    if (node2.inputs.length === 0) {
-      missingInputs.push(node2.name);
+    if (node.inputs.length === 0) {
+      missingInputs.push(node.name);
       continue;
     }
-    node2.inputs.forEach((input2) => {
+    node.inputs.forEach((input2) => {
       if (seen.has(input2.name)) {
         return;
       }
@@ -65568,37 +65759,37 @@ function getExecutionSubgraph(inputs, outputs, weightMap, initNodes) {
   }
   return { inputs, outputs, usedNodes, missingInputs, dynamicNode, syncInputs };
 }
-function getNodesInTopologicalOrder(graph2, weightMap, executionInfo) {
+function getNodesInTopologicalOrder(graph, weightMap, executionInfo) {
   const { usedNodes, inputs } = executionInfo;
   const frontier = [];
-  const inputNodes = Object.keys(inputs).map((name) => parseNodeName(name)[0]).map((name) => graph2.nodes[name]);
-  const initNodes = graph2.initNodes;
+  const inputNodes = Object.keys(inputs).map((name) => parseNodeName(name)[0]).map((name) => graph.nodes[name]);
+  const initNodes = graph.initNodes;
   inputNodes.forEach((input2) => {
     if (usedNodes.has(input2.name)) {
       frontier.push(input2);
     }
   });
-  graph2.weights.forEach((weight) => {
+  graph.weights.forEach((weight) => {
     if (usedNodes.has(weight.name)) {
       frontier.push(weight);
     }
   });
   if (initNodes != null) {
-    initNodes.forEach((node2) => {
-      if (usedNodes.has(node2.name)) {
-        frontier.push(node2);
+    initNodes.forEach((node) => {
+      if (usedNodes.has(node.name)) {
+        frontier.push(node);
       }
     });
   }
   const seen = new Set();
   const orderedNodes = [];
   while (frontier.length > 0) {
-    const node2 = frontier.pop();
-    seen.add(node2.name);
-    if (!weightMap[node2.name]) {
-      orderedNodes.push(node2);
+    const node = frontier.pop();
+    seen.add(node.name);
+    if (!weightMap[node.name]) {
+      orderedNodes.push(node);
     }
-    node2.children.forEach((child) => {
+    node.children.forEach((child) => {
       if (!seen.has(child.name) && usedNodes.has(child.name) && child.inputs.every((input2) => seen.has(input2.name))) {
         frontier.push(child);
       }
@@ -65633,18 +65824,18 @@ var HASH_TABLE_OPS = [
   "LookupTableSize",
   "LookupTableSizeV2"
 ];
-function isControlFlow(node2) {
-  return CONTROL_FLOW_OPS.indexOf(node2.op) >= 0;
+function isControlFlow(node) {
+  return CONTROL_FLOW_OPS.indexOf(node.op) >= 0;
 }
-function isDynamicShape(node2) {
-  return DYNAMIC_SHAPE_OPS.indexOf(node2.op) >= 0;
+function isDynamicShape(node) {
+  return DYNAMIC_SHAPE_OPS.indexOf(node.op) >= 0;
 }
-function isHashTable(node2) {
-  return HASH_TABLE_OPS.indexOf(node2.op) >= 0;
+function isHashTable(node) {
+  return HASH_TABLE_OPS.indexOf(node.op) >= 0;
 }
 var GraphExecutor = class {
-  constructor(graph2, parent) {
-    this.graph = graph2;
+  constructor(graph, parent) {
+    this.graph = graph;
     this.parent = parent;
     this.compiledMap = new Map();
     this._weightMap = {};
@@ -65653,14 +65844,14 @@ var GraphExecutor = class {
     this._functionExecutorMap = {};
     this.intermediateTensors = {};
     this.keepTensorForDebug = false;
-    this._outputs = graph2.outputs;
-    this._inputs = graph2.inputs;
-    this._initNodes = graph2.initNodes;
-    this._signature = graph2.signature;
-    this._functions = graph2.functions;
-    if (graph2.functions != null) {
-      Object.keys(graph2.functions).forEach((name) => {
-        this._functionExecutorMap[name] = new GraphExecutor(graph2.functions[name], this);
+    this._outputs = graph.outputs;
+    this._inputs = graph.inputs;
+    this._initNodes = graph.initNodes;
+    this._signature = graph.signature;
+    this._functions = graph.functions;
+    if (graph.functions != null) {
+      Object.keys(graph.functions).forEach((name) => {
+        this._functionExecutorMap[name] = new GraphExecutor(graph.functions[name], this);
       });
     }
   }
@@ -65682,30 +65873,30 @@ var GraphExecutor = class {
     this._resourceManager = resourceManager;
   }
   get inputs() {
-    return this._inputs.map((node2) => {
+    return this._inputs.map((node) => {
       return {
-        name: node2.name,
-        shape: node2.attrParams["shape"] ? node2.attrParams["shape"].value : void 0,
-        dtype: node2.attrParams["dtype"] ? node2.attrParams["dtype"].value : void 0
+        name: node.name,
+        shape: node.attrParams["shape"] ? node.attrParams["shape"].value : void 0,
+        dtype: node.attrParams["dtype"] ? node.attrParams["dtype"].value : void 0
       };
     });
   }
   get outputs() {
-    return this._outputs.map((node2) => {
+    return this._outputs.map((node) => {
       return {
-        name: node2.name,
-        shape: node2.attrParams["shape"] ? node2.attrParams["shape"].value : void 0,
-        dtype: node2.attrParams["dtype"] ? node2.attrParams["dtype"].value : void 0
+        name: node.name,
+        shape: node.attrParams["shape"] ? node.attrParams["shape"].value : void 0,
+        dtype: node.attrParams["dtype"] ? node.attrParams["dtype"].value : void 0
       };
     });
   }
   get inputNodes() {
-    return this._inputs.map((node2) => node2.signatureKey || node2.name);
+    return this._inputs.map((node) => node.signatureKey || node.name);
   }
   get outputNodes() {
-    return this._outputs.map((node2) => {
-      const name = node2.signatureKey || node2.name;
-      return node2.defaultOutput ? `${name}:${node2.defaultOutput}` : name;
+    return this._outputs.map((node) => {
+      const name = node.signatureKey || node.name;
+      return node.defaultOutput ? `${name}:${node.defaultOutput}` : name;
     });
   }
   get functions() {
@@ -65715,8 +65906,8 @@ var GraphExecutor = class {
     }, {});
   }
   getCompilationKey(inputs, outputs) {
-    const sortedInputs = inputs.map((node2) => node2.name).sort();
-    const sortedOutputs = outputs.map((node2) => node2.name).sort();
+    const sortedInputs = inputs.map((node) => node.name).sort();
+    const sortedOutputs = outputs.map((node) => node.name).sort();
     return sortedInputs.join(this.SEPERATOR) + "--" + sortedOutputs.join(this.SEPERATOR);
   }
   compile(inputs, outputs) {
@@ -65766,14 +65957,14 @@ var GraphExecutor = class {
       const tensorsToKeep = this.getFrozenTensorIds(tensorsMap);
       const intermediateTensorConsumerCount = {};
       for (let i2 = 0; i2 < orderedNodes.length; i2++) {
-        const node2 = orderedNodes[i2];
-        if (!tensorsMap[node2.name]) {
-          const tensors = executeOp20(node2, tensorsMap, context, this._resourceManager);
+        const node = orderedNodes[i2];
+        if (!tensorsMap[node.name]) {
+          const tensors = executeOp20(node, tensorsMap, context, this._resourceManager);
           if (util_exports.isPromise(tensors)) {
-            throw new Error(`The execution of the op '${node2.op}' returned a promise. Please use model.executeAsync() instead.`);
+            throw new Error(`The execution of the op '${node.op}' returned a promise. Please use model.executeAsync() instead.`);
           }
-          tensorsMap[node2.name] = tensors;
-          this.checkTensorForDisposal(node2.name, node2, tensorsMap, context, tensorsToKeep, outputNodeNames, intermediateTensorConsumerCount);
+          tensorsMap[node.name] = tensors;
+          this.checkTensorForDisposal(node.name, node, tensorsMap, context, tensorsToKeep, outputNodeNames, intermediateTensorConsumerCount);
         }
       }
       if (this.parent == null) {
@@ -65786,16 +65977,16 @@ var GraphExecutor = class {
     const ids = [].concat.apply([], Object.keys(tensorMap).map((key) => tensorMap[key]).map((tensors) => tensors.map((tensor2) => tensor2.id)));
     return new Set(ids);
   }
-  checkTensorForDisposal(nodeName, node2, tensorMap, context, tensorsToKeep, outputNames, intermediateTensorConsumerCount) {
-    if (node2.category === "control" || outputNames.indexOf(nodeName) !== -1) {
+  checkTensorForDisposal(nodeName, node, tensorMap, context, tensorsToKeep, outputNames, intermediateTensorConsumerCount) {
+    if (node.category === "control" || outputNames.indexOf(nodeName) !== -1) {
       return;
     }
     tensorMap[nodeName].forEach((tensor2) => {
       if (tensor2 != null) {
-        intermediateTensorConsumerCount[tensor2.id] = (intermediateTensorConsumerCount[tensor2.id] || 0) + node2.children.length;
+        intermediateTensorConsumerCount[tensor2.id] = (intermediateTensorConsumerCount[tensor2.id] || 0) + node.children.length;
       }
     });
-    node2.inputs.forEach((input2) => {
+    node.inputs.forEach((input2) => {
       if (input2.category !== "control") {
         const tensors = getTensorsForCurrentContenxt(input2.name, tensorMap, context);
         if (tensors != null) {
@@ -65806,7 +65997,7 @@ var GraphExecutor = class {
                 if (!this.keepTensorForDebug) {
                   tensor2.dispose();
                 } else {
-                  const [nodeName2, index2] = getNodeNameAndIndex(node2.name, context);
+                  const [nodeName2, index2] = getNodeNameAndIndex(node.name, context);
                   if (this.intermediateTensors[nodeName2]) {
                     this.intermediateTensors[nodeName2][index2] = tensor2;
                   } else {
@@ -65904,8 +66095,8 @@ var GraphExecutor = class {
       ...inputNodes,
       ...this.graph.weights,
       ...this._initNodes || []
-    ].map((node2) => {
-      return { node: node2, contexts: context.currentContext };
+    ].map((node) => {
+      return { node, contexts: context.currentContext };
     });
     const tensorsMap = { ...this.weightMap };
     Object.keys(inputs).forEach((name) => {
@@ -65924,7 +66115,7 @@ var GraphExecutor = class {
     if (dynamicNode == null && !isFunctionExecution) {
       console.warn(`This model execution did not contain any nodes with control flow or dynamic output shapes. You can use model.execute() instead.`);
     }
-    const missingOutputs = outputNodes2.filter((node2) => !isControlFlow(node2) && !getTensor(node2.name, tensorsMap, context)).map((node2) => node2.name);
+    const missingOutputs = outputNodes2.filter((node) => !isControlFlow(node) && !getTensor(node.name, tensorsMap, context)).map((node) => node.name);
     if (missingOutputs.length > 0) {
       let alternativeMsg = "";
       if (dynamicNode != null) {
@@ -65968,8 +66159,8 @@ var GraphExecutor = class {
     }
     return promises;
   }
-  processChildNodes(node2, stack2, context, tensorMap, added, usedNodes) {
-    node2.children.forEach((childNode) => {
+  processChildNodes(node, stack2, context, tensorMap, added, usedNodes) {
+    node.children.forEach((childNode) => {
       const [nodeName] = getNodeNameAndIndex(childNode.name, context);
       if (added[nodeName] || !usedNodes.has(childNode.name)) {
         return;
@@ -65996,14 +66187,14 @@ var GraphExecutor = class {
     Object.keys(inputs).forEach((name) => {
       const input2 = inputs[name];
       const [nodeName] = parseNodeName(name);
-      const node2 = this.graph.nodes[nodeName];
-      if (node2.attrParams["shape"] && node2.attrParams["shape"].value) {
-        const shape = node2.attrParams["shape"].value;
+      const node = this.graph.nodes[nodeName];
+      if (node.attrParams["shape"] && node.attrParams["shape"].value) {
+        const shape = node.attrParams["shape"].value;
         const match4 = shape.length === input2.shape.length && input2.shape.every((dim, index2) => shape[index2] === -1 || shape[index2] === dim);
-        util_exports.assert(match4, () => `The shape of dict['${node2.name}'] provided in model.execute(dict) must be [${shape}], but was [${input2.shape}]`);
+        util_exports.assert(match4, () => `The shape of dict['${node.name}'] provided in model.execute(dict) must be [${shape}], but was [${input2.shape}]`);
       }
-      if (node2.attrParams["dtype"] && node2.attrParams["dtype"].value) {
-        util_exports.assert(input2.dtype === node2.attrParams["dtype"].value, () => `The dtype of dict['${node2.name}'] provided in model.execute(dict) must be ${node2.attrParams["dtype"].value}, but was ${input2.dtype}`);
+      if (node.attrParams["dtype"] && node.attrParams["dtype"].value) {
+        util_exports.assert(input2.dtype === node.attrParams["dtype"].value, () => `The dtype of dict['${node.name}'] provided in model.execute(dict) must be ${node.attrParams["dtype"].value}, but was ${input2.dtype}`);
       }
     });
   }
@@ -66051,9 +66242,9 @@ var ResourceManager = class {
     this.hashTableNameToHandle = hashTableNameToHandle;
     this.hashTableMap = hashTableMap;
   }
-  addHashTable(name, hashTable2) {
-    this.hashTableNameToHandle[name] = hashTable2.handle;
-    this.hashTableMap[hashTable2.id] = hashTable2;
+  addHashTable(name, hashTable) {
+    this.hashTableNameToHandle[name] = hashTable.handle;
+    this.hashTableMap[hashTable.id] = hashTable;
   }
   getHashTableHandleByName(name) {
     return this.hashTableNameToHandle[name];
@@ -66134,7 +66325,7 @@ var GraphModel = class {
   }
   loadSync(artifacts) {
     this.artifacts = artifacts;
-    const graph2 = this.artifacts.modelTopology;
+    const graph = this.artifacts.modelTopology;
     let signature;
     if (this.artifacts.userDefinedMetadata != null && this.artifacts.userDefinedMetadata.signature != null) {
       signature = this.artifacts.userDefinedMetadata.signature;
@@ -66142,9 +66333,9 @@ var GraphModel = class {
       signature = this.artifacts.signature;
     }
     this.signature = signature;
-    this.version = `${graph2.versions.producer}.${graph2.versions.minConsumer}`;
+    this.version = `${graph.versions.producer}.${graph.versions.minConsumer}`;
     const weightMap = io_exports.decodeWeights(this.artifacts.weightData, this.artifacts.weightSpecs);
-    this.executor = new GraphExecutor(OperationMapper.Instance.transformGraph(graph2, this.signature));
+    this.executor = new GraphExecutor(OperationMapper.Instance.transformGraph(graph, this.signature));
     this.executor.weightMap = this.convertTensorMapToTensorsMap(weightMap);
     this.executor.resourceManager = this.resourceManager;
     if (artifacts.modelInitializer != null && artifacts.modelInitializer.node != null) {
@@ -66243,8 +66434,8 @@ async function loadGraphModel(modelUrl, options3 = {}) {
   return model22;
 }
 var version3 = "0.0.0";
-var src_exports = {};
-__export2(src_exports, {
+var src_exports2 = {};
+__export2(src_exports2, {
   CSVDataset: () => CSVDataset,
   Dataset: () => Dataset,
   FileDataSource: () => FileDataSource,
@@ -66678,11 +66869,11 @@ var SkipIterator = class extends LazyIterator {
   }
   async serialNext() {
     while (this.count++ < this.maxCount) {
-      const skipped16 = await this.upstream.next();
-      if (skipped16.done) {
-        return skipped16;
+      const skipped15 = await this.upstream.next();
+      if (skipped15.done) {
+        return skipped15;
       }
-      dispose(skipped16.value);
+      dispose(skipped15.value);
     }
     return this.upstream.next();
   }
@@ -66916,12 +67107,12 @@ var ChainedIterator = class extends LazyIterator {
     return itemResult;
   }
 };
-var ZipMismatchMode;
-(function(ZipMismatchMode2) {
+var ZipMismatchMode = ((ZipMismatchMode2) => {
   ZipMismatchMode2[ZipMismatchMode2["FAIL"] = 0] = "FAIL";
   ZipMismatchMode2[ZipMismatchMode2["SHORTEST"] = 1] = "SHORTEST";
   ZipMismatchMode2[ZipMismatchMode2["LONGEST"] = 2] = "LONGEST";
-})(ZipMismatchMode || (ZipMismatchMode = {}));
+  return ZipMismatchMode2;
+})(ZipMismatchMode || {});
 var ZipIterator = class extends LazyIterator {
   constructor(iterators, mismatchMode = 0) {
     super();
@@ -67039,7 +67230,7 @@ var Dataset = class {
     this.size = null;
   }
   batch(batchSize, smallLastBatch = true) {
-    const base2 = this;
+    const base = this;
     util_exports.assert(batchSize > 0, () => `batchSize needs to be positive, but it is
       ${batchSize}`);
     let size2;
@@ -67051,11 +67242,11 @@ var Dataset = class {
       size2 = Math.floor(this.size / batchSize);
     }
     return datasetFromIteratorFn(async () => {
-      return (await base2.iterator()).columnMajorBatch(batchSize, smallLastBatch, deepBatchConcat);
+      return (await base.iterator()).columnMajorBatch(batchSize, smallLastBatch, deepBatchConcat);
     }, size2);
   }
   concatenate(dataset) {
-    const base2 = this;
+    const base = this;
     let size2;
     if (this.size === Infinity || dataset.size === Infinity) {
       size2 = Infinity;
@@ -67064,10 +67255,10 @@ var Dataset = class {
     } else {
       size2 = null;
     }
-    return datasetFromIteratorFn(async () => (await base2.iterator()).concatenate(await dataset.iterator()), size2);
+    return datasetFromIteratorFn(async () => (await base.iterator()).concatenate(await dataset.iterator()), size2);
   }
   filter(predicate) {
-    const base2 = this;
+    const base = this;
     let size2;
     if (this.size === Infinity) {
       size2 = Infinity;
@@ -67075,33 +67266,33 @@ var Dataset = class {
       size2 = null;
     }
     return datasetFromIteratorFn(async () => {
-      return (await base2.iterator()).filter((x2) => tidy(() => predicate(x2)));
+      return (await base.iterator()).filter((x2) => tidy(() => predicate(x2)));
     }, size2);
   }
   async forEachAsync(f2) {
     return (await this.iterator()).forEachAsync(f2);
   }
   map(transform6) {
-    const base2 = this;
+    const base = this;
     return datasetFromIteratorFn(async () => {
-      return (await base2.iterator()).map((x2) => tidy(() => transform6(x2)));
+      return (await base.iterator()).map((x2) => tidy(() => transform6(x2)));
     }, this.size);
   }
   mapAsync(transform6) {
-    const base2 = this;
+    const base = this;
     return datasetFromIteratorFn(async () => {
-      return (await base2.iterator()).mapAsync(transform6);
+      return (await base.iterator()).mapAsync(transform6);
     }, this.size);
   }
   prefetch(bufferSize) {
     if (bufferSize == null) {
       throw new RangeError("`Dataset.prefetch()` requires bufferSize to be specified.");
     }
-    const base2 = this;
-    return datasetFromIteratorFn(async () => (await base2.iterator()).prefetch(bufferSize), this.size);
+    const base = this;
+    return datasetFromIteratorFn(async () => (await base.iterator()).prefetch(bufferSize), this.size);
   }
   repeat(count22) {
-    const base2 = this;
+    const base = this;
     let size2;
     if (this.size != null && count22 > 0) {
       size2 = this.size * count22;
@@ -67113,12 +67304,12 @@ var Dataset = class {
       size2 = null;
     }
     return datasetFromIteratorFn(async () => {
-      const iteratorIterator = iteratorFromFunction(async () => ({ value: await base2.iterator(), done: false }));
+      const iteratorIterator = iteratorFromFunction(async () => ({ value: await base.iterator(), done: false }));
       return iteratorFromConcatenated(iteratorIterator.take(count22));
     }, size2);
   }
   skip(count22) {
-    const base2 = this;
+    const base = this;
     let size2;
     if (this.size != null && count22 >= 0 && this.size >= count22) {
       size2 = this.size - count22;
@@ -67127,7 +67318,7 @@ var Dataset = class {
     } else {
       size2 = null;
     }
-    return datasetFromIteratorFn(async () => (await base2.iterator()).skip(count22), size2);
+    return datasetFromIteratorFn(async () => (await base.iterator()).skip(count22), size2);
   }
   shuffle(bufferSize, seed, reshuffleEachIteration = true) {
     if (bufferSize == null || bufferSize < 0) {
@@ -67137,18 +67328,18 @@ var Dataset = class {
         throw new RangeError(`\`Dataset.shuffle()\` requires bufferSize to be specified.  If your data fits in main memory (for regular JS objects), and/or GPU memory (for \`tf.Tensor\`s), consider setting bufferSize to the dataset size (${this.size} elements)`);
       }
     }
-    const base2 = this;
+    const base = this;
     const random = seedrandom3.alea(seed || util_exports.now().toString());
     return datasetFromIteratorFn(async () => {
       let seed2 = random.int32();
       if (reshuffleEachIteration) {
         seed2 += random.int32();
       }
-      return (await base2.iterator()).shuffle(bufferSize, seed2.toString());
+      return (await base.iterator()).shuffle(bufferSize, seed2.toString());
     }, this.size);
   }
   take(count22) {
-    const base2 = this;
+    const base = this;
     let size2;
     if (this.size != null && this.size > count22) {
       size2 = count22;
@@ -67157,7 +67348,7 @@ var Dataset = class {
     } else {
       size2 = null;
     }
-    return datasetFromIteratorFn(async () => (await base2.iterator()).take(count22), size2);
+    return datasetFromIteratorFn(async () => (await base.iterator()).take(count22), size2);
   }
   async toArray() {
     if (this.size === Infinity) {
@@ -67915,7 +68106,7 @@ async function urlChunkIterator(url, options3 = {}, fetchFunc) {
   }
 }
 var getRequestInitFromRequest = (request) => {
-  const init2 = {
+  const init22 = {
     method: request.method,
     headers: request.headers,
     body: request.body,
@@ -67926,7 +68117,7 @@ var getRequestInitFromRequest = (request) => {
     referrer: request.referrer,
     integrity: request.integrity
   };
-  return init2;
+  return init22;
 };
 function isLocalPath(source) {
   return typeof source === "string" && source.substr(0, 7) === "file://";
@@ -67939,7 +68130,7 @@ var FileDataSource = class extends DataSource {
   }
   async iterator() {
     if (isLocalPath(this.input) && env().get("IS_NODE")) {
-      const fs = __require222("fs");
+      const fs = require_fs();
       this.input = fs.readFileSync(this.input.substr(7));
     }
     return new FileChunkIterator(this.input, this.options);
@@ -68556,14 +68747,14 @@ var floorConfig = {
   backendName: "cpu",
   kernelFunc: floor2
 };
-function gatherNdImpl(indicesData, paramsBuf, dtype, numSlices, sliceRank, sliceSize, strides, paramsShape, paramsSize) {
+function gatherNdImpl(indicesData, paramsBuf, dtype, numSlices, sliceRank, sliceSize, strides2, paramsShape, paramsSize) {
   const outBuf = buffer([numSlices, sliceSize], dtype);
   for (let i2 = 0; i2 < numSlices; i2++) {
     const index2 = [];
     let flattenIndex = 0;
     for (let j2 = 0; j2 < sliceRank; j2++) {
       const dim = indicesData[i2 * sliceRank + j2];
-      flattenIndex += dim * strides[j2];
+      flattenIndex += dim * strides2[j2];
       index2.push(dim);
     }
     if (flattenIndex < 0 || flattenIndex >= paramsSize / sliceSize) {
@@ -68627,11 +68818,11 @@ function linSpaceImpl(start, stop, num) {
   return values;
 }
 var logImpl = createSimpleUnaryImpl((xi) => Math.log(xi));
-var log5 = unaryKernelFuncFromImpl(Log, logImpl);
+var log3 = unaryKernelFuncFromImpl(Log, logImpl);
 var logConfig = {
   kernelName: Log,
   backendName: "cpu",
-  kernelFunc: log5
+  kernelFunc: log3
 };
 function maxImpl(aVals, reduceSize, outShape, dtype) {
   const vals = util_exports.getTypedArrayFromDType(dtype, util_exports.sizeFromShape(outShape));
@@ -68861,8 +69052,7 @@ function sparseFillEmptyRowsImpl(indices, indicesShape, indicesDType, values, va
   const rank = indicesShape[1];
   if (denseRows === 0) {
     if (indicesCount !== 0) {
-      throw new Error(`Received SparseTensor with denseShape[0] = 0 but
-         indices.shape[0] = ${indicesCount}`);
+      throw new Error(backend_util_exports.getSparseFillEmptyRowsIndicesDenseShapeMismatch(indicesCount));
     }
     const outputIndices = util_exports.getArrayFromDType(indicesDType, 0);
     const outputValues = util_exports.getArrayFromDType(valuesDType, 0);
@@ -68880,10 +69070,10 @@ function sparseFillEmptyRowsImpl(indices, indicesShape, indicesDType, values, va
   for (let i2 = 0; i2 < indicesCount; ++i2) {
     const row = indices[i2 * rank];
     if (row < 0) {
-      throw new Error(`indices(${i2}, 0) is invalid: ${row} < 0`);
+      throw new Error(backend_util_exports.getSparseFillEmptyRowsNegativeIndexErrorMessage(i2, row));
     }
     if (row >= denseRows) {
-      throw new Error(`indices(${i2}, 0) is invalid: ${row} >= ${denseRows}`);
+      throw new Error(backend_util_exports.getSparseFillEmptyRowsOutOfRangeIndexErrorMessage(i2, row, denseRows));
     }
     ++csrOffset[row];
     rowsAreOrdered = rowsAreOrdered && row >= lastIndicesRow;
@@ -68959,13 +69149,13 @@ function sparseReshapeImpl(inputIndices, inputIndicesShape, inputDType, inputSha
     const size2 = targetShape[d2];
     if (size2 === -1) {
       if (unknownIndex !== -1) {
-        throw new Error(`only one output dimension may be -1, not both ${unknownIndex} and ${d2}`);
+        throw new Error(backend_util_exports.getSparseReshapeMultipleNegativeOneOutputDimErrorMessage(unknownIndex, d2));
       }
       unknownIndex = d2;
       outputShape.push(1);
     } else {
       if (size2 < 0) {
-        throw new Error(`size ${d2} must be non-negative, not ${size2}`);
+        throw new Error(backend_util_exports.getSparseReshapeNegativeOutputDimErrorMessage(d2, size2));
       }
       product *= size2;
       outputShape.push(size2);
@@ -68973,18 +69163,17 @@ function sparseReshapeImpl(inputIndices, inputIndicesShape, inputDType, inputSha
   }
   if (unknownIndex !== -1) {
     if (product <= 0) {
-      throw new Error("reshape cannot infer the missing input size for an empty tensor unless all specified input sizes are non-zero");
+      throw new Error(backend_util_exports.getSparseReshapeEmptyTensorZeroOutputDimErrorMessage());
     }
     const missing = Math.trunc(denseSize / product);
     if (product * missing !== denseSize) {
-      throw new Error(`Input to reshape is a SparseTensor with ${denseSize}
-          dense values, but the requested shape requires a multiple of ${product}. inputShape=${inputShape} outputShape= ${outputShape}`);
+      throw new Error(backend_util_exports.getSparseReshapeInputOutputMultipleErrorMessage(inputShape, outputShape));
     }
     outputShape[unknownIndex] = missing;
   }
   const outputSize2 = util_exports.sizeFromShape(outputShape);
   if (outputSize2 !== denseSize) {
-    throw new Error(`Input to reshape is a tensor with ${denseSize} dense values, but the requested shape has ${outputSize2}. inputShape=${inputShape} outputShape=${outputShape}`);
+    throw new Error(backend_util_exports.getSparseReshapeInputOutputMismatchErrorMessage(inputShape, outputShape));
   }
   const inputRank = inputShape.length;
   const inputStrides = [];
@@ -69016,15 +69205,12 @@ function sparseReshapeImpl(inputIndices, inputIndicesShape, inputDType, inputSha
 }
 function sparseSegmentReductionImpl(input2, inputShape, inputDType, indices, segmentIds, isMean = false, defaultValue = 0) {
   const numIndices = indices.length;
-  if (numIndices !== segmentIds.length) {
-    throw new Error(`segmentIds and indices should have same size.`);
-  }
   const inputFlat = [inputShape[0], input2.length / inputShape[0]];
   const numCol = inputFlat[1];
   const lastSegmentIdPlusOne = numIndices > 0 ? segmentIds[numIndices - 1] + 1 : 0;
   const outputRows = lastSegmentIdPlusOne;
   if (outputRows < 0) {
-    throw new Error(`segment ids must be >= 0`);
+    throw new Error(backend_util_exports.getSparseSegmentReductionNegativeSegmentIdsErrorMessage());
   }
   const outputShape = inputShape.slice();
   outputShape[0] = outputRows;
@@ -69037,7 +69223,7 @@ function sparseSegmentReductionImpl(input2, inputShape, inputDType, indices, seg
     return [output, outputShape];
   }
   if (outputRows <= 0) {
-    throw new Error(`segment ids must be >= 0`);
+    throw new Error(backend_util_exports.getSparseSegmentReductionNegativeSegmentIdsErrorMessage());
   }
   let start = 0, end = 1;
   let uninitializedIndex = 0;
@@ -69051,11 +69237,11 @@ function sparseSegmentReductionImpl(input2, inputShape, inputDType, indices, seg
         continue;
       }
       if (outIndex >= nextIndex) {
-        throw new Error(`segment ids are not increasing`);
+        throw new Error(backend_util_exports.getSparseSegmentReductionNonIncreasingSegmentIdsErrorMessage());
       }
     }
     if (outIndex < 0 || outIndex >= outputRows) {
-      throw new Error(`Segment id ${outIndex} out of range [0, ${outputRows}), possibly because segmentIds input is not sorted.`);
+      throw new Error(backend_util_exports.getSparseSegmentReductionSegmentIdOutOfRangeErrorMessage(outIndex, outputRows));
     }
     if (outIndex > uninitializedIndex) {
       output.fill(defaultValue, uninitializedIndex * numCol, outIndex * numCol);
@@ -69063,7 +69249,7 @@ function sparseSegmentReductionImpl(input2, inputShape, inputDType, indices, seg
     for (let i2 = start; i2 < end; ++i2) {
       const index2 = indices[i2];
       if (index2 < 0 || index2 >= inputFlat[0]) {
-        throw new Error(`Bad: indices[${i2}] == ${indices[i2]} out of range [0, ${inputFlat[0]})`);
+        throw new Error(backend_util_exports.getSparseSegmentReductionIndicesOutOfRangeErrorMessage(i2, indices[i2], inputFlat[0]));
       }
       for (let j2 = 0; j2 < numCol; j2++) {
         output[outIndex * numCol + j2] += input2[index2 * numCol + j2];
@@ -69104,13 +69290,13 @@ var squaredDifferenceConfig = {
   backendName: "cpu",
   kernelFunc: squaredDifference2
 };
-function stridedSliceImpl(outShape, xBuf, strides, begin) {
+function stridedSliceImpl(outShape, xBuf, strides2, begin) {
   const outBuf = buffer(outShape, xBuf.dtype);
   for (let i2 = 0; i2 < outBuf.size; i2++) {
     const loc = outBuf.indexToLoc(i2);
     const newLoc = new Array(loc.length);
     for (let j2 = 0; j2 < newLoc.length; j2++) {
-      newLoc[j2] = loc[j2] * strides[j2] + begin[j2];
+      newLoc[j2] = loc[j2] * strides2[j2] + begin[j2];
     }
     outBuf.set(xBuf.get(...newLoc), ...loc);
   }
@@ -69903,7 +70089,7 @@ var atanhConfig = {
   backendName: "cpu",
   kernelFunc: atanh2
 };
-function pool2(xValues, xShape, dtype, strides, convInfo, poolType) {
+function pool2(xValues, xShape, dtype, strides2, convInfo, poolType) {
   const strideHeight = convInfo.strideHeight;
   const strideWidth = convInfo.strideWidth;
   const dilationHeight = convInfo.dilationHeight;
@@ -69920,7 +70106,7 @@ function pool2(xValues, xShape, dtype, strides, convInfo, poolType) {
   const outputColStrides = convInfo.outShape[3];
   for (let b2 = 0; b2 < convInfo.batchSize; ++b2) {
     const outputBatchOffset = b2 * outputBatchStrides;
-    const inputBatchOffset = b2 * strides[0];
+    const inputBatchOffset = b2 * strides2[0];
     for (let d2 = 0; d2 < convInfo.inChannels; ++d2) {
       for (let yR = 0; yR < convInfo.outHeight; ++yR) {
         const xRCorner = yR * strideHeight - padTop;
@@ -69935,9 +70121,9 @@ function pool2(xValues, xShape, dtype, strides, convInfo, poolType) {
           let avgValue = 0;
           let count22 = 0;
           for (let xR = xRMin; xR < xRMax; xR += dilationHeight) {
-            const xROffset = inputBatchOffset + xR * strides[1];
+            const xROffset = inputBatchOffset + xR * strides2[1];
             for (let xC = xCMin; xC < xCMax; xC += dilationWidth) {
-              const xCOffset = xROffset + xC * strides[2];
+              const xCOffset = xROffset + xC * strides2[2];
               const pixel = xValues[xCOffset + d2];
               if (poolType === "max" && pixel > minMaxValue) {
                 minMaxValue = pixel;
@@ -70009,7 +70195,7 @@ function maxPoolPositions(xValues, xShape, dtype, convInfo, flattenPositions = f
   }
   return maxPositions;
 }
-function pool3d2(xValues, xShape, dtype, strides, convInfo, poolType) {
+function pool3d2(xValues, xShape, dtype, strides2, convInfo, poolType) {
   const strideDepth = convInfo.strideDepth;
   const strideHeight = convInfo.strideHeight;
   const strideWidth = convInfo.strideWidth;
@@ -70031,7 +70217,7 @@ function pool3d2(xValues, xShape, dtype, strides, convInfo, poolType) {
   const outputColStrides = convInfo.outShape[4];
   for (let batch = 0; batch < convInfo.batchSize; ++batch) {
     const outputBatchOffset = batch * outputBatchStrides;
-    const inputBatchOffset = batch * strides[0];
+    const inputBatchOffset = batch * strides2[0];
     for (let channel = 0; channel < convInfo.inChannels; ++channel) {
       for (let yDepth = 0; yDepth < convInfo.outDepth; ++yDepth) {
         const xDepthCorner = yDepth * strideDepth - padFront;
@@ -70061,11 +70247,11 @@ function pool3d2(xValues, xShape, dtype, strides, convInfo, poolType) {
             let avgValue = 0;
             let count22 = 0;
             for (let xDepth = xDepthMin; xDepth < xDepthMax; xDepth += dilationDepth) {
-              const xDepthOffset = inputBatchOffset + xDepth * strides[1];
+              const xDepthOffset = inputBatchOffset + xDepth * strides2[1];
               for (let xRow = xRowMin; xRow < xRowMax; xRow += dilationHeight) {
-                const xRowOffset = xDepthOffset + xRow * strides[2];
+                const xRowOffset = xDepthOffset + xRow * strides2[2];
                 for (let xCol = xColMin; xCol < xColMax; xCol += dilationWidth) {
-                  const xColOffset = xRowOffset + xCol * strides[3];
+                  const xColOffset = xRowOffset + xCol * strides2[3];
                   const pixel = xValues[xColOffset + channel];
                   if (poolType === "max" && pixel > minMaxValue) {
                     minMaxValue = pixel;
@@ -70159,17 +70345,17 @@ function avgPool2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
   assertNotComplex(x2, "avgPool");
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
   const dilations = 1;
-  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in avgPool: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode);
+  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in avgPool: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, dilations, pad3, dimRoundingMode);
   let res2;
   if (convInfo.filterWidth === 1 && convInfo.filterHeight === 1 && util_exports.arraysEqual(convInfo.inShape, convInfo.outShape)) {
     res2 = identity2({ inputs: { x: x2 }, backend: backend22 });
   } else {
     const xValues = backend22.data.get(x2.dataId).values;
-    const strides2 = util_exports.computeStrides(x2.shape);
-    const buffer2 = pool2(xValues, x2.shape, x2.dtype, strides2, convInfo, "avg");
+    const strides22 = util_exports.computeStrides(x2.shape);
+    const buffer2 = pool2(xValues, x2.shape, x2.dtype, strides22, convInfo, "avg");
     res2 = backend22.makeTensorInfo(convInfo.outShape, x2.dtype, buffer2.values);
   }
   return res2;
@@ -70182,9 +70368,9 @@ var avgPoolConfig = {
 function avgPool3D(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
-  const { filterSize, strides, pad: pad3, dimRoundingMode, dataFormat } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode, dataFormat } = attrs;
   assertNotComplex(x2, "avgPool3d");
-  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides, 1, pad3, dimRoundingMode, dataFormat);
+  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides2, 1, pad3, dimRoundingMode, dataFormat);
   const xValues = backend22.data.get(x2.dataId).values;
   const outBuf = pool3d2(xValues, x2.shape, x2.dtype, util_exports.computeStrides(x2.shape), convInfo, "avg");
   return backend22.makeTensorInfo(outBuf.shape, "float32", outBuf.values);
@@ -70197,9 +70383,9 @@ var avgPool3DConfig = {
 function avgPool3DGrad(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, input: input2 } = inputs;
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
   assertNotComplex([dy, input2], "avgPool3DGrad");
-  const convInfo = backend_util_exports.computePool3DInfo(input2.shape, filterSize, strides, 1, pad3, dimRoundingMode);
+  const convInfo = backend_util_exports.computePool3DInfo(input2.shape, filterSize, strides2, 1, pad3, dimRoundingMode);
   const strideDepth = convInfo.strideDepth;
   const strideHeight = convInfo.strideHeight;
   const strideWidth = convInfo.strideWidth;
@@ -70265,8 +70451,8 @@ function avgPoolGrad2(args) {
   const { dy, input: input2 } = inputs;
   const x2 = input2;
   assertNotComplex([dy, input2], "avgPoolGrad");
-  const { filterSize, strides, pad: pad3 } = attrs;
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, 1, pad3);
+  const { filterSize, strides: strides2, pad: pad3 } = attrs;
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, 1, pad3);
   const strideHeight = convInfo.strideHeight;
   const strideWidth = convInfo.strideWidth;
   const filterHeight = convInfo.filterHeight;
@@ -70512,10 +70698,10 @@ var concatConfig = {
 function conv2D(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter } = inputs;
-  const { strides, pad: pad3, dataFormat, dilations, dimRoundingMode } = attrs;
+  const { strides: strides2, pad: pad3, dataFormat, dilations, dimRoundingMode } = attrs;
   assertNotComplex([x2, filter], "conv2d");
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, dilations, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, dilations, pad3, dimRoundingMode, false, $dataFormat);
   const filterHeight = convInfo.filterHeight;
   const filterWidth = convInfo.filterWidth;
   const dilationHeight = convInfo.dilationHeight;
@@ -70583,10 +70769,10 @@ var conv2DConfig = {
 function conv2DBackpropFilter2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, dy } = inputs;
-  const { strides, pad: pad3, dataFormat, dimRoundingMode, filterShape } = attrs;
+  const { strides: strides2, pad: pad3, dataFormat, dimRoundingMode, filterShape } = attrs;
   assertNotComplex([x2, dy], "conv2dBackpropFilter");
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filterShape, strides, 1, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filterShape, strides2, 1, pad3, dimRoundingMode, false, $dataFormat);
   const { strideHeight, strideWidth, filterHeight, filterWidth } = convInfo;
   const isChannelsLast = convInfo.dataFormat === "channelsLast";
   const dW = new TensorBuffer(convInfo.filterShape, "float32");
@@ -70633,12 +70819,12 @@ var conv2DBackpropFilterConfig = {
 function conv2DBackpropInput2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, filter } = inputs;
-  const { inputShape, strides, pad: pad3, dataFormat, dimRoundingMode } = attrs;
+  const { inputShape, strides: strides2, pad: pad3, dataFormat, dimRoundingMode } = attrs;
   assertNotComplex([dy, filter], "conv2dBackpropInput");
   const filterStrides = util_exports.computeStrides(filter.shape);
   const dyStrides = util_exports.computeStrides(dy.shape);
   let $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides, 1, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides2, 1, pad3, dimRoundingMode, false, $dataFormat);
   const dx = new TensorBuffer(convInfo.inShape, "float32");
   const dxValues = dx.values;
   const dyValues = backend22.data.get(dy.dataId).values;
@@ -70709,9 +70895,9 @@ var conv2DBackpropInputConfig = {
 function conv3D(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter } = inputs;
-  const { strides, pad: pad3, dilations } = attrs;
+  const { strides: strides2, pad: pad3, dilations } = attrs;
   assertNotComplex([x2, filter], "conv3d");
-  const convInfo = backend_util_exports.computeConv3DInfo(x2.shape, filter.shape, strides, dilations, pad3);
+  const convInfo = backend_util_exports.computeConv3DInfo(x2.shape, filter.shape, strides2, dilations, pad3);
   const {
     filterDepth,
     filterHeight,
@@ -70788,11 +70974,11 @@ var conv3DConfig = {
 function conv3DBackpropFilterV2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, dy } = inputs;
-  const { strides, pad: pad3, filterShape } = attrs;
+  const { strides: strides2, pad: pad3, filterShape } = attrs;
   assertNotComplex([x2, dy], "conv3dBackpropFilterV2");
   const xStrides = util_exports.computeStrides(x2.shape);
   const dyStrides = util_exports.computeStrides(dy.shape);
-  const convInfo = backend_util_exports.computeConv3DInfo(x2.shape, filterShape, strides, 1, pad3);
+  const convInfo = backend_util_exports.computeConv3DInfo(x2.shape, filterShape, strides2, 1, pad3);
   const strideDepth = convInfo.strideDepth;
   const strideHeight = convInfo.strideHeight;
   const strideWidth = convInfo.strideWidth;
@@ -70861,11 +71047,11 @@ var conv3DBackpropFilterV2Config = {
 function conv3DBackpropInputV2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, filter } = inputs;
-  const { pad: pad3, strides, inputShape } = attrs;
+  const { pad: pad3, strides: strides2, inputShape } = attrs;
   assertNotComplex([dy], "conv3dBackpropInputV2");
   const dyStrides = util_exports.computeStrides(dy.shape);
   const filterStrides = util_exports.computeStrides(filter.shape);
-  const convInfo = backend_util_exports.computeConv3DInfo(inputShape, filter.shape, strides, 1, pad3);
+  const convInfo = backend_util_exports.computeConv3DInfo(inputShape, filter.shape, strides2, 1, pad3);
   const dx = new TensorBuffer(convInfo.inShape, "float32");
   const dxValues = dx.values;
   const [dxS0, dxS1, dxS2, dxS3] = dx.strides;
@@ -70951,16 +71137,16 @@ var coshConfig = {
 };
 function cropAndResize2(args) {
   const { inputs, backend: backend22, attrs } = args;
-  const { image: image32, boxes, boxInd } = inputs;
+  const { image: image22, boxes, boxInd } = inputs;
   const { cropSize, method, extrapolationValue } = attrs;
-  const [batch, imageHeight, imageWidth, numChannels] = image32.shape;
+  const [batch, imageHeight, imageWidth, numChannels] = image22.shape;
   const numBoxes = boxes.shape[0];
   const [cropHeight, cropWidth] = cropSize;
   const output = buffer([numBoxes, cropHeight, cropWidth, numChannels], "float32");
   const boxVals = backend22.data.get(boxes.dataId).values;
   const boxIndVals = backend22.data.get(boxInd.dataId).values;
-  const imageVals = backend22.data.get(image32.dataId).values;
-  const inStride = util_exports.computeStrides(image32.shape);
+  const imageVals = backend22.data.get(image22.dataId).values;
+  const inStride = util_exports.computeStrides(image22.shape);
   const outStride = util_exports.computeStrides(output.shape);
   for (let b2 = 0; b2 < numBoxes; b2++) {
     const startInd = b2 * 4;
@@ -71152,7 +71338,7 @@ var depthToSpaceConfig = {
 function depthwiseConv2dNative(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter } = inputs;
-  const { strides, pad: pad3, dilations, dimRoundingMode } = attrs;
+  const { strides: strides2, pad: pad3, dilations, dimRoundingMode } = attrs;
   assertNotComplex([x2, filter], "depthwiseConv2DNative");
   const xStrides = util_exports.computeStrides(x2.shape);
   const filterStrides = util_exports.computeStrides(filter.shape);
@@ -71160,8 +71346,8 @@ function depthwiseConv2dNative(args) {
   if ($dilations == null) {
     $dilations = [1, 1];
   }
-  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides, $dilations), () => `Error in depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides} and dilations '${$dilations}'`);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, $dilations, pad3, dimRoundingMode, true);
+  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides2, $dilations), () => `Error in depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${$dilations}'`);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, $dilations, pad3, dimRoundingMode, true);
   const { filterHeight, filterWidth, dilationHeight, dilationWidth, padInfo } = convInfo;
   const padLeft = padInfo.left;
   const padTop = padInfo.top;
@@ -71218,9 +71404,9 @@ var depthwiseConv2dNativeConfig = {
 function depthwiseConv2dNativeBackpropFilter2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, dy } = inputs;
-  const { strides, dilations, pad: pad3, dimRoundingMode, filterShape } = attrs;
+  const { strides: strides2, dilations, pad: pad3, dimRoundingMode, filterShape } = attrs;
   assertNotComplex([x2, dy], "depthwiseConv2dNativeBackpropFilter");
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filterShape, strides, dilations, pad3, dimRoundingMode, true);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filterShape, strides2, dilations, pad3, dimRoundingMode, true);
   const { strideHeight, strideWidth, filterHeight, filterWidth } = convInfo;
   const dW = new TensorBuffer(convInfo.filterShape, "float32");
   const leftPad = convInfo.padInfo.left;
@@ -71263,11 +71449,11 @@ var depthwiseConv2dNativeBackpropFilterConfig = {
 function depthwiseConv2dNativeBackpropInput2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, filter } = inputs;
-  const { strides, dilations, pad: pad3, dimRoundingMode, inputShape } = attrs;
+  const { strides: strides2, dilations, pad: pad3, dimRoundingMode, inputShape } = attrs;
   assertNotComplex([dy, filter], "depthwiseConv2DNativeBackpropInput");
   const dyStrides = util_exports.computeStrides(dy.shape);
   const filterStrides = util_exports.computeStrides(filter.shape);
-  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides, dilations, pad3, dimRoundingMode, true);
+  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides2, dilations, pad3, dimRoundingMode, true);
   const dx = new TensorBuffer(convInfo.inShape, "float32");
   const dxValues = dx.values;
   const [dxS0, dxS1, dxS2] = dx.strides;
@@ -71351,7 +71537,7 @@ var dilation2dConfig = {
   backendName: "cpu",
   kernelFunc: ({ inputs, backend: backend22, attrs }) => {
     const { x: x2, filter } = inputs;
-    const { strides, pad: pad3, dilations } = attrs;
+    const { strides: strides2, pad: pad3, dilations } = attrs;
     const cpuBackend = backend22;
     const xVals = cpuBackend.data.get(x2.dataId).values;
     const xRank = x2.shape.length;
@@ -71372,7 +71558,7 @@ var dilation2dConfig = {
       dilationHeight,
       dilationWidth,
       outShape
-    } = backend_util_exports.computeDilation2DInfo(x2.shape, filter.shape, strides, pad3, "NHWC", dilations);
+    } = backend_util_exports.computeDilation2DInfo(x2.shape, filter.shape, strides2, pad3, "NHWC", dilations);
     const outSize = util_exports.sizeFromShape(outShape);
     const outRank = outShape.length;
     const outputVals = util_exports.getArrayFromDType(x2.dtype, outSize);
@@ -71414,7 +71600,7 @@ var dilation2dBackpropFilterConfig = {
   backendName: "cpu",
   kernelFunc: ({ inputs, backend: backend22, attrs }) => {
     const { x: x2, filter, dy } = inputs;
-    const { strides, pad: pad3, dilations } = attrs;
+    const { strides: strides2, pad: pad3, dilations } = attrs;
     const cpuBackend = backend22;
     const $x = util_exports.toNestedArray(x2.shape, cpuBackend.data.get(x2.dataId).values);
     const $filter = util_exports.toNestedArray(filter.shape, cpuBackend.data.get(filter.dataId).values);
@@ -71433,7 +71619,7 @@ var dilation2dBackpropFilterConfig = {
       dilationHeight,
       dilationWidth,
       outShape
-    } = backend_util_exports.computeDilation2DInfo(x2.shape, filter.shape, strides, pad3, "NHWC", dilations);
+    } = backend_util_exports.computeDilation2DInfo(x2.shape, filter.shape, strides2, pad3, "NHWC", dilations);
     util_exports.assert(dy.rank === outShape.length, () => `Error in ${Dilation2DBackpropFilter}, dy must have the same rank as output ${outShape.length}, but got ${dy.rank}`);
     const $dy = util_exports.toNestedArray(outShape, cpuBackend.data.get(dy.dataId).values);
     const gradients = util_exports.makeZerosNestedTypedArray(filter.shape, filter.dtype);
@@ -71476,7 +71662,7 @@ var dilation2dBackpropInputConfig = {
   backendName: "cpu",
   kernelFunc: ({ inputs, backend: backend22, attrs }) => {
     const { x: x2, filter, dy } = inputs;
-    const { strides, pad: pad3, dilations } = attrs;
+    const { strides: strides2, pad: pad3, dilations } = attrs;
     const cpuBackend = backend22;
     const $x = util_exports.toNestedArray(x2.shape, cpuBackend.data.get(x2.dataId).values);
     const $filter = util_exports.toNestedArray(filter.shape, cpuBackend.data.get(filter.dataId).values);
@@ -71495,7 +71681,7 @@ var dilation2dBackpropInputConfig = {
       dilationHeight,
       dilationWidth,
       outShape
-    } = backend_util_exports.computeDilation2DInfo(x2.shape, filter.shape, strides, pad3, "NHWC", dilations);
+    } = backend_util_exports.computeDilation2DInfo(x2.shape, filter.shape, strides2, pad3, "NHWC", dilations);
     util_exports.assert(dy.rank === outShape.length, () => `Error in ${Dilation2DBackpropInput}, dy must have the same rank as output ${outShape.length}, but got ${dy.rank}`);
     const $dy = util_exports.toNestedArray(outShape, cpuBackend.data.get(dy.dataId).values);
     const gradients = util_exports.makeZerosNestedTypedArray(x2.shape, x2.dtype);
@@ -71756,17 +71942,17 @@ function fftBatch(input2, inverse, cpuBackend) {
   return result;
 }
 function fftImpl(input2, inverse, cpuBackend) {
-  const inputSize8 = util_exports.sizeFromShape(input2.shape);
+  const inputSize9 = util_exports.sizeFromShape(input2.shape);
   const inputVals = cpuBackend.data.get(input2.dataId);
   const realVals = cpuBackend.data.get(inputVals.complexTensorInfos.real.dataId).values;
   const imagVals = cpuBackend.data.get(inputVals.complexTensorInfos.imag.dataId).values;
-  if (isExponentOf2(inputSize8)) {
-    const result = fftRadix2(realVals, imagVals, inputSize8, inverse, cpuBackend);
+  if (isExponentOf2(inputSize9)) {
+    const result = fftRadix2(realVals, imagVals, inputSize9, inverse, cpuBackend);
     const resultShape = [input2.shape[0], input2.shape[1]];
     if (inverse) {
       const realInfo = cpuBackend.makeTensorInfo(resultShape, "float32", result.real);
       const imagInfo = cpuBackend.makeTensorInfo(resultShape, "float32", result.imag);
-      const sizeInfo = cpuBackend.makeTensorInfo([], "float32", util_exports.createScalarValue(inputSize8, "float32"));
+      const sizeInfo = cpuBackend.makeTensorInfo([], "float32", util_exports.createScalarValue(inputSize9, "float32"));
       const sizeInfoCopy = identity2({ inputs: { x: sizeInfo }, backend: cpuBackend });
       const divRealInfo = realDivConfig.kernelFunc({ inputs: { a: realInfo, b: sizeInfo }, backend: cpuBackend });
       const divImagInfo = realDivConfig.kernelFunc({ inputs: { a: imagInfo, b: sizeInfoCopy }, backend: cpuBackend });
@@ -71783,7 +71969,7 @@ function fftImpl(input2, inverse, cpuBackend) {
     return result;
   } else {
     const data = backend_util_exports.mergeRealAndImagArrays(realVals, imagVals);
-    const rawOutput = fourierTransformByMatmul(data, inputSize8, inverse);
+    const rawOutput = fourierTransformByMatmul(data, inputSize9, inverse);
     return backend_util_exports.splitRealAndImagArrays(rawOutput);
   }
 }
@@ -71905,9 +72091,9 @@ function fourierTransformByMatmul(data, size2, inverse) {
 function fft2(args) {
   const { inputs, backend: backend22 } = args;
   const { input: input2 } = inputs;
-  const inputSize8 = util_exports.sizeFromShape(input2.shape);
+  const inputSize9 = util_exports.sizeFromShape(input2.shape);
   const innerDimensionSize = input2.shape[input2.shape.length - 1];
-  const batch = inputSize8 / innerDimensionSize;
+  const batch = inputSize9 / innerDimensionSize;
   const input2D = reshape3({
     inputs: { x: input2 },
     backend: backend22,
@@ -71948,11 +72134,11 @@ var flipLeftRightConfig = {
   kernelName: FlipLeftRight,
   backendName: "cpu",
   kernelFunc: ({ inputs, attrs, backend: backend22 }) => {
-    const { image: image32 } = inputs;
+    const { image: image22 } = inputs;
     const cpuBackend = backend22;
-    const output = util_exports.getTypedArrayFromDType(image32.dtype, util_exports.sizeFromShape(image32.shape));
-    const [batch, imageHeight, imageWidth, numChannels] = image32.shape;
-    const imageVals = cpuBackend.data.get(image32.dataId).values;
+    const output = util_exports.getTypedArrayFromDType(image22.dtype, util_exports.sizeFromShape(image22.shape));
+    const [batch, imageHeight, imageWidth, numChannels] = image22.shape;
+    const imageVals = cpuBackend.data.get(image22.dataId).values;
     for (let batchIdx = 0; batchIdx < batch; batchIdx++) {
       const batchOffset = batchIdx * imageWidth * imageHeight * numChannels;
       for (let row = 0; row < imageHeight; row++) {
@@ -71973,8 +72159,8 @@ var flipLeftRightConfig = {
         }
       }
     }
-    const dataId = cpuBackend.write(output, image32.shape, image32.dtype);
-    return { dataId, shape: image32.shape, dtype: image32.dtype };
+    const dataId = cpuBackend.write(output, image22.shape, image22.dtype);
+    return { dataId, shape: image22.shape, dtype: image22.dtype };
   }
 };
 var floorDivImpl = createSimpleBinaryKernelImpl((a6, b2) => Math.floor(a6 / b2));
@@ -71988,7 +72174,7 @@ function fusedConv2D(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter, bias, preluActivationWeights } = inputs;
   const {
-    strides,
+    strides: strides2,
     pad: pad3,
     dataFormat,
     dilations,
@@ -71999,7 +72185,7 @@ function fusedConv2D(args) {
   let result = conv2D({
     inputs: { x: x2, filter },
     backend: backend22,
-    attrs: { strides, pad: pad3, dataFormat, dilations, dimRoundingMode }
+    attrs: { strides: strides2, pad: pad3, dataFormat, dilations, dimRoundingMode }
   });
   if (bias) {
     const resultOld = result;
@@ -72022,7 +72208,7 @@ function fusedDepthwiseConv2D(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter, bias, preluActivationWeights } = inputs;
   const {
-    strides,
+    strides: strides2,
     pad: pad3,
     dataFormat,
     dilations,
@@ -72033,7 +72219,7 @@ function fusedDepthwiseConv2D(args) {
   let result = depthwiseConv2dNative({
     inputs: { x: x2, filter },
     backend: backend22,
-    attrs: { strides, pad: pad3, dataFormat, dilations, dimRoundingMode }
+    attrs: { strides: strides2, pad: pad3, dataFormat, dilations, dimRoundingMode }
   });
   if (bias) {
     const oldResult = result;
@@ -72058,13 +72244,13 @@ function gatherNd(args) {
   const paramsSize = util_exports.sizeFromShape(params.shape);
   const indicesShape = indices.shape;
   const sliceRank = indicesShape[indicesShape.length - 1];
-  const [resultShape, numSlices, sliceSize, strides] = backend_util_exports.prepareAndValidate(params, indices);
+  const [resultShape, numSlices, sliceSize, strides2] = backend_util_exports.prepareAndValidate(params, indices);
   if (numSlices === 0) {
     return backend22.makeTensorInfo(resultShape, params.dtype, []);
   }
   const indicesData = backend22.data.get(indices.dataId).values;
   const paramsBuf = backend22.bufferSync(params);
-  const outBuf = gatherNdImpl(indicesData, paramsBuf, params.dtype, numSlices, sliceRank, sliceSize, strides, params.shape, paramsSize);
+  const outBuf = gatherNdImpl(indicesData, paramsBuf, params.dtype, numSlices, sliceRank, sliceSize, strides2, params.shape, paramsSize);
   return backend22.makeTensorInfo(resultShape, params.dtype, outBuf.values);
 }
 var gatherNdConfig = {
@@ -72128,9 +72314,9 @@ var gatherV2Config = {
 function ifft2(args) {
   const { inputs, backend: backend22 } = args;
   const { input: input2 } = inputs;
-  const inputSize8 = util_exports.sizeFromShape(input2.shape);
+  const inputSize9 = util_exports.sizeFromShape(input2.shape);
   const innerDimensionSize = input2.shape[input2.shape.length - 1];
-  const batch = inputSize8 / innerDimensionSize;
+  const batch = inputSize9 / innerDimensionSize;
   const input2D = reshape3({
     inputs: { x: input2 },
     backend: backend22,
@@ -72314,17 +72500,17 @@ function maxPool2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
   assertNotComplex(x2, "maxPool");
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
   const dilations = 1;
-  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in maxPool: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode);
+  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in maxPool: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, dilations, pad3, dimRoundingMode);
   let res2;
   if (convInfo.filterWidth === 1 && convInfo.filterHeight === 1 && util_exports.arraysEqual(convInfo.inShape, convInfo.outShape)) {
     res2 = identity2({ inputs: { x: x2 }, backend: backend22 });
   } else {
     const xValues = backend22.data.get(x2.dataId).values;
-    const strides2 = util_exports.computeStrides(x2.shape);
-    const buffer2 = pool2(xValues, x2.shape, x2.dtype, strides2, convInfo, "max");
+    const strides22 = util_exports.computeStrides(x2.shape);
+    const buffer2 = pool2(xValues, x2.shape, x2.dtype, strides22, convInfo, "max");
     res2 = backend22.makeTensorInfo(convInfo.outShape, x2.dtype, buffer2.values);
   }
   return res2;
@@ -72337,9 +72523,9 @@ var maxPoolConfig = {
 function maxPool3D(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
-  const { filterSize, strides, pad: pad3, dimRoundingMode, dataFormat } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode, dataFormat } = attrs;
   assertNotComplex(x2, "maxPool3d");
-  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides, 1, pad3, dimRoundingMode, dataFormat);
+  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides2, 1, pad3, dimRoundingMode, dataFormat);
   const xValues = backend22.data.get(x2.dataId).values;
   const outBuf = pool3d2(xValues, x2.shape, x2.dtype, util_exports.computeStrides(x2.shape), convInfo, "max");
   return backend22.makeTensorInfo(outBuf.shape, "float32", outBuf.values);
@@ -72352,9 +72538,9 @@ var maxPool3DConfig = {
 function maxPool3DGrad(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, input: input2 } = inputs;
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
   assertNotComplex([dy, input2], "maxPool3DGrad");
-  const convInfo = backend_util_exports.computePool3DInfo(input2.shape, filterSize, strides, 1, pad3, dimRoundingMode);
+  const convInfo = backend_util_exports.computePool3DInfo(input2.shape, filterSize, strides2, 1, pad3, dimRoundingMode);
   const inputBuf = backend22.bufferSync(input2);
   const maxPosBuf = maxPool3dPositions(inputBuf, convInfo);
   const strideDepth = convInfo.strideDepth;
@@ -72424,8 +72610,8 @@ function maxPoolGrad2(args) {
   const { dy, input: input2, output } = inputs;
   const x2 = input2;
   assertNotComplex([input2, output], "maxPoolGrad");
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, 1, pad3, dimRoundingMode);
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, 1, pad3, dimRoundingMode);
   const xValues = backend22.data.get(x2.dataId).values;
   const maxPosBuf = buffer(convInfo.outShape, x2.dtype, maxPoolPositions(xValues, x2.shape, x2.dtype, convInfo).values);
   const strideHeight = convInfo.strideHeight;
@@ -72479,8 +72665,8 @@ var maxPoolGradConfig2 = {
   kernelFunc: maxPoolGrad2
 };
 function maxPoolWithArgmaxImpl(xValues, xShape, dtype, includeBatchInIndex, convInfo) {
-  const strides = util_exports.computeStrides(xShape);
-  const maxPools = pool2(xValues, xShape, dtype, strides, convInfo, "max");
+  const strides2 = util_exports.computeStrides(xShape);
+  const maxPools = pool2(xValues, xShape, dtype, strides2, convInfo, "max");
   const maxPositions = maxPoolPositions(xValues, xShape, dtype, convInfo, true, includeBatchInIndex);
   return [maxPools.values, maxPositions.values];
 }
@@ -72489,11 +72675,11 @@ var maxPoolWithArgmaxConfig = {
   backendName: "cpu",
   kernelFunc: ({ inputs, attrs, backend: backend22 }) => {
     const { x: x2 } = inputs;
-    const { filterSize, strides, pad: pad3, includeBatchInIndex } = attrs;
+    const { filterSize, strides: strides2, pad: pad3, includeBatchInIndex } = attrs;
     const cpuBackend = backend22;
     assertNotComplex(x2, "MaxPoolWithArgmax");
     const values = cpuBackend.data.get(x2.dataId).values;
-    const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, [1, 1], pad3);
+    const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, [1, 1], pad3);
     const [pooled, indexes] = maxPoolWithArgmaxImpl(values, x2.shape, x2.dtype, includeBatchInIndex, convInfo);
     const pooledDataId = cpuBackend.write(pooled, convInfo.outShape, x2.dtype);
     const indexesDataId = cpuBackend.write(indexes, convInfo.outShape, x2.dtype);
@@ -73199,16 +73385,16 @@ var rotateWithOffsetConfig = {
   kernelName: RotateWithOffset,
   backendName: "cpu",
   kernelFunc: ({ inputs, attrs, backend: backend22 }) => {
-    const { image: image32 } = inputs;
+    const { image: image22 } = inputs;
     const { radians, fillValue, center } = attrs;
     const cpuBackend = backend22;
-    const output = util_exports.getTypedArrayFromDType(image32.dtype, util_exports.sizeFromShape(image32.shape));
-    const [batch, imageHeight, imageWidth, numChannels] = image32.shape;
+    const output = util_exports.getTypedArrayFromDType(image22.dtype, util_exports.sizeFromShape(image22.shape));
+    const [batch, imageHeight, imageWidth, numChannels] = image22.shape;
     const [centerX, centerY] = backend_util_exports.getImageCenter(center, imageHeight, imageWidth);
     const fullOpacityValue = 255;
     const sinFactor = Math.sin(radians);
     const cosFactor = Math.cos(radians);
-    const imageVals = cpuBackend.data.get(image32.dataId).values;
+    const imageVals = cpuBackend.data.get(image22.dataId).values;
     for (let batchIdx = 0; batchIdx < batch; batchIdx++) {
       const batchOffset = batchIdx * imageWidth * imageHeight * numChannels;
       for (let row = 0; row < imageHeight; row++) {
@@ -73243,21 +73429,21 @@ var rotateWithOffsetConfig = {
         }
       }
     }
-    const dataId = cpuBackend.write(output, image32.shape, image32.dtype);
-    return { dataId, shape: image32.shape, dtype: image32.dtype };
+    const dataId = cpuBackend.write(output, image22.shape, image22.dtype);
+    return { dataId, shape: image22.shape, dtype: image22.dtype };
   }
 };
 var round3 = unaryKernelFunc(Round, (xi) => {
-  const base2 = Math.floor(xi);
-  if (xi - base2 < 0.5) {
+  const base = Math.floor(xi);
+  if (xi - base < 0.5) {
     return Math.floor(xi);
-  } else if (xi - base2 > 0.5) {
+  } else if (xi - base > 0.5) {
     return Math.ceil(xi);
   } else {
-    if (base2 % 2 === 0) {
-      return base2;
+    if (base % 2 === 0) {
+      return base;
     } else {
-      return base2 + 1;
+      return base + 1;
     }
   }
 });
@@ -73266,7 +73452,7 @@ var roundConfig = {
   backendName: "cpu",
   kernelFunc: round3
 };
-function scatterImpl(indices, updates, shape, outputSize2, sliceSize, numUpdates, sliceRank, strides, defaultValue, sumDupeIndices) {
+function scatterImpl(indices, updates, shape, outputSize2, sliceSize, numUpdates, sliceRank, strides2, defaultValue, sumDupeIndices) {
   const flattenShape = [outputSize2 / sliceSize, sliceSize];
   const indicesData = indices.values;
   const updatesData = updates.values;
@@ -73281,7 +73467,7 @@ function scatterImpl(indices, updates, shape, outputSize2, sliceSize, numUpdates
     for (let j2 = 0; j2 < sliceRank; j2++) {
       const dim = indicesData[i2 * sliceRank + j2];
       index2.push(dim);
-      flattenIndex += dim * strides[j2];
+      flattenIndex += dim * strides2[j2];
     }
     if (flattenIndex < 0 || flattenIndex >= outputSize2 / sliceSize) {
       throw new Error(`Invalid indices: ${index2} does not index into ${shape}`);
@@ -73300,11 +73486,11 @@ function scatterNd(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { indices, updates } = inputs;
   const { shape } = attrs;
-  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(updates, indices, shape);
+  const { sliceRank, numUpdates, sliceSize, strides: strides2, outputSize: outputSize2 } = backend_util_exports.calculateShapes(updates, indices, shape);
   const sumDupeIndices = true;
   const indicesBuf = backend22.bufferSync(indices);
   const updatesBuf = backend22.bufferSync(updates);
-  const outBuf = scatterImpl(indicesBuf, updatesBuf, shape, outputSize2, sliceSize, numUpdates, sliceRank, strides, 0, sumDupeIndices);
+  const outBuf = scatterImpl(indicesBuf, updatesBuf, shape, outputSize2, sliceSize, numUpdates, sliceRank, strides2, 0, sumDupeIndices);
   return backend22.makeTensorInfo(shape, outBuf.dtype, outBuf.values);
 }
 var scatterNdConfig = {
@@ -73523,6 +73709,9 @@ function sparseSegmentMean2(args) {
     throw new Error(`Segment ids should be a vector but received shape
           ${segmentIds.shape}`);
   }
+  if (indices.shape[0] !== segmentIds.shape[0]) {
+    throw new Error(`segmentIds and indices should have same size.`);
+  }
   const $data = backend22.data.get(data.dataId).values;
   const $indices = backend22.data.get(indices.dataId).values;
   const $segmentIds = backend22.data.get(segmentIds.dataId).values;
@@ -73548,6 +73737,9 @@ function sparseSegmentSum2(args) {
     throw new Error(`Segment ids should be a vector but received shape
          ${segmentIds.shape}`);
   }
+  if (indices.shape[0] !== segmentIds.shape[0]) {
+    throw new Error(`segmentIds and indices should have same size.`);
+  }
   const $data = backend22.data.get(data.dataId).values;
   const $indices = backend22.data.get(indices.dataId).values;
   const $segmentIds = backend22.data.get(segmentIds.dataId).values;
@@ -73563,12 +73755,12 @@ function sparseToDense2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { sparseIndices, sparseValues, defaultValue } = inputs;
   const { outputShape } = attrs;
-  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
+  const { sliceRank, numUpdates, sliceSize, strides: strides2, outputSize: outputSize2 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
   const sumDupeIndices = false;
   const indicesBuf = backend22.bufferSync(sparseIndices);
   const updatesBuf = backend22.bufferSync(sparseValues);
   const $defaultValue = backend22.data.get(defaultValue.dataId).values[0];
-  const outBuf = scatterImpl(indicesBuf, updatesBuf, outputShape, outputSize2, sliceSize, numUpdates, sliceRank, strides, $defaultValue, sumDupeIndices);
+  const outBuf = scatterImpl(indicesBuf, updatesBuf, outputShape, outputSize2, sliceSize, numUpdates, sliceRank, strides2, $defaultValue, sumDupeIndices);
   return backend22.makeTensorInfo(outputShape, outBuf.dtype, outBuf.values);
 }
 var sparseToDenseConfig = {
@@ -73633,7 +73825,7 @@ function stridedSlice2(args) {
   const {
     begin,
     end,
-    strides,
+    strides: strides2,
     beginMask,
     endMask,
     ellipsisMask,
@@ -73650,7 +73842,7 @@ function stridedSlice2(args) {
     begin: $begin,
     end: $end,
     strides: $strides
-  } = slice_util_exports.sliceInfo(x2.shape, begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask);
+  } = slice_util_exports.sliceInfo(x2.shape, begin, end, strides2, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask);
   let result;
   if (isIdentity) {
     result = reshape3({ inputs: { x: x2 }, backend: backend22, attrs: { shape: finalShape } });
@@ -73787,18 +73979,18 @@ var topKConfig = {
 };
 function transform2(args) {
   const { inputs, attrs, backend: backend22 } = args;
-  const { image: image32, transforms } = inputs;
+  const { image: image22, transforms } = inputs;
   const { interpolation, fillMode, fillValue, outputShape } = attrs;
-  const [batch, imageHeight, imageWidth, numChannels] = image32.shape;
+  const [batch, imageHeight, imageWidth, numChannels] = image22.shape;
   const [outHeight, outWidth] = outputShape != null ? outputShape : [imageHeight, imageWidth];
   const outShape = [batch, outHeight, outWidth, numChannels];
-  const strides = util_exports.computeStrides(image32.shape);
-  const batchStride = strides[0];
-  const rowStride = strides[1];
-  const colStride = strides[2];
-  const outVals = util_exports.getTypedArrayFromDType(image32.dtype, util_exports.sizeFromShape(outShape));
+  const strides2 = util_exports.computeStrides(image22.shape);
+  const batchStride = strides2[0];
+  const rowStride = strides2[1];
+  const colStride = strides2[2];
+  const outVals = util_exports.getTypedArrayFromDType(image22.dtype, util_exports.sizeFromShape(outShape));
   outVals.fill(fillValue);
-  const imageVals = backend22.data.get(image32.dataId).values;
+  const imageVals = backend22.data.get(image22.dataId).values;
   const transformVals = backend22.data.get(transforms.dataId).values;
   for (let b2 = 0; b2 < batch; ++b2) {
     const transform6 = transforms.shape[0] === 1 ? transformVals : transformVals.subarray(b2 * 8, b2 * 8 + 8);
@@ -73829,10 +74021,10 @@ function transform2(args) {
         }
       }
     }
-    return backend22.makeTensorInfo(outShape, image32.dtype, outVals);
+    return backend22.makeTensorInfo(outShape, image22.dtype, outVals);
   }
-  const dataId = backend22.write(outVals, outShape, image32.dtype);
-  return { dataId, shape: image32.shape, dtype: image32.dtype };
+  const dataId = backend22.write(outVals, outShape, image22.dtype);
+  return { dataId, shape: image22.shape, dtype: image22.dtype };
 }
 var transformConfig = {
   kernelName: Transform,
@@ -74288,26 +74480,26 @@ function getWebGLRenderingContext(webGLVersion) {
   }
   return canvas3.getContext("webgl2", WEBGL_ATTRIBUTES);
 }
-var PackingScheme;
-(function(PackingScheme2) {
+var PackingScheme = ((PackingScheme2) => {
   PackingScheme2[PackingScheme2["DENSE"] = 0] = "DENSE";
   PackingScheme2[PackingScheme2["SHARED_BATCH"] = 1] = "SHARED_BATCH";
-})(PackingScheme || (PackingScheme = {}));
-var TextureUsage;
-(function(TextureUsage2) {
+  return PackingScheme2;
+})(PackingScheme || {});
+var TextureUsage = ((TextureUsage2) => {
   TextureUsage2[TextureUsage2["RENDER"] = 0] = "RENDER";
   TextureUsage2[TextureUsage2["UPLOAD"] = 1] = "UPLOAD";
   TextureUsage2[TextureUsage2["PIXELS"] = 2] = "PIXELS";
   TextureUsage2[TextureUsage2["DOWNLOAD"] = 3] = "DOWNLOAD";
-})(TextureUsage || (TextureUsage = {}));
-var PhysicalTextureType;
-(function(PhysicalTextureType2) {
+  return TextureUsage2;
+})(TextureUsage || {});
+var PhysicalTextureType = ((PhysicalTextureType2) => {
   PhysicalTextureType2[PhysicalTextureType2["UNPACKED_FLOAT16"] = 0] = "UNPACKED_FLOAT16";
   PhysicalTextureType2[PhysicalTextureType2["UNPACKED_FLOAT32"] = 1] = "UNPACKED_FLOAT32";
   PhysicalTextureType2[PhysicalTextureType2["PACKED_4X1_UNSIGNED_BYTE"] = 2] = "PACKED_4X1_UNSIGNED_BYTE";
   PhysicalTextureType2[PhysicalTextureType2["PACKED_2X2_FLOAT32"] = 3] = "PACKED_2X2_FLOAT32";
   PhysicalTextureType2[PhysicalTextureType2["PACKED_2X2_FLOAT16"] = 4] = "PACKED_2X2_FLOAT16";
-})(PhysicalTextureType || (PhysicalTextureType = {}));
+  return PhysicalTextureType2;
+})(PhysicalTextureType || {});
 function getUnpackedMatrixTextureShapeWidthHeight(rows, columns) {
   return [columns, rows];
 }
@@ -74351,6 +74543,7 @@ function getTextureConfig(gl, textureHalfFloatExtension) {
     defaultNumChannels = 1;
     textureTypeHalfFloat = glany.HALF_FLOAT;
     textureTypeFloat = glany.FLOAT;
+    downloadTextureFormat = glany.RGBA8;
   } else {
     internalFormatFloat = gl.RGBA;
     internalFormatHalfFloat = gl.RGBA;
@@ -74361,8 +74554,8 @@ function getTextureConfig(gl, textureHalfFloatExtension) {
     defaultNumChannels = 4;
     textureTypeHalfFloat = textureHalfFloatExtension != null ? textureHalfFloatExtension.HALF_FLOAT_OES : null;
     textureTypeFloat = gl.FLOAT;
+    downloadTextureFormat = gl.RGBA;
   }
-  downloadTextureFormat = gl.RGBA;
   return {
     internalFormatFloat,
     internalFormatHalfFloat,
@@ -74893,7 +75086,7 @@ ENV4.registerFlag("WEBGL_USE_SHAPES_UNIFORMS", () => false);
 ENV4.registerFlag("TOPK_LAST_DIM_CPU_HANDOFF_SIZE_THRESHOLD", () => 1e5);
 ENV4.registerFlag("TOPK_K_CPU_HANDOFF_THRESHOLD", () => 128);
 function getGlslDifferences() {
-  let version9;
+  let version92;
   let attribute;
   let varyingVs;
   let varyingFs;
@@ -74904,7 +75097,7 @@ function getGlslDifferences() {
   let defineSpecialInf;
   let defineRound;
   if (env().getNumber("WEBGL_VERSION") === 2) {
-    version9 = "#version 300 es";
+    version92 = "#version 300 es";
     attribute = "in";
     varyingVs = "out";
     varyingFs = "in";
@@ -74935,7 +75128,7 @@ function getGlslDifferences() {
       }
     `;
   } else {
-    version9 = "";
+    version92 = "";
     attribute = "attribute";
     varyingVs = "varying";
     varyingFs = "varying";
@@ -74972,7 +75165,7 @@ function getGlslDifferences() {
     `;
   }
   return {
-    version: version9,
+    version: version92,
     attribute,
     varyingVs,
     varyingFs,
@@ -74985,45 +75178,45 @@ function getGlslDifferences() {
   };
 }
 function getLogicalCoordinatesFromFlatIndex(coords32, shape, index2 = "index") {
-  const strides = util_exports.computeStrides(shape);
-  return strides.map((stride, i2) => {
+  const strides2 = util_exports.computeStrides(shape);
+  return strides2.map((stride, i2) => {
     const line1 = `int ${coords32[i2]} = ${index2} / ${stride}`;
-    const line2 = i2 === strides.length - 1 ? `int ${coords32[i2 + 1]} = ${index2} - ${coords32[i2]} * ${stride}` : `index -= ${coords32[i2]} * ${stride}`;
+    const line2 = i2 === strides2.length - 1 ? `int ${coords32[i2 + 1]} = ${index2} - ${coords32[i2]} * ${stride}` : `index -= ${coords32[i2]} * ${stride}`;
     return `${line1}; ${line2};`;
   }).join("");
 }
 function getOutputLogicalCoordinatesFromFlatIndexByUniform(coords32, shape, index2 = "index") {
-  const strides = util_exports.computeStrides(shape);
-  return strides.map((_2, i2) => {
+  const strides2 = util_exports.computeStrides(shape);
+  return strides2.map((_2, i2) => {
     const line1 = `int ${coords32[i2]} = ${index2} / outShapeStrides[${i2}]`;
-    const line2 = i2 === strides.length - 1 ? `int ${coords32[i2 + 1]} = ${index2} - ${coords32[i2]} * outShapeStrides[${i2}]` : `index -= ${coords32[i2]} * outShapeStrides[${i2}]`;
+    const line2 = i2 === strides2.length - 1 ? `int ${coords32[i2 + 1]} = ${index2} - ${coords32[i2]} * outShapeStrides[${i2}]` : `index -= ${coords32[i2]} * outShapeStrides[${i2}]`;
     return `${line1}; ${line2};`;
   }).join("");
 }
 function symbolicallyComputeStrides(indicesArr, variableName) {
   const numCoords = indicesArr.length;
   const shape = indicesArr.map((d2) => `${variableName}[${d2}]`);
-  const strides = new Array(numCoords - 1);
-  strides[numCoords - 2] = shape[numCoords - 1];
+  const strides2 = new Array(numCoords - 1);
+  strides2[numCoords - 2] = shape[numCoords - 1];
   for (let i2 = numCoords - 3; i2 >= 0; --i2) {
-    strides[i2] = `(${strides[i2 + 1]} * ${shape[i2 + 1]})`;
+    strides2[i2] = `(${strides2[i2 + 1]} * ${shape[i2 + 1]})`;
   }
-  return strides;
+  return strides2;
 }
 function getLogicalCoordinatesFromFlatIndexByUniform(coords32, variableName, index2 = "index") {
   const indicesArray = coords32.map((_2, i2) => i2);
-  const strides = symbolicallyComputeStrides(indicesArray, variableName);
-  return strides.map((_2, i2) => {
-    const line1 = `int ${coords32[i2]} = ${index2} / ${strides[i2]}`;
-    const line2 = i2 === strides.length - 1 ? `int ${coords32[i2 + 1]} = ${index2} - ${coords32[i2]} * ${strides[i2]}` : `index -= ${coords32[i2]} * ${strides[i2]}`;
+  const strides2 = symbolicallyComputeStrides(indicesArray, variableName);
+  return strides2.map((_2, i2) => {
+    const line1 = `int ${coords32[i2]} = ${index2} / ${strides2[i2]}`;
+    const line2 = i2 === strides2.length - 1 ? `int ${coords32[i2 + 1]} = ${index2} - ${coords32[i2]} * ${strides2[i2]}` : `index -= ${coords32[i2]} * ${strides2[i2]}`;
     return `${line1}; ${line2};`;
   }).join("");
 }
 function getFlatIndexFrom3D(shape) {
-  const strides = util_exports.computeStrides(shape).map((d2) => d2.toString());
+  const strides2 = util_exports.computeStrides(shape).map((d2) => d2.toString());
   return `
   int getFlatIndex(ivec3 coords) {
-    return coords.x * ${strides[0]} + coords.y * ${strides[1]} + coords.z;
+    return coords.x * ${strides2[0]} + coords.y * ${strides2[1]} + coords.z;
   }
 `;
 }
@@ -76845,16 +77038,16 @@ function runProgram(gpgpu, binary, inputs, output, customUniformValues) {
     }
   }
   if (binary.outShapeStridesLocation) {
-    const strides = util_exports.computeStrides(output.shape);
+    const strides2 = util_exports.computeStrides(output.shape);
     switch (output.shape.length) {
       case 2:
-        gpgpu.gl.uniform1iv(binary.outShapeStridesLocation, new Int32Array(strides));
+        gpgpu.gl.uniform1iv(binary.outShapeStridesLocation, new Int32Array(strides2));
         break;
       case 3:
-        gpgpu.gl.uniform2iv(binary.outShapeStridesLocation, new Int32Array(strides));
+        gpgpu.gl.uniform2iv(binary.outShapeStridesLocation, new Int32Array(strides2));
         break;
       case 4:
-        gpgpu.gl.uniform3iv(binary.outShapeStridesLocation, new Int32Array(strides));
+        gpgpu.gl.uniform3iv(binary.outShapeStridesLocation, new Int32Array(strides2));
         break;
       default:
         break;
@@ -76904,8 +77097,8 @@ function makeShaderKey(program, inputs, output) {
       } else if (uniformShape.length === 2 && !program.packedInputs) {
         rank2 = `${uniformShape[0] > 1}_${uniformShape[1] > 1}`;
       } else if (uniformShape.length > 2 && !program.packedInputs) {
-        const strides = util_exports.computeStrides(uniformShape);
-        rank34 = `${strides[0] === xTexShape[1]}_${strides[strides.length - 1] === xTexShape[1]}`;
+        const strides2 = util_exports.computeStrides(uniformShape);
+        rank34 = `${strides2[0] === xTexShape[1]}_${strides2[strides2.length - 1] === xTexShape[1]}`;
       }
       const xRank = x2.shape.length;
       const isLogicalShapTexShapeEqual = uniformShape.length === 2 && util_exports.arraysEqual(x2.shape, xTexShape);
@@ -77194,7 +77387,11 @@ function createAndConfigureTexture(gl, width, height, internalFormat, textureFor
   callAndCheck(gl, () => gl.texParameteri(tex2d, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE));
   callAndCheck(gl, () => gl.texParameteri(tex2d, gl.TEXTURE_MIN_FILTER, gl.NEAREST));
   callAndCheck(gl, () => gl.texParameteri(tex2d, gl.TEXTURE_MAG_FILTER, gl.NEAREST));
-  callAndCheck(gl, () => gl.texImage2D(tex2d, 0, internalFormat, width, height, 0, textureFormat, textureType, null));
+  if (env().getNumber("WEBGL_VERSION") === 1) {
+    callAndCheck(gl, () => gl.texImage2D(tex2d, 0, internalFormat, width, height, 0, textureFormat, textureType, null));
+  } else {
+    callAndCheck(gl, () => gl.texStorage2D(tex2d, 1, internalFormat, width, height));
+  }
   callAndCheck(gl, () => gl.bindTexture(gl.TEXTURE_2D, null));
   return texture;
 }
@@ -77254,15 +77451,29 @@ function uploadDenseMatrixToTexture(gl, texture, width, height, data, textureCon
     internalFormat = textureConfig.internalFormatPackedFloat;
   }
   dataForUpload.set(data);
-  callAndCheck(gl, () => gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, gl.RGBA, texelDataType, dataForUpload));
+  if (env().getNumber("WEBGL_VERSION") === 2) {
+    callAndCheck(gl, () => gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, width, height, gl.RGBA, texelDataType, dataForUpload));
+  } else {
+    callAndCheck(gl, () => gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, gl.RGBA, texelDataType, dataForUpload));
+  }
   callAndCheck(gl, () => gl.bindTexture(gl.TEXTURE_2D, null));
 }
 function uploadPixelDataToTexture(gl, texture, pixels) {
   callAndCheck(gl, () => gl.bindTexture(gl.TEXTURE_2D, texture));
   if (pixels.data instanceof Uint8Array) {
-    callAndCheck(gl, () => gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, pixels.width, pixels.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels.data));
+    if (env().getNumber("WEBGL_VERSION") === 2) {
+      callAndCheck(gl, () => gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, pixels.width, pixels.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels.data));
+      gl.flush();
+    } else {
+      callAndCheck(gl, () => gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, pixels.width, pixels.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels.data));
+    }
   } else {
-    callAndCheck(gl, () => gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, pixels));
+    if (env().getNumber("WEBGL_VERSION") === 2) {
+      callAndCheck(gl, () => gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels));
+      gl.flush();
+    } else {
+      callAndCheck(gl, () => gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, pixels));
+    }
   }
   callAndCheck(gl, () => gl.bindTexture(gl.TEXTURE_2D, null));
 }
@@ -77770,19 +77981,20 @@ var PackProgram = class {
     this.packedInputs = false;
     this.packedOutput = true;
     this.outputShape = outputShape;
-    const rank = outputShape.length;
-    if (rank === 0) {
+    this.rank = outputShape.length;
+    this.enableShapeUniforms = useShapeUniforms(this.outputShape.length);
+    if (this.rank === 0) {
       this.userCode = `
         void main() {
           setOutput(vec4(getA(), 0., 0., 0.));
         }
       `;
     } else {
-      const channels = getChannels("rc", rank);
-      const dtype = getCoordsDataType(rank);
-      const outOfBoundsCondition = getOutOfBoundsCondition(rank, outputShape, channels);
-      const setup46 = getSetup(rank, outputShape[outputShape.length - 1], outputShape[outputShape.length - 2], channels);
-      const output = getOutput(outputShape, channels);
+      const channels = getChannels("rc", this.rank);
+      const dtype = getCoordsDataType(this.rank);
+      const outOfBoundsCondition = this.getOutOfBoundsCondition(channels);
+      const setup49 = this.getSetup(channels);
+      const output = this.getOutput(channels);
       this.userCode = `
         void main() {
           ${dtype} rc = getOutputCoords();
@@ -77790,7 +78002,7 @@ var PackProgram = class {
           if(${outOfBoundsCondition}) {
             setOutput(vec4(0));
           } else {
-            ${setup46}
+            ${setup49}
 
             setOutput(vec4(${output}));
           }
@@ -77798,61 +78010,62 @@ var PackProgram = class {
       `;
     }
   }
-};
-function getSourceCoordsArr(rank, dims) {
-  const coords32 = [];
-  for (let row = 0; row <= 1; row++) {
-    for (let col = 0; col <= 1; col++) {
-      let coord = `${row === 0 ? "r" : "rp1"}, ${col === 0 ? "c" : "cp1"}`;
-      for (let d2 = 2; d2 < rank; d2++) {
-        coord = `${dims[dims.length - 1 - d2]},` + coord;
+  getSourceCoordsArr(dims) {
+    const coords32 = [];
+    for (let row = 0; row <= 1; row++) {
+      for (let col = 0; col <= 1; col++) {
+        let coord = `${row === 0 ? "r" : "rp1"}, ${col === 0 ? "c" : "cp1"}`;
+        for (let d2 = 2; d2 < this.rank; d2++) {
+          coord = `${dims[dims.length - 1 - d2]},` + coord;
+        }
+        coords32.push(coord);
       }
-      coords32.push(coord);
     }
+    return coords32;
   }
-  return coords32;
-}
-function getOutOfBoundsCondition(rank, shape, dims) {
-  if (rank === 1) {
-    return `rc > ${shape[0]}`;
-  }
-  let cond = "";
-  for (let i2 = rank - 2; i2 < rank; i2++) {
-    cond += `${dims[i2]} >= ${shape[i2]}`;
-    if (i2 < rank - 1) {
-      cond += "||";
+  getOutOfBoundsCondition(dims) {
+    if (this.rank === 1) {
+      return `rc > ${this.enableShapeUniforms ? "outShape" : this.outputShape[0]}`;
     }
+    let cond = "";
+    for (let i2 = this.rank - 2; i2 < this.rank; i2++) {
+      cond += `${dims[i2]} >= ${this.enableShapeUniforms ? `outShape[${i2}]` : this.outputShape[i2]}`;
+      if (i2 < this.rank - 1) {
+        cond += "||";
+      }
+    }
+    return cond;
   }
-  return cond;
-}
-function getSetup(rank, cols, rows, dims) {
-  if (rank === 1) {
-    return "";
-  }
-  const innerDims = dims.slice(-2);
-  return `
-    int r = ${innerDims[0]};
-    int c = ${innerDims[1]};
-    int rp1 = r + 1;
-    int cp1 = c + 1;
+  getSetup(dims) {
+    if (this.rank === 1) {
+      return "";
+    }
+    const innerDims = dims.slice(-2);
+    const col = this.enableShapeUniforms ? `outShape[${this.rank} - 1]` : this.outputShape[this.rank - 1];
+    const row = this.enableShapeUniforms ? `outShape[${this.rank} - 2]` : this.outputShape[this.rank - 2];
+    return `
+      int r = ${innerDims[0]};
+      int c = ${innerDims[1]};
+      int rp1 = r + 1;
+      int cp1 = c + 1;
 
-    bool cEdge = cp1 >= ${cols};
-    bool rEdge = rp1 >= ${rows};
-  `;
-}
-function getOutput(shape, dims) {
-  const rank = shape.length;
-  const sourceCoords = getSourceCoordsArr(rank, dims);
-  if (rank === 1) {
-    return `getA(rc),
-            rc + 1 >= ${shape[0]} ? 0. : getA(rc + 1),
-            0, 0`;
+      bool cEdge = cp1 >= ${col};
+      bool rEdge = rp1 >= ${row};
+    `;
   }
-  return `getA(${sourceCoords[0]}),
-          cEdge ? 0. : getA(${sourceCoords[1]}),
-          rEdge ? 0. : getA(${sourceCoords[2]}),
-          rEdge || cEdge ? 0. : getA(${sourceCoords[3]})`;
-}
+  getOutput(dims) {
+    const sourceCoords = this.getSourceCoordsArr(dims);
+    if (this.rank === 1) {
+      return `getA(rc),
+              rc + 1 >= ${this.enableShapeUniforms ? "outShape" : this.outputShape[0]} ? 0. : getA(rc + 1),
+              0, 0`;
+    }
+    return `getA(${sourceCoords[0]}),
+            cEdge ? 0. : getA(${sourceCoords[1]}),
+            rEdge ? 0. : getA(${sourceCoords[2]}),
+            rEdge || cEdge ? 0. : getA(${sourceCoords[3]})`;
+  }
+};
 var ReshapePackedProgram = class {
   constructor(outputShape, inputShape) {
     this.variableNames = ["A"];
@@ -78044,6 +78257,8 @@ function numBytesForInternalFormat(gl, internalFormat) {
     return 16;
   } else if (internalFormat === glany.RGBA16F) {
     return 8;
+  } else if (internalFormat === glany.RGBA8) {
+    return 4;
   }
   throw new Error(`Unknown internal format ${internalFormat}`);
 }
@@ -78193,6 +78408,7 @@ var UnpackProgram = class {
     this.packedInputs = true;
     this.packedOutput = false;
     this.outputShape = outputShape;
+    this.enableShapeUniforms = useShapeUniforms(this.outputShape.length);
     const rank = outputShape.length;
     const channels = getChannels("rc", rank);
     const dtype = getCoordsDataType(rank);
@@ -78711,7 +78927,9 @@ var _MathBackendWebGL = class extends KernelBackend {
           texData.isPacked = true;
           texData.shape = input2.shape;
         }
-      } else if (!!texData.isPacked !== !!program.packedInputs) {
+      }
+      this.uploadToGPU(input2.dataId);
+      if (!!texData.isPacked !== !!program.packedInputs) {
         input2 = texData.isPacked ? this.unpackTensor(input2) : this.packTensor(input2);
         dataToDispose.push(input2);
         texData = this.texData.get(input2.dataId);
@@ -78724,7 +78942,6 @@ var _MathBackendWebGL = class extends KernelBackend {
         texData = this.texData.get(input2.dataId);
         savedInput.shape = targetShape;
       }
-      this.uploadToGPU(input2.dataId);
       return { shape: input2.shape, texData, isUniform: false };
     });
     this.uploadToGPU(output.dataId);
@@ -78837,18 +79054,23 @@ var _MathBackendWebGL = class extends KernelBackend {
       let program;
       let width = texShape[1], height = texShape[0];
       const isByteArray = values instanceof Uint8Array || values instanceof Uint8ClampedArray;
-      if (isPacked) {
+      if (isPacked || !isByteArray) {
         [width, height] = getPackedMatrixTextureShapeWidthHeight(texShape[0], texShape[1]);
+      }
+      if (isPacked) {
         program = new EncodeMatrixPackedProgram(shapeAs3D, isByteArray);
       } else {
         program = new EncodeMatrixProgram(shapeAs3D, isByteArray);
       }
-      const tempDenseInputHandle = this.makeTensorInfo([height, width], dtype);
+      const tempDenseInputTexShape = isByteArray ? [height, width] : texShape;
+      const tempDenseInputHandle = this.makeTensorInfo(tempDenseInputTexShape, dtype);
+      const tempDenseInputTexData = this.texData.get(tempDenseInputHandle.dataId);
       if (isByteArray) {
-        this.texData.get(tempDenseInputHandle.dataId).usage = TextureUsage.PIXELS;
+        tempDenseInputTexData.usage = TextureUsage.PIXELS;
       } else {
-        this.texData.get(tempDenseInputHandle.dataId).usage = TextureUsage.UPLOAD;
+        tempDenseInputTexData.usage = TextureUsage.UPLOAD;
       }
+      tempDenseInputTexData.texShape = tempDenseInputTexShape;
       this.gpgpu.uploadDenseMatrixToTexture(this.getTexture(tempDenseInputHandle.dataId), width, height, values);
       const customValues = [[height, width]];
       const preventEagerUnpacking = true;
@@ -80813,10 +81035,10 @@ function avgPool3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
   assertNotComplex2(x2, "avgPool");
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
   const dilations = 1;
-  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in avgPool: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode);
+  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in avgPool: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, dilations, pad3, dimRoundingMode);
   if (convInfo.filterWidth === 1 && convInfo.filterHeight === 1 && util_exports.arraysEqual(convInfo.inShape, convInfo.outShape)) {
     return identity3({ inputs: { x: x2 }, backend: backend22 });
   }
@@ -80831,9 +81053,9 @@ var avgPoolConfig2 = {
 function avgPool3D2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
-  const { filterSize, strides, pad: pad3, dimRoundingMode, dataFormat } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode, dataFormat } = attrs;
   const dilations = [1, 1, 1];
-  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode, dataFormat);
+  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides2, dilations, pad3, dimRoundingMode, dataFormat);
   const avgPoolProgram = new Pool3DProgram(convInfo, "avg", false);
   return backend22.runWebGLProgram(avgPoolProgram, [x2], "float32");
 }
@@ -80985,9 +81207,9 @@ function avgPool3DGrad2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, input: input2 } = inputs;
   const x2 = input2;
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
   const dilations = [1, 1, 1];
-  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode);
+  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides2, dilations, pad3, dimRoundingMode);
   const avgPoolBackpropProgram = new AvgPool3DBackpropProgram(convInfo);
   return backend22.runWebGLProgram(avgPoolBackpropProgram, [dy], x2.dtype);
 }
@@ -81001,8 +81223,8 @@ function avgPoolGrad3(args) {
   const { dy, input: input2 } = inputs;
   const x2 = input2;
   assertNotComplex2([dy, input2], "avgPoolGrad");
-  const { filterSize, strides, pad: pad3 } = attrs;
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, 1, pad3);
+  const { filterSize, strides: strides2, pad: pad3 } = attrs;
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, 1, pad3);
   const avgPoolBackpropProgram = new AvgPool2DBackpropProgram(convInfo);
   return backend22.runWebGLProgram(avgPoolBackpropProgram, [dy], x2.dtype);
 }
@@ -82230,9 +82452,9 @@ function conv2dWithIm2Row({
 function conv2d4(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter } = inputs;
-  const { strides, pad: pad3, dataFormat, dilations, dimRoundingMode } = attrs;
+  const { strides: strides2, pad: pad3, dataFormat, dilations, dimRoundingMode } = attrs;
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, dilations, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, dilations, pad3, dimRoundingMode, false, $dataFormat);
   let out;
   if (convInfo.filterHeight === 1 && convInfo.filterWidth === 1 && convInfo.dilationHeight === 1 && convInfo.dilationWidth === 1 && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && (convInfo.padInfo.type === "SAME" || convInfo.padInfo.type === "VALID")) {
     out = conv2dByMatMul({ x: x2, filter, convInfo, backend: backend22 });
@@ -82506,9 +82728,9 @@ var Conv3DDerInputProgram = class {
 function conv2DBackpropFilter3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, dy } = inputs;
-  const { strides, pad: pad3, dataFormat, dimRoundingMode, filterShape } = attrs;
+  const { strides: strides2, pad: pad3, dataFormat, dimRoundingMode, filterShape } = attrs;
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filterShape, strides, 1, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filterShape, strides2, 1, pad3, dimRoundingMode, false, $dataFormat);
   const program = new Conv2DDerFilterProgram(convInfo);
   return backend22.runWebGLProgram(program, [x2, dy], "float32");
 }
@@ -82520,9 +82742,9 @@ var conv2DBackpropFilterConfig2 = {
 function conv2DBackpropInput3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, filter } = inputs;
-  const { inputShape, strides, pad: pad3, dataFormat, dimRoundingMode } = attrs;
+  const { inputShape, strides: strides2, pad: pad3, dataFormat, dimRoundingMode } = attrs;
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides, 1, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides2, 1, pad3, dimRoundingMode, false, $dataFormat);
   const program = new Conv2DDerInputProgram(convInfo);
   return backend22.runWebGLProgram(program, [dy, filter], "float32");
 }
@@ -82534,8 +82756,8 @@ var conv2DBackpropInputConfig2 = {
 function conv3D2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter } = inputs;
-  const { strides, pad: pad3, dilations } = attrs;
-  const convInfo = backend_util_exports.computeConv3DInfo(x2.shape, filter.shape, strides, dilations, pad3);
+  const { strides: strides2, pad: pad3, dilations } = attrs;
+  const convInfo = backend_util_exports.computeConv3DInfo(x2.shape, filter.shape, strides2, dilations, pad3);
   const program = new Conv3DProgram(convInfo);
   return backend22.runWebGLProgram(program, [x2, filter], "float32");
 }
@@ -82547,8 +82769,8 @@ var conv3DConfig2 = {
 function conv3DBackpropFilterV22(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, dy } = inputs;
-  const { strides, pad: pad3, filterShape } = attrs;
-  const convInfo = backend_util_exports.computeConv3DInfo(x2.shape, filterShape, strides, 1, pad3);
+  const { strides: strides2, pad: pad3, filterShape } = attrs;
+  const convInfo = backend_util_exports.computeConv3DInfo(x2.shape, filterShape, strides2, 1, pad3);
   const program = new Conv3DDerFilterProgram(convInfo);
   return backend22.runWebGLProgram(program, [x2, dy], "float32");
 }
@@ -82560,8 +82782,8 @@ var conv3DBackpropFilterV2Config2 = {
 function conv3DBackpropInput2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, filter } = inputs;
-  const { pad: pad3, strides, inputShape } = attrs;
-  const convInfo = backend_util_exports.computeConv3DInfo(inputShape, filter.shape, strides, 1, pad3);
+  const { pad: pad3, strides: strides2, inputShape } = attrs;
+  const convInfo = backend_util_exports.computeConv3DInfo(inputShape, filter.shape, strides2, 1, pad3);
   const program = new Conv3DDerInputProgram(convInfo);
   return backend22.runWebGLProgram(program, [dy, filter], "float32");
 }
@@ -82683,10 +82905,10 @@ var CropAndResizeProgram = class {
 };
 var cropAndResize3 = (args) => {
   const { inputs, backend: backend22, attrs } = args;
-  const { image: image32, boxes, boxInd } = inputs;
+  const { image: image22, boxes, boxInd } = inputs;
   const { cropSize, method, extrapolationValue } = attrs;
-  const program = new CropAndResizeProgram(image32.shape, boxes.shape, cropSize, method, extrapolationValue);
-  return backend22.runWebGLProgram(program, [image32, boxes, boxInd], "float32");
+  const program = new CropAndResizeProgram(image22.shape, boxes.shape, cropSize, method, extrapolationValue);
+  return backend22.runWebGLProgram(program, [image22, boxes, boxInd], "float32");
 };
 var cropAndResizeConfig2 = {
   kernelName: CropAndResize,
@@ -83291,13 +83513,13 @@ var DepthwiseConvPacked2DProgram = class {
 function depthwiseConv2dNative2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter } = inputs;
-  const { strides, pad: pad3, dilations, dimRoundingMode } = attrs;
+  const { strides: strides2, pad: pad3, dilations, dimRoundingMode } = attrs;
   let $dilations = dilations;
   if ($dilations == null) {
     $dilations = [1, 1];
   }
-  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides, $dilations), () => `Error in depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides} and dilations '${$dilations}'`);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, $dilations, pad3, dimRoundingMode, true);
+  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides2, $dilations), () => `Error in depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${$dilations}'`);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, $dilations, pad3, dimRoundingMode, true);
   let program;
   if (env().getBool("WEBGL_PACK_DEPTHWISECONV") && convInfo.strideWidth <= 2 && convInfo.outChannels / convInfo.inChannels === 1) {
     program = new DepthwiseConvPacked2DProgram(convInfo);
@@ -83426,8 +83648,8 @@ var DepthwiseConv2DDerInputProgram = class {
 function depthwiseConv2dNativeBackpropFilter3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, dy } = inputs;
-  const { strides, dilations, pad: pad3, dimRoundingMode, filterShape } = attrs;
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filterShape, strides, dilations, pad3, dimRoundingMode, true);
+  const { strides: strides2, dilations, pad: pad3, dimRoundingMode, filterShape } = attrs;
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filterShape, strides2, dilations, pad3, dimRoundingMode, true);
   const program = new DepthwiseConv2DDerFilterProgram(convInfo);
   return backend22.runWebGLProgram(program, [x2, dy], "float32");
 }
@@ -83439,8 +83661,8 @@ var depthwiseConv2dNativeBackpropFilterConfig2 = {
 function depthwiseConv2dNativeBackpropInput3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, filter } = inputs;
-  const { strides, dilations, pad: pad3, dimRoundingMode, inputShape } = attrs;
-  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides, dilations, pad3, dimRoundingMode, true);
+  const { strides: strides2, dilations, pad: pad3, dimRoundingMode, inputShape } = attrs;
+  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides2, dilations, pad3, dimRoundingMode, true);
   const program = new DepthwiseConv2DDerInputProgram(convInfo);
   return backend22.runWebGLProgram(program, [dy, filter], "float32");
 }
@@ -83540,8 +83762,8 @@ var Dilation2DProgram = class {
 function dilation2D(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter } = inputs;
-  const { strides, pad: pad3, dilations } = attrs;
-  const convInfo = backend_util_exports.computeDilation2DInfo(x2.shape, filter.shape, strides, pad3, "NHWC", dilations);
+  const { strides: strides2, pad: pad3, dilations } = attrs;
+  const convInfo = backend_util_exports.computeDilation2DInfo(x2.shape, filter.shape, strides2, pad3, "NHWC", dilations);
   let out;
   const program = new Dilation2DProgram(convInfo);
   out = backend22.runWebGLProgram(program, [x2, filter], "float32");
@@ -83779,9 +84001,9 @@ var FFTProgram = class {
 };
 function fftImpl2(x2, inverse, backend22) {
   const xData = backend22.texData.get(x2.dataId);
-  const inputSize8 = util_exports.sizeFromShape(x2.shape);
+  const inputSize9 = util_exports.sizeFromShape(x2.shape);
   const innerDimensionSize = x2.shape[x2.shape.length - 1];
-  const batch = inputSize8 / innerDimensionSize;
+  const batch = inputSize9 / innerDimensionSize;
   const input2D = reshape4({ inputs: { x: x2 }, backend: backend22, attrs: { shape: [batch, innerDimensionSize] } });
   const xShape = input2D.shape;
   const realProgram = new FFTProgram("real", xShape, inverse);
@@ -83879,10 +84101,10 @@ var flipLeftRightConfig2 = {
   kernelName: FlipLeftRight,
   backendName: "webgl",
   kernelFunc: ({ inputs, backend: backend22 }) => {
-    const { image: image32 } = inputs;
+    const { image: image22 } = inputs;
     const webglBackend = backend22;
-    const program = new FlipLeftRightProgram(image32.shape);
-    const output = webglBackend.runWebGLProgram(program, [image32], image32.dtype);
+    const program = new FlipLeftRightProgram(image22.shape);
+    const output = webglBackend.runWebGLProgram(program, [image22], image22.dtype);
     return output;
   }
 };
@@ -84047,7 +84269,7 @@ function fusedConv2d(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter, bias, preluActivationWeights } = inputs;
   const {
-    strides,
+    strides: strides2,
     pad: pad3,
     dataFormat,
     dilations,
@@ -84056,7 +84278,7 @@ function fusedConv2d(args) {
     leakyreluAlpha
   } = attrs;
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, dilations, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, dilations, pad3, dimRoundingMode, false, $dataFormat);
   let out;
   const intermediates = [];
   if (convInfo.filterHeight === 1 && convInfo.filterWidth === 1 && convInfo.dilationHeight === 1 && convInfo.dilationWidth === 1 && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && (convInfo.padInfo.type === "SAME" || convInfo.padInfo.type === "VALID")) {
@@ -84114,14 +84336,14 @@ var fusedConv2DConfig2 = {
 function fusedDepthwiseConv2D2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter, bias, preluActivationWeights } = inputs;
-  const { strides, pad: pad3, dilations, dimRoundingMode, activation: activation2, leakyreluAlpha } = attrs;
+  const { strides: strides2, pad: pad3, dilations, dimRoundingMode, activation: activation2, leakyreluAlpha } = attrs;
   const intermediates = [];
   let $dilations = dilations;
   if ($dilations == null) {
     $dilations = [1, 1];
   }
-  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides, $dilations), () => `Error in depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides} and dilations '${$dilations}'`);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, $dilations, pad3, dimRoundingMode, true);
+  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides2, $dilations), () => `Error in depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${$dilations}'`);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, $dilations, pad3, dimRoundingMode, true);
   const shouldPackDepthwiseConv = env().getBool("WEBGL_PACK_DEPTHWISECONV") && convInfo.strideWidth <= 2 && convInfo.outChannels / convInfo.inChannels === 1;
   const fusedActivation = activation2 ? mapActivationToShaderProgram(activation2, shouldPackDepthwiseConv) : null;
   const programInputs = [x2, filter];
@@ -84161,12 +84383,12 @@ var fusedDepthwiseConv2DConfig2 = {
   kernelFunc: fusedDepthwiseConv2D2
 };
 var GatherNDProgram = class {
-  constructor(sliceDim, strides, shape) {
+  constructor(sliceDim, strides2, shape) {
     this.sliceDim = sliceDim;
-    this.strides = strides;
+    this.strides = strides2;
     this.variableNames = ["x", "indices"];
     this.outputShape = shape;
-    const stridesType = getCoordsDataType(strides.length);
+    const stridesType = getCoordsDataType(strides2.length);
     const dtype = getCoordsDataType(shape.length);
     const strideString = this.sliceDim > 1 ? "strides[j]" : "strides";
     this.userCode = `
@@ -84189,7 +84411,7 @@ function gatherNd2(args) {
   const indicesShape = indices.shape;
   const sliceRank = indicesShape[indicesShape.length - 1];
   const paramsSize = util_exports.sizeFromShape(params.shape);
-  const [resultShape, numSlices, sliceSize, strides] = backend_util_exports.prepareAndValidate(params, indices);
+  const [resultShape, numSlices, sliceSize, strides2] = backend_util_exports.prepareAndValidate(params, indices);
   const flattenIndices = reshape4({ inputs: { x: indices }, backend: backend22, attrs: { shape: [numSlices, sliceRank] } });
   const flattenX = reshape4({
     inputs: { x: params },
@@ -84199,10 +84421,10 @@ function gatherNd2(args) {
   if (backend22.shouldExecuteOnCPU([params, indices]) || params.dtype === "string") {
     const indicesData = backend22.readSync(indices.dataId);
     const paramsBuf = backend22.bufferSync(params);
-    const outValue = gatherNdImplCPU(indicesData, paramsBuf, params.dtype, numSlices, sliceRank, sliceSize, strides, params.shape, paramsSize);
+    const outValue = gatherNdImplCPU(indicesData, paramsBuf, params.dtype, numSlices, sliceRank, sliceSize, strides2, params.shape, paramsSize);
     return backend22.makeTensorInfo(resultShape, params.dtype, outValue.values);
   }
-  const program = new GatherNDProgram(sliceRank, strides, [numSlices, sliceSize]);
+  const program = new GatherNDProgram(sliceRank, strides2, [numSlices, sliceSize]);
   const res2 = backend22.runWebGLProgram(program, [flattenX, flattenIndices], flattenX.dtype);
   const reshaped = reshape4({ inputs: { x: res2 }, backend: backend22, attrs: { shape: resultShape } });
   backend22.disposeIntermediateTensorInfo(flattenIndices);
@@ -84414,11 +84636,11 @@ var LOG_PACKED = `
 
   return result;
 `;
-var log6 = unaryKernelFunc2({ opSnippet: LOG, packedOpSnippet: LOG_PACKED, cpuKernelImpl: logImplCPU });
+var log4 = unaryKernelFunc2({ opSnippet: LOG, packedOpSnippet: LOG_PACKED, cpuKernelImpl: logImplCPU });
 var logConfig2 = {
   kernelName: Log,
   backendName: "webgl",
-  kernelFunc: log6
+  kernelFunc: log4
 };
 var LOG1P = `return log(1.0 + x);`;
 var log1p3 = unaryKernelFunc2({ opSnippet: LOG1P });
@@ -84765,10 +84987,10 @@ function maxPool3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
   assertNotComplex2(x2, "maxPool");
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
   const dilations = 1;
-  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in maxPool: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode);
+  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in maxPool: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, dilations, pad3, dimRoundingMode);
   if (convInfo.filterWidth === 1 && convInfo.filterHeight === 1 && util_exports.arraysEqual(convInfo.inShape, convInfo.outShape)) {
     return identity3({ inputs: { x: x2 }, backend: backend22 });
   }
@@ -84783,9 +85005,9 @@ var maxPoolConfig2 = {
 function maxPool3d2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
-  const { filterSize, strides, pad: pad3, dataFormat, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dataFormat, dimRoundingMode } = attrs;
   const dilations = [1, 1, 1];
-  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode, dataFormat);
+  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides2, dilations, pad3, dimRoundingMode, dataFormat);
   const maxPoolProgram = new Pool3DProgram(convInfo, "max", false);
   return backend22.runWebGLProgram(maxPoolProgram, [x2], x2.dtype);
 }
@@ -84943,9 +85165,9 @@ function maxPool3DGrad2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, input: input2 } = inputs;
   const x2 = input2;
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
   const dilations = [1, 1, 1];
-  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode);
+  const convInfo = backend_util_exports.computePool3DInfo(x2.shape, filterSize, strides2, dilations, pad3, dimRoundingMode);
   const maxPool3dPositionsProgram = new Pool3DProgram(convInfo, "max", true);
   const maxPool3dPositions2 = backend22.runWebGLProgram(maxPool3dPositionsProgram, [x2], x2.dtype);
   const maxPoolBackpropProgram = new MaxPool3DBackpropProgram(convInfo);
@@ -84963,8 +85185,8 @@ function maxPoolGrad3(args) {
   const { dy, input: input2, output } = inputs;
   const x2 = input2;
   assertNotComplex2([input2, output], "maxPoolGrad");
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, 1, pad3, dimRoundingMode);
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, 1, pad3, dimRoundingMode);
   const getPositions = true;
   const maxPoolPositionsProgram = new Pool2DProgram(convInfo, "max", getPositions);
   const maxPoolPositions2 = backend22.runWebGLProgram(maxPoolPositionsProgram, [x2], x2.dtype);
@@ -84990,12 +85212,12 @@ var maxPoolWithArgmaxConfig2 = {
   backendName: "webgl",
   kernelFunc: ({ inputs, attrs, backend: backend22 }) => {
     const { x: x2 } = inputs;
-    const { filterSize, strides, pad: pad3, includeBatchInIndex } = attrs;
+    const { filterSize, strides: strides2, pad: pad3, includeBatchInIndex } = attrs;
     const webglBackend = backend22;
     util_exports.assert(x2.shape.length === 4, () => `Error in maxPool: input must be rank 4 but got rank ${x2.shape.length}.`);
     const dilations = [1, 1];
-    util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides, dilations), () => `Error in maxPool: Either strides or dilations must be 1. Got strides ${strides} and dilations '${dilations}'`);
-    const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, dilations, pad3);
+    util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides2, dilations), () => `Error in maxPool: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${dilations}'`);
+    const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, dilations, pad3);
     const [result, indexes] = maxPoolWithArgmaxImpl2(x2, includeBatchInIndex, convInfo, webglBackend);
     return [result, indexes];
   }
@@ -86524,13 +86746,13 @@ var rotateWithOffsetConfig2 = {
   kernelName: RotateWithOffset,
   backendName: "webgl",
   kernelFunc: ({ inputs, attrs, backend: backend22 }) => {
-    const { image: image32 } = inputs;
+    const { image: image22 } = inputs;
     const { radians, fillValue, center } = attrs;
     const webglBackend = backend22;
-    const program = new RotateProgram(image32.shape, fillValue);
-    const [centerX, centerY] = backend_util_exports.getImageCenter(center, image32.shape[1], image32.shape[2]);
+    const program = new RotateProgram(image22.shape, fillValue);
+    const [centerX, centerY] = backend_util_exports.getImageCenter(center, image22.shape[1], image22.shape[2]);
     const customValues = [[centerX, centerY, Math.sin(radians), Math.cos(radians)]];
-    const output = webglBackend.runWebGLProgram(program, [image32], image32.dtype, customValues);
+    const output = webglBackend.runWebGLProgram(program, [image22], image22.dtype, customValues);
     return output;
   }
 };
@@ -86564,10 +86786,10 @@ var rsqrtConfig2 = {
   kernelFunc: rsqrt3
 };
 var ScatterProgram = class {
-  constructor(updateSize, sliceDim, indicesRank, updatesRank, strides, shape, summingDupeIndex = true) {
+  constructor(updateSize, sliceDim, indicesRank, updatesRank, strides2, shape, summingDupeIndex = true) {
     this.variableNames = ["updates", "indices", "defaultValue"];
     this.outputShape = shape;
-    const stridesType = getCoordsDataType(strides.length);
+    const stridesType = getCoordsDataType(strides2.length);
     const dtype = getCoordsDataType(shape.length);
     let indicesString = "";
     if (indicesRank === 1) {
@@ -86585,7 +86807,7 @@ var ScatterProgram = class {
     const updatesSnippet = `getUpdates(${updatesString})`;
     const strideString = sliceDim > 1 ? "strides[j]" : "strides";
     this.userCode = `
-        ${stridesType} strides = ${stridesType}(${strides});
+        ${stridesType} strides = ${stridesType}(${strides2});
 
         void main() {
           ${dtype} coords = getOutputCoords();
@@ -86611,7 +86833,7 @@ function scatterNd2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { indices, updates } = inputs;
   const { shape } = attrs;
-  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(updates, indices, shape);
+  const { sliceRank, numUpdates, sliceSize, strides: strides2, outputSize: outputSize2 } = backend_util_exports.calculateShapes(updates, indices, shape);
   const flattenShape = [outputSize2 / sliceSize, sliceSize];
   if (outputSize2 === 0) {
     return backend22.makeTensorInfo(shape, indices.dtype);
@@ -86619,7 +86841,7 @@ function scatterNd2(args) {
   const flattenIndices = reshape4({ inputs: { x: indices }, backend: backend22, attrs: { shape: [numUpdates, sliceRank] } });
   const flattenX = reshape4({ inputs: { x: updates }, backend: backend22, attrs: { shape: [numUpdates, sliceSize] } });
   const defaultValue = backend22.makeTensorInfo([], "float32", new Float32Array([0]));
-  const program = new ScatterProgram(numUpdates, sliceRank, flattenIndices.shape.length, flattenX.shape.length, strides, flattenShape);
+  const program = new ScatterProgram(numUpdates, sliceRank, flattenIndices.shape.length, flattenX.shape.length, strides2, flattenShape);
   const res2 = backend22.runWebGLProgram(program, [flattenX, flattenIndices, defaultValue], flattenX.dtype);
   const reshaped = reshape4({ inputs: { x: res2 }, backend: backend22, attrs: { shape } });
   backend22.disposeIntermediateTensorInfo(flattenIndices);
@@ -86923,9 +87145,9 @@ function sparseToDense3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { sparseIndices, sparseValues, defaultValue } = inputs;
   const { outputShape } = attrs;
-  const { sliceRank, numUpdates, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
+  const { sliceRank, numUpdates, strides: strides2, outputSize: outputSize2 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
   const sumDupeIndices = false;
-  const program = new ScatterProgram(numUpdates, sliceRank, sparseIndices.shape.length, sparseValues.shape.length, strides, [outputSize2, 1], sumDupeIndices);
+  const program = new ScatterProgram(numUpdates, sliceRank, sparseIndices.shape.length, sparseValues.shape.length, strides2, [outputSize2, 1], sumDupeIndices);
   const res2 = backend22.runWebGLProgram(program, [sparseValues, sparseIndices, defaultValue], sparseValues.dtype);
   const reshaped = reshape4({ inputs: { x: res2 }, backend: backend22, attrs: { shape: outputShape } });
   backend22.disposeIntermediateTensorInfo(res2);
@@ -86993,7 +87215,7 @@ var stepConfig2 = {
   kernelFunc: step3
 };
 var StridedSliceProgram = class {
-  constructor(begin, strides, size2) {
+  constructor(begin, strides2, size2) {
     this.variableNames = ["x"];
     this.outputShape = size2;
     const rank = size2.length;
@@ -87011,7 +87233,7 @@ var StridedSliceProgram = class {
     }
     this.userCode = `
       ${inputDtype} begin = ${inputDtype}(${begin});
-      ${inputDtype} strides = ${inputDtype}(${strides});
+      ${inputDtype} strides = ${inputDtype}(${strides2});
 
       void main() {
         ${dtype} coords = getOutputCoords();
@@ -87026,7 +87248,7 @@ function stridedSlice3(args) {
   const {
     begin,
     end,
-    strides,
+    strides: strides2,
     beginMask,
     endMask,
     ellipsisMask,
@@ -87042,7 +87264,7 @@ function stridedSlice3(args) {
     begin: $begin,
     end: $end,
     strides: $strides
-  } = slice_util_exports.sliceInfo(x2.shape, begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask);
+  } = slice_util_exports.sliceInfo(x2.shape, begin, end, strides2, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask);
   let result;
   if (isIdentity) {
     result = reshape4({ inputs: { x: x2 }, backend: backend22, attrs: { shape: finalShape } });
@@ -87558,9 +87780,9 @@ var TransformProgram = class {
 };
 function transform3(args) {
   const { inputs, backend: backend22, attrs } = args;
-  const { image: image32, transforms } = inputs;
+  const { image: image22, transforms } = inputs;
   const { interpolation, fillMode, fillValue, outputShape } = attrs;
-  const [batch, imageHeight, imageWidth, numChannels] = image32.shape;
+  const [batch, imageHeight, imageWidth, numChannels] = image22.shape;
   const [outHeight, outWidth] = outputShape != null ? outputShape : [imageHeight, imageWidth];
   const outShape = [
     batch,
@@ -87569,7 +87791,7 @@ function transform3(args) {
     numChannels
   ];
   const program = new TransformProgram(imageHeight, imageWidth, interpolation, fillMode, fillValue, outShape);
-  return backend22.runWebGLProgram(program, [image32, transforms], "float32");
+  return backend22.runWebGLProgram(program, [image22, transforms], "float32");
 }
 var transformConfig2 = {
   kernelName: Transform,
@@ -88006,12 +88228,12 @@ function symbolicallyComputeStrides2(indicesArr, variableName) {
   }
   const numCoords = indicesArr.length;
   const shape = indicesArr.map((d2) => `${variableName}[${d2}]`);
-  const strides = new Array(numCoords - 1);
-  strides[numCoords - 2] = shape[numCoords - 1];
+  const strides2 = new Array(numCoords - 1);
+  strides2[numCoords - 2] = shape[numCoords - 1];
   for (let i2 = numCoords - 3; i2 >= 0; --i2) {
-    strides[i2] = `(${strides[i2 + 1]} * ${shape[i2 + 1]})`;
+    strides2[i2] = `(${strides2[i2 + 1]} * ${shape[i2 + 1]})`;
   }
-  return strides;
+  return strides2;
 }
 function getCoordsDataType2(rank) {
   if (rank <= 1) {
@@ -88041,25 +88263,21 @@ function getWorkGroupSizeString() {
   [[stage(compute), workgroup_size(workGroupSizeX, workGroupSizeY, workGroupSizeZ)]]
 `;
 }
-function getFlatDispatchLayoutMainHeaderString() {
+function getMainHeaderString() {
   return `
   ${getWorkGroupSizeString()}
-  fn main([[builtin(local_invocation_id)]] localId : vec3<u32>,
-          [[builtin(global_invocation_id)]] globalId : vec3<u32>,
-          [[builtin(num_workgroups)]] numWorkgroups: vec3<u32>)
-`;
-}
-function getNonFlatDispatchLayoutMainHeaderString() {
-  return `
-  ${getWorkGroupSizeString()}
-  fn main([[builtin(local_invocation_id)]] localId : vec3<u32>,
-          [[builtin(global_invocation_id)]] globalId : vec3<u32>)
+  fn main([[builtin(local_invocation_id)]] LocalId : vec3<u32>,
+          [[builtin(global_invocation_id)]] GlobalId : vec3<u32>,
+          [[builtin(num_workgroups)]] NumWorkgroups: vec3<u32>) {
+    localId = LocalId;
+    globalId = GlobalId;
+    numWorkgroups = NumWorkgroups;
 `;
 }
 function getMainHeaderAndGlobalIndexString() {
   return `
-    ${getFlatDispatchLayoutMainHeaderString()} {
-      let index = getGlobalIndex(globalId, localId, numWorkgroups);
+    ${getMainHeaderString()}
+      let index = getGlobalIndex();
 `;
 }
 function makeShader2(inputInfo, outputData, program, isFromPixel = false) {
@@ -88070,10 +88288,10 @@ function makeShader2(inputInfo, outputData, program, isFromPixel = false) {
   if (isFromPixel === true) {
     const getCoords5 = generateGetCoordsFromFlatIndex(outputData.shape);
     const outputBufferStr = `
-      [[block]] struct Matrix0 {
+      struct Matrix0 {
         numbers: array<${mapToWgslTypes(outputData.dtype, program.isVec4)}>;
       };
-      [[block]] struct Uniform {
+      struct Uniform {
         size            : i32;
         numChannels     : i32;
         outShapeStrides : vec2<i32>;
@@ -88093,7 +88311,7 @@ function makeShader2(inputInfo, outputData, program, isFromPixel = false) {
     ].join("\n");
   }
   const prefixSnippets = [];
-  let uniformDeclaration = "[[block]] struct Uniforms { NAN : f32; ";
+  let uniformDeclaration = "struct Uniforms { NAN : f32; ";
   program.variableNames.forEach((x2, i2) => {
     uniformDeclaration += `${x2.charAt(0).toLowerCase() + x2.slice(1)}Shape : ${getCoordsDataType2(inputInfo[i2].shape.length)}; `;
   });
@@ -88111,7 +88329,7 @@ function makeShader2(inputInfo, outputData, program, isFromPixel = false) {
   prefixSnippets.push(uniformDeclaration);
   if (program.atomic) {
     prefixSnippets.push(`
-    [[block]] struct Matrix0 {
+    struct Matrix0 {
         numbers: array<atomic<i32>>;
     };
 
@@ -88119,7 +88337,7 @@ function makeShader2(inputInfo, outputData, program, isFromPixel = false) {
   `);
   } else {
     prefixSnippets.push(`
-    [[block]] struct Matrix0 {
+    struct Matrix0 {
         numbers: array<${mapToWgslTypes(outputData.dtype, program.isVec4)}>;
     };
 
@@ -88128,7 +88346,7 @@ function makeShader2(inputInfo, outputData, program, isFromPixel = false) {
   }
   program.variableNames.forEach((x2, i2) => {
     prefixSnippets.push(`
-    [[block]] struct Matrix${1 + i2} {
+    struct Matrix${1 + i2} {
       numbers: array<${mapToWgslTypes(inputInfo[i2].dtype, program.isVec4)}>;
     };
     [[group(0), binding(${1 + i2})]] var<storage, read> ${x2} : Matrix${1 + i2};
@@ -88162,6 +88380,10 @@ function makeShader2(inputInfo, outputData, program, isFromPixel = false) {
   return source;
 }
 var SHADER_PREFIX = `
+  var<private> localId: vec3<u32>;
+  var<private> globalId: vec3<u32>;
+  var<private> numWorkgroups: vec3<u32>;
+
   fn idiv(a: i32, b: i32, sign: f32) -> i32 {
     var res: i32 = a / b;
     let mod: i32 = a % b;
@@ -88184,16 +88406,8 @@ var SHADER_PREFIX = `
     return true;
   }
 
-  fn isNanCustomVec4F32(val : vec4<f32>) -> vec4<f32> {
-    var res = vec4<f32> (0.0);
-    for (var i = 0u; i < 4u; i = i + 1u) {
-      if (isNanCustom(val[i])) {
-        res[i] = 1.0;
-      } else {
-        res[i] = 0.0;
-      }
-    }
-    return res;
+  fn isNanCustomVec4(val : vec4<f32>) -> vec4<bool> {
+    return vec4<bool>(isNanCustom(val[0]), isNanCustom(val[1]), isNanCustom(val[2]), isNanCustom(val[3]));
   }
 
   // Checks whether coordinates lie within the bounds of the shape.
@@ -88218,20 +88432,20 @@ var SAMPLING_SNIPPETS = `
   }
 
   fn getFlatIndex2D(coords : vec2<i32>, shape : vec2<i32>) -> i32 {
-    return i32(dot(vec2<f32>(coords), vec2<f32>(f32(shape.y), 1.0)));
+    return dot(coords, vec2<i32>(shape.y, 1));
   }
 
   fn getFlatIndex3D(coords : vec3<i32>, shape : vec3<i32>) -> i32 {
-    return i32(dot(vec3<f32>(coords), vec3<f32>(f32(shape.y) * f32(shape.z), f32(shape.z), 1.0)));
+    return dot(coords, vec3<i32>(shape.y * shape.z, shape.z, 1));
   }
 
   fn getFlatIndex4D(coords : vec4<i32>, shape : vec4<i32>) -> i32 {
-    return i32(dot(vec4<f32>(coords), vec4<f32>(
-        f32(shape.y) * f32(shape.z) * f32(shape.w), f32(shape.z) * f32(shape.w), f32(shape.w), 1.0)));
+    return dot(coords, vec4<i32>(
+        shape.y * shape.z * shape.w, shape.z * shape.w, shape.w, 1));
   }
 
   // Only used when the y/z dimension of workgroup size is 1.
-  fn getGlobalIndex(globalId : vec3<u32>, localId : vec3<u32>, numWorkgroups: vec3<u32>) -> i32 {
+  fn getGlobalIndex() -> i32 {
     if (numWorkgroups.y == 1u && numWorkgroups.z == 1u) {
       return i32(globalId.x);
     }
@@ -88261,22 +88475,22 @@ function getOutputFlatIndexSnippet(outRank) {
     case 2:
       snippet += `
         fn getOutputFlatIndex(coords : vec2<i32>) -> i32 {
-          return i32(dot(vec2<f32>(coords), vec2<f32>(f32(uniforms.outShapeStrides), 1.0)));
+          return dot(coords, vec2<i32>(uniforms.outShapeStrides, 1));
         }
         `;
       break;
     case 3:
       snippet += `
         fn getOutputFlatIndex(coords : vec3<i32>) -> i32 {
-          return i32(dot(vec3<f32>(coords), vec3<f32>(f32(uniforms.outShapeStrides.x), f32(uniforms.outShapeStrides.y), 1.0)));
+          return dot(coords, vec3<i32>(uniforms.outShapeStrides.x, uniforms.outShapeStrides.y, 1));
         }
         `;
       break;
     case 4:
       snippet += `
         fn getOutputFlatIndex(coords : vec4<i32>) -> i32 {
-          return i32(dot(vec4<f32>(coords), vec4<f32>(
-            f32(uniforms.outShapeStrides.x), f32(uniforms.outShapeStrides.y), f32(uniforms.outShapeStrides.z), 1.0)));
+          return dot(coords, vec4<i32>(
+            uniforms.outShapeStrides.x, uniforms.outShapeStrides.y, uniforms.outShapeStrides.z, 1));
         }
         `;
       break;
@@ -88492,8 +88706,8 @@ function generateGetOutputCoords(outShape, dispatchLayout) {
   const outRank = outShape.length;
   if (x2.length === outRank) {
     const dtype2 = getCoordsDataType2(outRank);
-    const snippet2 = `fn getOutputCoordsWithFlatDispatchLayout(globalId : vec3<u32>, localId : vec3<u32>, numWorkgroups: vec3<u32>) -> ${dtype2}{
-      let globalIndex = getGlobalIndex(globalId, localId, numWorkgroups);
+    const snippet2 = `fn getOutputCoords() -> ${dtype2}{
+      let globalIndex = getGlobalIndex();
       return getCoordsFromFlatIndex(globalIndex);
     }
     `;
@@ -88511,14 +88725,14 @@ function generateGetOutputCoords(outShape, dispatchLayout) {
     if (arr.length === 1) {
       gatherDimensionsStr += `let d${arr[0]} = i32(globalId[${i2}]);`;
     } else {
-      const strides = symbolicallyComputeStrides2(arr, "uniforms.outShape");
+      const strides2 = symbolicallyComputeStrides2(arr, "uniforms.outShape");
       gatherDimensionsStr += `var index${i2} = i32(globalId[${i2}]);`;
-      for (let j2 = 0; j2 < strides.length; j2++) {
-        gatherDimensionsStr += `let d${arr[j2]} = index${i2} / ${strides[j2]};`;
-        if (j2 === strides.length - 1) {
-          gatherDimensionsStr += `let d${arr[j2 + 1]} = index${i2} - d${arr[j2]} * ${strides[j2]};`;
+      for (let j2 = 0; j2 < strides2.length; j2++) {
+        gatherDimensionsStr += `let d${arr[j2]} = index${i2} / ${strides2[j2]};`;
+        if (j2 === strides2.length - 1) {
+          gatherDimensionsStr += `let d${arr[j2 + 1]} = index${i2} - d${arr[j2]} * ${strides2[j2]};`;
         } else {
-          gatherDimensionsStr += `index${i2} = index${i2} - d${arr[j2]} * ${strides[j2]};`;
+          gatherDimensionsStr += `index${i2} = index${i2} - d${arr[j2]} * ${strides2[j2]};`;
         }
       }
     }
@@ -88528,7 +88742,7 @@ function generateGetOutputCoords(outShape, dispatchLayout) {
     dimensions.push(`d${i2}`);
   }
   const dtype = getCoordsDataType2(rank);
-  let snippet = `fn getOutputCoordsWithNonFlatDispatchLayout(globalId : vec3<u32>) -> ${dtype} {
+  let snippet = `fn getOutputCoords() -> ${dtype} {
     ${gatherDimensionsStr}
   `;
   if (dimensions.length === 0) {
@@ -88543,21 +88757,21 @@ function generateGetCoordsFromFlatIndex(shape) {
   if (rank <= 1) {
     return `fn getCoordsFromFlatIndex(index : i32) -> i32 { return index; }`;
   }
-  const strides = util_exports.computeStrides(shape);
+  const strides2 = util_exports.computeStrides(shape);
   const dtype = getCoordsDataType2(rank);
   const coords32 = [];
   for (let i2 = 0; i2 < rank; i2++) {
     coords32.push(`d${i2}`);
   }
-  if (strides.length === 1) {
+  if (strides2.length === 1) {
     return `    fn getCoordsFromFlatIndex(index : i32) -> vec2<i32> {
       let d0 = index / uniforms.outShapeStrides; let d1 = index - d0 * uniforms.outShapeStrides;
       return vec2<i32>(d0, d1);
     }`;
   }
-  const snippet = "var index2 = index;" + strides.map((_2, i2) => {
+  const snippet = "var index2 = index;" + strides2.map((_2, i2) => {
     const line1 = `let ${coords32[i2]} = index2 / uniforms.outShapeStrides[${i2}]`;
-    const line2 = i2 === strides.length - 1 ? `let ${coords32[i2 + 1]} = index2 - ${coords32[i2]} * uniforms.outShapeStrides[${i2}]` : `index2 = index2 - ${coords32[i2]} * uniforms.outShapeStrides[${i2}]`;
+    const line2 = i2 === strides2.length - 1 ? `let ${coords32[i2 + 1]} = index2 - ${coords32[i2]} * uniforms.outShapeStrides[${i2}]` : `index2 = index2 - ${coords32[i2]} * uniforms.outShapeStrides[${i2}]`;
     return `${line1}; ${line2};`;
   }).join("");
   return `
@@ -88677,8 +88891,7 @@ function isWebGPUSupported() {
   }
   return true;
 }
-var BinaryOpType;
-(function(BinaryOpType6) {
+var BinaryOpType = ((BinaryOpType6) => {
   BinaryOpType6[BinaryOpType6["MUL"] = 0] = "MUL";
   BinaryOpType6[BinaryOpType6["ADD"] = 1] = "ADD";
   BinaryOpType6[BinaryOpType6["SUB"] = 2] = "SUB";
@@ -88698,7 +88911,8 @@ var BinaryOpType;
   BinaryOpType6[BinaryOpType6["MIN"] = 16] = "MIN";
   BinaryOpType6[BinaryOpType6["COMPLEX_MULTIPLY_REAL"] = 17] = "COMPLEX_MULTIPLY_REAL";
   BinaryOpType6[BinaryOpType6["COMPLEX_MULTIPLY_IMAG"] = 18] = "COMPLEX_MULTIPLY_IMAG";
-})(BinaryOpType || (BinaryOpType = {}));
+  return BinaryOpType6;
+})(BinaryOpType || {});
 var ADD2 = "return a + b;";
 var COMPLEX_MULTIPLY_REAL = "return areal * breal - aimag * bimag;";
 var COMPLEX_MULTIPLY_IMAG = "return areal * bimag + aimag * breal;";
@@ -88724,16 +88938,16 @@ var CHECK_NAN_SNIPPET4 = `
   if (isNanCustom(b)) { return b; }
   `;
 var CHECK_NAN_SNIPPET_VEC4 = `
-  if (isNaN.r > 0.) {
+  if (isNaN.r) {
     resultTemp.r = uniforms.NAN;
   }
-  if (isNaN.g > 0.) {
+  if (isNaN.g) {
     resultTemp.g = uniforms.NAN;
   }
-  if (isNaN.b > 0.) {
+  if (isNaN.b) {
     resultTemp.b = uniforms.NAN;
   }
-  if (isNaN.a > 0.) {
+  if (isNaN.a) {
     resultTemp.a = uniforms.NAN;
   }
   `;
@@ -88799,7 +89013,7 @@ var POW_VEC4 = `
   if (isExpZero.a) {
     resultTemp.a = 1.0;
   }
-  let isNaN = vec4<f32>(a < vec4<f32>(0.0)) * vec4<f32>(floor(b) < b);
+  let isNaN = a < vec4<f32>(0.0) & floor(b) < b;
   ${CHECK_NAN_SNIPPET_VEC4}
   return resultTemp;
   `;
@@ -88812,7 +89026,7 @@ function getMinMaxString(op2, useVec4) {
   const checkNanSnippet = useVec4 ? CHECK_NAN_SNIPPET_VEC4 : CHECK_NAN_SNIPPET4;
   return useVec4 ? `
     var resultTemp = vec4<f32>(${op2}(a, b));
-    let isNaN = min(vec4<f32>(isNanCustomVec4F32(a)) + vec4<f32>(isNanCustomVec4F32(b)), vec4<f32>(1.0));
+    let isNaN = isNanCustomVec4(a) | isNanCustomVec4(b);
     ` + checkNanSnippet + `
     return resultTemp;
   ` : checkNanSnippet + `
@@ -88863,8 +89077,7 @@ function getBinaryOpString(type, useVec4) {
       throw new Error(`BinaryType ${type} is not implemented!`);
   }
 }
-var UnaryOpType;
-(function(UnaryOpType3) {
+var UnaryOpType = ((UnaryOpType3) => {
   UnaryOpType3[UnaryOpType3["ABS"] = 0] = "ABS";
   UnaryOpType3[UnaryOpType3["CEIL"] = 1] = "CEIL";
   UnaryOpType3[UnaryOpType3["COS"] = 2] = "COS";
@@ -88880,15 +89093,17 @@ var UnaryOpType;
   UnaryOpType3[UnaryOpType3["PRELU"] = 12] = "PRELU";
   UnaryOpType3[UnaryOpType3["RELU"] = 13] = "RELU";
   UnaryOpType3[UnaryOpType3["RELU6"] = 14] = "RELU6";
-  UnaryOpType3[UnaryOpType3["RSQRT"] = 15] = "RSQRT";
-  UnaryOpType3[UnaryOpType3["SIN"] = 16] = "SIN";
-  UnaryOpType3[UnaryOpType3["SINH"] = 17] = "SINH";
-  UnaryOpType3[UnaryOpType3["SIGMOID"] = 18] = "SIGMOID";
-  UnaryOpType3[UnaryOpType3["SQRT"] = 19] = "SQRT";
-  UnaryOpType3[UnaryOpType3["SQUARE"] = 20] = "SQUARE";
-  UnaryOpType3[UnaryOpType3["TANH"] = 21] = "TANH";
-  UnaryOpType3[UnaryOpType3["TO_INT"] = 22] = "TO_INT";
-})(UnaryOpType || (UnaryOpType = {}));
+  UnaryOpType3[UnaryOpType3["LEAKYRELU"] = 15] = "LEAKYRELU";
+  UnaryOpType3[UnaryOpType3["RSQRT"] = 16] = "RSQRT";
+  UnaryOpType3[UnaryOpType3["SIN"] = 17] = "SIN";
+  UnaryOpType3[UnaryOpType3["SINH"] = 18] = "SINH";
+  UnaryOpType3[UnaryOpType3["SIGMOID"] = 19] = "SIGMOID";
+  UnaryOpType3[UnaryOpType3["SQRT"] = 20] = "SQRT";
+  UnaryOpType3[UnaryOpType3["SQUARE"] = 21] = "SQUARE";
+  UnaryOpType3[UnaryOpType3["TANH"] = 22] = "TANH";
+  UnaryOpType3[UnaryOpType3["TO_INT"] = 23] = "TO_INT";
+  return UnaryOpType3;
+})(UnaryOpType || {});
 var ABS3 = `return abs(a);`;
 var CEIL2 = `return ceil(a);`;
 var COS2 = `return cos(a);`;
@@ -88922,12 +89137,13 @@ var LOG2 = `if (a < 0.0) { return 1.0/0.0; }
 var LOGICAL_NOT2 = `return f32(!(a >= 1.0));`;
 var NEG2 = `return -a;`;
 var PRELU3 = `return (a < 0.0) ? b * a : a;`;
+var LEAKYRELU2 = `if (a < 0.0) { return uniforms.alpha * a; } return a;`;
 var RELU4 = "return max(a, 0.0);";
 var RELU64 = "return clamp(a, 0.0, 6.0);";
 var RELU6_VEC4 = "return clamp(a, vec4<f32>(0.0, 0.0, 0.0, 0.0), vec4<f32>(6.0, 6.0, 6.0, 6.0));";
 var RELU_VEC4 = `
   var resFloat = a * vec4<f32>(a >= vec4<f32>(0.0));
-  let isNaN = isNan(a);
+  let isNaN = isNanCustomVec4(a);
 
   if (isNaN.r) {
     resFloat.r = a.r;
@@ -88985,25 +89201,27 @@ function getUnaryOpString(type, useVec4) {
       return NEG2;
     case 12:
       return PRELU3;
+    case 15:
+      return LEAKYRELU2;
     case 13:
       return useVec4 ? RELU_VEC4 : RELU4;
     case 14:
       return useVec4 ? RELU6_VEC4 : RELU64;
-    case 15:
-      return RSQRT2;
-    case 18:
-      return SIGMOID4;
     case 16:
-      return SIN2;
-    case 17:
-      return SINH2;
+      return RSQRT2;
     case 19:
-      return SQRT2;
+      return SIGMOID4;
+    case 17:
+      return SIN2;
+    case 18:
+      return SINH2;
     case 20:
-      return SQUARE2;
+      return SQRT2;
     case 21:
-      return TANH2;
+      return SQUARE2;
     case 22:
+      return TANH2;
+    case 23:
       return TO_INT2;
     default:
       throw new Error(`BinaryType ${type} is not implemented!`);
@@ -89045,7 +89263,7 @@ function makeMatMulPackedVec4Source(workPerThread, workGroupSize) {
   let TileBOuter = ${tileInfo.TileBOuter};
   let TileInner = ${tileInfo.TileInner};
 
-  ${getNonFlatDispatchLayoutMainHeaderString()} {
+  ${getMainHeaderString()}
 
     let tileRow = i32(localId.y) * RowPerThread;
     let tileCol = i32(localId.x);
@@ -89104,13 +89322,13 @@ function makeMatMulPackedVec4Source(workPerThread, workGroupSize) {
                  globalCol,
                  acc[innerRow], globalId);
     }
-}`;
+  }`;
 }
 function makeMatMulVectorVec4Source(workGroupSize) {
   return `
   var<workgroup> mm_Asub : array<vec4<f32>, ${workGroupSize[0]}>;
   let tileSize = ${workGroupSize[0] * 4};
-  ${getNonFlatDispatchLayoutMainHeaderString()} {
+  ${getMainHeaderString()}
     let tileCol = i32(localId.x);
     let globalCol = i32(globalId.x);
     let globalRow = i32(globalId.y);
@@ -89260,7 +89478,7 @@ function makeMatMulPackedSource(workPerThread, workGroupSize) {
   return `
     var<workgroup> mm_Asub : array<array<f32, ${tileInner}>, ${tileAOuter}>;
     var<workgroup> mm_Bsub : array<array<f32, ${tileBOuter}>, ${tileInner}>;
-    ${getNonFlatDispatchLayoutMainHeaderString()} {
+    ${getMainHeaderString()}
       let tileRow = i32(localId.y) * ${workPerThread[1]};
       let tileCol = i32(localId.x) * ${workPerThread[0]};
 
@@ -89348,7 +89566,7 @@ function makeMatMulVectorSource(workGroupSize) {
     let TileSize = ${workGroupSize[0] * 4};
     var<workgroup> mm_Asub : array<vec4<f32>, ${workGroupSize[0]}>;
 
-    ${getNonFlatDispatchLayoutMainHeaderString()} {
+    ${getMainHeaderString()}
       let tileCol = i32(localId.x);
       let globalCol = i32(globalId.x);
       let globalRow = i32(globalId.y);
@@ -89515,8 +89733,8 @@ var MatMulPackedProgram2 = class {
 function makeMatMulReduceSource() {
   return `
     var<workgroup> sumValues : array<f32, workGroupSizeX>;
-    ${getNonFlatDispatchLayoutMainHeaderString()} {
-      let coords = getOutputCoordsWithNonFlatDispatchLayout(globalId);
+    ${getMainHeaderString()}
+      let coords = getOutputCoords();
       let batch = coords[0];
       let row = coords[1];
       let col = coords[2];
@@ -89641,7 +89859,7 @@ function makeMatMulSmallOutputSizeSource(workGroupSize) {
   // arithmetic operations and others handle IO operations between barrier api,
   // makes ALUs and load/store units work simultaneously, could improves
   // the performance.
-  ${getNonFlatDispatchLayoutMainHeaderString()} {
+  ${getMainHeaderString()}
     let tileRow = i32(localId.y);
     let tileCol = i32(localId.x);
     let globalRow = i32(globalId.y);
@@ -90297,55 +90515,24 @@ var addNConfig3 = {
 };
 var ArgMinMaxProgram2 = class {
   constructor(inputShape, axis, reduceType) {
+    this.workGroupSize = [64, 1, 1];
     this.variableNames = ["x"];
-    this.uniforms = "axis : i32;";
+    this.uniforms = "axis : i32; infinityValue : f32;";
+    this.size = true;
     const axes = [axis];
     backend_util_exports.assertAxesAreInnerMostDims("arg" + reduceType.charAt(0).toUpperCase() + reduceType.slice(1), axes, inputShape.length);
     this.op = reduceType === "min" ? "<" : ">";
-    const [outputShape, reduceShape] = backend_util_exports.computeOutAndReduceShapes(inputShape, axes);
+    const [outputShape] = backend_util_exports.computeOutAndReduceShapes(inputShape, axes);
     this.outputShape = outputShape.length === 0 ? [1] : outputShape;
-    const reduceSize = util_exports.sizeFromShape(reduceShape);
-    this.reductionFactor = 2;
-    const xMaxThreads = 256;
-    const xThreads = Math.min(Math.ceil(reduceSize / this.reductionFactor), xMaxThreads);
-    this.workGroupSize = [xThreads, 1, 1];
-    this.dispatchLayout = { x: [], y: this.outputShape.map((d2, i2) => i2) };
-    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, [1, 1, 1]);
     this.inputShape = inputShape;
     this.shaderKey = `argMinMax${this.op}`;
   }
   getUserCode() {
-    const reduceInSharedMemory = this.workGroupSize[0] > 1;
     const sharedMemorySnippet = `
       var<workgroup> xBestIndices : array<i32, ${this.workGroupSize[0]}>;
       var<workgroup> xBestValues : array<f32, ${this.workGroupSize[0]}>;
-    `;
-    const sharedMemoryReduceSnippet = `
-      xBestIndices[localId.x] = bestIndex;
-      xBestValues[localId.x] = bestValue;
-
-      for(var currentSize = WorkGroupSize; currentSize > 1; currentSize = DIV_CEIL(currentSize, ${this.reductionFactor})) {
-        workgroupBarrier();
-
-        for (var w = 0; w < ${this.reductionFactor}; w = w + 1) {
-          let i = i32(localId.x) * ${this.reductionFactor} + w;
-          if (i < currentSize) {
-            let candidateIndex = xBestIndices[i];
-            let candidate = xBestValues[i];
-            if(candidate ${this.op} bestValue && !isNanCustom(candidate)) {
-              bestValue = candidate;
-              bestIndex = candidateIndex;
-            }
-          }
-        }
-
-        xBestIndices[localId.x] = bestIndex;
-        xBestValues[localId.x] = bestValue;
-      }
-
-      if (localId.x == 0u) {
-        setOutputFlatI32(flatOutputIndex, i32(bestIndex));
-      }
     `;
     const indexOutputCoords = (outputCoords, index2) => {
       if (this.outputShape.length === 1) {
@@ -90362,20 +90549,18 @@ var ArgMinMaxProgram2 = class {
       }
     };
     const userCode = `
-      fn DIV_CEIL(a : i32, b : i32) -> i32 {
-        return ((a - 1) / b + 1);
+      fn DIV_CEIL(a : u32, b : u32) -> u32 {
+        return ((a - 1u) / b + 1u);
       }
 
-      let WorkGroupSize = ${this.workGroupSize[0]};
-
-      ${reduceInSharedMemory ? sharedMemorySnippet : ""}
+      ${sharedMemorySnippet}
 
       // In order to get a flattened index into the input tensor, we need to
       // add back the index along the reduced dimension to |outputCoords|.
       // This function outputs the offset to the first value along
       // |axis| and the stride to get the next value of the input along |axis|.
-      fn getInputCoordInfo(globalId : vec3<u32>) -> vec2<i32>{
-        let outputCoords = getOutputCoordsWithNonFlatDispatchLayout(globalId);
+      fn getInputCoordInfo(outputIndex : i32) -> vec2<i32>{
+        let outputCoords = getCoordsFromFlatIndex(outputIndex);
         var i = ${this.outputShape.length - 1};
 
         var stride = 1;
@@ -90400,28 +90585,45 @@ var ArgMinMaxProgram2 = class {
         return coordInfo[0] + coordInfo[1] * index;
       }
 
-      ${getNonFlatDispatchLayoutMainHeaderString()} {
-        let coordInfo = getInputCoordInfo(globalId);
-
-        var bestIndex = 0;
-        var bestValue = f32(x.numbers[getInputIndex(coordInfo, bestIndex)]);
-
+      ${getMainHeaderAndGlobalIndexString()}
+        let outputIndex = index / i32(workGroupSizeX);
+        let coordInfo = getInputCoordInfo(outputIndex);
         let Length = ${indexInputShape("uniforms.axis")};
-        let WorkPerThread = DIV_CEIL(Length, WorkGroupSize);
 
-        for (var w = 0; w < WorkPerThread; w = w + 1) {
-          let i = i32(globalId.x) * WorkPerThread + w;
-          if (i < Length) {
-            let candidate = f32(x.numbers[getInputIndex(coordInfo, i)]);
-            if (candidate ${this.op} bestValue && !isNanCustom(f32(candidate))) {
-              bestValue = candidate;
-              bestIndex = i;
-            }
+        var bestIndex = i32(localId.x);
+        var bestValue = uniforms.infinityValue;
+
+        for (var k = i32(localId.x); k < Length && outputIndex < uniforms.size;
+            k = k + i32(workGroupSizeX)) {
+          let candidate = f32(x.numbers[getInputIndex(coordInfo, k)]);
+          if (!isNanCustom(candidate) && candidate ${this.op} bestValue) {
+            bestValue = candidate;
+            bestIndex = k;
           }
         }
+        xBestValues[localId.x] = bestValue;
+        xBestIndices[localId.x] = bestIndex;
+        workgroupBarrier();
 
-        let flatOutputIndex = i32(globalId.y);
-        ${reduceInSharedMemory ? sharedMemoryReduceSnippet : "setOutputFlatI32(flatOutputIndex, bestIndex);"}
+        var reduceSize = min(u32(Length), workGroupSizeX);
+        for (var currentSize = reduceSize / 2u; reduceSize > 1u;
+            currentSize = reduceSize / 2u) {
+          let interval = DIV_CEIL(reduceSize, 2u);
+          if (localId.x < currentSize) {
+            let candidate = xBestValues[localId.x + interval];
+            if (candidate ${this.op} bestValue) {
+              bestValue = candidate;
+              xBestValues[localId.x] = bestValue;
+              xBestIndices[localId.x] = xBestIndices[localId.x + interval];
+            }
+          }
+          reduceSize = interval;
+          workgroupBarrier();
+        }
+
+        if (localId.x == 0u && outputIndex < uniforms.size) {
+          setOutputFlatI32(outputIndex, xBestIndices[localId.x]);
+        }
       }
     `;
     return userCode;
@@ -90557,7 +90759,10 @@ function argMax4(args) {
   }
   backend_util_exports.assertAxesAreInnerMostDims("argMax", [axes[0]], $x.shape.length);
   const program = new ArgMinMaxProgram2($x.shape, axes[0], "max");
-  const uniformData = [{ type: "int32", data: [axes[0]] }];
+  const uniformData = [
+    { type: "int32", data: [axes[0]] },
+    { type: "float32", data: [Number.NEGATIVE_INFINITY] }
+  ];
   const out = backend22.runWebGPUProgram(program, [$x], "int32", uniformData);
   intermediateTensorInfos.forEach((t2) => backend22.disposeData(t2.dataId));
   return out;
@@ -90582,7 +90787,10 @@ function argMin4(args) {
   }
   backend_util_exports.assertAxesAreInnerMostDims("argMin", [axes[0]], $x.shape.length);
   const program = new ArgMinMaxProgram2($x.shape, axes[0], "min");
-  const uniformData = [{ type: "int32", data: [axes[0]] }];
+  const uniformData = [
+    { type: "int32", data: [axes[0]] },
+    { type: "float32", data: [Number.POSITIVE_INFINITY] }
+  ];
   const out = backend22.runWebGPUProgram(program, [$x], "int32", uniformData);
   intermediateTensorInfos.forEach((t2) => backend22.disposeData(t2.dataId));
   return out;
@@ -90684,9 +90892,9 @@ var PoolWithFilterSizeEqualsOneProgram = class {
 function avgPool4(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
   const dilations = 1;
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode);
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, dilations, pad3, dimRoundingMode);
   if (convInfo.filterWidth === 1 && convInfo.filterHeight === 1 && util_exports.arraysEqual(convInfo.inShape, convInfo.outShape)) {
     return identity4({ inputs: { x: x2 }, backend: backend22 });
   }
@@ -90988,6 +91196,7 @@ var clipByValueConfig2 = {
 };
 var ConcatProgram2 = class {
   constructor(shapes) {
+    this.uniforms = "";
     this.workPerThread = 4;
     this.workGroupSize = [64, 1, 1];
     this.size = true;
@@ -90995,25 +91204,22 @@ var ConcatProgram2 = class {
     this.variableNames = shapes.map((_2, i2) => `T${i2}`);
     this.dispatchLayout = flatDispatchLayout(this.outputShape);
     this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
-    this.shapes = shapes;
-    this.shaderKey = `concat${shapes}`;
+    this.offsetLength = shapes.length - 1;
+    for (let i2 = 0; i2 < this.offsetLength; i2++) {
+      this.uniforms += `offset${i2} : i32;`;
+    }
+    this.shaderKey = "concat";
   }
   getUserCode() {
-    const offsets = new Array(this.shapes.length - 1);
     const snippets = [];
-    if (offsets.length > 0) {
-      offsets[0] = this.shapes[0][1];
-      for (let i2 = 1; i2 < offsets.length; i2++) {
-        offsets[i2] = offsets[i2 - 1] + this.shapes[i2][1];
+    if (this.offsetLength > 0) {
+      snippets.push(`if (yC < uniforms.offset0){ setOutput(coords.x, coords.y, getT0(yR, yC)); }`);
+      for (let i2 = 1; i2 < this.offsetLength; i2++) {
+        snippets.push(`elseif (yC < uniforms.offset${[i2]}){ setOutput(coords.x, coords.y, getT${i2}(yR, yC - uniforms.offset${i2 - 1})); }`);
       }
-      snippets.push(`if (yC < ${offsets[0]}){ setOutput(coords.x, coords.y, getT0(yR, yC)); }`);
-      for (let i2 = 1; i2 < offsets.length; i2++) {
-        const shift = offsets[i2 - 1];
-        snippets.push(`elseif (yC < ${offsets[i2]}){ setOutput(coords.x, coords.y, getT${i2}(yR, yC - ${shift})); }`);
-      }
-      const lastIndex = offsets.length;
-      const lastShift = offsets[offsets.length - 1];
-      snippets.push(`else { setOutput(coords.x, coords.y, getT${lastIndex}(yR, yC - ${lastShift})); }`);
+      const lastIndex = this.offsetLength;
+      const lastShiftIndex = this.offsetLength - 1;
+      snippets.push(`else { setOutput(coords.x, coords.y, getT${lastIndex}(yR, yC - uniforms.offset${lastShiftIndex})); }`);
     } else {
       snippets.push(`setOutput(coords.x, coords.y, getT0(yR, yC));`);
     }
@@ -91081,8 +91287,19 @@ function concatImpl3(inputs, axis, backend22) {
     return outInfo;
   }
   const { tensors2D, outShape } = computeTensors2D2(inputs, axis, backend22);
-  const program = new ConcatProgram2(tensors2D.map((t2) => t2.shape));
-  const res2 = backend22.runWebGPUProgram(program, tensors2D, tensors2D[0].dtype);
+  const shapes = tensors2D.map((t2) => t2.shape);
+  const program = new ConcatProgram2(shapes);
+  const uniformData = [];
+  const offsets = new Array(shapes.length - 1);
+  if (offsets.length > 0) {
+    offsets[0] = shapes[0][1];
+    uniformData.push({ type: "int32", data: [offsets[0]] });
+    for (let i2 = 1; i2 < offsets.length; i2++) {
+      offsets[i2] = offsets[i2 - 1] + shapes[i2][1];
+      uniformData.push({ type: "int32", data: [offsets[i2]] });
+    }
+  }
+  const res2 = backend22.runWebGPUProgram(program, tensors2D, tensors2D[0].dtype, uniformData);
   tensors2D.forEach((r2) => backend22.disposeData(r2.dataId));
   const reshapedResult = reshape5({ inputs: { x: res2 }, backend: backend22, attrs: { shape: outShape } });
   backend22.disposeData(res2.dataId);
@@ -91635,8 +91852,8 @@ var Conv2DNaiveProgram = class {
         }
       }
 
-      ${getFlatDispatchLayoutMainHeaderString()} {
-        let coords = getOutputCoordsWithFlatDispatchLayout(globalId, localId, numWorkgroups);
+      ${getMainHeaderString()}
+        let coords = getOutputCoords();
         let batch = coords[0];
         let outChannel = coords[3];
 
@@ -91663,9 +91880,9 @@ var Conv2DNaiveProgram = class {
 function conv2d5(args) {
   const { inputs, attrs, backend: backend22 } = args;
   const { x: x2, filter } = inputs;
-  const { strides, pad: pad3, dataFormat, dilations, dimRoundingMode } = attrs;
+  const { strides: strides2, pad: pad3, dataFormat, dilations, dimRoundingMode } = attrs;
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, dilations, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, dilations, pad3, dimRoundingMode, false, $dataFormat);
   if (convInfo.filterHeight === 1 && convInfo.filterWidth === 1 && convInfo.dilationHeight === 1 && convInfo.dilationWidth === 1 && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && (convInfo.padInfo.type === "SAME" || convInfo.padInfo.type === "VALID")) {
     return conv2dByMatMul2({ x: x2, filter, convInfo, backend: backend22 });
   }
@@ -91846,9 +92063,9 @@ var Conv2DDerInputProgram2 = class {
 function conv2DBackpropInput4(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { dy, filter } = inputs;
-  const { inputShape, strides, pad: pad3, dataFormat, dimRoundingMode } = attrs;
+  const { inputShape, strides: strides2, pad: pad3, dataFormat, dimRoundingMode } = attrs;
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides, 1, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides2, 1, pad3, dimRoundingMode, false, $dataFormat);
   const dimensions = [
     { type: "int32", data: [convInfo.filterHeight, convInfo.filterWidth] },
     {
@@ -91995,11 +92212,11 @@ var CropAndResizeProgram2 = class {
 };
 var cropAndResize4 = (args) => {
   const { inputs, backend: backend22, attrs } = args;
-  const { image: image32, boxes, boxInd } = inputs;
+  const { image: image22, boxes, boxInd } = inputs;
   const { cropSize, method, extrapolationValue } = attrs;
-  const program = new CropAndResizeProgram2(image32.shape[3], boxes.shape, cropSize, method);
+  const program = new CropAndResizeProgram2(image22.shape[3], boxes.shape, cropSize, method);
   const uniformData = [{ type: "float32", data: [extrapolationValue] }];
-  return backend22.runWebGPUProgram(program, [image32, boxes, boxInd], "float32", uniformData);
+  return backend22.runWebGPUProgram(program, [image22, boxes, boxInd], "float32", uniformData);
 };
 var cropAndResizeConfig3 = {
   kernelName: CropAndResize,
@@ -92214,7 +92431,9 @@ var DepthwiseConv2D3x3Program = class {
 var DepthwiseConv2DProgram2 = class {
   constructor(convInfo, addBias = false, activation2 = null, hasPreluActivation = false) {
     this.variableNames = ["x", "W"];
-    this.uniforms = `pad : vec2<i32>; stride : vec2<i32>; dilation : vec2<i32>; inDims : vec2<i32>;`;
+    this.uniforms = `pad : vec2<i32>; stride : vec2<i32>; dilation : vec2<i32>;
+      inDims : vec2<i32>; filterHeight : i32; filterWidth : i32;
+      channelMul : i32;`;
     this.workGroupSize = [256, 1, 1];
     this.outputShape = convInfo.outShape;
     this.dispatchLayout = flatDispatchLayout(this.outputShape);
@@ -92230,10 +92449,9 @@ var DepthwiseConv2DProgram2 = class {
     this.addBias = addBias;
     this.activation = activation2;
     this.hasPreluActivation = hasPreluActivation;
-    this.shaderKey = `depthwise_${this.convInfo.filterHeight}_${this.convInfo.filterWidth}_${this.activation}_${this.convInfo.outChannels / this.convInfo.inChannels}`;
+    this.shaderKey = `depthwise_${this.activation}`;
   }
   getUserCode() {
-    const channelMul = this.convInfo.outChannels / this.convInfo.inChannels;
     let activationSnippet = "", applyActivationSnippet = "";
     if (this.activation) {
       const activationOp = mapActivationToShaderProgram2(this.activation, false);
@@ -92255,25 +92473,28 @@ var DepthwiseConv2DProgram2 = class {
     const userCode = `
       ${activationSnippet}
 
-      fn writeResult(batch : i32, row : i32, col : i32, chan : i32, value : f32) {
+      fn writeResult(batch : i32, row : i32, col : i32, chan : i32,
+          value : f32) {
         let coord = vec4<i32>(batch, row, col, chan);
         if (coordsInBounds4D(coord, uniforms.outShape)) {
           setOutput(batch, row, col, chan, value);
         }
       }
 
-      ${getFlatDispatchLayoutMainHeaderString()} {
-        let coords = getOutputCoordsWithFlatDispatchLayout(globalId, localId, numWorkgroups);
+      ${getMainHeaderString()}
+        let coords = getOutputCoords();
         let batch = coords[0];
         let xRCCorner = vec2<i32>(coords.yz) * uniforms.stride - uniforms.pad;
         let d2 = coords[3];
-        let d1 = d2 / ${channelMul};
-        let q = d2 - d1 * ${channelMul};
+        let d1 = d2 / uniforms.channelMul;
+        let q = d2 - d1 * uniforms.channelMul;
 
         let inputRowStart = xRCCorner.x;
         let inputColStart = xRCCorner.y;
-        let inputRowEnd = inputRowStart + ${this.convInfo.filterHeight} * uniforms.dilation[0];
-        let inputColEnd = inputColStart + ${this.convInfo.filterWidth} * uniforms.dilation[1];
+        let inputRowEnd = inputRowStart + uniforms.filterHeight *
+            uniforms.dilation[0];
+        let inputColEnd = inputColStart + uniforms.filterWidth *
+            uniforms.dilation[1];
 
         // Convolve x(?, ?, d1) with w(:, :, d1, q) to get y(yR, yC, d2).
         // ? = to be determined. : = across all values in that axis.
@@ -92281,13 +92502,14 @@ var DepthwiseConv2DProgram2 = class {
 
         // Extract if checking out of for loop for performance.
         if (inputRowStart >= 0 && inputColStart >= 0 &&
-          inputRowEnd < uniforms.inDims[0] && inputColEnd < uniforms.inDims[1]) {
+          inputRowEnd < uniforms.inDims[0] &&
+              inputColEnd < uniforms.inDims[1]) {
             // Here using a constant value |this.convInfo.filterHeight| instead
             // of uniform value is in order to loop unrolling.
-            for (var wR = 0; wR < ${this.convInfo.filterHeight}; wR = wR + 1) {
+            for (var wR = 0; wR < uniforms.filterHeight; wR = wR + 1) {
               let xR = inputRowStart + wR * uniforms.dilation[0];
 
-              for (var wC = 0; wC < ${this.convInfo.filterWidth}; wC = wC + 1) {
+              for (var wC = 0; wC < uniforms.filterWidth; wC = wC + 1) {
                 let xC = inputColStart + wC * uniforms.dilation[1];
 
                 let xVal = getX(batch, xR, xC, d1);
@@ -92296,14 +92518,14 @@ var DepthwiseConv2DProgram2 = class {
               }
             }
           } else {
-            for (var wR = 0; wR < ${this.convInfo.filterHeight}; wR = wR + 1) {
+            for (var wR = 0; wR < uniforms.filterHeight; wR = wR + 1) {
               let xR = inputRowStart + wR * uniforms.dilation[0];
 
               if (xR < 0 || xR >= uniforms.inDims[0]) {
                 continue;
               }
 
-              for (var wC = 0; wC < ${this.convInfo.filterWidth}; wC = wC + 1) {
+              for (var wC = 0; wC < uniforms.filterWidth; wC = wC + 1) {
                 let xC = inputColStart + wC * uniforms.dilation[1];
 
                 if (xC < 0 || xC >= uniforms.inDims[1]) {
@@ -92328,24 +92550,25 @@ var DepthwiseConv2DProgram2 = class {
 function depthwiseConv2dNative3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter } = inputs;
-  const { strides, pad: pad3, dilations, dimRoundingMode } = attrs;
+  const { strides: strides2, pad: pad3, dilations, dimRoundingMode } = attrs;
   let $dilations = dilations;
   if ($dilations == null) {
     $dilations = [1, 1];
   }
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, $dilations, pad3, dimRoundingMode, true);
-  let program;
-  if (convInfo.batchSize === 1 && convInfo.inHeight === convInfo.outHeight && convInfo.inWidth === convInfo.outWidth && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && convInfo.filterHeight === convInfo.filterWidth && convInfo.inChannels === convInfo.outChannels && convInfo.filterHeight === 3 && convInfo.inChannels % 4 === 0) {
-    program = new DepthwiseConv2D3x3Program(convInfo);
-  } else {
-    program = new DepthwiseConv2DProgram2(convInfo);
-  }
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, $dilations, pad3, dimRoundingMode, true);
   const dimensions = [
     { type: "int32", data: [convInfo.padInfo.top, convInfo.padInfo.left] },
     { type: "int32", data: [convInfo.strideHeight, convInfo.strideWidth] },
     { type: "int32", data: [convInfo.dilationHeight, convInfo.dilationWidth] },
     { type: "int32", data: [convInfo.inHeight, convInfo.inWidth] }
   ];
+  let program;
+  if (convInfo.batchSize === 1 && convInfo.inHeight === convInfo.outHeight && convInfo.inWidth === convInfo.outWidth && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && convInfo.filterHeight === convInfo.filterWidth && convInfo.inChannels === convInfo.outChannels && convInfo.filterHeight === 3 && convInfo.inChannels % 4 === 0) {
+    program = new DepthwiseConv2D3x3Program(convInfo);
+  } else {
+    program = new DepthwiseConv2DProgram2(convInfo);
+    dimensions.push({ type: "int32", data: [convInfo.filterHeight] }, { type: "int32", data: [convInfo.filterWidth] }, { type: "int32", data: [convInfo.outChannels / convInfo.inChannels] });
+  }
   return backend22.runWebGPUProgram(program, [x2, filter], x2.dtype, dimensions);
 }
 var depthwiseConv2dNativeConfig3 = {
@@ -92364,31 +92587,27 @@ var multiplyConfig3 = {
   kernelFunc: multiplyKernelFunc
 };
 var ReduceProgram2 = class {
-  constructor(reduceInfo, reduceType, outputDtype) {
+  constructor(reduceInfo, reduceType) {
+    this.workGroupSize = [64, 1, 1];
     this.variableNames = ["x"];
     this.uniforms = "reduceSize : i32;";
+    this.size = true;
     this.inputShape = [reduceInfo.batchSize, reduceInfo.inSize];
     const [outputShape] = backend_util_exports.computeOutAndReduceShapes(this.inputShape, [1]);
     this.outputShape = outputShape.length === 0 ? [1] : outputShape;
-    this.reductionFactor = 2;
-    const xMaxThreads = 256;
-    const xThreads = Math.min(Math.ceil(reduceInfo.inSize / this.reductionFactor), xMaxThreads);
-    this.workGroupSize = [xThreads, 1, 1];
-    this.dispatchLayout = { x: [], y: this.outputShape.map((d2, i2) => i2) };
-    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
+    this.dispatchLayout = flatDispatchLayout(this.outputShape);
+    this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, [1, 1, 1]);
     this.reduceType = reduceType;
-    this.shaderKey = `reduce_${reduceType}_${outputDtype}`;
+    this.shaderKey = `reduce_${reduceType}`;
   }
   getUserCode() {
-    const reduceInSharedMemory = this.workGroupSize[0] > 1;
     let reduceOp = ``;
     let initValue = "0.0";
     if (this.reduceType === "min" || this.reduceType === "max") {
       reduceOp = `
          if (isNanCustom(candidate)) {
           bestValue = uniforms.NAN;
-         } elseif (candidate ${this.reduceType === "min" ? "<" : ">"}
-           bestValue)
+         } elseif (!isNanCustom(bestValue) && candidate ${this.reduceType === "min" ? "<" : ">"} bestValue)
            {  bestValue = candidate; }`;
       initValue = "f32(x.numbers[offset])";
     } else if (this.reduceType === "sum" || this.reduceType === "mean") {
@@ -92397,57 +92616,51 @@ var ReduceProgram2 = class {
       reduceOp = " bestValue = bestValue * candidate; ";
       initValue = "1.0";
     }
-    const outputSnippet = this.reduceType === "mean" ? `setOutputFlat(flatOutputIndex, bestValue / f32(uniforms.reduceSize));` : `setOutputFlat(flatOutputIndex, bestValue);`;
+    const outputSnippet = this.reduceType === "mean" ? `setOutputFlat(outputIndex, bestValue / f32(uniforms.reduceSize));` : `setOutputFlat(outputIndex, bestValue);`;
     const sharedMemorySnippet = `
          var<workgroup> xBestValues : array<f32, ${this.workGroupSize[0]}>;
        `;
-    const sharedMemoryReduceSnippet = `
-       xBestValues[localId.x] = bestValue;
-       ${this.reduceType === "sum" || this.reduceType === "mean" || this.reduceType === "prod" ? `bestValue = ${initValue};` : " "}
-       var currentSize = WorkGroupSize;
-       for(; currentSize > 1;) {
-         workgroupBarrier();
-         for (var w = 0; w < ${this.reductionFactor}; w = w + 1) {
-           let i = i32(localId.x) * ${this.reductionFactor} + w;
-           if (i < currentSize) {
-             let candidate = xBestValues[i];
-             ${reduceOp}
-           }
-         }
-         workgroupBarrier();
-         xBestValues[localId.x] = bestValue;
-         currentSize = DIV_CEIL(currentSize, ${this.reductionFactor});
-         ${this.reduceType === "sum" || this.reduceType === "mean" || this.reduceType === "prod" ? `if(currentSize > 1) { bestValue = ${initValue}; }` : ""}
-       }
-       if (localId.x == 0u) {
-         ${outputSnippet}
-       }
-     `;
     const userCode = `
-       fn DIV_CEIL(a : i32, b : i32) -> i32 {
-        return ((a - 1) / b + 1);
+       fn DIV_CEIL(a : u32, b : u32) -> u32 {
+        return ((a - 1u) / b + 1u);
        }
-       let WorkGroupSize = ${this.workGroupSize[0]};
-       ${reduceInSharedMemory ? sharedMemorySnippet : ""}
-       fn getOffset(globalId : vec3<u32>) -> i32 {
-         let outputCoords = getOutputCoordsWithNonFlatDispatchLayout(globalId);
+
+       ${sharedMemorySnippet}
+       fn getOffset(outputIndex : i32) -> i32 {
+         let outputCoords = getCoordsFromFlatIndex(outputIndex);
          let offset = ${this.outputShape.length === 1 ? "outputCoords" : "outputCoords[0]"} * uniforms.reduceSize;
-         return offset;
+          return offset;
        }
-       ${getNonFlatDispatchLayoutMainHeaderString()} {
-         let offset = getOffset(globalId);
+       ${getMainHeaderAndGlobalIndexString()}
+         let outputIndex = index / i32(workGroupSizeX);
+         let offset = getOffset(outputIndex);
          var bestValue = ${initValue};
          let Length = uniforms.reduceSize;
-         let WorkPerThread = DIV_CEIL(Length, WorkGroupSize);
-         for (var w = 0; w < WorkPerThread; w = w + 1) {
-           let i = i32(globalId.x) * WorkPerThread + w;
-           if (i < Length) {
-             let candidate = f32(x.numbers[offset + i]);
-             ${reduceOp}
-           }
+         let WorkPerThread = DIV_CEIL(u32(Length), workGroupSizeX);
+         for (var k = i32(localId.x); k < Length && outputIndex < uniforms.size;
+             k = k + i32(workGroupSizeX)) {
+           let candidate = f32(x.numbers[offset + k]);
+           ${reduceOp}
          }
-         let flatOutputIndex = i32(globalId.y);
-         ${reduceInSharedMemory ? sharedMemoryReduceSnippet : outputSnippet}
+         xBestValues[localId.x] = bestValue;
+         workgroupBarrier();
+
+         var reduceSize = min(u32(Length), workGroupSizeX);
+         for (var currentSize = reduceSize / 2u; reduceSize > 1u;
+             currentSize = reduceSize / 2u) {
+           let interval = DIV_CEIL(reduceSize, 2u);
+           if (localId.x < currentSize) {
+            let candidate = xBestValues[localId.x + interval];
+            ${reduceOp}
+            xBestValues[localId.x] = bestValue;
+           }
+           reduceSize = interval;
+           workgroupBarrier();
+         }
+
+         if (localId.x == 0u && outputIndex < uniforms.size) {
+          ${outputSnippet}
+        }
        }
      `;
     return userCode;
@@ -92495,7 +92708,7 @@ function reduce2(x2, axis, keepDims, reduceType, backend22) {
     const uniformData = [
       { type: "int32", data: [inSize] }
     ];
-    const program = new ReduceProgram2(reduceInfo, reduceType, dtype);
+    const program = new ReduceProgram2(reduceInfo, reduceType);
     const reduced = backend22.runWebGPUProgram(program, [input2], dtype, uniformData);
     toDispose.push(reduced);
     res2 = reshape5({ inputs: { x: reduced }, attrs: { shape: resOutShape }, backend: backend22 });
@@ -92697,10 +92910,10 @@ var flipLeftRightConfig3 = {
   kernelName: FlipLeftRight,
   backendName: "webgpu",
   kernelFunc: ({ inputs, backend: backend22 }) => {
-    const { image: image32 } = inputs;
+    const { image: image22 } = inputs;
     const webgpuBackend = backend22;
-    const program = new FlipLeftRightProgram2(image32.shape);
-    const output = webgpuBackend.runWebGPUProgram(program, [image32], image32.dtype);
+    const program = new FlipLeftRightProgram2(image22.shape);
+    const output = webgpuBackend.runWebGPUProgram(program, [image22], image22.dtype);
     return output;
   }
 };
@@ -92729,8 +92942,12 @@ var makeBindGroup = (device, bindGroupLayout, inputs, output, uniforms) => {
 var compileProgram2 = (device, program, pipelineLayout, inputsData, output, isFromPixel = false) => {
   const outputData = { dtype: output.dtype, shape: output.shape };
   const source = makeShader2(inputsData, outputData, program, isFromPixel);
-  const module = device.createShaderModule({ code: source });
-  const pipeline = device.createComputePipeline({ layout: pipelineLayout, compute: { module, entryPoint: "main" } });
+  const module = device.createShaderModule({ code: source, label: program.constructor.name });
+  const pipeline = device.createComputePipeline({
+    layout: pipelineLayout,
+    compute: { module, entryPoint: "main" },
+    label: program.constructor.name
+  });
   return pipeline;
 };
 function makeShaderKey2(program, shapes, types, broadcastDimsKey = "", inputShapesEqualsOutShape = "") {
@@ -92741,7 +92958,7 @@ function fromPixelsExternalImage(args) {
   const { externalImage, backend: backend22, attrs, outShape, useImport } = args;
   const { numChannels } = attrs;
   const size2 = util_exports.sizeFromShape(outShape);
-  const strides = util_exports.computeStrides(outShape);
+  const strides2 = util_exports.computeStrides(outShape);
   const output = backend22.makeTensorInfo(outShape, "int32");
   const program = backend22.getFromPixelsProgram(useImport ? "import" : "copyExternal");
   program.updateOutputShape(outShape);
@@ -92760,7 +92977,7 @@ function fromPixelsExternalImage(args) {
   }
   const info = backend22.tensorMap.get(output.dataId);
   info.bufferInfo.buffer = backend22.acquireBuffer(info.bufferInfo.byteSize);
-  const uniformData = [size2, numChannels, ...strides, ...program.dispatch];
+  const uniformData = [size2, numChannels, ...strides2, ...program.dispatch];
   program.setUniform(backend22.device, uniformData);
   let externalResource;
   if (useImport) {
@@ -92920,7 +93137,7 @@ function fusedConv2d2(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter, bias, preluActivationWeights } = inputs;
   const {
-    strides,
+    strides: strides2,
     pad: pad3,
     dataFormat,
     dilations,
@@ -92929,7 +93146,7 @@ function fusedConv2d2(args) {
     leakyreluAlpha
   } = attrs;
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, dilations, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, dilations, pad3, dimRoundingMode, false, $dataFormat);
   const hasBias = bias != null;
   const hasPreluActivationWeights = preluActivationWeights != null;
   let program;
@@ -92984,13 +93201,13 @@ var fusedConv2DConfig3 = {
 function fusedDepthwiseConv2D3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2, filter, bias, preluActivationWeights } = inputs;
-  const { strides, pad: pad3, dilations, dimRoundingMode, activation: activation2 } = attrs;
+  const { strides: strides2, pad: pad3, dilations, dimRoundingMode, activation: activation2 } = attrs;
   let $dilations = dilations;
   if ($dilations == null) {
     $dilations = [1, 1];
   }
-  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides, $dilations), () => `Error in depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides} and dilations '${$dilations}'`);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, $dilations, pad3, dimRoundingMode, true);
+  util_exports.assert(backend_util_exports.eitherStridesOrDilationsAreOne(strides2, $dilations), () => `Error in depthwiseConv2d: Either strides or dilations must be 1. Got strides ${strides2} and dilations '${$dilations}'`);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, $dilations, pad3, dimRoundingMode, true);
   const programInputs = [x2, filter];
   const hasBias = bias != null;
   const hasPreluActivationWeights = preluActivationWeights != null;
@@ -93000,18 +93217,19 @@ function fusedDepthwiseConv2D3(args) {
   if (hasPreluActivationWeights) {
     programInputs.push(preluActivationWeights);
   }
-  let program;
-  if (convInfo.batchSize === 1 && convInfo.inHeight === convInfo.outHeight && convInfo.inWidth === convInfo.outWidth && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && convInfo.filterHeight === convInfo.filterWidth && convInfo.inChannels === convInfo.outChannels && convInfo.filterHeight === 3 && convInfo.inChannels % 4 === 0) {
-    program = new DepthwiseConv2D3x3Program(convInfo, hasBias, activation2, hasPreluActivationWeights);
-  } else {
-    program = new DepthwiseConv2DProgram2(convInfo, hasBias, activation2, hasPreluActivationWeights);
-  }
   const dimensions = [
     { type: "int32", data: [convInfo.padInfo.top, convInfo.padInfo.left] },
     { type: "int32", data: [convInfo.strideHeight, convInfo.strideWidth] },
     { type: "int32", data: [convInfo.dilationHeight, convInfo.dilationWidth] },
     { type: "int32", data: [convInfo.inHeight, convInfo.inWidth] }
   ];
+  let program;
+  if (convInfo.batchSize === 1 && convInfo.inHeight === convInfo.outHeight && convInfo.inWidth === convInfo.outWidth && convInfo.strideHeight === 1 && convInfo.strideWidth === 1 && convInfo.filterHeight === convInfo.filterWidth && convInfo.inChannels === convInfo.outChannels && convInfo.filterHeight === 3 && convInfo.inChannels % 4 === 0) {
+    program = new DepthwiseConv2D3x3Program(convInfo, hasBias, activation2, hasPreluActivationWeights);
+  } else {
+    program = new DepthwiseConv2DProgram2(convInfo, hasBias, activation2, hasPreluActivationWeights);
+    dimensions.push({ type: "int32", data: [convInfo.filterHeight] }, { type: "int32", data: [convInfo.filterWidth] }, { type: "int32", data: [convInfo.outChannels / convInfo.inChannels] });
+  }
   const result = backend22.runWebGPUProgram(program, programInputs, "float32", dimensions);
   return result;
 }
@@ -93063,7 +93281,7 @@ function gatherNd3(args) {
   const indicesShape = indices.shape;
   const sliceRank = indicesShape[indicesShape.length - 1];
   const paramsSize = util_exports.sizeFromShape(params.shape);
-  const [resultShape, numSlices, sliceSize, strides] = backend_util_exports.prepareAndValidate(params, indices);
+  const [resultShape, numSlices, sliceSize, strides2] = backend_util_exports.prepareAndValidate(params, indices);
   const flattenIndices = reshape5({ inputs: { x: indices }, backend: backend22, attrs: { shape: [numSlices, sliceRank] } });
   const flattenX = reshape5({
     inputs: { x: params },
@@ -93073,11 +93291,11 @@ function gatherNd3(args) {
   if (backend22.shouldExecuteOnCPU([params, indices]) || params.dtype === "string") {
     const indicesData = backend22.readSync(indices.dataId);
     const paramsBuf = backend22.bufferSync(params);
-    const outValue = gatherNdImplCPU2(indicesData, paramsBuf, params.dtype, numSlices, sliceRank, sliceSize, strides, params.shape, paramsSize);
+    const outValue = gatherNdImplCPU2(indicesData, paramsBuf, params.dtype, numSlices, sliceRank, sliceSize, strides2, params.shape, paramsSize);
     return backend22.makeTensorInfo(resultShape, params.dtype, outValue.values);
   }
   const program = new GatherNDProgram2(sliceRank, [numSlices, sliceSize]);
-  const uniformData = [{ type: "int32", data: [sliceRank] }, { type: "int32", data: strides }];
+  const uniformData = [{ type: "int32", data: [sliceRank] }, { type: "int32", data: strides2 }];
   const res2 = backend22.runWebGPUProgram(program, [flattenX, flattenIndices], flattenX.dtype, uniformData);
   const reshaped = reshape5({ inputs: { x: res2 }, backend: backend22, attrs: { shape: resultShape } });
   backend22.disposeData(flattenIndices.dataId);
@@ -93219,11 +93437,11 @@ var lessEqualConfig3 = {
   backendName: "webgpu",
   kernelFunc: lessEqual4
 };
-var log7 = unaryKernelFunc3({ opType: UnaryOpType.LOG, cpuKernelImpl: logImplCPU2 });
+var log5 = unaryKernelFunc3({ opType: UnaryOpType.LOG, cpuKernelImpl: logImplCPU2 });
 var logConfig3 = {
   kernelName: Log,
   backendName: "webgpu",
-  kernelFunc: log7
+  kernelFunc: log5
 };
 var logicalAnd4 = binaryKernelFunc3({
   opSnippet: BinaryOpType.LOGICAL_AND,
@@ -93263,9 +93481,9 @@ var maximumConfig3 = {
 function maxPool4(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { x: x2 } = inputs;
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
   const dilations = 1;
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, dilations, pad3, dimRoundingMode);
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, dilations, pad3, dimRoundingMode);
   let program;
   const dimensions = [];
   if (convInfo.filterHeight === 1 && convInfo.filterWidth === 1) {
@@ -93644,21 +93862,32 @@ var relu6Config3 = {
   backendName: "webgpu",
   kernelFunc: relu64
 };
+function leakyRelu4(args) {
+  const { inputs, backend: backend22, attrs } = args;
+  const { x: x2 } = inputs;
+  const { alpha: alpha2 } = attrs;
+  const uniformData = [{ type: "float32", data: [alpha2] }];
+  const program = new UnaryOpProgram2(x2.shape, UnaryOpType.LEAKYRELU);
+  program.uniforms = "alpha : f32;";
+  return backend22.runWebGPUProgram(program, [x2], "float32", uniformData);
+}
+var leakyReluConfig3 = {
+  kernelName: LeakyRelu,
+  backendName: "webgpu",
+  kernelFunc: leakyRelu4
+};
 var ResizeBilinearProgram2 = class {
-  constructor(inputShape, newHeight, newWidth, alignCorners, halfPixelCenters) {
+  constructor(inputShape, newHeight, newWidth) {
     this.variableNames = ["x"];
+    this.uniforms = "adjustHeightWidth : vec2<f32>; halfPixelCenters : f32;";
     this.workGroupSize = [64, 1, 1];
     this.size = true;
     this.outputShape = [inputShape[0], newHeight, newWidth, inputShape[3]];
     this.dispatchLayout = flatDispatchLayout(this.outputShape);
     this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
-    this.alignCorners = alignCorners;
-    this.halfPixelCenters = halfPixelCenters;
-    this.shaderKey = `resizeBilinear_${alignCorners}_${halfPixelCenters}_${this.outputShape[1] > 1}_${this.outputShape[2] > 1}`;
+    this.shaderKey = `resizeBilinear`;
   }
   getUserCode() {
-    const adjustHeight = this.alignCorners && this.outputShape[1] > 1;
-    const adjustWidth = this.alignCorners && this.outputShape[2] > 1;
     const userCode = `
       ${getMainHeaderAndGlobalIndexString()}
         if (index < uniforms.size) {
@@ -93668,18 +93897,20 @@ var ResizeBilinearProgram2 = class {
           let rc = coords.yz;
 
           let effectiveInSize = vec2<f32>(
-            ${adjustHeight ? `f32(uniforms.xShape.y) - 1.0` : `f32(uniforms.xShape.y)`},
-            ${adjustWidth ? `f32(uniforms.xShape.z) - 1.0` : `f32(uniforms.xShape.z)`});
+            f32(uniforms.xShape.y) - uniforms.adjustHeightWidth[0],
+            f32(uniforms.xShape.z) - uniforms.adjustHeightWidth[1]);
 
           let effectiveOutSize = vec2<f32>(
-            ${adjustHeight ? `f32(uniforms.outShape.y) - 1.0` : `f32(uniforms.outShape.y)`},
-            ${adjustWidth ? `f32(uniforms.outShape.z) - 1.0` : `f32(uniforms.outShape.z)`});
+            f32(uniforms.outShape.y) - uniforms.adjustHeightWidth[0],
+            f32(uniforms.outShape.z) - uniforms.adjustHeightWidth[1]);
 
           let effectiveInputOverOutputRatioRC =
               effectiveInSize / effectiveOutSize;
 
           // Fractional source index
-          let sourceFracIndexRC = ${this.halfPixelCenters ? "(vec2<f32>(rc) + vec2<f32>(0.5)) * effectiveInputOverOutputRatioRC - vec2<f32>(0.5)" : "vec2<f32>(rc) * effectiveInputOverOutputRatioRC"};
+          let sourceFracIndexRC =
+            (vec2<f32>(rc) + vec2<f32>(uniforms.halfPixelCenters)) *
+            effectiveInputOverOutputRatioRC - vec2<f32>(uniforms.halfPixelCenters);
 
           // Compute the four integer indices.
           let sourceFloorRC = vec2<i32>(sourceFracIndexRC);
@@ -93709,8 +93940,15 @@ function resizeBilinear4(args) {
   const { images } = inputs;
   const { alignCorners, size: size2, halfPixelCenters } = attrs;
   const [newHeight, newWidth] = size2;
-  const program = new ResizeBilinearProgram2(images.shape, newHeight, newWidth, alignCorners, halfPixelCenters);
-  return backend22.runWebGPUProgram(program, [images], "float32");
+  const adjustHeight = alignCorners && newHeight > 1 ? 1 : 0;
+  const adjustWidth = alignCorners && newWidth > 1 ? 1 : 0;
+  const halfPixelCentersValue = halfPixelCenters ? 0.5 : 0;
+  const uniformData = [
+    { type: "float32", data: [adjustHeight, adjustWidth] },
+    { type: "float32", data: [halfPixelCentersValue] }
+  ];
+  const program = new ResizeBilinearProgram2(images.shape, newHeight, newWidth);
+  return backend22.runWebGPUProgram(program, [images], "float32", uniformData);
 }
 var resizeBilinearConfig3 = {
   kernelName: ResizeBilinear,
@@ -93718,27 +93956,24 @@ var resizeBilinearConfig3 = {
   kernelFunc: resizeBilinear4
 };
 var ResizeNearestNeighborProgram2 = class {
-  constructor(inputShape, newHeight, newWidth, alignCorners, halfPixelCenters) {
+  constructor(inputShape, newHeight, newWidth, halfPixelCenters) {
     this.variableNames = ["x"];
+    this.uniforms = "adjustHeightWidth : vec2<f32>; roundBase : f32;";
     this.workGroupSize = [64, 1, 1];
     this.size = true;
     this.outputShape = [inputShape[0], newHeight, newWidth, inputShape[3]];
     this.dispatchLayout = flatDispatchLayout(this.outputShape);
     this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize);
-    this.alignCorners = alignCorners;
     this.halfPixelCenters = halfPixelCenters;
-    this.shaderKey = `resizeNearest_${alignCorners}_${this.outputShape[1] > 1}_${this.outputShape[2] > 1}_${halfPixelCenters}`;
+    this.shaderKey = `resizeNearest_${halfPixelCenters}`;
   }
   getUserCode() {
-    const roundBase = this.alignCorners ? "0.5" : "0.0";
     let sourceFracIndexRC;
     if (this.halfPixelCenters) {
       sourceFracIndexRC = `max((vec2<f32>(rc) + vec2<f32>(0.5)) * effectiveInputOverOutputRatioRC, vec2<f32>(0.0))`;
     } else {
       sourceFracIndexRC = `vec2<f32>(rc) * effectiveInputOverOutputRatioRC`;
     }
-    const adjustHeight = this.alignCorners && this.outputShape[1] > 1;
-    const adjustWidth = this.alignCorners && this.outputShape[2] > 1;
     const userCode = `
       ${getMainHeaderAndGlobalIndexString()}
         if (index < uniforms.size) {
@@ -93748,12 +93983,12 @@ var ResizeNearestNeighborProgram2 = class {
           let rc = coords.yz;
 
           let effectiveInSize = vec2<f32>(
-            ${adjustHeight ? `f32(uniforms.xShape.y) - 1.0` : `f32(uniforms.xShape.y)`},
-            ${adjustWidth ? `f32(uniforms.xShape.z) - 1.0` : `f32(uniforms.xShape.z)`});
+            f32(uniforms.xShape.y) - uniforms.adjustHeightWidth[0],
+            f32(uniforms.xShape.z) - uniforms.adjustHeightWidth[1]);
 
           let effectiveOutSize = vec2<f32>(
-            ${adjustHeight ? `f32(uniforms.outShape.y) - 1.0` : `f32(uniforms.outShape.y)`},
-            ${adjustWidth ? `f32(uniforms.outShape.z) - 1.0` : `f32(uniforms.outShape.z)`});
+            f32(uniforms.outShape.y) - uniforms.adjustHeightWidth[0],
+            f32(uniforms.outShape.z) - uniforms.adjustHeightWidth[1]);
 
           let effectiveInputOverOutputRatioRC =
               effectiveInSize / effectiveOutSize;
@@ -93764,7 +93999,7 @@ var ResizeNearestNeighborProgram2 = class {
           // Compute the coordinators of nearest neighbor point.
           let inputShapeRC = vec2<f32>(f32(uniforms.xShape.y), f32(uniforms.xShape.z));
           let sourceNearestRC = vec2<i32>(
-            min(inputShapeRC - 1.0, floor(sourceFracIndexRC + ${roundBase})));
+            min(inputShapeRC - 1.0, floor(sourceFracIndexRC + uniforms.roundBase)));
           let newValue = getX(b, sourceNearestRC.x, sourceNearestRC.y, d);
 
           setOutputFlat(index, newValue);
@@ -93779,8 +94014,15 @@ function resizeNearestNeighbor4(args) {
   const { images } = inputs;
   const { alignCorners, halfPixelCenters, size: size2 } = attrs;
   const [newHeight, newWidth] = size2;
-  const program = new ResizeNearestNeighborProgram2(images.shape, newHeight, newWidth, alignCorners, halfPixelCenters);
-  return backend22.runWebGPUProgram(program, [images], images.dtype);
+  const adjustHeight = alignCorners && newHeight > 1 ? 1 : 0;
+  const adjustWidth = alignCorners && newWidth > 1 ? 1 : 0;
+  const roundBase = alignCorners ? 0.5 : 0;
+  const uniformData = [
+    { type: "float32", data: [adjustHeight, adjustWidth] },
+    { type: "float32", data: [roundBase] }
+  ];
+  const program = new ResizeNearestNeighborProgram2(images.shape, newHeight, newWidth, halfPixelCenters);
+  return backend22.runWebGPUProgram(program, [images], images.dtype, uniformData);
 }
 var resizeNearestNeighborConfig3 = {
   kernelName: ResizeNearestNeighbor,
@@ -93840,11 +94082,11 @@ var rotateWithOffsetConfig3 = {
   kernelName: RotateWithOffset,
   backendName: "webgpu",
   kernelFunc: ({ inputs, attrs, backend: backend22 }) => {
-    const { image: image32 } = inputs;
+    const { image: image22 } = inputs;
     const { radians, fillValue, center } = attrs;
     const webgpuBackend = backend22;
-    const program = new RotateProgram2(image32.shape, fillValue);
-    const [centerX, centerY] = backend_util_exports.getImageCenter(center, image32.shape[1], image32.shape[2]);
+    const program = new RotateProgram2(image22.shape, fillValue);
+    const [centerX, centerY] = backend_util_exports.getImageCenter(center, image22.shape[1], image22.shape[2]);
     const uniformData = [
       { type: "float32", data: [centerX] },
       { type: "float32", data: [centerY] },
@@ -93856,7 +94098,7 @@ var rotateWithOffsetConfig3 = {
     } else {
       uniformData.push({ type: "float32", data: fillValue });
     }
-    const output = webgpuBackend.runWebGPUProgram(program, [image32], image32.dtype, uniformData);
+    const output = webgpuBackend.runWebGPUProgram(program, [image22], image22.dtype, uniformData);
     return output;
   }
 };
@@ -93867,7 +94109,7 @@ var rsqrtConfig3 = {
   kernelFunc: rsqrt4
 };
 var ScatterOptimizedProgram = class {
-  constructor(flattenXShape, sliceDim, indicesRank, updatesRank, strides, shape, outputDtype) {
+  constructor(flattenXShape, sliceDim, indicesRank, updatesRank, strides2, shape, outputDtype) {
     this.variableNames = ["updates", "indices"];
     this.workGroupSize = [64, 1, 1];
     this.atomic = true;
@@ -93877,7 +94119,7 @@ var ScatterOptimizedProgram = class {
     this.dispatch = computeDispatch(this.dispatchLayout, flattenXShape, this.workGroupSize);
     this.sliceDimGreaterThanOne = sliceDim > 1;
     this.shaderKey = `scatter_${indicesRank}_${updatesRank}_${this.sliceDimGreaterThanOne}_${outputDtype}`;
-    const stridesType = getCoordsDataType2(strides.length);
+    const stridesType = getCoordsDataType2(strides2.length);
     this.uniforms = `sliceDim : i32; strides: ${stridesType}; size: i32;`;
     this.updatesRank = updatesRank;
     this.indicesRank = indicesRank;
@@ -93914,7 +94156,7 @@ var ScatterOptimizedProgram = class {
       `;
     }
     const updatesSnippet = `getUpdates(${updatesString})`;
-    const atomicAddSnippet = this.type === "int32" ? `ignore(atomicAdd(&(result.numbers[flatIndex]), i32(updateValue)));` : `
+    const atomicAddSnippet = this.type === "int32" ? `atomicAdd(&(result.numbers[flatIndex]), i32(updateValue));` : `
      var assumed = atomicLoad(&(result.numbers[flatIndex]));
      var success = 0;
      for (; success == 0;) {
@@ -93950,7 +94192,7 @@ function scatterNd3(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { indices, updates } = inputs;
   const { shape } = attrs;
-  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(updates, indices, shape);
+  const { sliceRank, numUpdates, sliceSize, strides: strides2, outputSize: outputSize2 } = backend_util_exports.calculateShapes(updates, indices, shape);
   const flattenShape = [outputSize2 / sliceSize, sliceSize];
   if (outputSize2 === 0) {
     return backend22.makeTensorInfo(shape, indices.dtype);
@@ -93962,10 +94204,10 @@ function scatterNd3(args) {
   const size2 = util_exports.sizeFromShape(flattenX.shape);
   const uniformData = [
     { type: "int32", data: [sliceRank] },
-    { type: "int32", data: strides },
+    { type: "int32", data: strides2 },
     { type: "int32", data: [size2] }
   ];
-  const program = new ScatterOptimizedProgram(flattenX.shape, sliceRank, flattenIndices.shape.length, flattenX.shape.length, strides, flattenShape, type);
+  const program = new ScatterOptimizedProgram(flattenX.shape, sliceRank, flattenIndices.shape.length, flattenX.shape.length, strides2, flattenShape, type);
   const res2 = backend22.runWebGPUProgram(program, [flattenX, flattenIndices], type, uniformData, output);
   const reshaped = reshape5({ inputs: { x: res2 }, backend: backend22, attrs: { shape } });
   backend22.disposeData(flattenIndices.dataId);
@@ -94136,7 +94378,7 @@ var spaceToBatchNDConfig3 = {
   kernelFunc: spaceToBatchND4
 };
 var ScatterProgram2 = class {
-  constructor(updateSize, sliceDim, indicesRank, updatesRank, strides, shape, summingDupeIndex = true) {
+  constructor(updateSize, sliceDim, indicesRank, updatesRank, strides2, shape, summingDupeIndex = true) {
     this.variableNames = ["updates", "indices", "defaultValue"];
     this.workGroupSize = [64, 1, 1];
     this.workPerThread = 4;
@@ -94146,7 +94388,7 @@ var ScatterProgram2 = class {
     this.dispatch = computeDispatch(this.dispatchLayout, this.outputShape, this.workGroupSize, [this.workPerThread, 1, 1]);
     const sliceDimGreaterThanOne = sliceDim > 1;
     this.shaderKey = `scatter_${indicesRank}_${updatesRank}_${sliceDimGreaterThanOne}`;
-    const stridesType = getCoordsDataType2(strides.length);
+    const stridesType = getCoordsDataType2(strides2.length);
     this.uniforms = `updateSize : i32; sliceDim : i32; strides: ${stridesType};`;
     let indicesString = "";
     if (indicesRank === 1) {
@@ -94203,14 +94445,14 @@ function sparseToDense4(args) {
   const { inputs, backend: backend22, attrs } = args;
   const { sparseIndices, sparseValues, defaultValue } = inputs;
   const { outputShape } = attrs;
-  const { sliceRank, numUpdates, strides, outputSize: outputSize2 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
+  const { sliceRank, numUpdates, strides: strides2, outputSize: outputSize2 } = backend_util_exports.calculateShapes(sparseValues, sparseIndices, outputShape);
   const sumDupeIndices = false;
   const uniformData = [
     { type: "int32", data: [numUpdates] },
     { type: "int32", data: [sliceRank] },
-    { type: "int32", data: strides }
+    { type: "int32", data: strides2 }
   ];
-  const program = new ScatterProgram2(numUpdates, sliceRank, sparseIndices.shape.length, sparseValues.shape.length, strides, [outputSize2, 1], sumDupeIndices);
+  const program = new ScatterProgram2(numUpdates, sliceRank, sparseIndices.shape.length, sparseValues.shape.length, strides2, [outputSize2, 1], sumDupeIndices);
   const res2 = backend22.runWebGPUProgram(program, [sparseValues, sparseIndices, defaultValue], sparseValues.dtype, uniformData);
   const reshaped = reshape5({ inputs: { x: res2 }, backend: backend22, attrs: { shape: outputShape } });
   backend22.disposeData(res2.dataId);
@@ -94309,7 +94551,7 @@ function stridedSlice4(args) {
   const {
     begin,
     end,
-    strides,
+    strides: strides2,
     beginMask,
     endMask,
     ellipsisMask,
@@ -94325,7 +94567,7 @@ function stridedSlice4(args) {
     begin: $begin,
     end: $end,
     strides: $strides
-  } = slice_util_exports.sliceInfo(x2.shape, begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask);
+  } = slice_util_exports.sliceInfo(x2.shape, begin, end, strides2, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask);
   let result;
   if (isIdentity) {
     result = reshape5({ inputs: { x: x2 }, backend: backend22, attrs: { shape: finalShape } });
@@ -94847,9 +95089,9 @@ var TransformProgram2 = class {
 };
 function transform4(args) {
   const { inputs, backend: backend22, attrs } = args;
-  const { image: image32, transforms } = inputs;
+  const { image: image22, transforms } = inputs;
   const { interpolation, fillMode, fillValue, outputShape } = attrs;
-  const [batch, imageHeight, imageWidth, numChannels] = image32.shape;
+  const [batch, imageHeight, imageWidth, numChannels] = image22.shape;
   const [outHeight, outWidth] = outputShape != null ? outputShape : [imageHeight, imageWidth];
   const outShape = [
     batch,
@@ -94882,7 +95124,7 @@ function transform4(args) {
     { type: "int32", data: [fillModeId] },
     { type: "float32", data: [fillValue] }
   ];
-  return backend22.runWebGPUProgram(program, [image32, transforms], "float32", uniformData);
+  return backend22.runWebGPUProgram(program, [image22, transforms], "float32", uniformData);
 }
 var transformConfig3 = {
   kernelName: Transform,
@@ -94996,6 +95238,7 @@ var kernelConfigs3 = [
   realDivConfig3,
   reluConfig3,
   relu6Config3,
+  leakyReluConfig3,
   reshapeConfig3,
   resizeBilinearConfig3,
   resizeNearestNeighborConfig3,
@@ -95725,8 +95968,8 @@ var _WebGPUBackend = class extends KernelBackend {
     bufferShapes.map((d2) => {
       uniformsWithType.push({ type: uniformsType, data: d2 });
     });
-    const strides = util_exports.computeStrides(output.shape);
-    uniformsWithType.push({ type: uniformsType, data: strides });
+    const strides2 = util_exports.computeStrides(output.shape);
+    uniformsWithType.push({ type: uniformsType, data: strides2 });
     if (program.size) {
       const size2 = util_exports.sizeFromShape(program.outputShape);
       uniformsWithType.push({ type: uniformsType, data: [program.isVec4 ? size2 / 4 : size2] });
@@ -95907,16 +96150,15 @@ if (device_util_exports.isBrowser() && isWebGPUSupported()) {
     return new WebGPUBackend(device, supportTimeQuery);
   }, 3);
 }
-var CppDType;
-(function(CppDType2) {
+var CppDType = ((CppDType2) => {
   CppDType2[CppDType2["float32"] = 0] = "float32";
   CppDType2[CppDType2["int32"] = 1] = "int32";
   CppDType2[CppDType2["bool"] = 2] = "bool";
   CppDType2[CppDType2["string"] = 3] = "string";
   CppDType2[CppDType2["complex64"] = 4] = "complex64";
-})(CppDType || (CppDType = {}));
-var FusableActivation;
-(function(FusableActivation2) {
+  return CppDType2;
+})(CppDType || {});
+var FusableActivation = ((FusableActivation2) => {
   FusableActivation2[FusableActivation2["linear"] = 0] = "linear";
   FusableActivation2[FusableActivation2["relu"] = 1] = "relu";
   FusableActivation2[FusableActivation2["relu6"] = 2] = "relu6";
@@ -95924,7 +96166,8 @@ var FusableActivation;
   FusableActivation2[FusableActivation2["leakyrelu"] = 4] = "leakyrelu";
   FusableActivation2[FusableActivation2["sigmoid"] = 5] = "sigmoid";
   FusableActivation2[FusableActivation2["elu"] = 6] = "elu";
-})(FusableActivation || (FusableActivation = {}));
+  return FusableActivation2;
+})(FusableActivation || {});
 var wasmFusedMatMul;
 function setup(backend22) {
   wasmFusedMatMul = backend22.wasm.cwrap(_FusedMatMul, null, [
@@ -96033,20 +96276,8 @@ function createBinaryKernelConfig(kernelName, supportsFullBroadcast17, dtype) {
     const bShapeBytes = new Uint8Array(new Int32Array(b2.shape).buffer);
     const outId = backend22.dataIdMap.get(out.dataId).id;
     const kernelFunc4 = () => wasmFunc9(aId, aShapeBytes, a6.shape.length, bId, bShapeBytes, b2.shape.length, CppDType[a6.dtype], outId);
-    if (supportsFullBroadcast17 && a6.dtype === "float32") {
-      kernelFunc4();
-      return out;
-    }
-    const aBroadcastDims = backend_util_exports.getBroadcastDims(a6.shape, newShape);
-    const bBroadcastDims = backend_util_exports.getBroadcastDims(b2.shape, newShape);
-    const loopsOverAllOfA = aBroadcastDims.every((v2, i2) => v2 === i2);
-    const loopsOverAllOfB = bBroadcastDims.every((v2, i2) => v2 === i2);
-    if (loopsOverAllOfA && loopsOverAllOfB) {
-      kernelFunc4();
-      return out;
-    } else {
-      throw new Error(`Broadcasting along outer dims is not yet supported for ${a6.dtype} ${kernelName}.`);
-    }
+    kernelFunc4();
+    return out;
   }
   return { kernelName, backendName: "wasm", setupFunc: setupFunc3, kernelFunc: kernelFunc3 };
 }
@@ -96337,8 +96568,8 @@ function avgPool5(args) {
   const { inputs, attrs, backend: backend22 } = args;
   const x2 = inputs.x;
   const xId = backend22.dataIdMap.get(x2.dataId).id;
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, 1, pad3, dimRoundingMode);
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, 1, pad3, dimRoundingMode);
   const filterHeight = convInfo.filterHeight;
   const filterWidth = convInfo.filterWidth;
   const padTop = convInfo.padInfo.top;
@@ -96681,9 +96912,9 @@ function conv2d6(args) {
   const { x: x2, filter } = inputs;
   const xId = backend22.dataIdMap.get(x2.dataId).id;
   const filterId = backend22.dataIdMap.get(filter.dataId).id;
-  const { strides, dilations, pad: pad3, dimRoundingMode, dataFormat } = attrs;
+  const { strides: strides2, dilations, pad: pad3, dimRoundingMode, dataFormat } = attrs;
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, dilations, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, dilations, pad3, dimRoundingMode, false, $dataFormat);
   const filterHeight = convInfo.filterHeight;
   const filterWidth = convInfo.filterWidth;
   const padTop = convInfo.padInfo.top;
@@ -96746,10 +96977,10 @@ function setup10(backend22) {
 function conv2DBackpropInput5(args) {
   const { backend: backend22, inputs, attrs } = args;
   const { dy, filter } = inputs;
-  const { strides, pad: pad3, dataFormat, dimRoundingMode, inputShape } = attrs;
+  const { strides: strides2, pad: pad3, dataFormat, dimRoundingMode, inputShape } = attrs;
   const dilations = 1;
   const $dataFormat = backend_util_exports.convertConv2DDataFormat(dataFormat);
-  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides, dilations, pad3, dimRoundingMode, false, $dataFormat);
+  const convInfo = backend_util_exports.computeConv2DInfo(inputShape, filter.shape, strides2, dilations, pad3, dimRoundingMode, false, $dataFormat);
   const {
     batchSize,
     filterHeight,
@@ -96792,11 +97023,11 @@ var conv2DBackpropInputConfig4 = {
 };
 var cosConfig4 = createUnaryKernelConfig(Cos);
 var coshConfig4 = createUnaryKernelConfig(Cosh);
-var InterpolationMethod;
-(function(InterpolationMethod2) {
+var InterpolationMethod = ((InterpolationMethod2) => {
   InterpolationMethod2[InterpolationMethod2["bilinear"] = 0] = "bilinear";
   InterpolationMethod2[InterpolationMethod2["nearest"] = 1] = "nearest";
-})(InterpolationMethod || (InterpolationMethod = {}));
+  return InterpolationMethod2;
+})(InterpolationMethod || {});
 var wasmCropAndResize;
 function setup11(backend22) {
   wasmCropAndResize = backend22.wasm.cwrap(CropAndResize, null, [
@@ -96815,14 +97046,14 @@ function setup11(backend22) {
 function cropAndResize5(args) {
   const { backend: backend22, inputs, attrs } = args;
   const { method, extrapolationValue, cropSize } = attrs;
-  const { image: image32, boxes, boxInd } = inputs;
+  const { image: image22, boxes, boxInd } = inputs;
   const numBoxes = boxes.shape[0];
   const [cropHeight, cropWidth] = cropSize;
-  const outShape = [numBoxes, cropHeight, cropWidth, image32.shape[3]];
-  let imagesData = backend22.dataIdMap.get(image32.dataId);
+  const outShape = [numBoxes, cropHeight, cropWidth, image22.shape[3]];
+  let imagesData = backend22.dataIdMap.get(image22.dataId);
   let castedData;
-  if (image32.dtype !== "float32") {
-    castedData = cast6({ backend: backend22, inputs: { x: image32 }, attrs: { dtype: "float32" } });
+  if (image22.dtype !== "float32") {
+    castedData = cast6({ backend: backend22, inputs: { x: image22 }, attrs: { dtype: "float32" } });
     imagesData = backend22.dataIdMap.get(castedData.dataId);
   }
   const imagesId = imagesData.id;
@@ -96830,7 +97061,7 @@ function cropAndResize5(args) {
   const boxIndId = backend22.dataIdMap.get(boxInd.dataId).id;
   const out = backend22.makeOutput(outShape, "float32");
   const outId = backend22.dataIdMap.get(out.dataId).id;
-  const imagesShapeBytes = new Uint8Array(new Int32Array(image32.shape).buffer);
+  const imagesShapeBytes = new Uint8Array(new Int32Array(image22.shape).buffer);
   wasmCropAndResize(imagesId, boxesId, boxIndId, numBoxes, imagesShapeBytes, cropHeight, cropWidth, InterpolationMethod[method], extrapolationValue, outId);
   if (castedData != null) {
     backend22.disposeData(castedData.dataId);
@@ -96959,9 +97190,9 @@ function depthwiseConv2d5(args) {
   const { x: x2, filter } = inputs;
   const xId = backend22.dataIdMap.get(x2.dataId).id;
   const filterId = backend22.dataIdMap.get(filter.dataId).id;
-  const { strides, dilations, pad: pad3, dimRoundingMode } = attrs;
+  const { strides: strides2, dilations, pad: pad3, dimRoundingMode } = attrs;
   const $dilations = dilations == null ? [1, 1] : dilations;
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, $dilations, pad3, dimRoundingMode, true);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, $dilations, pad3, dimRoundingMode, true);
   const filterHeight = convInfo.filterHeight;
   const filterWidth = convInfo.filterWidth;
   const padTop = convInfo.padInfo.top;
@@ -97037,11 +97268,11 @@ function setup15(backend22) {
 }
 function flipLeftRight2(args) {
   const { inputs, backend: backend22 } = args;
-  const { image: image32 } = inputs;
-  const out = backend22.makeOutput(image32.shape, image32.dtype);
-  const imageId = backend22.dataIdMap.get(image32.dataId).id;
+  const { image: image22 } = inputs;
+  const out = backend22.makeOutput(image22.shape, image22.dtype);
+  const imageId = backend22.dataIdMap.get(image22.dataId).id;
   const outId = backend22.dataIdMap.get(out.dataId).id;
-  const [batch, imageHeight, imageWidth, numChannels] = image32.shape;
+  const [batch, imageHeight, imageWidth, numChannels] = image22.shape;
   wasmFlipLeftRight(imageId, batch, imageHeight, imageWidth, numChannels, outId);
   return out;
 }
@@ -97113,7 +97344,7 @@ function fusedConv2d3(args) {
   const { inputs, attrs, backend: backend22 } = args;
   const { x: x2, filter, bias, preluActivationWeights } = inputs;
   const {
-    strides,
+    strides: strides2,
     pad: pad3,
     dilations,
     dataFormat,
@@ -97121,7 +97352,7 @@ function fusedConv2d3(args) {
     activation: activation2,
     leakyreluAlpha
   } = attrs;
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, dilations, pad3, dimRoundingMode);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, dilations, pad3, dimRoundingMode);
   const fusedActivation = FusableActivation[activation2];
   if (fusedActivation == null) {
     throw new Error(`${activation2} activation not yet supported for FusedConv2D in the wasm backend.`);
@@ -97202,7 +97433,7 @@ function fusedDepthwiseConv2d(args) {
   const { inputs, attrs, backend: backend22 } = args;
   const { x: x2, filter, bias, preluActivationWeights } = inputs;
   const {
-    strides,
+    strides: strides2,
     pad: pad3,
     dilations,
     dataFormat,
@@ -97210,7 +97441,7 @@ function fusedDepthwiseConv2d(args) {
     activation: activation2,
     leakyreluAlpha
   } = attrs;
-  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides, dilations, pad3, dimRoundingMode, true);
+  const convInfo = backend_util_exports.computeConv2DInfo(x2.shape, filter.shape, strides2, dilations, pad3, dimRoundingMode, true);
   const fusedActivation = FusableActivation[activation2];
   if (fusedActivation == null) {
     throw new Error(`${activation2} activation not yet supported for FusedDepthwiseConv2D in the wasm backend.`);
@@ -97275,7 +97506,7 @@ function setup19(backend22) {
 function gatherNd4(args) {
   const { backend: backend22, inputs } = args;
   const { params, indices } = inputs;
-  const [resultShape, numSlices, sliceSize, strides] = gather_nd_util_exports.prepareAndValidate(params, indices);
+  const [resultShape, numSlices, sliceSize, strides2] = gather_nd_util_exports.prepareAndValidate(params, indices);
   const out = backend22.makeOutput(resultShape, params.dtype);
   if (numSlices === 0) {
     return out;
@@ -97286,7 +97517,7 @@ function gatherNd4(args) {
   const xId = xData.id;
   const indicesData = backend22.dataIdMap.get(indices.dataId);
   const indicesId = indicesData.id;
-  const stridesBytes = new Uint8Array(new Int32Array(strides).buffer);
+  const stridesBytes = new Uint8Array(new Int32Array(strides2).buffer);
   const outId = backend22.dataIdMap.get(out.dataId).id;
   wasmGatherNd(xId, CppDType[params.dtype], indicesId, numSlices, sliceRank, sliceSize, stridesBytes, outId);
   return out;
@@ -97383,7 +97614,7 @@ function setupFunc2(backend22) {
     "number"
   ]);
 }
-function leakyRelu4(args) {
+function leakyRelu5(args) {
   const { inputs: { x: x2 }, attrs: { alpha: alpha2 }, backend: backend22 } = args;
   const xId = backend22.dataIdMap.get(x2.dataId).id;
   const out = backend22.makeOutput(x2.shape, "float32");
@@ -97393,11 +97624,11 @@ function leakyRelu4(args) {
   }
   return out;
 }
-var leakyReluConfig3 = {
+var leakyReluConfig4 = {
   kernelName: LeakyRelu,
   backendName: "wasm",
   setupFunc: setupFunc2,
-  kernelFunc: leakyRelu4
+  kernelFunc: leakyRelu5
 };
 var supportsFullBroadcast6 = false;
 var lessConfig4 = createBinaryKernelConfig(Less, supportsFullBroadcast6, "bool");
@@ -97481,8 +97712,8 @@ function maxPool5(args) {
   const x2 = inputs.x;
   const xId = backend22.dataIdMap.get(x2.dataId).id;
   util_exports.assert(x2.dtype === "float32", () => `Error in MaxPool: only float32 input is supported. Got ${x2.dtype}.`);
-  const { filterSize, strides, pad: pad3, dimRoundingMode } = attrs;
-  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides, 1, pad3, dimRoundingMode);
+  const { filterSize, strides: strides2, pad: pad3, dimRoundingMode } = attrs;
+  const convInfo = backend_util_exports.computePool2DInfo(x2.shape, filterSize, strides2, 1, pad3, dimRoundingMode);
   const filterHeight = convInfo.filterHeight;
   const filterWidth = convInfo.filterWidth;
   const padTop = convInfo.padInfo.top;
@@ -97611,11 +97842,11 @@ var minConfig4 = {
 };
 var supportsFullBroadcast10 = false;
 var minimumConfig4 = createBinaryKernelConfig(Minimum, supportsFullBroadcast10);
-var MirrorPaddingMode;
-(function(MirrorPaddingMode2) {
+var MirrorPaddingMode = ((MirrorPaddingMode2) => {
   MirrorPaddingMode2[MirrorPaddingMode2["reflect"] = 0] = "reflect";
   MirrorPaddingMode2[MirrorPaddingMode2["symmetric"] = 1] = "symmetric";
-})(MirrorPaddingMode || (MirrorPaddingMode = {}));
+  return MirrorPaddingMode2;
+})(MirrorPaddingMode || {});
 var wasmMirrorPad;
 function setup25(backend22) {
   wasmMirrorPad = backend22.wasm.cwrap(MirrorPad, null, [
@@ -98060,12 +98291,12 @@ function setup35(backend22) {
 }
 function rotateWithOffset2(args) {
   const { inputs, backend: backend22, attrs } = args;
-  const { image: image32 } = inputs;
+  const { image: image22 } = inputs;
   const { radians, fillValue, center } = attrs;
-  const out = backend22.makeOutput(image32.shape, image32.dtype);
-  const imageId = backend22.dataIdMap.get(image32.dataId).id;
+  const out = backend22.makeOutput(image22.shape, image22.dtype);
+  const imageId = backend22.dataIdMap.get(image22.dataId).id;
   const outId = backend22.dataIdMap.get(out.dataId).id;
-  const [batch, imageHeight, imageWidth, numChannels] = image32.shape;
+  const [batch, imageHeight, imageWidth, numChannels] = image22.shape;
   const [centerX, centerY] = backend_util_exports.getImageCenter(center, imageHeight, imageWidth);
   const fillIsBlack = fillValue === 0;
   const fullOpacityValue = 255;
@@ -98104,12 +98335,12 @@ function scatterNd4(args) {
   if (util_exports.sizeFromShape(shape) === 0) {
     return out;
   }
-  const { sliceRank, numUpdates, sliceSize, strides, outputSize: outputSize2 } = scatter_nd_util_exports.calculateShapes(updates, indices, shape);
+  const { sliceRank, numUpdates, sliceSize, strides: strides2, outputSize: outputSize2 } = scatter_nd_util_exports.calculateShapes(updates, indices, shape);
   const indicesData = backend22.dataIdMap.get(indices.dataId);
   const indicesId = indicesData.id;
   const updatesData = backend22.dataIdMap.get(updates.dataId);
   const updatesId = updatesData.id;
-  const stridesBytes = new Uint8Array(new Int32Array(strides).buffer);
+  const stridesBytes = new Uint8Array(new Int32Array(strides2).buffer);
   const outId = backend22.dataIdMap.get(out.dataId).id;
   wasmScatterNd(indicesId, updatesId, CppDType[updates.dtype], sliceRank, numUpdates, sliceSize, stridesBytes, outputSize2, outId);
   return out;
@@ -98237,6 +98468,251 @@ var spaceToBatchNDConfig4 = {
   backendName: "wasm",
   kernelFunc: spaceToBatchND5
 };
+var wasmSparseFillEmptyRows;
+function setup40(backend22) {
+  wasmSparseFillEmptyRows = backend22.wasm.cwrap("SparseFillEmptyRows", "number", [
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number"
+  ]);
+}
+function sparseFillEmptyRows4(args) {
+  const { backend: backend22, inputs } = args;
+  const { indices, values, denseShape, defaultValue } = inputs;
+  const indicesCount = indices.shape[0];
+  const rank = indices.shape[1];
+  const denseRows = backend22.readSync(denseShape.dataId)[0];
+  const maxOutputIndicesShape = [indicesCount + denseRows, rank];
+  const indicesId = backend22.dataIdMap.get(indices.dataId).id;
+  const valuesId = backend22.dataIdMap.get(values.dataId).id;
+  const defaultValueId = backend22.dataIdMap.get(defaultValue.dataId).id;
+  const outputIndices = backend22.makeOutput(maxOutputIndicesShape, indices.dtype);
+  const outputIndicesId = backend22.dataIdMap.get(outputIndices.dataId).id;
+  const outputValues = backend22.makeOutput(maxOutputIndicesShape.slice(0, 1), values.dtype);
+  const outputValuesId = backend22.dataIdMap.get(outputValues.dataId).id;
+  const emptyRowIndicator = backend22.makeOutput([denseRows], "bool");
+  const emptyRowIndicatorId = backend22.dataIdMap.get(emptyRowIndicator.dataId).id;
+  const reverseIndexMap = backend22.makeOutput([indicesCount], indices.dtype);
+  const reverseIndexMapId = backend22.dataIdMap.get(reverseIndexMap.dataId).id;
+  const exceptionValues = backend22.makeOutput([4], "int32");
+  const exceptionValuesId = backend22.dataIdMap.get(exceptionValues.dataId).id;
+  const outputRows = wasmSparseFillEmptyRows(indicesId, valuesId, CppDType[values.dtype], indicesCount, denseRows, rank, defaultValueId, outputIndicesId, outputValuesId, emptyRowIndicatorId, reverseIndexMapId, exceptionValuesId);
+  const exceptionValuesArray = backend22.readSync(exceptionValues.dataId);
+  let exceptionMessage;
+  switch (exceptionValuesArray[0]) {
+    case 1: {
+      exceptionMessage = backend_util_exports.getSparseFillEmptyRowsIndicesDenseShapeMismatch(exceptionValuesArray[1]);
+      break;
+    }
+    case 2: {
+      exceptionMessage = backend_util_exports.getSparseFillEmptyRowsNegativeIndexErrorMessage(exceptionValuesArray[1], exceptionValuesArray[2]);
+      break;
+    }
+    case 3:
+      exceptionMessage = backend_util_exports.getSparseFillEmptyRowsOutOfRangeIndexErrorMessage(exceptionValuesArray[1], exceptionValuesArray[2], exceptionValuesArray[3]);
+      break;
+    default:
+      exceptionMessage = "";
+  }
+  backend22.disposeData(exceptionValues.dataId);
+  if (exceptionMessage) {
+    backend22.disposeData(outputIndices.dataId);
+    backend22.disposeData(outputValues.dataId);
+    backend22.disposeData(emptyRowIndicator.dataId);
+    backend22.disposeData(reverseIndexMap.dataId);
+    throw new Error(exceptionMessage);
+  }
+  let resizedIndices = outputIndices;
+  let resizedValues = outputValues;
+  if (outputRows !== maxOutputIndicesShape[0]) {
+    resizedIndices = slice5({
+      inputs: { x: outputIndices },
+      attrs: { begin: 0, size: [outputRows, rank] },
+      backend: backend22
+    });
+    resizedValues = slice5({
+      inputs: { x: outputValues },
+      attrs: { begin: 0, size: outputRows },
+      backend: backend22
+    });
+    backend22.disposeData(outputIndices.dataId);
+    backend22.disposeData(outputValues.dataId);
+  }
+  return [resizedIndices, resizedValues, emptyRowIndicator, reverseIndexMap];
+}
+var sparseFillEmptyRowsConfig3 = {
+  kernelName: SparseFillEmptyRows,
+  backendName: "wasm",
+  setupFunc: setup40,
+  kernelFunc: sparseFillEmptyRows4
+};
+var wasmSparseReshape;
+function setup41(backend22) {
+  wasmSparseReshape = backend22.wasm.cwrap(SparseReshape, null, [
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number"
+  ]);
+}
+function sparseReshape4(args) {
+  const { backend: backend22, inputs } = args;
+  const { inputIndices, inputShape, newShape } = inputs;
+  if (inputIndices.shape.length !== 2) {
+    throw new Error(`Input indices should be a matrix but received shape
+        ${inputIndices.shape}`);
+  }
+  if (inputShape.shape.length !== 1) {
+    throw new Error(`Input shape should be a vector but received shape
+        ${inputShape.shape}`);
+  }
+  if (newShape.shape.length !== 1) {
+    throw new Error(`Target shape should be a vector but received shape ${newShape.shape}`);
+  }
+  const inputIndicesId = backend22.dataIdMap.get(inputIndices.dataId).id;
+  const inputShapeId = backend22.dataIdMap.get(inputShape.dataId).id;
+  const newShapeId = backend22.dataIdMap.get(newShape.dataId).id;
+  const nnz = inputIndices.shape[0];
+  const outputRank = util_exports.sizeFromShape(newShape.shape);
+  const newIndices = backend22.makeOutput([nnz, outputRank], inputIndices.dtype);
+  const newIndicesId = backend22.dataIdMap.get(newIndices.dataId).id;
+  const outputShape = backend22.makeOutput([outputRank], newShape.dtype);
+  const outputShapeId = backend22.dataIdMap.get(outputShape.dataId).id;
+  const exceptionValues = backend22.makeOutput([3], "int32");
+  const exceptionValuesId = backend22.dataIdMap.get(exceptionValues.dataId).id;
+  wasmSparseReshape(inputIndicesId, inputShapeId, newShapeId, nnz, newIndicesId, outputShapeId, exceptionValuesId);
+  const exceptionValuesArray = backend22.readSync(exceptionValues.dataId);
+  let exceptionMessage;
+  switch (exceptionValuesArray[0]) {
+    case 0: {
+      exceptionMessage = backend_util_exports.getSparseReshapeMultipleNegativeOneOutputDimErrorMessage(exceptionValuesArray[1], exceptionValuesArray[2]);
+      break;
+    }
+    case 1: {
+      exceptionMessage = backend_util_exports.getSparseReshapeNegativeOutputDimErrorMessage(exceptionValuesArray[1], exceptionValuesArray[2]);
+      break;
+    }
+    case 2:
+      exceptionMessage = backend_util_exports.getSparseReshapeEmptyTensorZeroOutputDimErrorMessage();
+      break;
+    case 3: {
+      const inputShapeValues = Array.from(backend22.readSync(inputShape.dataId)), outputShapeValues = Array.from(backend22.readSync(outputShape.dataId));
+      exceptionMessage = backend_util_exports.getSparseReshapeInputOutputMultipleErrorMessage(inputShapeValues, outputShapeValues);
+      break;
+    }
+    case 4: {
+      const inputShapeValues = Array.from(backend22.readSync(inputShape.dataId)), outputShapeValues = Array.from(backend22.readSync(outputShape.dataId));
+      exceptionMessage = backend_util_exports.getSparseReshapeInputOutputMismatchErrorMessage(inputShapeValues, outputShapeValues);
+      break;
+    }
+    default:
+      exceptionMessage = "";
+  }
+  backend22.disposeData(exceptionValues.dataId);
+  if (exceptionMessage) {
+    backend22.disposeData(newIndices.dataId);
+    backend22.disposeData(outputShape.dataId);
+    throw new Error(exceptionMessage);
+  }
+  return [newIndices, outputShape];
+}
+var sparseReshapeConfig3 = {
+  kernelName: SparseReshape,
+  backendName: "wasm",
+  setupFunc: setup41,
+  kernelFunc: sparseReshape4
+};
+var wasmSparseSegmentReduction;
+function setup42(backend22) {
+  wasmSparseSegmentReduction = backend22.wasm.cwrap("SparseSegmentReduction", null, [
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number",
+    "number"
+  ]);
+}
+function sparseSegmentReduction(args, isMean) {
+  const { backend: backend22, inputs } = args;
+  const { data, indices, segmentIds } = inputs;
+  const numIndices = indices.shape[0];
+  const segmentIdsBack = backend22.readSync(segmentIds.dataId, numIndices - 1, numIndices)[0];
+  const lastSegmentIdPlusOne = numIndices > 0 ? segmentIdsBack + 1 : 0;
+  const outputRows = lastSegmentIdPlusOne;
+  if (outputRows < 0) {
+    throw new Error(backend_util_exports.getSparseSegmentReductionNegativeSegmentIdsErrorMessage());
+  }
+  const outputShape = data.shape.slice();
+  outputShape[0] = outputRows;
+  const dataId = backend22.dataIdMap.get(data.dataId).id;
+  const indicesId = backend22.dataIdMap.get(indices.dataId).id;
+  const segmentIdsId = backend22.dataIdMap.get(segmentIds.dataId).id;
+  const output = backend22.makeOutput(outputShape, data.dtype);
+  const outputId = backend22.dataIdMap.get(output.dataId).id;
+  const exceptionValues = backend22.makeOutput([4], "int32");
+  const exceptionValuesId = backend22.dataIdMap.get(exceptionValues.dataId).id;
+  wasmSparseSegmentReduction(dataId, CppDType[data.dtype], data.shape[0], indicesId, segmentIdsId, outputId, exceptionValuesId, isMean, 0);
+  const exceptionValuesArray = backend22.readSync(exceptionValues.dataId);
+  let exceptionMessage;
+  switch (exceptionValuesArray[0]) {
+    case 0: {
+      exceptionMessage = backend_util_exports.getSparseSegmentReductionNegativeSegmentIdsErrorMessage();
+      break;
+    }
+    case 1: {
+      exceptionMessage = backend_util_exports.getSparseSegmentReductionNonIncreasingSegmentIdsErrorMessage();
+      break;
+    }
+    case 2:
+      exceptionMessage = backend_util_exports.getSparseSegmentReductionSegmentIdOutOfRangeErrorMessage(exceptionValuesArray[1], exceptionValuesArray[2]);
+      break;
+    case 3:
+      exceptionMessage = backend_util_exports.getSparseSegmentReductionIndicesOutOfRangeErrorMessage(exceptionValuesArray[1], exceptionValuesArray[2], exceptionValuesArray[3]);
+      break;
+    default:
+      exceptionMessage = "";
+  }
+  backend22.disposeData(exceptionValues.dataId);
+  if (exceptionMessage) {
+    backend22.disposeData(output.dataId);
+    throw new Error(exceptionMessage);
+  }
+  return output;
+}
+function sparseSegmentMean4(args) {
+  return sparseSegmentReduction(args, true);
+}
+var sparseSegmentMeanConfig3 = {
+  kernelName: SparseSegmentMean,
+  backendName: "wasm",
+  setupFunc: setup42,
+  kernelFunc: sparseSegmentMean4
+};
+function sparseSegmentSum4(args) {
+  return sparseSegmentReduction(args, false);
+}
+var sparseSegmentSumConfig3 = {
+  kernelName: SparseSegmentSum,
+  backendName: "wasm",
+  setupFunc: setup42,
+  kernelFunc: sparseSegmentSum4
+};
 function splitV4(args) {
   const { inputs, attrs, backend: backend22 } = args;
   const { x: x2 } = inputs;
@@ -98263,7 +98739,7 @@ var squareConfig4 = createUnaryKernelConfig(Square);
 var supportsFullBroadcast15 = true;
 var squaredDifferenceConfig4 = createBinaryKernelConfig(SquaredDifference, supportsFullBroadcast15);
 var wasmStep;
-function setup40(backend22) {
+function setup43(backend22) {
   wasmStep = backend22.wasm.cwrap(Step, null, [
     "number",
     "number",
@@ -98284,11 +98760,11 @@ function step4(args) {
 var stepConfig3 = {
   kernelName: Step,
   backendName: "wasm",
-  setupFunc: setup40,
+  setupFunc: setup43,
   kernelFunc: step4
 };
 var wasmStridedSlice;
-function setup41(backend22) {
+function setup44(backend22) {
   wasmStridedSlice = backend22.wasm.cwrap(StridedSlice, null, [
     "number",
     "array",
@@ -98308,7 +98784,7 @@ function stridedSlice5(args) {
   const {
     begin,
     end,
-    strides,
+    strides: strides2,
     beginMask,
     endMask,
     ellipsisMask,
@@ -98324,7 +98800,7 @@ function stridedSlice5(args) {
     begin: $begin,
     end: $end,
     strides: $strides
-  } = slice_util_exports.sliceInfo(x2.shape, begin, end, strides, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask);
+  } = slice_util_exports.sliceInfo(x2.shape, begin, end, strides2, beginMask, endMask, ellipsisMask, newAxisMask, shrinkAxisMask);
   let result;
   if (isIdentity) {
     result = reshape6({ inputs: { x: x2 }, backend: backend22, attrs: { shape: finalShape } });
@@ -98353,13 +98829,13 @@ function stridedSlice5(args) {
 var stridedSliceConfig4 = {
   kernelName: StridedSlice,
   backendName: "wasm",
-  setupFunc: setup41,
+  setupFunc: setup44,
   kernelFunc: stridedSlice5
 };
 var supportsFullBroadcast16 = true;
 var subConfig4 = createBinaryKernelConfig(Sub, supportsFullBroadcast16);
 var wasmSum;
-function setup42(backend22) {
+function setup45(backend22) {
   wasmSum = backend22.wasm.cwrap(Sum, null, [
     "number",
     "number",
@@ -98404,13 +98880,13 @@ function sum6(args) {
 var sumConfig4 = {
   kernelName: Sum,
   backendName: "wasm",
-  setupFunc: setup42,
+  setupFunc: setup45,
   kernelFunc: sum6
 };
 var tanConfig3 = createUnaryKernelConfig(Tan);
 var tanhConfig4 = createUnaryKernelConfig(Tanh);
 var wasmTile;
-function setup43(backend22) {
+function setup46(backend22) {
   wasmTile = backend22.wasm.cwrap(Tile, null, [
     "number",
     "array",
@@ -98439,11 +98915,11 @@ function tile6(args) {
 var tileConfig4 = {
   kernelName: Tile,
   backendName: "wasm",
-  setupFunc: setup43,
+  setupFunc: setup46,
   kernelFunc: tile6
 };
 var wasmTopK;
-function setup44(backend22) {
+function setup47(backend22) {
   wasmTopK = backend22.wasm.cwrap(TopK, null, [
     "number",
     "array",
@@ -98472,11 +98948,11 @@ var topk2 = ({ inputs, backend: backend22, attrs }) => {
 var topKConfig4 = {
   kernelName: TopK,
   backendName: "wasm",
-  setupFunc: setup44,
+  setupFunc: setup47,
   kernelFunc: topk2
 };
 var wasmTransform;
-function setup45(backend22) {
+function setup48(backend22) {
   wasmTransform = backend22.wasm.cwrap(Transform, null, [
     "number",
     "number",
@@ -98497,9 +98973,9 @@ function setup45(backend22) {
 }
 function transform5(args) {
   const { backend: backend22, inputs, attrs } = args;
-  const { image: image32, transforms } = inputs;
+  const { image: image22, transforms } = inputs;
   const { interpolation, fillMode, fillValue, outputShape } = attrs;
-  const [batch, imageHeight, imageWidth, numChannels] = image32.shape;
+  const [batch, imageHeight, imageWidth, numChannels] = image22.shape;
   const [outHeight, outWidth] = outputShape != null ? outputShape : [imageHeight, imageWidth];
   const outShape = [
     batch,
@@ -98507,10 +98983,10 @@ function transform5(args) {
     outWidth,
     numChannels
   ];
-  const strides = new Uint8Array(new Int32Array(util_exports.computeStrides(image32.shape)).buffer);
-  const out = backend22.makeOutput(outShape, image32.dtype);
+  const strides2 = new Uint8Array(new Int32Array(util_exports.computeStrides(image22.shape)).buffer);
+  const out = backend22.makeOutput(outShape, image22.dtype);
   const outId = backend22.dataIdMap.get(out.dataId).id;
-  const imageData = backend22.dataIdMap.get(image32.dataId);
+  const imageData = backend22.dataIdMap.get(image22.dataId);
   const imageId = imageData.id;
   const transformsData = backend22.dataIdMap.get(transforms.dataId);
   const transformsId = transformsData.id;
@@ -98533,13 +99009,13 @@ function transform5(args) {
       fillModeId = 1;
       break;
   }
-  wasmTransform(imageId, transformsId, transforms.shape[0] > 1, batch, outHeight, outWidth, numChannels, imageWidth, imageHeight, strides, image32.shape.length - 1, interpolationModeId, fillModeId, fillValue, outId);
+  wasmTransform(imageId, transformsId, transforms.shape[0] > 1, batch, outHeight, outWidth, numChannels, imageWidth, imageHeight, strides2, image22.shape.length - 1, interpolationModeId, fillModeId, fillValue, outId);
   return out;
 }
 var transformConfig4 = {
   kernelName: Transform,
   backendName: "wasm",
-  setupFunc: setup45,
+  setupFunc: setup48,
   kernelFunc: transform5
 };
 function unpack4(args) {
@@ -98624,7 +99100,7 @@ var kernelConfigs4 = [
   greaterConfig4,
   greaterEqualConfig4,
   identityConfig4,
-  leakyReluConfig3,
+  leakyReluConfig4,
   lessConfig4,
   lessEqualConfig4,
   logConfig4,
@@ -98666,6 +99142,10 @@ var kernelConfigs4 = [
   sliceConfig4,
   softmaxConfig4,
   spaceToBatchNDConfig4,
+  sparseFillEmptyRowsConfig3,
+  sparseReshapeConfig3,
+  sparseSegmentMeanConfig3,
+  sparseSegmentSumConfig3,
   splitVConfig4,
   sqrtConfig4,
   squareConfig4,
@@ -98812,12 +99292,18 @@ var BackendWasm = class extends KernelBackend {
   async read(dataId) {
     return this.readSync(dataId);
   }
-  readSync(dataId) {
+  readSync(dataId, start, end) {
     const { memoryOffset, dtype, shape, stringBytes } = this.dataIdMap.get(dataId);
     if (dtype === "string") {
-      return stringBytes;
+      if ((start == null || start === 0) && (end == null || end >= stringBytes.length)) {
+        return stringBytes;
+      }
+      return stringBytes.slice(start, end);
     }
-    const bytes = this.wasm.HEAPU8.slice(memoryOffset, memoryOffset + util_exports.sizeFromShape(shape) * util_exports.bytesPerElement(dtype));
+    start = start || 0;
+    end = end || util_exports.sizeFromShape(shape);
+    const bytesPerElement2 = util_exports.bytesPerElement(dtype);
+    const bytes = this.wasm.HEAPU8.slice(memoryOffset + start * bytesPerElement2, memoryOffset + end * bytesPerElement2);
     return typedArrayFromBuffer(bytes.buffer, dtype);
   }
   disposeData(dataId, force = false) {
@@ -99045,7 +99531,7 @@ registerBackend("wasm", async () => {
   const { wasm } = await init();
   return new BackendWasm(wasm);
 }, WASM_PRIORITY);
-var externalVersion = "3.11.0-20211110";
+var externalVersion = "3.12.0-20211215";
 var version8 = {
   tfjs: externalVersion,
   "tfjs-core": externalVersion,
@@ -99056,7 +99542,6 @@ var version8 = {
   "tfjs-backend-webgl": externalVersion,
   "tfjs-backend-wasm": externalVersion
 };
-var version_core = version8["tfjs-core"];
 var vertexIdentity = `
   precision highp float;
   attribute vec2 pos;
@@ -99769,9 +100254,9 @@ async function histogramEqualization(inputImage) {
   const range7 = [sub(max7[0], min7[0]), sub(max7[1], min7[1]), sub(max7[2], min7[2])];
   const fact = [div(maxValue, range7[0]), div(maxValue, range7[1]), div(maxValue, range7[2])];
   const enh = [mul(sub5[0], fact[0]), mul(sub5[1], fact[1]), mul(sub5[2], fact[2])];
-  const rgb3 = stack([enh[0], enh[1], enh[2]], 2);
-  const reshape7 = reshape(rgb3, [1, squeeze2.shape[0], squeeze2.shape[1], 3]);
-  dispose([...channels, ...min7, ...max7, ...sub5, ...range7, ...fact, ...enh, rgb3, squeeze2]);
+  const rgb2 = stack([enh[0], enh[1], enh[2]], 2);
+  const reshape7 = reshape(rgb2, [1, squeeze2.shape[0], squeeze2.shape[1], 3]);
+  dispose([...channels, ...min7, ...max7, ...sub5, ...range7, ...fact, ...enh, rgb2, squeeze2]);
   return reshape7;
 }
 var maxSize = 2048;
@@ -99832,9 +100317,9 @@ async function process2(input2, config3, getTensor2 = true) {
       if (input2.shape[2] === 3) {
         tensor2 = expandDims(input2, 0);
       } else if (input2.shape[2] === 4) {
-        const rgb3 = slice3d(input2, [0, 0, 0], [-1, -1, 3]);
-        tensor2 = expandDims(rgb3, 0);
-        dispose(rgb3);
+        const rgb2 = slice3d(input2, [0, 0, 0], [-1, -1, 3]);
+        tensor2 = expandDims(rgb2, 0);
+        dispose(rgb2);
       }
     } else if (input2.shape.length === 4) {
       if (input2.shape[3] === 3) {
@@ -99983,9 +100468,9 @@ async function process2(input2, config3, getTensor2 = true) {
       }
     }
     if (depth === 4) {
-      const rgb3 = slice3d(pixels, [0, 0, 0], [-1, -1, 3]);
+      const rgb2 = slice3d(pixels, [0, 0, 0], [-1, -1, 3]);
       dispose(pixels);
-      pixels = rgb3;
+      pixels = rgb2;
     }
     if (!pixels)
       throw new Error("input error: cannot create tensor");
@@ -99997,7 +100482,7 @@ async function process2(input2, config3, getTensor2 = true) {
 }
 async function skip(config3, input2) {
   let skipFrame = false;
-  if (config3.cacheSensitivity === 0)
+  if (config3.cacheSensitivity === 0 || !input2.shape || input2.shape.length !== 4 || input2.shape[1] > 2048 || input2.shape[2] > 2048)
     return skipFrame;
   if (!last.inputTensor) {
     last.inputTensor = clone(input2);
@@ -100013,7 +100498,7 @@ async function skip(config3, input2) {
     const diffRelative = diffSum[0] / (input2.shape[1] || 1) / (input2.shape[2] || 1) / 255 / 3;
     dispose([last.inputTensor, t2.diff, t2.squared, t2.sum]);
     last.inputTensor = clone(input2);
-    skipFrame = diffRelative <= config3.cacheSensitivity;
+    skipFrame = diffRelative <= (config3.cacheSensitivity || 0);
   }
   return skipFrame;
 }
@@ -100078,8 +100563,8 @@ var Env = class {
     __publicField(this, "Image");
     __publicField(this, "ImageData");
     this.browser = typeof navigator !== "undefined";
-    this.node = typeof process !== "undefined";
-    this.tfjs = { version: version_core };
+    this.node = typeof process !== "undefined" && typeof process.versions !== "undefined" && typeof process.versions.node !== "undefined";
+    this.tfjs = { version: version8["tfjs-core"] };
     this.offscreen = typeof OffscreenCanvas !== "undefined";
     this.initial = true;
     this.worker = this.browser && this.offscreen ? typeof WorkerGlobalScope !== "undefined" : void 0;
@@ -100122,27 +100607,17 @@ var Env = class {
     try {
       if (this.webgpu.supported)
         this.webgpu.adapter = (await navigator["gpu"].requestAdapter()).name;
-      this.kernels = getKernelsForBackend(getBackend()).map((kernel) => kernel.kernelName.toLowerCase());
     } catch (e2) {
       this.webgpu.supported = false;
+    }
+    try {
+      this.kernels = getKernelsForBackend(getBackend()).map((kernel) => kernel.kernelName.toLowerCase());
+    } catch (e2) {
     }
   }
   async updateCPU() {
     const cpu = { model: "", flags: [] };
     if (this.node && this.platform.startsWith("linux")) {
-      const fs = __require2("fs");
-      try {
-        const data = fs.readFileSync("/proc/cpuinfo").toString();
-        for (const line of data.split("\n")) {
-          if (line.startsWith("model name")) {
-            cpu.model = line.match(/:(.*)/g)[0].replace(":", "").trim();
-          }
-          if (line.startsWith("flags")) {
-            cpu.flags = line.match(/:(.*)/g)[0].replace(":", "").trim().split(" ").sort();
-          }
-        }
-      } catch (e2) {
-      }
     }
     if (!this["cpu"])
       Object.defineProperty(this, "cpu", { value: cpu });
@@ -100151,7 +100626,7 @@ var Env = class {
   }
 };
 var env2 = new Env();
-var version = "2.5.2";
+var version9 = "2.5.7";
 var model2;
 var last2 = [];
 var raceNames = ["white", "black", "asian", "indian", "other"];
@@ -100188,8 +100663,8 @@ async function predict(image7, config3, idx, count3) {
     if (!(model2 == null ? void 0 : model2.inputs[0].shape))
       return;
     const t2 = {};
-    const box4 = [[0, 0.1, 0.9, 0.9]];
-    t2.resize = image.cropAndResize(image7, box4, [0], [model2.inputs[0].shape[2], model2.inputs[0].shape[1]]);
+    const box5 = [[0, 0.1, 0.9, 0.9]];
+    t2.resize = image.cropAndResize(image7, box5, [0], [model2.inputs[0].shape[2], model2.inputs[0].shape[1]]);
     const obj = { age: 0, gender: "unknown", genderScore: 0, race: [] };
     if ((_a2 = config3.face["gear"]) == null ? void 0 : _a2.enabled)
       [t2.age, t2.gender, t2.race] = model2.execute(t2.resize, ["age_output", "gender_output", "race_output"]);
@@ -100214,6 +100689,22 @@ async function predict(image7, config3, idx, count3) {
     lastTime = now2();
     resolve(obj);
   });
+}
+var constants = {
+  tf255: 255,
+  tf1: 1,
+  tf2: 2,
+  tf05: 0.5,
+  tf127: 127.5,
+  rgb: [0.2989, 0.587, 0.114]
+};
+function init2() {
+  constants.tf255 = scalar(255, "float32");
+  constants.tf1 = scalar(1, "float32");
+  constants.tf2 = scalar(2, "float32");
+  constants.tf05 = scalar(0.5, "float32");
+  constants.tf127 = scalar(127.5, "float32");
+  constants.rgb = tensor1d([0.2989, 0.587, 0.114], "float32");
 }
 var model3;
 var last3 = [];
@@ -100251,7 +100742,7 @@ async function predict2(image7, config3, idx, count3) {
       return;
     const t2 = {};
     t2.resize = image.resizeBilinear(image7, [model3.inputs[0].shape[2], model3.inputs[0].shape[1]], false);
-    t2.enhance = mul(t2.resize, 255);
+    t2.enhance = mul(t2.resize, constants.tf255);
     const obj = { age: 0 };
     if (config3.face["ssrnet"].enabled)
       t2.age = model3.execute(t2.enhance);
@@ -100307,10 +100798,10 @@ async function predict3(image7, config3, idx, count3) {
       const greenNorm = mul(green, rgb[1]);
       const blueNorm = mul(blue, rgb[2]);
       const grayscale = addN([redNorm, greenNorm, blueNorm]);
-      const normalize = mul(sub(grayscale, 0.5), 2);
+      const normalize = mul(sub(grayscale, constants.tf05), 2);
       return normalize;
     });
-    const obj = { gender: "", genderScore: 0 };
+    const obj = { gender: "unknown", genderScore: 0 };
     if (config3.face["ssrnet"].enabled)
       t2.gender = model4.execute(t2.enhance);
     const data = await t2.gender.data();
@@ -103645,49 +104136,50 @@ var VTX7 = [33, 133, 362, 263, 1, 78, 308];
 var UV68 = VTX68.map((x2) => UV468[x2]);
 var UV33 = VTX33.map((x2) => UV468[x2]);
 var UV7 = VTX7.map((x2) => UV468[x2]);
-var getBoxSize = (box4) => [Math.abs(box4.endPoint[0] - box4.startPoint[0]), Math.abs(box4.endPoint[1] - box4.startPoint[1])];
-var getBoxCenter = (box4) => [box4.startPoint[0] + (box4.endPoint[0] - box4.startPoint[0]) / 2, box4.startPoint[1] + (box4.endPoint[1] - box4.startPoint[1]) / 2];
-var getClampedBox = (box4, input2) => box4 ? [
-  Math.trunc(Math.max(0, box4.startPoint[0])),
-  Math.trunc(Math.max(0, box4.startPoint[1])),
-  Math.trunc(Math.min(input2.shape[2] || 0, box4.endPoint[0]) - Math.max(0, box4.startPoint[0])),
-  Math.trunc(Math.min(input2.shape[1] || 0, box4.endPoint[1]) - Math.max(0, box4.startPoint[1]))
+var getBoxSize = (box5) => [Math.abs(box5.endPoint[0] - box5.startPoint[0]), Math.abs(box5.endPoint[1] - box5.startPoint[1])];
+var getBoxCenter = (box5) => [box5.startPoint[0] + (box5.endPoint[0] - box5.startPoint[0]) / 2, box5.startPoint[1] + (box5.endPoint[1] - box5.startPoint[1]) / 2, 1];
+var clampBox = (box5, input2) => box5 ? [
+  Math.trunc(Math.max(0, box5.startPoint[0])),
+  Math.trunc(Math.max(0, box5.startPoint[1])),
+  Math.trunc(Math.min(input2.shape[2] || 0, box5.endPoint[0]) - Math.max(0, box5.startPoint[0])),
+  Math.trunc(Math.min(input2.shape[1] || 0, box5.endPoint[1]) - Math.max(0, box5.startPoint[1]))
 ] : [0, 0, 0, 0];
-var getRawBox = (box4, input2) => box4 ? [
-  box4.startPoint[0] / (input2.shape[2] || 0),
-  box4.startPoint[1] / (input2.shape[1] || 0),
-  (box4.endPoint[0] - box4.startPoint[0]) / (input2.shape[2] || 0),
-  (box4.endPoint[1] - box4.startPoint[1]) / (input2.shape[1] || 0)
+var getRawBox = (box5, input2) => box5 ? [
+  box5.startPoint[0] / (input2.shape[2] || 0),
+  box5.startPoint[1] / (input2.shape[1] || 0),
+  (box5.endPoint[0] - box5.startPoint[0]) / (input2.shape[2] || 0),
+  (box5.endPoint[1] - box5.startPoint[1]) / (input2.shape[1] || 0)
 ] : [0, 0, 0, 0];
-var scaleBoxCoordinates = (box4, factor) => {
-  const startPoint = [box4.startPoint[0] * factor[0], box4.startPoint[1] * factor[1]];
-  const endPoint = [box4.endPoint[0] * factor[0], box4.endPoint[1] * factor[1]];
-  return { startPoint, endPoint, landmarks: box4.landmarks, confidence: box4.confidence };
+var scaleBoxCoordinates = (box5, factor) => {
+  const startPoint = [box5.startPoint[0] * factor[0], box5.startPoint[1] * factor[1]];
+  const endPoint = [box5.endPoint[0] * factor[0], box5.endPoint[1] * factor[1]];
+  return { startPoint, endPoint, landmarks: box5.landmarks, confidence: box5.confidence };
 };
-var cutBoxFromImageAndResize = (box4, image7, cropSize) => {
+var cutAndResize = (box5, image7, cropSize) => {
   const h2 = image7.shape[1];
   const w2 = image7.shape[2];
-  const crop2 = image.cropAndResize(image7, [[box4.startPoint[1] / h2, box4.startPoint[0] / w2, box4.endPoint[1] / h2, box4.endPoint[0] / w2]], [0], cropSize);
-  const norm2 = div(crop2, 255);
+  const cutBox = [box5.startPoint[1] / h2, box5.startPoint[0] / w2, box5.endPoint[1] / h2, box5.endPoint[0] / w2];
+  const crop2 = image.cropAndResize(image7, [cutBox], [0], cropSize);
+  const norm2 = div(crop2, constants.tf255);
   dispose(crop2);
   return norm2;
 };
-var enlargeBox = (box4, factor) => {
-  const center = getBoxCenter(box4);
-  const size2 = getBoxSize(box4);
+var enlargeBox = (box5, factor) => {
+  const center = getBoxCenter(box5);
+  const size2 = getBoxSize(box5);
   const halfSize = [factor * size2[0] / 2, factor * size2[1] / 2];
-  return { startPoint: [center[0] - halfSize[0], center[1] - halfSize[1]], endPoint: [center[0] + halfSize[0], center[1] + halfSize[1]], landmarks: box4.landmarks, confidence: box4.confidence };
+  return { startPoint: [center[0] - halfSize[0], center[1] - halfSize[1]], endPoint: [center[0] + halfSize[0], center[1] + halfSize[1]], landmarks: box5.landmarks, confidence: box5.confidence };
 };
-var squarifyBox = (box4) => {
-  const centers = getBoxCenter(box4);
-  const size2 = getBoxSize(box4);
+var squarifyBox = (box5) => {
+  const centers = getBoxCenter(box5);
+  const size2 = getBoxSize(box5);
   const halfSize = Math.max(...size2) / 2;
-  return { startPoint: [Math.round(centers[0] - halfSize), Math.round(centers[1] - halfSize)], endPoint: [Math.round(centers[0] + halfSize), Math.round(centers[1] + halfSize)], landmarks: box4.landmarks, confidence: box4.confidence };
+  return { startPoint: [Math.round(centers[0] - halfSize), Math.round(centers[1] - halfSize)], endPoint: [Math.round(centers[0] + halfSize), Math.round(centers[1] + halfSize)], landmarks: box5.landmarks, confidence: box5.confidence };
 };
 var calculateLandmarksBoundingBox = (landmarks) => {
-  const xs = landmarks.map((d2) => d2[0]);
-  const ys = landmarks.map((d2) => d2[1]);
-  return { startPoint: [Math.min(...xs), Math.min(...ys)], endPoint: [Math.max(...xs), Math.max(...ys)], landmarks };
+  const x2 = landmarks.map((d2) => d2[0]);
+  const y2 = landmarks.map((d2) => d2[1]);
+  return { startPoint: [Math.min(...x2), Math.min(...y2)], endPoint: [Math.max(...x2), Math.max(...y2)], landmarks };
 };
 var fixedRotationMatrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
 var normalizeRadians = (angle2) => angle2 - 2 * Math.PI * Math.floor((angle2 + Math.PI) / (2 * Math.PI));
@@ -103731,13 +104223,13 @@ var invertTransformMatrix = (matrix) => {
   return [rotationComponent[0].concat(invertedTranslation[0]), rotationComponent[1].concat(invertedTranslation[1]), [0, 0, 1]];
 };
 var rotatePoint = (homogeneousCoordinate, rotationMatrix) => [dot4(homogeneousCoordinate, rotationMatrix[0]), dot4(homogeneousCoordinate, rotationMatrix[1])];
-function generateAnchors(inputSize8) {
-  const spec = { strides: [inputSize8 / 16, inputSize8 / 8], anchors: [2, 6] };
+function generateAnchors(inputSize9) {
+  const spec = { strides: [inputSize9 / 16, inputSize9 / 8], anchors: [2, 6] };
   const anchors4 = [];
   for (let i2 = 0; i2 < spec.strides.length; i2++) {
     const stride = spec.strides[i2];
-    const gridRows = Math.floor((inputSize8 + stride - 1) / stride);
-    const gridCols = Math.floor((inputSize8 + stride - 1) / stride);
+    const gridRows = Math.floor((inputSize9 + stride - 1) / stride);
+    const gridCols = Math.floor((inputSize9 + stride - 1) / stride);
     const anchorsNum = spec.anchors[i2];
     for (let gridY = 0; gridY < gridRows; gridY++) {
       const anchorY = stride * (gridY + 0.5);
@@ -103750,52 +104242,68 @@ function generateAnchors(inputSize8) {
   }
   return anchors4;
 }
-function transformRawCoords(coordsRaw, box4, angle2, rotationMatrix, inputSize8) {
-  const boxSize = getBoxSize(box4);
+function transformRawCoords(coordsRaw, box5, angle2, rotationMatrix, inputSize9) {
+  const boxSize = getBoxSize(box5);
   const coordsScaled = coordsRaw.map((coord) => [
-    boxSize[0] / inputSize8 * (coord[0] - inputSize8 / 2),
-    boxSize[1] / inputSize8 * (coord[1] - inputSize8 / 2),
+    boxSize[0] / inputSize9 * (coord[0] - inputSize9 / 2),
+    boxSize[1] / inputSize9 * (coord[1] - inputSize9 / 2),
     coord[2] || 0
   ]);
   const largeAngle = angle2 && angle2 !== 0 && Math.abs(angle2) > 0.2;
   const coordsRotationMatrix = largeAngle ? buildRotationMatrix(angle2, [0, 0]) : fixedRotationMatrix;
   const coordsRotated = largeAngle ? coordsScaled.map((coord) => [...rotatePoint(coord, coordsRotationMatrix), coord[2]]) : coordsScaled;
   const inverseRotationMatrix = largeAngle ? invertTransformMatrix(rotationMatrix) : fixedRotationMatrix;
-  const boxCenter = [...getBoxCenter({ startPoint: box4.startPoint, endPoint: box4.endPoint }), 1];
+  const boxCenter = getBoxCenter(box5);
+  const offsets = [dot4(boxCenter, inverseRotationMatrix[0]), dot4(boxCenter, inverseRotationMatrix[1])];
   return coordsRotated.map((coord) => [
-    Math.round(coord[0] + dot4(boxCenter, inverseRotationMatrix[0])),
-    Math.round(coord[1] + dot4(boxCenter, inverseRotationMatrix[1])),
-    Math.round(coord[2] || 0)
+    Math.trunc(coord[0] + offsets[0]),
+    Math.trunc(coord[1] + offsets[1]),
+    Math.trunc(coord[2] || 0)
   ]);
 }
-function correctFaceRotation(rotate, box4, input2, inputSize8) {
-  const symmetryLine = box4.landmarks.length >= meshLandmarks.count ? meshLandmarks.symmetryLine : blazeFaceLandmarks.symmetryLine;
+function correctFaceRotation(rotate, box5, input2, inputSize9) {
+  const symmetryLine = box5.landmarks.length >= meshLandmarks.count ? meshLandmarks.symmetryLine : blazeFaceLandmarks.symmetryLine;
   let angle2 = 0;
   let rotationMatrix = fixedRotationMatrix;
   let face5;
   if (rotate && env2.kernels.includes("rotatewithoffset")) {
-    angle2 = computeRotation(box4.landmarks[symmetryLine[0]], box4.landmarks[symmetryLine[1]]);
+    angle2 = computeRotation(box5.landmarks[symmetryLine[0]], box5.landmarks[symmetryLine[1]]);
     const largeAngle = angle2 && angle2 !== 0 && Math.abs(angle2) > 0.2;
     if (largeAngle) {
-      const center = getBoxCenter({ startPoint: box4.startPoint, endPoint: box4.endPoint });
+      const center = getBoxCenter(box5);
       const centerRaw = [center[0] / input2.shape[2], center[1] / input2.shape[1]];
       const rotated = image.rotateWithOffset(input2, angle2, 0, centerRaw);
       rotationMatrix = buildRotationMatrix(-angle2, center);
-      face5 = cutBoxFromImageAndResize(box4, rotated, [inputSize8, inputSize8]);
+      face5 = cutAndResize(box5, rotated, [inputSize9, inputSize9]);
       dispose(rotated);
     } else {
-      face5 = cutBoxFromImageAndResize(box4, input2, [inputSize8, inputSize8]);
+      face5 = cutAndResize(box5, input2, [inputSize9, inputSize9]);
     }
   } else {
-    face5 = cutBoxFromImageAndResize(box4, input2, [inputSize8, inputSize8]);
+    face5 = cutAndResize(box5, input2, [inputSize9, inputSize9]);
   }
   return [angle2, rotationMatrix, face5];
 }
+var findFaceCenter = (mesh) => {
+  const x2 = mesh.map((m2) => m2[0]);
+  const y2 = mesh.map((m2) => m2[1]);
+  return [Math.min(...x2) + (Math.max(...x2) - Math.min(...x2)) / 2, Math.min(...y2) + (Math.max(...y2) - Math.min(...y2)) / 2];
+};
+var calculateFaceBox = (mesh, previousBox) => {
+  const center = findFaceCenter(mesh);
+  const boxSize = getBoxSize(previousBox);
+  const calculatedBox = {
+    startPoint: [center[0] - boxSize[0] / 2, center[1] - boxSize[1] / 2],
+    endPoint: [center[0] + boxSize[0] / 2, center[1] + boxSize[1] / 2]
+  };
+  return calculatedBox;
+};
 var keypointsCount = 6;
+var faceBoxScaleFactor = 1.2;
 var model6;
-var anchorsData = [];
 var anchors = null;
 var inputSize = 0;
+var inputSizeT = null;
 var size = () => inputSize;
 async function load5(config3) {
   var _a, _b;
@@ -103810,10 +104318,8 @@ async function load5(config3) {
   } else if (config3.debug)
     log("cached model:", model6["modelUrl"]);
   inputSize = model6.inputs[0].shape ? model6.inputs[0].shape[2] : 0;
-  if (inputSize === -1)
-    inputSize = 64;
-  anchorsData = generateAnchors(inputSize);
-  anchors = tensor2d(anchorsData);
+  inputSizeT = scalar(inputSize, "int32");
+  anchors = tensor2d(generateAnchors(inputSize));
   return model6;
 }
 function decodeBounds(boxOutputs) {
@@ -103821,13 +104327,13 @@ function decodeBounds(boxOutputs) {
   t2.boxStarts = slice(boxOutputs, [0, 1], [-1, 2]);
   t2.centers = add2(t2.boxStarts, anchors);
   t2.boxSizes = slice(boxOutputs, [0, 3], [-1, 2]);
-  t2.boxSizesNormalized = div(t2.boxSizes, inputSize);
-  t2.centersNormalized = div(t2.centers, inputSize);
-  t2.halfBoxSize = div(t2.boxSizesNormalized, 2);
+  t2.boxSizesNormalized = div(t2.boxSizes, inputSizeT);
+  t2.centersNormalized = div(t2.centers, inputSizeT);
+  t2.halfBoxSize = div(t2.boxSizesNormalized, constants.tf2);
   t2.starts = sub(t2.centersNormalized, t2.halfBoxSize);
   t2.ends = add2(t2.centersNormalized, t2.halfBoxSize);
-  t2.startNormalized = mul(t2.starts, inputSize);
-  t2.endNormalized = mul(t2.ends, inputSize);
+  t2.startNormalized = mul(t2.starts, inputSizeT);
+  t2.endNormalized = mul(t2.ends, inputSizeT);
   const boxes = concat2d([t2.startNormalized, t2.endNormalized], 1);
   Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
   return boxes;
@@ -103835,11 +104341,11 @@ function decodeBounds(boxOutputs) {
 async function getBoxes(inputImage, config3) {
   var _a, _b, _c, _d;
   if (!inputImage || inputImage["isDisposedInternal"] || inputImage.shape.length !== 4 || inputImage.shape[1] < 1 || inputImage.shape[2] < 1)
-    return { boxes: [] };
+    return [];
   const t2 = {};
   t2.resized = image.resizeBilinear(inputImage, [inputSize, inputSize]);
-  t2.div = div(t2.resized, 127.5);
-  t2.normalized = sub(t2.div, 0.5);
+  t2.div = div(t2.resized, constants.tf127);
+  t2.normalized = sub(t2.div, constants.tf05);
   const res2 = model6 == null ? void 0 : model6.execute(t2.normalized);
   if (Array.isArray(res2)) {
     const sorted = res2.sort((a6, b2) => a6.size - b2.size);
@@ -103867,21 +104373,22 @@ async function getBoxes(inputImage, config3) {
       b2.slice = slice(t2.batch, [nms[i2], keypointsCount - 1], [1, -1]);
       b2.squeeze = squeeze(b2.slice);
       b2.landmarks = reshape(b2.squeeze, [keypointsCount, -1]);
-      b2.startPoint = slice(b2.bbox, [0, 0], [-1, 2]);
-      b2.endPoint = slice(b2.bbox, [0, 2], [-1, 2]);
-      boxes.push({
-        box: {
-          startPoint: await b2.startPoint.data(),
-          endPoint: await b2.endPoint.data()
-        },
+      const points = await b2.bbox.data();
+      const rawBox = {
+        startPoint: [points[0], points[1]],
+        endPoint: [points[2], points[3]],
         landmarks: await b2.landmarks.array(),
         confidence
-      });
+      };
+      const scaledBox = scaleBoxCoordinates(rawBox, [(inputImage.shape[2] || 0) / inputSize, (inputImage.shape[1] || 0) / inputSize]);
+      const enlargedBox = enlargeBox(scaledBox, faceBoxScaleFactor);
+      const squaredBox = squarifyBox(enlargedBox);
+      boxes.push(squaredBox);
       Object.keys(b2).forEach((tensor2) => dispose(b2[tensor2]));
     }
   }
   Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
-  return { boxes, scaleFactor: [inputImage.shape[2] / inputSize, inputImage.shape[1] / inputSize] };
+  return boxes;
 }
 var blazeposecoords_exports = {};
 __export(blazeposecoords_exports, {
@@ -103906,12 +104413,12 @@ var kpt = [
   "rightElbow",
   "leftWrist",
   "rightWrist",
-  "leftPalm",
-  "rightPalm",
-  "leftIndex",
-  "rightIndex",
   "leftPinky",
   "rightPinky",
+  "leftIndex",
+  "rightIndex",
+  "leftThumb",
+  "rightThumb",
   "leftHip",
   "rightHip",
   "leftKnee",
@@ -103924,141 +104431,221 @@ var kpt = [
   "rightFoot",
   "bodyCenter",
   "bodyTop",
-  "leftThumb",
+  "leftPalm",
   "leftHand",
-  "rightThumb",
+  "rightPalm",
   "rightHand"
 ];
 var connected = {
   leftLeg: ["leftHip", "leftKnee", "leftAnkle", "leftHeel", "leftFoot"],
   rightLeg: ["rightHip", "rightKnee", "rightAnkle", "rightHeel", "rightFoot"],
-  torso: ["leftShoulder", "rightShoulder", "rightHip", "leftHip", "leftShoulder"],
+  torso: ["leftShoulder", "rightShoulder", "rightHip", "leftHip", "leftShoulder", "rightShoulder"],
   leftArm: ["leftShoulder", "leftElbow", "leftWrist", "leftPalm"],
   rightArm: ["rightShoulder", "rightElbow", "rightWrist", "rightPalm"],
-  leftHand: [],
-  rightHand: [],
-  head: []
+  leftEye: ["leftEyeInside", "leftEye", "leftEyeOutside"],
+  rightEye: ["rightEyeInside", "rightEye", "rightEyeOutside"],
+  mouth: ["leftMouth", "rightMouth"]
 };
+var inputSize2 = 224;
+var anchorTensor;
+var numLayers = 5;
+var strides = [8, 16, 32, 32, 32];
+async function createAnchors() {
+  const anchors4 = [];
+  let layerId = 0;
+  while (layerId < numLayers) {
+    let anchorCount = 0;
+    let lastSameStrideLayer = layerId;
+    while (lastSameStrideLayer < strides.length && strides[lastSameStrideLayer] === strides[layerId]) {
+      anchorCount += 2;
+      lastSameStrideLayer++;
+    }
+    const stride = strides[layerId];
+    const featureMapHeight = Math.ceil(inputSize2 / stride);
+    const featureMapWidth = Math.ceil(inputSize2 / stride);
+    for (let y2 = 0; y2 < featureMapHeight; ++y2) {
+      for (let x2 = 0; x2 < featureMapWidth; ++x2) {
+        for (let anchorId = 0; anchorId < anchorCount; ++anchorId) {
+          anchors4.push({ x: (x2 + 0.5) / featureMapWidth, y: (y2 + 0.5) / featureMapHeight });
+        }
+      }
+    }
+    layerId = lastSameStrideLayer;
+  }
+  anchorTensor = { x: tensor1d(anchors4.map((a6) => a6.x)), y: tensor1d(anchors4.map((a6) => a6.y)) };
+}
+function calc(keypoints, outputSize2 = [1, 1]) {
+  const coords10 = [keypoints.map((pt) => pt[0]), keypoints.map((pt) => pt[1])];
+  const min7 = [Math.min(...coords10[0]), Math.min(...coords10[1])];
+  const max7 = [Math.max(...coords10[0]), Math.max(...coords10[1])];
+  const box5 = [min7[0], min7[1], max7[0] - min7[0], max7[1] - min7[1]];
+  const boxRaw = [box5[0] / outputSize2[0], box5[1] / outputSize2[1], box5[2] / outputSize2[0], box5[3] / outputSize2[1]];
+  return { box: box5, boxRaw };
+}
+function square4(keypoints, outputSize2 = [1, 1]) {
+  const coords10 = [keypoints.map((pt) => pt[0]), keypoints.map((pt) => pt[1])];
+  const min7 = [Math.min(...coords10[0]), Math.min(...coords10[1])];
+  const max7 = [Math.max(...coords10[0]), Math.max(...coords10[1])];
+  const center = [(min7[0] + max7[0]) / 2, (min7[1] + max7[1]) / 2];
+  const dist = Math.max(center[0] - min7[0], center[1] - min7[1], -center[0] + max7[0], -center[1] + max7[1]);
+  const box5 = [Math.trunc(center[0] - dist), Math.trunc(center[1] - dist), Math.trunc(2 * dist), Math.trunc(2 * dist)];
+  const boxRaw = [box5[0] / outputSize2[0], box5[1] / outputSize2[1], box5[2] / outputSize2[0], box5[3] / outputSize2[1]];
+  return { box: box5, boxRaw };
+}
+function scale2(box5, scaleFact) {
+  const dist = [box5[2] * scaleFact, box5[3] * scaleFact];
+  const newBox = [
+    box5[0] - (dist[0] - box5[2]) / 2,
+    box5[1] - (dist[1] - box5[3]) / 2,
+    dist[0],
+    dist[1]
+  ];
+  return newBox;
+}
+function crop(box5) {
+  const yxBox = [Math.max(0, box5[1]), Math.max(0, box5[0]), Math.min(1, box5[3] + box5[1]), Math.min(1, box5[2] + box5[0])];
+  return yxBox;
+}
 var env3 = { initial: true };
-var models = [null, null];
-var inputSize2 = [[0, 0], [0, 0]];
+var models = { detector: null, landmarks: null };
+var inputSize3 = { detector: [224, 224], landmarks: [256, 256] };
 var skipped5 = Number.MAX_SAFE_INTEGER;
-var outputNodes;
+var outputNodes = {
+  landmarks: ["ld_3d", "activation_segmentation", "activation_heatmap", "world_3d", "output_poseflag"],
+  detector: []
+};
 var cache = null;
+var cropBox;
 var padding = [[0, 0], [0, 0], [0, 0], [0, 0]];
 var lastTime5 = 0;
+var sigmoid6 = (x2) => 1 - 1 / (1 + Math.exp(x2));
 async function loadDetect(config3) {
-  var _a, _b, _c;
   if (env3.initial)
-    models[0] = null;
-  if (!models[0] && ((_a = config3.body.detector) == null ? void 0 : _a.modelPath) || "") {
-    models[0] = await loadGraphModel(join(config3.modelBasePath, ((_b = config3.body.detector) == null ? void 0 : _b.modelPath) || ""));
-    const inputs = Object.values(models[0].modelSignature["inputs"]);
-    inputSize2[0][0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
-    inputSize2[0][1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
-    if (!models[0] || !models[0]["modelUrl"])
-      log("load model failed:", (_c = config3.body.detector) == null ? void 0 : _c.modelPath);
+    models.detector = null;
+  if (!models.detector && config3.body["detector"] && config3.body["detector"]["modelPath"] || "") {
+    models.detector = await loadGraphModel(join(config3.modelBasePath, config3.body["detector"]["modelPath"] || ""));
+    const inputs = Object.values(models.detector.modelSignature["inputs"]);
+    inputSize3.detector[0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
+    inputSize3.detector[1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
+    if (!models.detector || !models.detector["modelUrl"])
+      log("load model failed:", config3.body["detector"]["modelPath"]);
     else if (config3.debug)
-      log("load model:", models[0]["modelUrl"]);
-  } else if (config3.debug && models[0])
-    log("cached model:", models[0]["modelUrl"]);
-  return models[0];
+      log("load model:", models.detector["modelUrl"]);
+  } else if (config3.debug && models.detector)
+    log("cached model:", models.detector["modelUrl"]);
+  await createAnchors();
+  return models.detector;
 }
 async function loadPose(config3) {
-  var _a;
   if (env3.initial)
-    models[1] = null;
-  if (!models[1]) {
-    models[1] = await loadGraphModel(join(config3.modelBasePath, config3.body.modelPath || ""));
-    const inputs = Object.values(models[1].modelSignature["inputs"]);
-    inputSize2[1][0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
-    inputSize2[1][1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
-    if ((_a = config3.body.modelPath) == null ? void 0 : _a.includes("lite"))
-      outputNodes = ["ld_3d", "output_segmentation", "output_heatmap", "world_3d", "output_poseflag"];
-    else
-      outputNodes = ["Identity", "Identity_2", "Identity_3", "Identity_4", "Identity_1"];
-    if (!models[1] || !models[1]["modelUrl"])
+    models.landmarks = null;
+  if (!models.landmarks) {
+    models.landmarks = await loadGraphModel(join(config3.modelBasePath, config3.body.modelPath || ""));
+    const inputs = Object.values(models.landmarks.modelSignature["inputs"]);
+    inputSize3.landmarks[0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
+    inputSize3.landmarks[1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
+    if (!models.landmarks || !models.landmarks["modelUrl"])
       log("load model failed:", config3.body.modelPath);
     else if (config3.debug)
-      log("load model:", models[1]["modelUrl"]);
+      log("load model:", models.landmarks["modelUrl"]);
   } else if (config3.debug)
-    log("cached model:", models[1]["modelUrl"]);
-  return models[1];
+    log("cached model:", models.landmarks["modelUrl"]);
+  return models.landmarks;
 }
-function calculateBoxes(keypoints, outputSize2) {
-  const x2 = keypoints.map((a6) => a6.position[0]);
-  const y2 = keypoints.map((a6) => a6.position[1]);
-  const keypointsBox = [Math.min(...x2), Math.min(...y2), Math.max(...x2) - Math.min(...x2), Math.max(...y2) - Math.min(...y2)];
-  const keypointsBoxRaw = [keypointsBox[0] / outputSize2[0], keypointsBox[1] / outputSize2[1], keypointsBox[2] / outputSize2[0], keypointsBox[3] / outputSize2[1]];
-  return { keypointsBox, keypointsBoxRaw };
-}
-async function prepareImage(input2) {
+async function prepareImage(input2, size2) {
   const t2 = {};
   if (!input2.shape || !input2.shape[1] || !input2.shape[2])
     return input2;
-  padding = [
-    [0, 0],
-    [input2.shape[2] > input2.shape[1] ? Math.trunc((input2.shape[2] - input2.shape[1]) / 2) : 0, input2.shape[2] > input2.shape[1] ? Math.trunc((input2.shape[2] - input2.shape[1]) / 2) : 0],
-    [input2.shape[1] > input2.shape[2] ? Math.trunc((input2.shape[1] - input2.shape[2]) / 2) : 0, input2.shape[1] > input2.shape[2] ? Math.trunc((input2.shape[1] - input2.shape[2]) / 2) : 0],
-    [0, 0]
-  ];
-  t2.pad = pad(input2, padding);
-  t2.resize = image.resizeBilinear(t2.pad, [inputSize2[1][0], inputSize2[1][1]]);
-  const final = div(t2.resize, 255);
+  let final;
+  if (cropBox) {
+    t2.cropped = image.cropAndResize(input2, [cropBox], [0], [input2.shape[1], input2.shape[2]]);
+  }
+  if (input2.shape[1] !== input2.shape[2]) {
+    const height = [
+      input2.shape[2] > input2.shape[1] ? Math.trunc((input2.shape[2] - input2.shape[1]) / 2) : 0,
+      input2.shape[2] > input2.shape[1] ? Math.trunc((input2.shape[2] - input2.shape[1]) / 2) : 0
+    ];
+    const width = [
+      input2.shape[1] > input2.shape[2] ? Math.trunc((input2.shape[1] - input2.shape[2]) / 2) : 0,
+      input2.shape[1] > input2.shape[2] ? Math.trunc((input2.shape[1] - input2.shape[2]) / 2) : 0
+    ];
+    padding = [
+      [0, 0],
+      height,
+      width,
+      [0, 0]
+    ];
+    t2.pad = pad(t2.cropped || input2, padding);
+    t2.resize = image.resizeBilinear(t2.pad, [size2, size2]);
+    final = div(t2.resize, constants.tf255);
+  } else if (input2.shape[1] !== size2) {
+    t2.resize = image.resizeBilinear(t2.cropped || input2, [size2, size2]);
+    final = div(t2.resize, constants.tf255);
+  } else {
+    final = div(t2.cropped || input2, constants.tf255);
+  }
   Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
   return final;
 }
 function rescaleKeypoints(keypoints, outputSize2) {
   for (const kpt4 of keypoints) {
     kpt4.position = [
-      kpt4.position[0] * (outputSize2[0] + padding[2][0] + padding[2][1]) / outputSize2[0] - padding[2][0],
-      kpt4.position[1] * (outputSize2[1] + padding[1][0] + padding[1][1]) / outputSize2[1] - padding[1][0],
+      Math.trunc(kpt4.position[0] * (outputSize2[0] + padding[2][0] + padding[2][1]) / outputSize2[0] - padding[2][0]),
+      Math.trunc(kpt4.position[1] * (outputSize2[1] + padding[1][0] + padding[1][1]) / outputSize2[1] - padding[1][0]),
       kpt4.position[2]
     ];
-    kpt4.positionRaw = [
-      kpt4.position[0] / outputSize2[0],
-      kpt4.position[1] / outputSize2[1],
-      kpt4.position[2]
-    ];
+    kpt4.positionRaw = [kpt4.position[0] / outputSize2[0], kpt4.position[1] / outputSize2[1], kpt4.position[2]];
+  }
+  if (cropBox) {
+    for (const kpt4 of keypoints) {
+      kpt4.positionRaw = [
+        kpt4.positionRaw[0] + cropBox[1],
+        kpt4.positionRaw[1] + cropBox[0],
+        kpt4.positionRaw[2]
+      ];
+      kpt4.position = [
+        Math.trunc(kpt4.positionRaw[0] * outputSize2[0]),
+        Math.trunc(kpt4.positionRaw[1] * outputSize2[1]),
+        kpt4.positionRaw[2]
+      ];
+    }
   }
   return keypoints;
 }
-var sigmoid6 = (x2) => 1 - 1 / (1 + Math.exp(x2));
-async function detectParts(input2, config3, outputSize2) {
+async function detectLandmarks(input2, config3, outputSize2) {
   var _a;
   const t2 = {};
-  t2.input = await prepareImage(input2);
-  [t2.ld, t2.segmentation, t2.heatmap, t2.world, t2.poseflag] = (_a = models[1]) == null ? void 0 : _a.execute(t2.input, outputNodes);
-  const poseScoreRaw = (await t2.poseflag.data())[0];
-  const poseScore = Math.max(0, (poseScoreRaw - 0.8) / (1 - 0.8));
+  [t2.ld, t2.segmentation, t2.heatmap, t2.world, t2.poseflag] = (_a = models.landmarks) == null ? void 0 : _a.execute(input2, outputNodes.landmarks);
+  const poseScore = (await t2.poseflag.data())[0];
   const points = await t2.ld.data();
+  Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
   const keypointsRelative = [];
   const depth = 5;
   for (let i2 = 0; i2 < points.length / depth; i2++) {
     const score = sigmoid6(points[depth * i2 + 3]);
     const presence = sigmoid6(points[depth * i2 + 4]);
     const adjScore = Math.trunc(100 * score * presence * poseScore) / 100;
-    const positionRaw = [points[depth * i2 + 0] / inputSize2[1][0], points[depth * i2 + 1] / inputSize2[1][1], points[depth * i2 + 2] + 0];
+    const positionRaw = [points[depth * i2 + 0] / inputSize3.landmarks[0], points[depth * i2 + 1] / inputSize3.landmarks[1], points[depth * i2 + 2] + 0];
     const position = [Math.trunc(outputSize2[0] * positionRaw[0]), Math.trunc(outputSize2[1] * positionRaw[1]), positionRaw[2]];
     keypointsRelative.push({ part: kpt[i2], positionRaw, position, score: adjScore });
   }
   if (poseScore < (config3.body.minConfidence || 0))
     return null;
   const keypoints = rescaleKeypoints(keypointsRelative, outputSize2);
-  const boxes = calculateBoxes(keypoints, [outputSize2[0], outputSize2[1]]);
-  Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
+  const kpts = keypoints.map((k3) => k3.position);
+  const boxes = calc(kpts, [outputSize2[0], outputSize2[1]]);
   const annotations2 = {};
   for (const [name, indexes] of Object.entries(connected)) {
     const pt = [];
     for (let i2 = 0; i2 < indexes.length - 1; i2++) {
       const pt0 = keypoints.find((kpt4) => kpt4.part === indexes[i2]);
       const pt1 = keypoints.find((kpt4) => kpt4.part === indexes[i2 + 1]);
-      if (pt0 && pt1 && pt0.score > (config3.body.minConfidence || 0) && pt1.score > (config3.body.minConfidence || 0))
+      if (pt0 && pt1)
         pt.push([pt0.position, pt1.position]);
     }
     annotations2[name] = pt;
   }
-  const body4 = { id: 0, score: Math.trunc(100 * poseScore) / 100, box: boxes.keypointsBox, boxRaw: boxes.keypointsBoxRaw, keypoints, annotations: annotations2 };
+  const body4 = { id: 0, score: Math.trunc(100 * poseScore) / 100, box: boxes.box, boxRaw: boxes.boxRaw, keypoints, annotations: annotations2 };
   return body4;
 }
 async function predict5(input2, config3) {
@@ -104068,13 +104655,14 @@ async function predict5(input2, config3) {
   if (config3.skipAllowed && skipTime && skipFrame && cache !== null) {
     skipped5++;
   } else {
-    cache = await detectParts(input2, config3, outputSize2);
+    const t2 = {};
+    t2.landmarks = await prepareImage(input2, 256);
+    cache = await detectLandmarks(t2.landmarks, config3, outputSize2);
+    Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
     lastTime5 = now2();
     skipped5 = 0;
   }
-  if (cache)
-    return [cache];
-  return [];
+  return cache ? [cache] : [];
 }
 var labels = [
   { class: 1, label: "person" },
@@ -104159,7 +104747,7 @@ var labels = [
   { class: 80, label: "toothbrush" }
 ];
 var model7;
-var inputSize3 = 0;
+var inputSize4 = 0;
 var last5 = [];
 var lastTime6 = 0;
 var skipped6 = Number.MAX_SAFE_INTEGER;
@@ -104169,7 +104757,7 @@ async function load6(config3) {
   if (!model7) {
     model7 = await loadGraphModel(join(config3.modelBasePath, config3.object.modelPath || ""));
     const inputs = Object.values(model7.modelSignature["inputs"]);
-    inputSize3 = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
+    inputSize4 = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
     if (!model7 || !model7["modelUrl"])
       log("load model failed:", config3.object.modelPath);
     else if (config3.debug)
@@ -104181,47 +104769,42 @@ async function load6(config3) {
 async function process3(res2, outputShape, config3) {
   if (!res2)
     return [];
+  const t2 = {};
   const results = [];
   const detections = await res2.array();
-  const squeezeT = squeeze(res2);
-  dispose(res2);
-  const arr = split(squeezeT, 6, 1);
-  dispose(squeezeT);
-  const stackT = stack([arr[1], arr[0], arr[3], arr[2]], 1);
-  const boxesT = squeeze(stackT);
-  dispose(stackT);
-  const scoresT = squeeze(arr[4]);
-  const classesT = squeeze(arr[5]);
-  arr.forEach((t2) => dispose(t2));
-  const nmsT = await image.nonMaxSuppressionAsync(boxesT, scoresT, config3.object.maxDetected, config3.object.iouThreshold, config3.object.minConfidence);
-  dispose(boxesT);
-  dispose(scoresT);
-  dispose(classesT);
-  const nms = await nmsT.data();
-  dispose(nmsT);
+  t2.squeeze = squeeze(res2);
+  const arr = split(t2.squeeze, 6, 1);
+  t2.stack = stack([arr[1], arr[0], arr[3], arr[2]], 1);
+  t2.boxes = squeeze(t2.stack);
+  t2.scores = squeeze(arr[4]);
+  t2.classes = squeeze(arr[5]);
+  dispose([res2, ...arr]);
+  t2.nms = await image.nonMaxSuppressionAsync(t2.boxes, t2.scores, config3.object.maxDetected, config3.object.iouThreshold, config3.object.minConfidence);
+  const nms = await t2.nms.data();
   let i2 = 0;
-  for (const id of nms) {
+  for (const id of Array.from(nms)) {
     const score = Math.trunc(100 * detections[0][id][4]) / 100;
     const classVal = detections[0][id][5];
     const label = labels[classVal].label;
     const [x2, y2] = [
-      detections[0][id][0] / inputSize3,
-      detections[0][id][1] / inputSize3
+      detections[0][id][0] / inputSize4,
+      detections[0][id][1] / inputSize4
     ];
     const boxRaw = [
       x2,
       y2,
-      detections[0][id][2] / inputSize3 - x2,
-      detections[0][id][3] / inputSize3 - y2
+      detections[0][id][2] / inputSize4 - x2,
+      detections[0][id][3] / inputSize4 - y2
     ];
-    const box4 = [
+    const box5 = [
       Math.trunc(boxRaw[0] * outputShape[0]),
       Math.trunc(boxRaw[1] * outputShape[1]),
       Math.trunc(boxRaw[2] * outputShape[0]),
       Math.trunc(boxRaw[3] * outputShape[1])
     ];
-    results.push({ id: i2++, score, class: classVal, label, box: box4, boxRaw });
+    results.push({ id: i2++, score, class: classVal, label, box: box5, boxRaw });
   }
+  Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
   return results;
 }
 async function predict6(input2, config3) {
@@ -104234,7 +104817,7 @@ async function predict6(input2, config3) {
   skipped6 = 0;
   return new Promise(async (resolve) => {
     const outputSize2 = [input2.shape[2], input2.shape[1]];
-    const resize = image.resizeBilinear(input2, [inputSize3, inputSize3]);
+    const resize = image.resizeBilinear(input2, [inputSize4, inputSize4]);
     const objectT = config3.object.enabled ? model7 == null ? void 0 : model7.execute(resize, ["tower_0/detections"]) : null;
     lastTime6 = now2();
     dispose(resize);
@@ -104291,19 +104874,22 @@ async function load7(config3) {
     log("cached model:", model8["modelUrl"]);
   return model8;
 }
-function max2d(inputs, minScore) {
+async function max2d(inputs, minScore) {
   const [width, height] = inputs.shape;
-  return tidy(() => {
-    const reshaped = reshape(inputs, [height * width]);
-    const newScore = max(reshaped, 0).dataSync()[0];
-    if (newScore > minScore) {
-      const coordinates = argMax(reshaped, 0);
-      const x2 = mod(coordinates, width).dataSync()[0];
-      const y2 = div(coordinates, scalar(width, "int32")).dataSync()[0];
-      return [x2, y2, newScore];
-    }
-    return [0, 0, newScore];
-  });
+  const reshaped = reshape(inputs, [height * width]);
+  const max7 = max(reshaped, 0);
+  const newScore = (await max7.data())[0];
+  dispose([reshaped, max7]);
+  if (newScore > minScore) {
+    const coordinates = argMax(reshaped, 0);
+    const mod4 = mod(coordinates, width);
+    const x2 = (await mod4.data())[0];
+    const div3 = div(coordinates, scalar(width, "int32"));
+    const y2 = (await div3.data())[0];
+    dispose([mod4, div3]);
+    return [x2, y2, newScore];
+  }
+  return [0, 0, newScore];
 }
 async function predict7(image7, config3) {
   const skipTime = (config3.body.skipTime || 0) > now2() - lastTime7;
@@ -104319,8 +104905,8 @@ async function predict7(image7, config3) {
       if (!(model8 == null ? void 0 : model8.inputs[0].shape))
         return null;
       const resize = image.resizeBilinear(image7, [model8.inputs[0].shape[2], model8.inputs[0].shape[1]], false);
-      const enhance3 = mul(resize, 2);
-      const norm2 = enhance3.sub(1);
+      const enhance3 = mul(resize, constants.tf2);
+      const norm2 = sub(enhance3, constants.tf1);
       return norm2;
     });
     let resT;
@@ -104335,7 +104921,7 @@ async function predict7(image7, config3) {
       const stack2 = squeeze2.unstack(2);
       dispose(squeeze2);
       for (let id = 0; id < stack2.length; id++) {
-        const [x22, y22, partScore] = max2d(stack2[id], config3.body.minConfidence);
+        const [x22, y22, partScore] = await max2d(stack2[id], config3.body.minConfidence);
         if (partScore > (((_a = config3.body) == null ? void 0 : _a.minConfidence) || 0)) {
           cache2.keypoints.push({
             score: Math.round(100 * partScore) / 100,
@@ -104389,7 +104975,6 @@ var last6 = [];
 var lastCount5 = 0;
 var lastTime8 = 0;
 var skipped8 = Number.MAX_SAFE_INTEGER;
-var rgb2 = [0.2989, 0.587, 0.114];
 async function load8(config3) {
   var _a, _b;
   if (env2.initial)
@@ -104420,15 +105005,12 @@ async function predict8(image7, config3, idx, count3) {
     const obj = [];
     if ((_a2 = config3.face.emotion) == null ? void 0 : _a2.enabled) {
       const t2 = {};
-      const inputSize8 = (model9 == null ? void 0 : model9.inputs[0].shape) ? model9.inputs[0].shape[2] : 0;
-      t2.resize = image.resizeBilinear(image7, [inputSize8, inputSize8], false);
-      [t2.red, t2.green, t2.blue] = split(t2.resize, 3, 3);
-      t2.redNorm = mul(t2.red, rgb2[0]);
-      t2.greenNorm = mul(t2.green, rgb2[1]);
-      t2.blueNorm = mul(t2.blue, rgb2[2]);
-      t2.grayscale = addN([t2.redNorm, t2.greenNorm, t2.blueNorm]);
-      t2.grayscaleSub = sub(t2.grayscale, 0.5);
-      t2.grayscaleMul = mul(t2.grayscaleSub, 2);
+      const inputSize9 = (model9 == null ? void 0 : model9.inputs[0].shape) ? model9.inputs[0].shape[2] : 0;
+      t2.resize = image.resizeBilinear(image7, [inputSize9, inputSize9], false);
+      t2.channels = mul(t2.resize, constants.rgb);
+      t2.grayscale = sum2(t2.channels, 3, true);
+      t2.grayscaleSub = sub(t2.grayscale, constants.tf05);
+      t2.grayscaleMul = mul(t2.grayscaleSub, constants.tf2);
       t2.emotion = model9 == null ? void 0 : model9.execute(t2.grayscaleMul);
       lastTime8 = now2();
       const data = await t2.emotion.data();
@@ -104490,7 +105072,7 @@ async function predict9(input2, config3, idx, count3) {
   });
 }
 var model11;
-var inputSize4 = 0;
+var inputSize5 = 0;
 var irisEnlarge = 2.3;
 var leftOutline = meshAnnotations["leftEyeLower0"];
 var rightOutline = meshAnnotations["rightEyeLower0"];
@@ -104516,9 +105098,9 @@ async function load10(config3) {
       log("load model:", model11["modelUrl"]);
   } else if (config3.debug)
     log("cached model:", model11["modelUrl"]);
-  inputSize4 = model11.inputs[0].shape ? model11.inputs[0].shape[2] : 0;
-  if (inputSize4 === -1)
-    inputSize4 = 64;
+  inputSize5 = model11.inputs[0].shape ? model11.inputs[0].shape[2] : 0;
+  if (inputSize5 === -1)
+    inputSize5 = 64;
   return model11;
 }
 function replaceRawCoordinates(rawCoords, newCoords, prefix, keys) {
@@ -104543,20 +105125,20 @@ var getLeftToRightEyeDepthDifference = (rawCoords) => {
   return leftEyeZ - rightEyeZ;
 };
 var getEyeBox = (rawCoords, face5, eyeInnerCornerIndex, eyeOuterCornerIndex, meshSize, flip = false) => {
-  const box4 = squarifyBox(enlargeBox(calculateLandmarksBoundingBox([rawCoords[eyeInnerCornerIndex], rawCoords[eyeOuterCornerIndex]]), irisEnlarge));
-  const boxSize = getBoxSize(box4);
+  const box5 = squarifyBox(enlargeBox(calculateLandmarksBoundingBox([rawCoords[eyeInnerCornerIndex], rawCoords[eyeOuterCornerIndex]]), irisEnlarge));
+  const boxSize = getBoxSize(box5);
   let crop2 = image.cropAndResize(face5, [[
-    box4.startPoint[1] / meshSize,
-    box4.startPoint[0] / meshSize,
-    box4.endPoint[1] / meshSize,
-    box4.endPoint[0] / meshSize
-  ]], [0], [inputSize4, inputSize4]);
+    box5.startPoint[1] / meshSize,
+    box5.startPoint[0] / meshSize,
+    box5.endPoint[1] / meshSize,
+    box5.endPoint[0] / meshSize
+  ]], [0], [inputSize5, inputSize5]);
   if (flip && env2.kernels.includes("flipleftright")) {
     const flipped = image.flipLeftRight(crop2);
     dispose(crop2);
     crop2 = flipped;
   }
-  return { box: box4, boxSize, crop: crop2 };
+  return { box: box5, boxSize, crop: crop2 };
 };
 var getEyeCoords = (eyeData, eyeBox, eyeBoxSize, flip = false) => {
   const eyeRawCoords = [];
@@ -104565,8 +105147,8 @@ var getEyeCoords = (eyeData, eyeBox, eyeBoxSize, flip = false) => {
     const y2 = eyeData[i2 * 3 + 1];
     const z2 = eyeData[i2 * 3 + 2];
     eyeRawCoords.push([
-      (flip ? 1 - x2 / inputSize4 : x2 / inputSize4) * eyeBoxSize[0] + eyeBox.startPoint[0],
-      y2 / inputSize4 * eyeBoxSize[1] + eyeBox.startPoint[1],
+      (flip ? 1 - x2 / inputSize5 : x2 / inputSize5) * eyeBoxSize[0] + eyeBox.startPoint[0],
+      y2 / inputSize5 * eyeBoxSize[1] + eyeBox.startPoint[1],
       z2
     ]);
   }
@@ -104619,37 +105201,29 @@ async function augmentIris(rawCoords, face5, config3, meshSize) {
   const newCoords = rawCoords.concat(adjustedLeftIrisCoords).concat(adjustedRightIrisCoords);
   return newCoords;
 }
-var boxCache = [];
+var cache3 = {
+  boxes: [],
+  skipped: Number.MAX_SAFE_INTEGER,
+  timestamp: 0
+};
 var model12 = null;
-var inputSize5 = 0;
-var skipped10 = Number.MAX_SAFE_INTEGER;
-var lastTime10 = 0;
+var inputSize6 = 0;
 async function predict10(input2, config3) {
-  var _a, _b, _c, _d, _e2, _f, _g, _h, _i, _j, _k, _l;
-  const skipTime = (((_a = config3.face.detector) == null ? void 0 : _a.skipTime) || 0) > now2() - lastTime10;
-  const skipFrame = skipped10 < (((_b = config3.face.detector) == null ? void 0 : _b.skipFrames) || 0);
-  if (!config3.skipAllowed || !skipTime || !skipFrame || boxCache.length === 0) {
-    const possibleBoxes = await getBoxes(input2, config3);
-    lastTime10 = now2();
-    boxCache = [];
-    for (const possible of possibleBoxes.boxes) {
-      const box4 = {
-        startPoint: possible.box.startPoint,
-        endPoint: possible.box.endPoint,
-        landmarks: possible.landmarks,
-        confidence: possible.confidence
-      };
-      boxCache.push(squarifyBox(enlargeBox(scaleBoxCoordinates(box4, possibleBoxes.scaleFactor), Math.sqrt(((_c = config3.face.detector) == null ? void 0 : _c.cropFactor) || 1.6))));
-    }
-    skipped10 = 0;
+  var _a, _b, _c, _d, _e2, _f, _g, _h;
+  const skipTime = (((_a = config3.face.detector) == null ? void 0 : _a.skipTime) || 0) > now2() - cache3.timestamp;
+  const skipFrame = cache3.skipped < (((_b = config3.face.detector) == null ? void 0 : _b.skipFrames) || 0);
+  if (!config3.skipAllowed || !skipTime || !skipFrame || cache3.boxes.length === 0) {
+    cache3.boxes = await getBoxes(input2, config3);
+    cache3.timestamp = now2();
+    cache3.skipped = 0;
   } else {
-    skipped10++;
+    cache3.skipped++;
   }
   const faces = [];
   const newCache = [];
   let id = 0;
-  for (let i2 = 0; i2 < boxCache.length; i2++) {
-    let box4 = boxCache[i2];
+  for (let i2 = 0; i2 < cache3.boxes.length; i2++) {
+    const box5 = cache3.boxes[i2];
     let angle2 = 0;
     let rotationMatrix;
     const face5 = {
@@ -104663,22 +105237,22 @@ async function predict10(input2, config3) {
       faceScore: 0,
       annotations: {}
     };
-    [angle2, rotationMatrix, face5.tensor] = correctFaceRotation(!((_d = config3.face.mesh) == null ? void 0 : _d.enabled) && ((_e2 = config3.face.detector) == null ? void 0 : _e2.rotation), box4, input2, ((_f = config3.face.mesh) == null ? void 0 : _f.enabled) ? inputSize5 : size());
-    if ((_g = config3 == null ? void 0 : config3.filter) == null ? void 0 : _g.equalization) {
+    [angle2, rotationMatrix, face5.tensor] = correctFaceRotation((_c = config3.face.detector) == null ? void 0 : _c.rotation, box5, input2, ((_d = config3.face.mesh) == null ? void 0 : _d.enabled) ? inputSize6 : size());
+    if ((_e2 = config3 == null ? void 0 : config3.filter) == null ? void 0 : _e2.equalization) {
       const equilized = await histogramEqualization(face5.tensor);
       dispose(face5.tensor);
       face5.tensor = equilized;
     }
-    face5.boxScore = Math.round(100 * box4.confidence) / 100;
-    if (!((_h = config3.face.mesh) == null ? void 0 : _h.enabled)) {
-      face5.box = getClampedBox(box4, input2);
-      face5.boxRaw = getRawBox(box4, input2);
+    face5.boxScore = Math.round(100 * box5.confidence) / 100;
+    if (!((_f = config3.face.mesh) == null ? void 0 : _f.enabled)) {
+      face5.box = clampBox(box5, input2);
+      face5.boxRaw = getRawBox(box5, input2);
       face5.score = face5.boxScore;
-      face5.mesh = box4.landmarks.map((pt) => [
-        (box4.startPoint[0] + box4.endPoint[0]) / 2 + (box4.endPoint[0] + box4.startPoint[0]) * pt[0] / size(),
-        (box4.startPoint[1] + box4.endPoint[1]) / 2 + (box4.endPoint[1] + box4.startPoint[1]) * pt[1] / size()
+      face5.mesh = box5.landmarks.map((pt) => [
+        (box5.startPoint[0] + box5.endPoint[0]) / 2 + (box5.endPoint[0] + box5.startPoint[0]) * pt[0] / size(),
+        (box5.startPoint[1] + box5.endPoint[1]) / 2 + (box5.endPoint[1] + box5.startPoint[1]) * pt[1] / size()
       ]);
-      face5.meshRaw = face5.mesh.map((pt) => [pt[0] / (input2.shape[2] || 0), pt[1] / (input2.shape[1] || 0), (pt[2] || 0) / inputSize5]);
+      face5.meshRaw = face5.mesh.map((pt) => [pt[0] / (input2.shape[2] || 0), pt[1] / (input2.shape[1] || 0), (pt[2] || 0) / inputSize6]);
       for (const key of Object.keys(blazeFaceLandmarks))
         face5.annotations[key] = [face5.mesh[blazeFaceLandmarks[key]]];
     } else if (!model12) {
@@ -104691,27 +105265,25 @@ async function predict10(input2, config3) {
       const coordsReshaped = reshape(contourCoords, [-1, 3]);
       let rawCoords = await coordsReshaped.array();
       dispose([contourCoords, coordsReshaped, confidence, contours]);
-      if (face5.faceScore < (((_i = config3.face.detector) == null ? void 0 : _i.minConfidence) || 1)) {
-        box4.confidence = face5.faceScore;
+      if (face5.faceScore < (((_g = config3.face.detector) == null ? void 0 : _g.minConfidence) || 1)) {
+        box5.confidence = face5.faceScore;
       } else {
-        if ((_j = config3.face.iris) == null ? void 0 : _j.enabled)
-          rawCoords = await augmentIris(rawCoords, face5.tensor, config3, inputSize5);
-        face5.mesh = transformRawCoords(rawCoords, box4, angle2, rotationMatrix, inputSize5);
-        face5.meshRaw = face5.mesh.map((pt) => [pt[0] / (input2.shape[2] || 0), pt[1] / (input2.shape[1] || 0), (pt[2] || 0) / inputSize5]);
+        if ((_h = config3.face.iris) == null ? void 0 : _h.enabled)
+          rawCoords = await augmentIris(rawCoords, face5.tensor, config3, inputSize6);
+        face5.mesh = transformRawCoords(rawCoords, box5, angle2, rotationMatrix, inputSize6);
+        face5.meshRaw = face5.mesh.map((pt) => [pt[0] / (input2.shape[2] || 0), pt[1] / (input2.shape[1] || 0), (pt[2] || 0) / inputSize6]);
         for (const key of Object.keys(meshAnnotations))
           face5.annotations[key] = meshAnnotations[key].map((index2) => face5.mesh[index2]);
-        box4 = squarifyBox({ ...enlargeBox(calculateLandmarksBoundingBox(face5.mesh), ((_k = config3.face.detector) == null ? void 0 : _k.cropFactor) || 1.6), confidence: box4.confidence });
-        face5.box = getClampedBox(box4, input2);
-        face5.boxRaw = getRawBox(box4, input2);
         face5.score = face5.faceScore;
-        newCache.push(box4);
-        dispose(face5.tensor);
-        [angle2, rotationMatrix, face5.tensor] = correctFaceRotation((_l = config3.face.detector) == null ? void 0 : _l.rotation, box4, input2, inputSize5);
+        const calculatedBox = { ...calculateFaceBox(face5.mesh, box5), confidence: box5.confidence, landmarks: box5.landmarks };
+        face5.box = clampBox(calculatedBox, input2);
+        face5.boxRaw = getRawBox(calculatedBox, input2);
+        newCache.push(calculatedBox);
       }
     }
     faces.push(face5);
   }
-  boxCache = [...newCache];
+  cache3.boxes = newCache;
   return faces;
 }
 async function load11(config3) {
@@ -104726,18 +105298,16 @@ async function load11(config3) {
       log("load model:", model12["modelUrl"]);
   } else if (config3.debug)
     log("cached model:", model12["modelUrl"]);
-  inputSize5 = model12.inputs[0].shape ? model12.inputs[0].shape[2] : 0;
-  if (inputSize5 === -1)
-    inputSize5 = 64;
+  inputSize6 = model12.inputs[0].shape ? model12.inputs[0].shape[2] : 0;
   return model12;
 }
 var triangulation = TRI468;
 var uvmap = UV468;
 var model13;
 var last8 = [];
-var lastTime11 = 0;
+var lastTime10 = 0;
 var lastCount7 = 0;
-var skipped11 = Number.MAX_SAFE_INTEGER;
+var skipped10 = Number.MAX_SAFE_INTEGER;
 async function load12(config3) {
   var _a, _b;
   const modelUrl = join(config3.modelBasePath, ((_a = config3.face.description) == null ? void 0 : _a.modelPath) || "");
@@ -104758,7 +105328,7 @@ function enhance2(input2) {
   if (!(model13 == null ? void 0 : model13.inputs[0].shape))
     return tensor2;
   const crop2 = image.resizeBilinear(tensor2, [model13.inputs[0].shape[2], model13.inputs[0].shape[1]], false);
-  const norm2 = mul(crop2, 255);
+  const norm2 = mul(crop2, constants.tf255);
   dispose(crop2);
   return norm2;
 }
@@ -104766,13 +105336,13 @@ async function predict11(image7, config3, idx, count3) {
   var _a, _b, _c, _d;
   if (!model13)
     return { age: 0, gender: "unknown", genderScore: 0, descriptor: [] };
-  const skipFrame = skipped11 < (((_a = config3.face.description) == null ? void 0 : _a.skipFrames) || 0);
-  const skipTime = (((_b = config3.face.description) == null ? void 0 : _b.skipTime) || 0) > now2() - lastTime11;
+  const skipFrame = skipped10 < (((_a = config3.face.description) == null ? void 0 : _a.skipFrames) || 0);
+  const skipTime = (((_b = config3.face.description) == null ? void 0 : _b.skipTime) || 0) > now2() - lastTime10;
   if (config3.skipAllowed && skipFrame && skipTime && lastCount7 === count3 && ((_c = last8[idx]) == null ? void 0 : _c.age) && ((_d = last8[idx]) == null ? void 0 : _d.age) > 0) {
-    skipped11++;
+    skipped10++;
     return last8[idx];
   }
-  skipped11 = 0;
+  skipped10 = 0;
   return new Promise(async (resolve) => {
     var _a2, _b2;
     const obj = {
@@ -104784,7 +105354,7 @@ async function predict11(image7, config3, idx, count3) {
     if ((_a2 = config3.face.description) == null ? void 0 : _a2.enabled) {
       const enhanced = enhance2(image7);
       const resT = model13 == null ? void 0 : model13.execute(enhanced);
-      lastTime11 = now2();
+      lastTime10 = now2();
       dispose(enhanced);
       const genderT = await resT.find((t2) => t2.shape[1] === 1);
       const gender = await genderT.data();
@@ -104809,54 +105379,54 @@ async function predict11(image7, config3, idx, count3) {
     resolve(obj);
   });
 }
-function getBoxSize2(box4) {
+function getBoxSize2(box5) {
   return [
-    Math.abs(box4.endPoint[0] - box4.startPoint[0]),
-    Math.abs(box4.endPoint[1] - box4.startPoint[1])
+    Math.abs(box5.endPoint[0] - box5.startPoint[0]),
+    Math.abs(box5.endPoint[1] - box5.startPoint[1])
   ];
 }
-function getBoxCenter2(box4) {
+function getBoxCenter2(box5) {
   return [
-    box4.startPoint[0] + (box4.endPoint[0] - box4.startPoint[0]) / 2,
-    box4.startPoint[1] + (box4.endPoint[1] - box4.startPoint[1]) / 2
+    box5.startPoint[0] + (box5.endPoint[0] - box5.startPoint[0]) / 2,
+    box5.startPoint[1] + (box5.endPoint[1] - box5.startPoint[1]) / 2
   ];
 }
-function cutBoxFromImageAndResize2(box4, image7, cropSize) {
+function cutBoxFromImageAndResize(box5, image7, cropSize) {
   const h2 = image7.shape[1];
   const w2 = image7.shape[2];
   const boxes = [[
-    box4.startPoint[1] / h2,
-    box4.startPoint[0] / w2,
-    box4.endPoint[1] / h2,
-    box4.endPoint[0] / w2
+    box5.startPoint[1] / h2,
+    box5.startPoint[0] / w2,
+    box5.endPoint[1] / h2,
+    box5.endPoint[0] / w2
   ]];
   return image.cropAndResize(image7, boxes, [0], cropSize);
 }
-function scaleBoxCoordinates2(box4, factor) {
-  const startPoint = [box4.startPoint[0] * factor[0], box4.startPoint[1] * factor[1]];
-  const endPoint = [box4.endPoint[0] * factor[0], box4.endPoint[1] * factor[1]];
-  const palmLandmarks = box4.palmLandmarks.map((coord) => {
+function scaleBoxCoordinates2(box5, factor) {
+  const startPoint = [box5.startPoint[0] * factor[0], box5.startPoint[1] * factor[1]];
+  const endPoint = [box5.endPoint[0] * factor[0], box5.endPoint[1] * factor[1]];
+  const palmLandmarks = box5.palmLandmarks.map((coord) => {
     const scaledCoord = [coord[0] * factor[0], coord[1] * factor[1]];
     return scaledCoord;
   });
-  return { startPoint, endPoint, palmLandmarks, confidence: box4.confidence };
+  return { startPoint, endPoint, palmLandmarks, confidence: box5.confidence };
 }
-function enlargeBox2(box4, factor = 1.5) {
-  const center = getBoxCenter2(box4);
-  const size2 = getBoxSize2(box4);
+function enlargeBox2(box5, factor = 1.5) {
+  const center = getBoxCenter2(box5);
+  const size2 = getBoxSize2(box5);
   const newHalfSize = [factor * size2[0] / 2, factor * size2[1] / 2];
   const startPoint = [center[0] - newHalfSize[0], center[1] - newHalfSize[1]];
   const endPoint = [center[0] + newHalfSize[0], center[1] + newHalfSize[1]];
-  return { startPoint, endPoint, palmLandmarks: box4.palmLandmarks };
+  return { startPoint, endPoint, palmLandmarks: box5.palmLandmarks };
 }
-function squarifyBox2(box4) {
-  const centers = getBoxCenter2(box4);
-  const size2 = getBoxSize2(box4);
+function squarifyBox2(box5) {
+  const centers = getBoxCenter2(box5);
+  const size2 = getBoxSize2(box5);
   const maxEdge = Math.max(...size2);
   const halfSize = maxEdge / 2;
   const startPoint = [centers[0] - halfSize, centers[1] - halfSize];
   const endPoint = [centers[0] + halfSize, centers[1] + halfSize];
-  return { startPoint, endPoint, palmLandmarks: box4.palmLandmarks };
+  return { startPoint, endPoint, palmLandmarks: box5.palmLandmarks };
 }
 function normalizeRadians2(angle2) {
   return angle2 - 2 * Math.PI * Math.floor((angle2 + Math.PI) / (2 * Math.PI));
@@ -107907,8 +108477,8 @@ var HandDetector = class {
   async predict(input2, config3) {
     const t2 = {};
     t2.resize = image.resizeBilinear(input2, [this.inputSize, this.inputSize]);
-    t2.div = div(t2.resize, 127.5);
-    t2.image = sub(t2.div, 1);
+    t2.div = div(t2.resize, constants.tf127);
+    t2.image = sub(t2.div, constants.tf1);
     t2.batched = this.model.execute(t2.image);
     t2.predictions = squeeze(t2.batched);
     t2.slice = slice(t2.predictions, [0, 0], [-1, 1]);
@@ -107926,9 +108496,9 @@ var HandDetector = class {
       p22.slice = slice(t2.predictions, [index2, 5], [1, 14]);
       p22.norm = this.normalizeLandmarks(p22.slice, index2);
       p22.palmLandmarks = reshape(p22.norm, [-1, 2]);
-      const box4 = await p22.box.data();
-      const startPoint = box4.slice(0, 2);
-      const endPoint = box4.slice(2, 4);
+      const box5 = await p22.box.data();
+      const startPoint = box5.slice(0, 2);
+      const endPoint = box5.slice(2, 4);
       const palmLandmarks = await p22.palmLandmarks.array();
       const hand3 = { startPoint, endPoint, palmLandmarks, confidence: scores[index2] };
       const scaled = scaleBoxCoordinates2(hand3, [input2.shape[2] / this.inputSize, input2.shape[1] / this.inputSize]);
@@ -107944,7 +108514,7 @@ var handBoxEnlargeFactor = 1.65;
 var palmLandmarkIds = [0, 5, 9, 13, 17, 1, 2];
 var palmLandmarksPalmBase = 0;
 var palmLandmarksMiddleFingerBase = 2;
-var lastTime12 = 0;
+var lastTime11 = 0;
 var HandPipeline = class {
   constructor(handDetector, handPoseModel2) {
     __publicField(this, "handDetector");
@@ -108009,7 +108579,7 @@ var HandPipeline = class {
   async estimateHands(image7, config3) {
     let useFreshBox = false;
     let boxes;
-    const skipTime = (config3.hand.skipTime || 0) > now2() - lastTime12;
+    const skipTime = (config3.hand.skipTime || 0) > now2() - lastTime11;
     const skipFrame = this.skipped < (config3.hand.skipFrames || 0);
     if (config3.skipAllowed && skipTime && skipFrame) {
       boxes = await this.handDetector.predict(image7, config3);
@@ -108035,12 +108605,12 @@ var HandPipeline = class {
         const rotatedImage = config3.hand.rotation && env2.kernels.includes("rotatewithoffset") ? image.rotateWithOffset(image7, angle2, 0, palmCenterNormalized) : image7.clone();
         const rotationMatrix = buildRotationMatrix2(-angle2, palmCenter);
         const newBox = useFreshBox ? this.getBoxForPalmLandmarks(currentBox.palmLandmarks, rotationMatrix) : currentBox;
-        const croppedInput = cutBoxFromImageAndResize2(newBox, rotatedImage, [this.inputSize, this.inputSize]);
-        const handImage = div(croppedInput, 255);
+        const croppedInput = cutBoxFromImageAndResize(newBox, rotatedImage, [this.inputSize, this.inputSize]);
+        const handImage = div(croppedInput, constants.tf255);
         dispose(croppedInput);
         dispose(rotatedImage);
         const [confidenceT, keypoints] = this.handPoseModel.execute(handImage);
-        lastTime12 = now2();
+        lastTime11 = now2();
         dispose(handImage);
         const confidence = (await confidenceT.data())[0];
         dispose(confidenceT);
@@ -108504,24 +109074,24 @@ async function predict12(input2, config3) {
       }
     }
     const keypoints = predictions[i2].landmarks;
-    let box4 = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, 0, 0];
+    let box5 = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, 0, 0];
     let boxRaw = [0, 0, 0, 0];
     if (keypoints && keypoints.length > 0) {
       for (const pt of keypoints) {
-        if (pt[0] < box4[0])
-          box4[0] = pt[0];
-        if (pt[1] < box4[1])
-          box4[1] = pt[1];
-        if (pt[0] > box4[2])
-          box4[2] = pt[0];
-        if (pt[1] > box4[3])
-          box4[3] = pt[1];
+        if (pt[0] < box5[0])
+          box5[0] = pt[0];
+        if (pt[1] < box5[1])
+          box5[1] = pt[1];
+        if (pt[0] > box5[2])
+          box5[2] = pt[0];
+        if (pt[1] > box5[3])
+          box5[3] = pt[1];
       }
-      box4[2] -= box4[0];
-      box4[3] -= box4[1];
-      boxRaw = [box4[0] / (input2.shape[2] || 0), box4[1] / (input2.shape[1] || 0), box4[2] / (input2.shape[2] || 0), box4[3] / (input2.shape[1] || 0)];
+      box5[2] -= box5[0];
+      box5[3] -= box5[1];
+      boxRaw = [box5[0] / (input2.shape[2] || 0), box5[1] / (input2.shape[1] || 0), box5[2] / (input2.shape[2] || 0), box5[3] / (input2.shape[1] || 0)];
     } else {
-      box4 = predictions[i2].box ? [
+      box5 = predictions[i2].box ? [
         Math.trunc(Math.max(0, predictions[i2].box.topLeft[0])),
         Math.trunc(Math.max(0, predictions[i2].box.topLeft[1])),
         Math.trunc(Math.min(input2.shape[2] || 0, predictions[i2].box.bottomRight[0]) - Math.max(0, predictions[i2].box.topLeft[0])),
@@ -108541,7 +109111,7 @@ async function predict12(input2, config3) {
       boxScore: Math.round(100 * predictions[i2].boxConfidence) / 100,
       fingerScore: Math.round(100 * predictions[i2].fingerConfidence) / 100,
       label: "hand",
-      box: box4,
+      box: box5,
       boxRaw,
       keypoints,
       annotations: annotations2,
@@ -108581,59 +109151,27 @@ async function load13(config3) {
   handPipeline = new HandPipeline(handDetector, handPoseModel);
   return [handDetectorModel, handPoseModel];
 }
-function calc(keypoints, outputSize2 = [1, 1]) {
-  const coords10 = [keypoints.map((pt) => pt[0]), keypoints.map((pt) => pt[1])];
-  const min7 = [Math.min(...coords10[0]), Math.min(...coords10[1])];
-  const max7 = [Math.max(...coords10[0]), Math.max(...coords10[1])];
-  const box4 = [min7[0], min7[1], max7[0] - min7[0], max7[1] - min7[1]];
-  const boxRaw = [box4[0] / outputSize2[0], box4[1] / outputSize2[1], box4[2] / outputSize2[0], box4[3] / outputSize2[1]];
-  return { box: box4, boxRaw };
-}
-function square4(keypoints, outputSize2 = [1, 1]) {
-  const coords10 = [keypoints.map((pt) => pt[0]), keypoints.map((pt) => pt[1])];
-  const min7 = [Math.min(...coords10[0]), Math.min(...coords10[1])];
-  const max7 = [Math.max(...coords10[0]), Math.max(...coords10[1])];
-  const center = [(min7[0] + max7[0]) / 2, (min7[1] + max7[1]) / 2];
-  const dist = Math.max(center[0] - min7[0], center[1] - min7[1], -center[0] + max7[0], -center[1] + max7[1]);
-  const box4 = [Math.trunc(center[0] - dist), Math.trunc(center[1] - dist), Math.trunc(2 * dist), Math.trunc(2 * dist)];
-  const boxRaw = [box4[0] / outputSize2[0], box4[1] / outputSize2[1], box4[2] / outputSize2[0], box4[3] / outputSize2[1]];
-  return { box: box4, boxRaw };
-}
-function scale2(box4, scaleFact) {
-  const dist = [box4[2] * scaleFact, box4[3] * scaleFact];
-  const newBox = [
-    box4[0] - (dist[0] - box4[2]) / 2,
-    box4[1] - (dist[1] - box4[3]) / 2,
-    dist[0],
-    dist[1]
-  ];
-  return newBox;
-}
-function crop(box4) {
-  const yxBox = [Math.max(0, box4[1]), Math.max(0, box4[0]), Math.min(1, box4[3] + box4[1]), Math.min(1, box4[2] + box4[0])];
-  return yxBox;
-}
 var models2 = [null, null];
 var modelOutputNodes = ["StatefulPartitionedCall/Postprocessor/Slice", "StatefulPartitionedCall/Postprocessor/ExpandDims_1"];
-var inputSize6 = [[0, 0], [0, 0]];
+var inputSize7 = [[0, 0], [0, 0]];
 var classes = ["hand", "fist", "pinch", "point", "face", "tip", "pinchtip"];
 var faceIndex = 4;
 var boxExpandFact = 1.6;
 var maxDetectorResolution = 512;
 var detectorExpandFact = 1.4;
-var skipped12 = Number.MAX_SAFE_INTEGER;
-var lastTime13 = 0;
+var skipped11 = Number.MAX_SAFE_INTEGER;
+var lastTime12 = 0;
 var outputSize = [0, 0];
-var cache3 = {
+var cache4 = {
   boxes: [],
   hands: []
 };
 var fingerMap = {
-  thumb: [1, 2, 3, 4],
-  index: [5, 6, 7, 8],
-  middle: [9, 10, 11, 12],
-  ring: [13, 14, 15, 16],
-  pinky: [17, 18, 19, 20],
+  thumb: [0, 1, 2, 3, 4],
+  index: [0, 5, 6, 7, 8],
+  middle: [0, 9, 10, 11, 12],
+  ring: [0, 13, 14, 15, 16],
+  pinky: [0, 17, 18, 19, 20],
   palm: [0]
 };
 async function loadDetect2(config3) {
@@ -108644,8 +109182,8 @@ async function loadDetect2(config3) {
     fakeOps(["tensorlistreserve", "enter", "tensorlistfromtensor", "merge", "loopcond", "switch", "exit", "tensorliststack", "nextiteration", "tensorlistsetitem", "tensorlistgetitem", "reciprocal", "shape", "split", "where"], config3);
     models2[0] = await loadGraphModel(join(config3.modelBasePath, ((_a = config3.hand.detector) == null ? void 0 : _a.modelPath) || ""));
     const inputs = Object.values(models2[0].modelSignature["inputs"]);
-    inputSize6[0][0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
-    inputSize6[0][1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
+    inputSize7[0][0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
+    inputSize7[0][1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
     if (!models2[0] || !models2[0]["modelUrl"])
       log("load model failed:", (_b = config3.hand.detector) == null ? void 0 : _b.modelPath);
     else if (config3.debug)
@@ -108661,8 +109199,8 @@ async function loadSkeleton(config3) {
   if (!models2[1]) {
     models2[1] = await loadGraphModel(join(config3.modelBasePath, ((_a = config3.hand.skeleton) == null ? void 0 : _a.modelPath) || ""));
     const inputs = Object.values(models2[1].modelSignature["inputs"]);
-    inputSize6[1][0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
-    inputSize6[1][1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
+    inputSize7[1][0] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[1].size) : 0;
+    inputSize7[1][1] = Array.isArray(inputs) ? parseInt(inputs[0].tensorShape.dim[2].size) : 0;
     if (!models2[1] || !models2[1]["modelUrl"])
       log("load model failed:", (_b = config3.hand.skeleton) == null ? void 0 : _b.modelPath);
     else if (config3.debug)
@@ -108730,9 +109268,8 @@ async function detectFingers(input2, h2, config3) {
   };
   if (input2 && models2[1] && config3.hand.landmarks && h2.score > (config3.hand.minConfidence || 0)) {
     const t2 = {};
-    t2.crop = image.cropAndResize(input2, [h2.boxCrop], [0], [inputSize6[1][0], inputSize6[1][1]], "bilinear");
-    t2.cast = cast(t2.crop, "float32");
-    t2.div = div(t2.cast, 255);
+    t2.crop = image.cropAndResize(input2, [h2.boxCrop], [0], [inputSize7[1][0], inputSize7[1][1]], "bilinear");
+    t2.div = div(t2.crop, constants.tf255);
     [t2.score, t2.keypoints] = models2[1].execute(t2.div, ["Identity_1", "Identity"]);
     const rawScore = (await t2.score.data())[0];
     const score = (100 - Math.trunc(100 / (1 + Math.exp(rawScore)))) / 100;
@@ -108740,7 +109277,7 @@ async function detectFingers(input2, h2, config3) {
       hand3.fingerScore = score;
       t2.reshaped = reshape(t2.keypoints, [-1, 3]);
       const coordsData = await t2.reshaped.array();
-      const coordsRaw = coordsData.map((kpt4) => [kpt4[0] / inputSize6[1][1], kpt4[1] / inputSize6[1][0], kpt4[2] || 0]);
+      const coordsRaw = coordsData.map((kpt4) => [kpt4[0] / inputSize7[1][1], kpt4[1] / inputSize7[1][0], kpt4[2] || 0]);
       const coordsNorm = coordsRaw.map((kpt4) => [kpt4[0] * h2.boxRaw[2], kpt4[1] * h2.boxRaw[3], kpt4[2] || 0]);
       hand3.keypoints = coordsNorm.map((kpt4) => [
         outputSize[0] * (kpt4[0] + h2.boxRaw[0]),
@@ -108761,51 +109298,51 @@ async function predict13(input2, config3) {
   if (!models2[0] || !models2[1] || !((_a = models2[0]) == null ? void 0 : _a.inputs[0].shape) || !((_b = models2[1]) == null ? void 0 : _b.inputs[0].shape))
     return [];
   outputSize = [input2.shape[2] || 0, input2.shape[1] || 0];
-  skipped12++;
-  const skipTime = (config3.hand.skipTime || 0) > now2() - lastTime13;
-  const skipFrame = skipped12 < (config3.hand.skipFrames || 0);
+  skipped11++;
+  const skipTime = (config3.hand.skipTime || 0) > now2() - lastTime12;
+  const skipFrame = skipped11 < (config3.hand.skipFrames || 0);
   if (config3.skipAllowed && skipTime && skipFrame) {
-    return cache3.hands;
+    return cache4.hands;
   }
   return new Promise(async (resolve) => {
-    const skipTimeExtended = 3 * (config3.hand.skipTime || 0) > now2() - lastTime13;
-    const skipFrameExtended = skipped12 < 3 * (config3.hand.skipFrames || 0);
-    if (config3.skipAllowed && cache3.hands.length === config3.hand.maxDetected) {
-      cache3.hands = await Promise.all(cache3.boxes.map((handBox) => detectFingers(input2, handBox, config3)));
-    } else if (config3.skipAllowed && skipTimeExtended && skipFrameExtended && cache3.hands.length > 0) {
-      cache3.hands = await Promise.all(cache3.boxes.map((handBox) => detectFingers(input2, handBox, config3)));
+    const skipTimeExtended = 3 * (config3.hand.skipTime || 0) > now2() - lastTime12;
+    const skipFrameExtended = skipped11 < 3 * (config3.hand.skipFrames || 0);
+    if (config3.skipAllowed && cache4.hands.length === config3.hand.maxDetected) {
+      cache4.hands = await Promise.all(cache4.boxes.map((handBox) => detectFingers(input2, handBox, config3)));
+    } else if (config3.skipAllowed && skipTimeExtended && skipFrameExtended && cache4.hands.length > 0) {
+      cache4.hands = await Promise.all(cache4.boxes.map((handBox) => detectFingers(input2, handBox, config3)));
     } else {
-      cache3.boxes = await detectHands(input2, config3);
-      lastTime13 = now2();
-      cache3.hands = await Promise.all(cache3.boxes.map((handBox) => detectFingers(input2, handBox, config3)));
-      skipped12 = 0;
+      cache4.boxes = await detectHands(input2, config3);
+      lastTime12 = now2();
+      cache4.hands = await Promise.all(cache4.boxes.map((handBox) => detectFingers(input2, handBox, config3)));
+      skipped11 = 0;
     }
-    const oldCache = [...cache3.boxes];
-    cache3.boxes.length = 0;
+    const oldCache = [...cache4.boxes];
+    cache4.boxes.length = 0;
     if (config3.cacheSensitivity > 0) {
-      for (let i2 = 0; i2 < cache3.hands.length; i2++) {
-        const boxKpt = square4(cache3.hands[i2].keypoints, outputSize);
-        if (boxKpt.box[2] / (input2.shape[2] || 1) > 0.05 && boxKpt.box[3] / (input2.shape[1] || 1) > 0.05 && cache3.hands[i2].fingerScore && cache3.hands[i2].fingerScore > (config3.hand.minConfidence || 0)) {
+      for (let i2 = 0; i2 < cache4.hands.length; i2++) {
+        const boxKpt = square4(cache4.hands[i2].keypoints, outputSize);
+        if (boxKpt.box[2] / (input2.shape[2] || 1) > 0.05 && boxKpt.box[3] / (input2.shape[1] || 1) > 0.05 && cache4.hands[i2].fingerScore && cache4.hands[i2].fingerScore > (config3.hand.minConfidence || 0)) {
           const boxScale = scale2(boxKpt.box, boxExpandFact);
           const boxScaleRaw = scale2(boxKpt.boxRaw, boxExpandFact);
           const boxCrop = crop(boxScaleRaw);
-          cache3.boxes.push({ ...oldCache[i2], box: boxScale, boxRaw: boxScaleRaw, boxCrop });
+          cache4.boxes.push({ ...oldCache[i2], box: boxScale, boxRaw: boxScaleRaw, boxCrop });
         }
       }
     }
-    for (let i2 = 0; i2 < cache3.hands.length; i2++) {
-      const bbox = calc(cache3.hands[i2].keypoints, outputSize);
-      cache3.hands[i2].box = bbox.box;
-      cache3.hands[i2].boxRaw = bbox.boxRaw;
+    for (let i2 = 0; i2 < cache4.hands.length; i2++) {
+      const bbox = calc(cache4.hands[i2].keypoints, outputSize);
+      cache4.hands[i2].box = bbox.box;
+      cache4.hands[i2].boxRaw = bbox.boxRaw;
     }
-    resolve(cache3.hands);
+    resolve(cache4.hands);
   });
 }
 var model14;
 var cached2 = [];
-var skipped13 = Number.MAX_SAFE_INTEGER;
+var skipped12 = Number.MAX_SAFE_INTEGER;
 var lastCount8 = 0;
-var lastTime14 = 0;
+var lastTime13 = 0;
 async function load14(config3) {
   var _a, _b;
   if (env2.initial)
@@ -108824,20 +109361,20 @@ async function predict14(image7, config3, idx, count3) {
   var _a, _b;
   if (!model14)
     return 0;
-  const skipTime = (((_a = config3.face.liveness) == null ? void 0 : _a.skipTime) || 0) > now2() - lastTime14;
-  const skipFrame = skipped13 < (((_b = config3.face.liveness) == null ? void 0 : _b.skipFrames) || 0);
+  const skipTime = (((_a = config3.face.liveness) == null ? void 0 : _a.skipTime) || 0) > now2() - lastTime13;
+  const skipFrame = skipped12 < (((_b = config3.face.liveness) == null ? void 0 : _b.skipFrames) || 0);
   if (config3.skipAllowed && skipTime && skipFrame && lastCount8 === count3 && cached2[idx]) {
-    skipped13++;
+    skipped12++;
     return cached2[idx];
   }
-  skipped13 = 0;
+  skipped12 = 0;
   return new Promise(async (resolve) => {
     const resize = image.resizeBilinear(image7, [(model14 == null ? void 0 : model14.inputs[0].shape) ? model14.inputs[0].shape[2] : 0, (model14 == null ? void 0 : model14.inputs[0].shape) ? model14.inputs[0].shape[1] : 0], false);
     const res2 = model14 == null ? void 0 : model14.execute(resize);
     const num = (await res2.data())[0];
     cached2[idx] = Math.round(100 * num) / 100;
     lastCount8 = count3;
-    lastTime14 = now2();
+    lastTime13 = now2();
     dispose([resize, res2]);
     resolve(cached2[idx]);
   });
@@ -108898,7 +109435,7 @@ var connected3 = {
   head: []
 };
 var maxJitter = 5e-3;
-var cache4 = {
+var cache5 = {
   keypoints: [],
   padding: [[0, 0], [0, 0], [0, 0], [0, 0]]
 };
@@ -108947,31 +109484,31 @@ function bodyParts(body4) {
 }
 function jitter(keypoints) {
   for (let i2 = 0; i2 < keypoints.length; i2++) {
-    if (keypoints[i2] && cache4.keypoints[i2]) {
-      const diff = [Math.abs(keypoints[i2].positionRaw[0] - cache4.keypoints[i2].positionRaw[0]), Math.abs(keypoints[i2].positionRaw[1] - cache4.keypoints[i2].positionRaw[1])];
+    if (keypoints[i2] && cache5.keypoints[i2]) {
+      const diff = [Math.abs(keypoints[i2].positionRaw[0] - cache5.keypoints[i2].positionRaw[0]), Math.abs(keypoints[i2].positionRaw[1] - cache5.keypoints[i2].positionRaw[1])];
       if (diff[0] < maxJitter && diff[1] < maxJitter) {
-        keypoints[i2] = cache4.keypoints[i2];
+        keypoints[i2] = cache5.keypoints[i2];
       } else {
-        cache4.keypoints[i2] = keypoints[i2];
+        cache5.keypoints[i2] = keypoints[i2];
       }
     } else {
-      cache4.keypoints[i2] = keypoints[i2];
+      cache5.keypoints[i2] = keypoints[i2];
     }
   }
   return keypoints;
 }
-function padInput(input2, inputSize8) {
+function padInput(input2, inputSize9) {
   const t2 = {};
   if (!input2.shape || !input2.shape[1] || !input2.shape[2])
     return input2;
-  cache4.padding = [
+  cache5.padding = [
     [0, 0],
     [input2.shape[2] > input2.shape[1] ? Math.trunc((input2.shape[2] - input2.shape[1]) / 2) : 0, input2.shape[2] > input2.shape[1] ? Math.trunc((input2.shape[2] - input2.shape[1]) / 2) : 0],
     [input2.shape[1] > input2.shape[2] ? Math.trunc((input2.shape[1] - input2.shape[2]) / 2) : 0, input2.shape[1] > input2.shape[2] ? Math.trunc((input2.shape[1] - input2.shape[2]) / 2) : 0],
     [0, 0]
   ];
-  t2.pad = pad(input2, cache4.padding);
-  t2.resize = image.resizeBilinear(t2.pad, [inputSize8, inputSize8]);
+  t2.pad = pad(input2, cache5.padding);
+  t2.resize = image.resizeBilinear(t2.pad, [inputSize9, inputSize9]);
   const final = cast(t2.resize, "int32");
   Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
   return final;
@@ -108980,8 +109517,8 @@ function rescaleBody(body4, outputSize2) {
   body4.keypoints = body4.keypoints.filter((kpt4) => kpt4 && kpt4.position);
   for (const kpt4 of body4.keypoints) {
     kpt4.position = [
-      kpt4.position[0] * (outputSize2[0] + cache4.padding[2][0] + cache4.padding[2][1]) / outputSize2[0] - cache4.padding[2][0],
-      kpt4.position[1] * (outputSize2[1] + cache4.padding[1][0] + cache4.padding[1][1]) / outputSize2[1] - cache4.padding[1][0]
+      kpt4.position[0] * (outputSize2[0] + cache5.padding[2][0] + cache5.padding[2][1]) / outputSize2[0] - cache5.padding[2][0],
+      kpt4.position[1] * (outputSize2[1] + cache5.padding[1][0] + cache5.padding[1][1]) / outputSize2[1] - cache5.padding[1][0]
     ];
     kpt4.positionRaw = [
       kpt4.position[0] / outputSize2[0],
@@ -108994,9 +109531,9 @@ function rescaleBody(body4, outputSize2) {
   return body4;
 }
 var model15;
-var inputSize7 = 0;
-var skipped14 = Number.MAX_SAFE_INTEGER;
-var cache5 = {
+var inputSize8 = 0;
+var skipped13 = Number.MAX_SAFE_INTEGER;
+var cache6 = {
   boxes: [],
   bodies: [],
   last: 0
@@ -109013,22 +109550,17 @@ async function load15(config3) {
       log("load model:", model15["modelUrl"]);
   } else if (config3.debug)
     log("cached model:", model15["modelUrl"]);
-  inputSize7 = model15.inputs[0].shape ? model15.inputs[0].shape[2] : 0;
-  if (inputSize7 === -1)
-    inputSize7 = 256;
+  inputSize8 = model15.inputs[0].shape ? model15.inputs[0].shape[2] : 0;
   return model15;
 }
-async function parseSinglePose(res2, config3, image7, inputBox) {
+async function parseSinglePose(res2, config3, image7) {
   const kpt4 = res2[0][0];
   const keypoints = [];
   let score = 0;
   for (let id = 0; id < kpt4.length; id++) {
     score = kpt4[id][2];
     if (score > config3.body.minConfidence) {
-      const positionRaw = [
-        (inputBox[3] - inputBox[1]) * kpt4[id][1] + inputBox[1],
-        (inputBox[2] - inputBox[0]) * kpt4[id][0] + inputBox[0]
-      ];
+      const positionRaw = [kpt4[id][1], kpt4[id][0]];
       keypoints.push({
         score: Math.round(100 * score) / 100,
         part: kpt3[id],
@@ -109059,7 +109591,7 @@ async function parseSinglePose(res2, config3, image7, inputBox) {
   bodies.push(body4);
   return bodies;
 }
-async function parseMultiPose(res2, config3, image7, inputBox) {
+async function parseMultiPose(res2, config3, image7) {
   const bodies = [];
   for (let id = 0; id < res2[0].length; id++) {
     const kpt4 = res2[0][id];
@@ -109069,10 +109601,7 @@ async function parseMultiPose(res2, config3, image7, inputBox) {
       for (let i2 = 0; i2 < 17; i2++) {
         const score = kpt4[3 * i2 + 2];
         if (score > config3.body.minConfidence) {
-          const positionRaw = [
-            (inputBox[3] - inputBox[1]) * kpt4[3 * i2 + 1] + inputBox[1],
-            (inputBox[2] - inputBox[0]) * kpt4[3 * i2 + 0] + inputBox[0]
-          ];
+          const positionRaw = [kpt4[3 * i2 + 1], kpt4[3 * i2 + 0]];
           keypoints.push({
             part: kpt3[i2],
             score: Math.round(100 * score) / 100,
@@ -109107,33 +109636,33 @@ async function predict15(input2, config3) {
   if (!model15 || !(model15 == null ? void 0 : model15.inputs[0].shape))
     return [];
   if (!config3.skipAllowed)
-    cache5.boxes.length = 0;
-  skipped14++;
-  const skipTime = (config3.body.skipTime || 0) > now2() - cache5.last;
-  const skipFrame = skipped14 < (config3.body.skipFrames || 0);
+    cache6.boxes.length = 0;
+  skipped13++;
+  const skipTime = (config3.body.skipTime || 0) > now2() - cache6.last;
+  const skipFrame = skipped13 < (config3.body.skipFrames || 0);
   if (config3.skipAllowed && skipTime && skipFrame) {
-    return cache5.bodies;
+    return cache6.bodies;
   }
   return new Promise(async (resolve) => {
     const t2 = {};
-    skipped14 = 0;
-    t2.input = padInput(input2, inputSize7);
+    skipped13 = 0;
+    t2.input = padInput(input2, inputSize8);
     t2.res = model15 == null ? void 0 : model15.execute(t2.input);
-    cache5.last = now2();
+    cache6.last = now2();
     const res2 = await t2.res.array();
-    cache5.bodies = t2.res.shape[2] === 17 ? await parseSinglePose(res2, config3, input2, [0, 0, 1, 1]) : await parseMultiPose(res2, config3, input2, [0, 0, 1, 1]);
-    for (const body4 of cache5.bodies) {
+    cache6.bodies = t2.res.shape[2] === 17 ? await parseSinglePose(res2, config3, input2) : await parseMultiPose(res2, config3, input2);
+    for (const body4 of cache6.bodies) {
       rescaleBody(body4, [input2.shape[2] || 1, input2.shape[1] || 1]);
       jitter(body4.keypoints);
     }
     Object.keys(t2).forEach((tensor2) => dispose(t2[tensor2]));
-    resolve(cache5.bodies);
+    resolve(cache6.bodies);
   });
 }
 var model16;
 var last9 = [];
-var lastTime15 = 0;
-var skipped15 = Number.MAX_SAFE_INTEGER;
+var lastTime14 = 0;
+var skipped14 = Number.MAX_SAFE_INTEGER;
 var scaleBox = 2.5;
 async function load16(config3) {
   if (!model16 || env2.initial) {
@@ -109148,7 +109677,7 @@ async function load16(config3) {
     log("cached model:", model16.modelUrl);
   return model16;
 }
-async function process4(res2, inputSize8, outputShape, config3) {
+async function process4(res2, inputSize9, outputShape, config3) {
   let id = 0;
   let results = [];
   for (const strideSize of [1, 2, 4]) {
@@ -109166,7 +109695,7 @@ async function process4(res2, inputSize8, outputShape, config3) {
           if (score > config3.object.minConfidence && j2 !== 61) {
             const cx = (0.5 + Math.trunc(i2 % baseSize)) / baseSize;
             const cy = (0.5 + Math.trunc(i2 / baseSize)) / baseSize;
-            const boxOffset = boxIdx[i2].map((a6) => a6 * (baseSize / strideSize / inputSize8));
+            const boxOffset = boxIdx[i2].map((a6) => a6 * (baseSize / strideSize / inputSize9));
             const [x2, y2] = [
               cx - scaleBox / strideSize * boxOffset[0],
               cy - scaleBox / strideSize * boxOffset[1]
@@ -109177,7 +109706,7 @@ async function process4(res2, inputSize8, outputShape, config3) {
             ];
             let boxRaw = [x2, y2, w2, h2];
             boxRaw = boxRaw.map((a6) => Math.max(0, Math.min(a6, 1)));
-            const box4 = [
+            const box5 = [
               boxRaw[0] * outputShape[0],
               boxRaw[1] * outputShape[1],
               boxRaw[2] * outputShape[0],
@@ -109188,7 +109717,7 @@ async function process4(res2, inputSize8, outputShape, config3) {
               score: Math.round(100 * score) / 100,
               class: j2 + 1,
               label: labels[j2].label,
-              box: box4.map((a6) => Math.trunc(a6)),
+              box: box5.map((a6) => Math.trunc(a6)),
               boxRaw
             };
             results.push(result);
@@ -109210,26 +109739,26 @@ async function process4(res2, inputSize8, outputShape, config3) {
   return results;
 }
 async function predict16(image7, config3) {
-  const skipTime = (config3.object.skipTime || 0) > now2() - lastTime15;
-  const skipFrame = skipped15 < (config3.object.skipFrames || 0);
+  const skipTime = (config3.object.skipTime || 0) > now2() - lastTime14;
+  const skipFrame = skipped14 < (config3.object.skipFrames || 0);
   if (config3.skipAllowed && skipTime && skipFrame && last9.length > 0) {
-    skipped15++;
+    skipped14++;
     return last9;
   }
-  skipped15 = 0;
+  skipped14 = 0;
   if (!env2.kernels.includes("mod") || !env2.kernels.includes("sparsetodense"))
     return last9;
   return new Promise(async (resolve) => {
     const outputSize2 = [image7.shape[2], image7.shape[1]];
     const resize = image.resizeBilinear(image7, [model16.inputSize, model16.inputSize], false);
-    const norm2 = div(resize, 255);
+    const norm2 = div(resize, constants.tf255);
     const transpose6 = norm2.transpose([0, 3, 1, 2]);
     dispose(norm2);
     dispose(resize);
     let objectT;
     if (config3.object.enabled)
       objectT = model16.execute(transpose6);
-    lastTime15 = now2();
+    lastTime14 = now2();
     dispose(transpose6);
     const obj = await process4(objectT, model16.inputSize, outputSize2, config3);
     last9 = obj;
@@ -109320,7 +109849,8 @@ function scalePoses(poses, [height, width], [inputResolutionHeight, inputResolut
       part,
       position: [Math.trunc(position.x * scaleX), Math.trunc(position.y * scaleY)],
       positionRaw: [position.x / inputResolutionHeight, position.y / inputResolutionHeight]
-    }))
+    })),
+    annotations: {}
   });
   const scaledPoses = poses.map((pose, i2) => scalePose(pose, i2));
   return scaledPoses;
@@ -109535,9 +110065,9 @@ function decode(offsets, scores, displacementsFwd, displacementsBwd, maxDetected
     let keypoints = decodePose(root, scores, offsets, displacementsFwd, displacementsBwd);
     keypoints = keypoints.filter((a6) => a6.score > minConfidence2);
     const score = getInstanceScore(poses, keypoints);
-    const box4 = getBoundingBox(keypoints);
+    const box5 = getBoundingBox(keypoints);
     if (score > minConfidence2)
-      poses.push({ keypoints, box: box4, score: Math.round(100 * score) / 100 });
+      poses.push({ keypoints, box: box5, score: Math.round(100 * score) / 100 });
   }
   return poses;
 }
@@ -109549,7 +110079,7 @@ async function predict17(input2, config3) {
     const normalized = sub(div(cast(resized, "float32"), 127.5), 1);
     const results = model17.execute(normalized, poseNetOutputs);
     const results3d = results.map((y2) => squeeze(y2, [0]));
-    results3d[1] = results3d[1].sigmoid();
+    results3d[1] = sigmoid(results3d[1]);
     return results3d;
   });
   const buffers = await Promise.all(res2.map((tensor2) => tensor2.buffer()));
@@ -109600,7 +110130,7 @@ async function process5(input2, background, config3) {
   const t2 = {};
   t2.resize = image.resizeBilinear(inputImage.tensor, [model18.inputs[0].shape ? model18.inputs[0].shape[1] : 0, model18.inputs[0].shape ? model18.inputs[0].shape[2] : 0], false);
   dispose(inputImage.tensor);
-  t2.norm = div(t2.resize, 255);
+  t2.norm = div(t2.resize, constants.tf255);
   t2.res = model18.execute(t2.norm);
   t2.squeeze = squeeze(t2.res, 0);
   if (t2.squeeze.shape[2] === 2) {
@@ -109684,7 +110214,7 @@ function reset(instance) {
     instance.models[model192] = null;
 }
 async function load19(instance) {
-  var _a, _b, _c, _d, _e2, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q2, _r, _s, _t, _u, _v, _w, _x2, _y2, _z2, _A, _B, _C, _D, _E, _F, _G;
+  var _a, _b, _c, _d, _e2, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q2, _r, _s, _t, _u, _v, _w, _x2, _y2, _z2, _A, _B, _C, _D;
   if (env2.initial)
     reset(instance);
   if (instance.config.hand.enabled) {
@@ -109695,43 +110225,43 @@ async function load19(instance) {
   }
   if (instance.config.body.enabled && !instance.models.blazepose && ((_f = (_e2 = instance.config.body) == null ? void 0 : _e2.modelPath) == null ? void 0 : _f.includes("blazepose")))
     instance.models.blazepose = loadPose(instance.config);
-  if (instance.config.body.enabled && !instance.models.blazeposedetect && ((_g = instance.config.body.detector) == null ? void 0 : _g.modelPath) && ((_i = (_h = instance.config.body) == null ? void 0 : _h.modelPath) == null ? void 0 : _i.includes("blazepose")))
+  if (instance.config.body.enabled && !instance.models.blazeposedetect && instance.config.body["detector"] && instance.config.body["detector"]["modelPath"])
     instance.models.blazeposedetect = loadDetect(instance.config);
-  if (instance.config.body.enabled && !instance.models.efficientpose && ((_k = (_j = instance.config.body) == null ? void 0 : _j.modelPath) == null ? void 0 : _k.includes("efficientpose")))
+  if (instance.config.body.enabled && !instance.models.efficientpose && ((_h = (_g = instance.config.body) == null ? void 0 : _g.modelPath) == null ? void 0 : _h.includes("efficientpose")))
     instance.models.efficientpose = load7(instance.config);
-  if (instance.config.body.enabled && !instance.models.movenet && ((_m = (_l = instance.config.body) == null ? void 0 : _l.modelPath) == null ? void 0 : _m.includes("movenet")))
+  if (instance.config.body.enabled && !instance.models.movenet && ((_j = (_i = instance.config.body) == null ? void 0 : _i.modelPath) == null ? void 0 : _j.includes("movenet")))
     instance.models.movenet = load15(instance.config);
-  if (instance.config.body.enabled && !instance.models.posenet && ((_o = (_n = instance.config.body) == null ? void 0 : _n.modelPath) == null ? void 0 : _o.includes("posenet")))
+  if (instance.config.body.enabled && !instance.models.posenet && ((_l = (_k = instance.config.body) == null ? void 0 : _k.modelPath) == null ? void 0 : _l.includes("posenet")))
     instance.models.posenet = load17(instance.config);
   if (instance.config.face.enabled && !instance.models.facedetect)
     instance.models.facedetect = load5(instance.config);
-  if (instance.config.face.enabled && ((_p = instance.config.face.antispoof) == null ? void 0 : _p.enabled) && !instance.models.antispoof)
+  if (instance.config.face.enabled && ((_m = instance.config.face.antispoof) == null ? void 0 : _m.enabled) && !instance.models.antispoof)
     instance.models.antispoof = load4(instance.config);
-  if (instance.config.face.enabled && ((_q2 = instance.config.face.liveness) == null ? void 0 : _q2.enabled) && !instance.models.liveness)
+  if (instance.config.face.enabled && ((_n = instance.config.face.liveness) == null ? void 0 : _n.enabled) && !instance.models.liveness)
     instance.models.liveness = load14(instance.config);
-  if (instance.config.face.enabled && ((_r = instance.config.face.description) == null ? void 0 : _r.enabled) && !instance.models.faceres)
+  if (instance.config.face.enabled && ((_o = instance.config.face.description) == null ? void 0 : _o.enabled) && !instance.models.faceres)
     instance.models.faceres = load12(instance.config);
-  if (instance.config.face.enabled && ((_s = instance.config.face.emotion) == null ? void 0 : _s.enabled) && !instance.models.emotion)
+  if (instance.config.face.enabled && ((_p = instance.config.face.emotion) == null ? void 0 : _p.enabled) && !instance.models.emotion)
     instance.models.emotion = load8(instance.config);
-  if (instance.config.face.enabled && ((_t = instance.config.face.iris) == null ? void 0 : _t.enabled) && !instance.models.faceiris)
+  if (instance.config.face.enabled && ((_q2 = instance.config.face.iris) == null ? void 0 : _q2.enabled) && !instance.models.faceiris)
     instance.models.faceiris = load10(instance.config);
-  if (instance.config.face.enabled && ((_u = instance.config.face.mesh) == null ? void 0 : _u.enabled) && !instance.models.facemesh)
+  if (instance.config.face.enabled && ((_r = instance.config.face.mesh) == null ? void 0 : _r.enabled) && !instance.models.facemesh)
     instance.models.facemesh = load11(instance.config);
-  if (instance.config.face.enabled && ((_v = instance.config.face["gear"]) == null ? void 0 : _v.enabled) && !instance.models.gear)
+  if (instance.config.face.enabled && ((_s = instance.config.face["gear"]) == null ? void 0 : _s.enabled) && !instance.models.gear)
     instance.models.gear = load(instance.config);
-  if (instance.config.face.enabled && ((_w = instance.config.face["ssrnet"]) == null ? void 0 : _w.enabled) && !instance.models.ssrnetage)
+  if (instance.config.face.enabled && ((_t = instance.config.face["ssrnet"]) == null ? void 0 : _t.enabled) && !instance.models.ssrnetage)
     instance.models.ssrnetage = load2(instance.config);
-  if (instance.config.face.enabled && ((_x2 = instance.config.face["ssrnet"]) == null ? void 0 : _x2.enabled) && !instance.models.ssrnetgender)
+  if (instance.config.face.enabled && ((_u = instance.config.face["ssrnet"]) == null ? void 0 : _u.enabled) && !instance.models.ssrnetgender)
     instance.models.ssrnetgender = load3(instance.config);
-  if (instance.config.face.enabled && ((_y2 = instance.config.face["mobilefacenet"]) == null ? void 0 : _y2.enabled) && !instance.models.mobilefacenet)
+  if (instance.config.face.enabled && ((_v = instance.config.face["mobilefacenet"]) == null ? void 0 : _v.enabled) && !instance.models.mobilefacenet)
     instance.models.mobilefacenet = load9(instance.config);
-  if (instance.config.hand.enabled && !instance.models.handtrack && ((_A = (_z2 = instance.config.hand.detector) == null ? void 0 : _z2.modelPath) == null ? void 0 : _A.includes("handtrack")))
+  if (instance.config.hand.enabled && !instance.models.handtrack && ((_x2 = (_w = instance.config.hand.detector) == null ? void 0 : _w.modelPath) == null ? void 0 : _x2.includes("handtrack")))
     instance.models.handtrack = loadDetect2(instance.config);
-  if (instance.config.hand.enabled && instance.config.hand.landmarks && !instance.models.handskeleton && ((_C = (_B = instance.config.hand.detector) == null ? void 0 : _B.modelPath) == null ? void 0 : _C.includes("handtrack")))
+  if (instance.config.hand.enabled && instance.config.hand.landmarks && !instance.models.handskeleton && ((_z2 = (_y2 = instance.config.hand.detector) == null ? void 0 : _y2.modelPath) == null ? void 0 : _z2.includes("handtrack")))
     instance.models.handskeleton = loadSkeleton(instance.config);
-  if (instance.config.object.enabled && !instance.models.centernet && ((_E = (_D = instance.config.object) == null ? void 0 : _D.modelPath) == null ? void 0 : _E.includes("centernet")))
+  if (instance.config.object.enabled && !instance.models.centernet && ((_B = (_A = instance.config.object) == null ? void 0 : _A.modelPath) == null ? void 0 : _B.includes("centernet")))
     instance.models.centernet = load6(instance.config);
-  if (instance.config.object.enabled && !instance.models.nanodet && ((_G = (_F = instance.config.object) == null ? void 0 : _F.modelPath) == null ? void 0 : _G.includes("nanodet")))
+  if (instance.config.object.enabled && !instance.models.nanodet && ((_D = (_C = instance.config.object) == null ? void 0 : _C.modelPath) == null ? void 0 : _D.includes("nanodet")))
     instance.models.nanodet = load16(instance.config);
   if (instance.config.segmentation.enabled && !instance.models.segmentation)
     instance.models.segmentation = load18(instance.config);
@@ -109743,41 +110273,29 @@ async function load19(instance) {
 async function validate2(instance) {
   const simpleOps = ["const", "placeholder", "noop", "pad", "squeeze", "add", "sub", "mul", "div"];
   for (const defined of Object.keys(instance.models)) {
-    if (instance.models[defined]) {
-      let models5 = [];
-      if (Array.isArray(instance.models[defined])) {
-        models5 = instance.models[defined].filter((model192) => model192 !== null).map((model192) => model192 && model192.executor ? model192 : model192.model);
-      } else {
-        models5 = [instance.models[defined]];
+    const model192 = instance.models[defined];
+    if (!model192)
+      continue;
+    const ops = [];
+    const executor = model192 == null ? void 0 : model192.executor;
+    if (executor && executor.graph.nodes) {
+      for (const kernel of Object.values(executor.graph.nodes)) {
+        const op2 = kernel.op.toLowerCase();
+        if (!ops.includes(op2))
+          ops.push(op2);
       }
-      for (const model192 of models5) {
-        if (!model192) {
-          if (instance.config.debug)
-            log("model marked as loaded but not defined:", defined);
-          continue;
-        }
-        const ops = [];
-        const executor = model192 == null ? void 0 : model192.executor;
-        if (executor && executor.graph.nodes) {
-          for (const kernel of Object.values(executor.graph.nodes)) {
-            const op2 = kernel.op.toLowerCase();
-            if (!ops.includes(op2))
-              ops.push(op2);
-          }
-        } else {
-          if (!executor && instance.config.debug)
-            log("model signature not determined:", defined);
-        }
-        const missing = [];
-        for (const op2 of ops) {
-          if (!simpleOps.includes(op2) && !instance.env.kernels.includes(op2) && !instance.env.kernels.includes(op2.replace("_", "")) && !instance.env.kernels.includes(op2.replace("native", "")) && !instance.env.kernels.includes(op2.replace("v2", ""))) {
-            missing.push(op2);
-          }
-        }
-        if (missing.length > 0 && instance.config.debug)
-          log("model validation:", defined, missing);
+    } else {
+      if (!executor && instance.config.debug)
+        log("model signature not determined:", defined);
+    }
+    const missing = [];
+    for (const op2 of ops) {
+      if (!simpleOps.includes(op2) && !instance.env.kernels.includes(op2) && !instance.env.kernels.includes(op2.replace("_", "")) && !instance.env.kernels.includes(op2.replace("native", "")) && !instance.env.kernels.includes(op2.replace("v2", ""))) {
+        missing.push(op2);
       }
     }
+    if (instance.config.debug && missing.length > 0)
+      log("model validation failed:", defined, missing);
   }
 }
 var config2 = {
@@ -109963,6 +110481,7 @@ async function check(instance, force = false) {
       try {
         await setBackend(instance.config.backend);
         await ready();
+        init2();
       } catch (err) {
         log("error: cannot set backend:", instance.config.backend, err);
         return false;
@@ -110052,12 +110571,12 @@ function point(ctx, x2, y2, z2, localOptions) {
 }
 function rect(ctx, x2, y2, width, height, localOptions) {
   ctx.beginPath();
+  ctx.lineWidth = localOptions.lineWidth;
   if (localOptions.useCurves) {
     const cx = (x2 + x2 + width) / 2;
     const cy = (y2 + y2 + height) / 2;
     ctx.ellipse(cx, cy, width / 2, height / 2, 0, 0, 2 * Math.PI);
   } else {
-    ctx.lineWidth = localOptions.lineWidth;
     ctx.moveTo(x2 + localOptions.roundRect, y2);
     ctx.lineTo(x2 + width - localOptions.roundRect, y2);
     ctx.quadraticCurveTo(x2 + width, y2, x2 + width, y2 + localOptions.roundRect);
@@ -110091,6 +110610,7 @@ function lines(ctx, points, localOptions) {
 function curves(ctx, points, localOptions) {
   if (points.length < 2)
     return;
+  ctx.lineWidth = localOptions.lineWidth;
   if (!localOptions.useCurves || points.length <= 2) {
     lines(ctx, points, localOptions);
     return;
@@ -110213,14 +110733,13 @@ async function face(inCanvas2, result, drawOptions) {
         ctx.fillText(labels2[i2], x2 + 4, y2 + 15);
       }
     }
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
     if (f2.mesh && f2.mesh.length > 0) {
       if (localOptions.drawPoints) {
         for (const pt of f2.mesh)
           point(ctx, pt[0], pt[1], pt[2], localOptions);
       }
       if (localOptions.drawPolygons) {
-        ctx.lineWidth = 1;
         if (f2.mesh.length > 450) {
           for (let i2 = 0; i2 < TRI468.length / 3; i2++) {
             const points = [
@@ -110321,6 +110840,8 @@ async function body(inCanvas2, result, drawOptions) {
     }
     if (localOptions.drawPoints && result[i2].keypoints) {
       for (let pt = 0; pt < result[i2].keypoints.length; pt++) {
+        if (!result[i2].keypoints[pt].score || result[i2].keypoints[pt].score === 0)
+          continue;
         ctx.fillStyle = localOptions.useDepth && result[i2].keypoints[pt].position[2] ? `rgba(${127.5 + 2 * (result[i2].keypoints[pt].position[2] || 0)}, ${127.5 - 2 * (result[i2].keypoints[pt].position[2] || 0)}, 255, 0.5)` : localOptions.color;
         point(ctx, result[i2].keypoints[pt].position[0], result[i2].keypoints[pt].position[1], 0, localOptions);
       }
@@ -110328,6 +110849,8 @@ async function body(inCanvas2, result, drawOptions) {
     if (localOptions.drawLabels && result[i2].keypoints) {
       ctx.font = localOptions.font;
       for (const pt of result[i2].keypoints) {
+        if (!pt.score || pt.score === 0)
+          continue;
         ctx.fillStyle = localOptions.useDepth && pt.position[2] ? `rgba(${127.5 + 2 * pt.position[2]}, ${127.5 - 2 * pt.position[2]}, 255, 0.5)` : localOptions.color;
         ctx.fillText(`${pt.part} ${Math.trunc(100 * pt.score)}%`, pt.position[0] + 4, pt.position[1] + 4);
       }
@@ -110376,7 +110899,8 @@ async function hand(inCanvas2, result, drawOptions) {
       const addHandLabel = (part, title) => {
         if (!part || part.length === 0 || !part[0])
           return;
-        ctx.fillStyle = localOptions.useDepth ? `rgba(${127.5 + 2 * part[part.length - 1][2]}, ${127.5 - 2 * part[part.length - 1][2]}, 255, 0.5)` : localOptions.color;
+        const z2 = part[part.length - 1][2] || 0;
+        ctx.fillStyle = localOptions.useDepth ? `rgba(${127.5 + 2 * z2}, ${127.5 - 2 * z2}, 255, 0.5)` : localOptions.color;
         ctx.fillText(title, part[part.length - 1][0] + 4, part[part.length - 1][1] + 4);
       };
       ctx.font = localOptions.font;
@@ -110393,7 +110917,8 @@ async function hand(inCanvas2, result, drawOptions) {
           return;
         for (let i2 = 0; i2 < part.length; i2++) {
           ctx.beginPath();
-          ctx.strokeStyle = localOptions.useDepth ? `rgba(${127.5 + i2 * part[i2][2]}, ${127.5 - i2 * part[i2][2]}, 255, 0.5)` : localOptions.color;
+          const z2 = part[i2][2] || 0;
+          ctx.strokeStyle = localOptions.useDepth ? `rgba(${127.5 + i2 * z2}, ${127.5 - i2 * z2}, 255, 0.5)` : localOptions.color;
           ctx.moveTo(part[i2 > 0 ? i2 - 1 : 0][0], part[i2 > 0 ? i2 - 1 : 0][1]);
           ctx.lineTo(part[i2][0], part[i2][1]);
           ctx.stroke();
@@ -110564,7 +111089,7 @@ var calculateFaceAngle = (face5, imageSize) => {
     return [x2, y2, z2];
   };
   const rotationMatrixToEulerAngle = (r2) => {
-    const [r00, r01, r02, r10, r11, r12, r20, r21, r22] = r2;
+    const [r00, _r01, _r02, r10, r11, r12, r20, r21, r22] = r2;
     let thetaX;
     let thetaY;
     let thetaZ;
@@ -110591,24 +111116,11 @@ var calculateFaceAngle = (face5, imageSize) => {
       thetaZ = 0;
     return { pitch: 2 * -thetaX, yaw: 2 * -thetaY, roll: 2 * -thetaZ };
   };
-  const meshToEulerAngle = (mesh2) => {
-    const radians = (a12, a22, b1, b2) => Math.atan2(b2 - a22, b1 - a12);
-    const angle22 = {
-      pitch: radians(mesh2[10][1], mesh2[10][2], mesh2[152][1], mesh2[152][2]),
-      yaw: radians(mesh2[33][0], mesh2[33][2], mesh2[263][0], mesh2[263][2]),
-      roll: radians(mesh2[33][0], mesh2[33][1], mesh2[263][0], mesh2[263][1])
-    };
-    return angle22;
-  };
   const mesh = face5.meshRaw;
   if (!mesh || mesh.length < 300)
     return { angle: { pitch: 0, yaw: 0, roll: 0 }, matrix: [1, 0, 0, 0, 1, 0, 0, 0, 1], gaze: { bearing: 0, strength: 0 } };
   const size2 = Math.max(face5.boxRaw[2] * imageSize[0], face5.boxRaw[3] * imageSize[1]) / 1.5;
-  const pts = [mesh[10], mesh[152], mesh[234], mesh[454]].map((pt) => [
-    pt[0] * imageSize[0] / size2,
-    pt[1] * imageSize[1] / size2,
-    pt[2]
-  ]);
+  const pts = [mesh[10], mesh[152], mesh[234], mesh[454]].map((pt) => [pt[0] * imageSize[0] / size2, pt[1] * imageSize[1] / size2, pt[2]]);
   const y_axis = normalize(subVectors(pts[1], pts[0]));
   let x_axis = normalize(subVectors(pts[3], pts[2]));
   const z_axis = normalize(crossVectors(x_axis, y_axis));
@@ -110629,7 +111141,7 @@ var calculateFaceAngle = (face5, imageSize) => {
   return { angle: angle2, matrix, gaze };
 };
 var detectFace = async (instance, input2) => {
-  var _a, _b, _c, _d, _e2, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q2, _r, _s, _t, _u, _v, _w, _x2, _y2, _z2;
+  var _a, _b, _c, _d, _e2, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q2, _r, _s, _t, _u, _v;
   let timeStamp;
   let ageRes;
   let gearRes;
@@ -110742,12 +111254,10 @@ var detectFace = async (instance, input2) => {
       descRes = { age: gearRes.age, gender: gearRes.gender, genderScore: gearRes.genderScore, race: gearRes.race };
     if (((_t = instance.config.face["mobilefacenet"]) == null ? void 0 : _t.enabled) && mobilefacenetRes)
       descRes.descriptor = mobilefacenetRes;
-    if (!((_u = instance.config.face.iris) == null ? void 0 : _u.enabled) && ((_w = (_v = faces[i2]) == null ? void 0 : _v.annotations) == null ? void 0 : _w.leftEyeIris) && ((_y2 = (_x2 = faces[i2]) == null ? void 0 : _x2.annotations) == null ? void 0 : _y2.rightEyeIris)) {
-      delete faces[i2].annotations.leftEyeIris;
-      delete faces[i2].annotations.rightEyeIris;
+    if (!((_u = instance.config.face.iris) == null ? void 0 : _u.enabled)) {
     }
     const irisSize = faces[i2].annotations && faces[i2].annotations.leftEyeIris && faces[i2].annotations.leftEyeIris[0] && faces[i2].annotations.rightEyeIris && faces[i2].annotations.rightEyeIris[0] && faces[i2].annotations.leftEyeIris.length > 0 && faces[i2].annotations.rightEyeIris.length > 0 && faces[i2].annotations.leftEyeIris[0] !== null && faces[i2].annotations.rightEyeIris[0] !== null ? Math.max(Math.abs(faces[i2].annotations.leftEyeIris[3][0] - faces[i2].annotations.leftEyeIris[1][0]), Math.abs(faces[i2].annotations.rightEyeIris[4][1] - faces[i2].annotations.rightEyeIris[2][1])) / input2.shape[2] : 0;
-    const tensor2 = ((_z2 = instance.config.face.detector) == null ? void 0 : _z2.return) ? squeeze(faces[i2].tensor) : null;
+    const tensor2 = ((_v = instance.config.face.detector) == null ? void 0 : _v.return) ? squeeze(faces[i2].tensor) : null;
     dispose(faces[i2].tensor);
     if (faces[i2].tensor)
       delete faces[i2].tensor;
@@ -110821,7 +111331,7 @@ var face2 = (res2) => {
   const gestures = [];
   for (let i2 = 0; i2 < res2.length; i2++) {
     if (res2[i2].mesh && res2[i2].mesh.length > 450) {
-      const zDiff = res2[i2].mesh[33][2] - res2[i2].mesh[263][2];
+      const zDiff = (res2[i2].mesh[33][2] || 0) - (res2[i2].mesh[263][2] || 0);
       const xDiff = res2[i2].mesh[33][0] - res2[i2].mesh[263][0];
       if (Math.abs(zDiff / xDiff) <= 0.15)
         gestures.push({ face: i2, gesture: "facing center" });
@@ -110836,7 +111346,7 @@ var face2 = (res2) => {
       const mouthOpen = Math.min(100, 500 * Math.abs(res2[i2].mesh[13][1] - res2[i2].mesh[14][1]) / Math.abs(res2[i2].mesh[10][1] - res2[i2].mesh[152][1]));
       if (mouthOpen > 10)
         gestures.push({ face: i2, gesture: `mouth ${Math.trunc(mouthOpen)}% open` });
-      const chinDepth = res2[i2].mesh[152][2];
+      const chinDepth = res2[i2].mesh[152][2] || 0;
       if (Math.abs(chinDepth) > 10)
         gestures.push({ face: i2, gesture: `head ${chinDepth < 0 ? "up" : "down"}` });
     }
@@ -110899,7 +111409,7 @@ var hand2 = (res2) => {
       }
     }
     if (fingers && fingers.length > 0) {
-      const closest = fingers.reduce((best, a6) => best.position[2] < a6.position[2] ? best : a6);
+      const closest = fingers.reduce((best, a6) => (best.position[2] || 0) < (a6.position[2] || 0) ? best : a6);
       gestures.push({ hand: i2, gesture: `${closest.name} forward` });
       const highest = fingers.reduce((best, a6) => best.position[1] < a6.position[1] ? best : a6);
       gestures.push({ hand: i2, gesture: `${highest.name} up` });
@@ -110929,18 +111439,20 @@ function calc2(newResult, config3) {
     bufferedResult.body = JSON.parse(JSON.stringify(newResult.body));
   } else {
     for (let i2 = 0; i2 < newResult.body.length; i2++) {
-      const box4 = newResult.body[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.body[i2].box[j2] + b2) / bufferedFactor);
-      const boxRaw = newResult.body[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.body[i2].boxRaw[j2] + b2) / bufferedFactor);
-      const keypoints = newResult.body[i2].keypoints.map((keypoint, j2) => ({
-        score: keypoint.score,
-        part: keypoint.part,
+      const box5 = newResult.body[i2].box.map((newBoxCoord, j2) => ((bufferedFactor - 1) * bufferedResult.body[i2].box[j2] + newBoxCoord) / bufferedFactor);
+      const boxRaw = newResult.body[i2].boxRaw.map((newBoxCoord, j2) => ((bufferedFactor - 1) * bufferedResult.body[i2].boxRaw[j2] + newBoxCoord) / bufferedFactor);
+      const keypoints = newResult.body[i2].keypoints.map((newKpt, j2) => ({
+        score: newKpt.score,
+        part: newKpt.part,
         position: [
-          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].position[0] + keypoint.position[0]) / bufferedFactor : keypoint.position[0],
-          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].position[1] + keypoint.position[1]) / bufferedFactor : keypoint.position[1]
+          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * (bufferedResult.body[i2].keypoints[j2].position[0] || 0) + (newKpt.position[0] || 0)) / bufferedFactor : newKpt.position[0],
+          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * (bufferedResult.body[i2].keypoints[j2].position[1] || 0) + (newKpt.position[1] || 0)) / bufferedFactor : newKpt.position[1],
+          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * (bufferedResult.body[i2].keypoints[j2].position[2] || 0) + (newKpt.position[2] || 0)) / bufferedFactor : newKpt.position[2]
         ],
         positionRaw: [
-          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].positionRaw[0] + keypoint.positionRaw[0]) / bufferedFactor : keypoint.position[0],
-          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * bufferedResult.body[i2].keypoints[j2].positionRaw[1] + keypoint.positionRaw[1]) / bufferedFactor : keypoint.position[1]
+          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * (bufferedResult.body[i2].keypoints[j2].positionRaw[0] || 0) + (newKpt.positionRaw[0] || 0)) / bufferedFactor : newKpt.position[0],
+          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * (bufferedResult.body[i2].keypoints[j2].positionRaw[1] || 0) + (newKpt.positionRaw[1] || 0)) / bufferedFactor : newKpt.position[1],
+          bufferedResult.body[i2].keypoints[j2] ? ((bufferedFactor - 1) * (bufferedResult.body[i2].keypoints[j2].positionRaw[2] || 0) + (newKpt.positionRaw[2] || 0)) / bufferedFactor : newKpt.position[2]
         ]
       }));
       const annotations2 = {};
@@ -110956,19 +111468,19 @@ function calc2(newResult, config3) {
         for (let j2 = 0; j2 < indexes.length - 1; j2++) {
           const pt0 = keypoints.find((kp) => kp.part === indexes[j2]);
           const pt1 = keypoints.find((kp) => kp.part === indexes[j2 + 1]);
-          if (pt0 && pt1 && pt0.score > (config3.body.minConfidence || 0) && pt1.score > (config3.body.minConfidence || 0))
+          if (pt0 && pt1)
             pt.push([pt0.position, pt1.position]);
         }
         annotations2[name] = pt;
       }
-      bufferedResult.body[i2] = { ...newResult.body[i2], box: box4, boxRaw, keypoints, annotations: annotations2 };
+      bufferedResult.body[i2] = { ...newResult.body[i2], box: box5, boxRaw, keypoints, annotations: annotations2 };
     }
   }
   if (!bufferedResult.hand || newResult.hand.length !== bufferedResult.hand.length) {
     bufferedResult.hand = JSON.parse(JSON.stringify(newResult.hand));
   } else {
     for (let i2 = 0; i2 < newResult.hand.length; i2++) {
-      const box4 = newResult.hand[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.hand[i2].box[j2] + b2) / bufferedFactor);
+      const box5 = newResult.hand[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.hand[i2].box[j2] + b2) / bufferedFactor);
       const boxRaw = newResult.hand[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.hand[i2].boxRaw[j2] + b2) / bufferedFactor);
       if (bufferedResult.hand[i2].keypoints.length !== newResult.hand[i2].keypoints.length)
         bufferedResult.hand[i2].keypoints = newResult.hand[i2].keypoints;
@@ -110982,14 +111494,14 @@ function calc2(newResult, config3) {
           annotations2[key] = newResult.hand[i2].annotations[key] && newResult.hand[i2].annotations[key][0] ? newResult.hand[i2].annotations[key].map((val, j2) => val.map((coord, k3) => ((bufferedFactor - 1) * bufferedResult.hand[i2].annotations[key][j2][k3] + coord) / bufferedFactor)) : null;
         }
       }
-      bufferedResult.hand[i2] = { ...newResult.hand[i2], box: box4, boxRaw, keypoints, annotations: annotations2 };
+      bufferedResult.hand[i2] = { ...newResult.hand[i2], box: box5, boxRaw, keypoints, annotations: annotations2 };
     }
   }
   if (!bufferedResult.face || newResult.face.length !== bufferedResult.face.length) {
     bufferedResult.face = JSON.parse(JSON.stringify(newResult.face));
   } else {
     for (let i2 = 0; i2 < newResult.face.length; i2++) {
-      const box4 = newResult.face[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.face[i2].box[j2] + b2) / bufferedFactor);
+      const box5 = newResult.face[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.face[i2].box[j2] + b2) / bufferedFactor);
       const boxRaw = newResult.face[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.face[i2].boxRaw[j2] + b2) / bufferedFactor);
       if (newResult.face[i2].rotation) {
         const rotation = { matrix: [0, 0, 0, 0, 0, 0, 0, 0, 0], angle: { roll: 0, yaw: 0, pitch: 0 }, gaze: { bearing: 0, strength: 0 } };
@@ -111003,18 +111515,18 @@ function calc2(newResult, config3) {
           bearing: ((bufferedFactor - 1) * (((_u = (_t = bufferedResult.face[i2].rotation) == null ? void 0 : _t.gaze) == null ? void 0 : _u.bearing) || 0) + (((_w = (_v = newResult.face[i2].rotation) == null ? void 0 : _v.gaze) == null ? void 0 : _w.bearing) || 0)) / bufferedFactor,
           strength: ((bufferedFactor - 1) * (((_y2 = (_x2 = bufferedResult.face[i2].rotation) == null ? void 0 : _x2.gaze) == null ? void 0 : _y2.strength) || 0) + (((_A = (_z2 = newResult.face[i2].rotation) == null ? void 0 : _z2.gaze) == null ? void 0 : _A.strength) || 0)) / bufferedFactor
         };
-        bufferedResult.face[i2] = { ...newResult.face[i2], rotation, box: box4, boxRaw };
+        bufferedResult.face[i2] = { ...newResult.face[i2], rotation, box: box5, boxRaw };
       }
-      bufferedResult.face[i2] = { ...newResult.face[i2], box: box4, boxRaw };
+      bufferedResult.face[i2] = { ...newResult.face[i2], box: box5, boxRaw };
     }
   }
   if (!bufferedResult.object || newResult.object.length !== bufferedResult.object.length) {
     bufferedResult.object = JSON.parse(JSON.stringify(newResult.object));
   } else {
     for (let i2 = 0; i2 < newResult.object.length; i2++) {
-      const box4 = newResult.object[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.object[i2].box[j2] + b2) / bufferedFactor);
+      const box5 = newResult.object[i2].box.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.object[i2].box[j2] + b2) / bufferedFactor);
       const boxRaw = newResult.object[i2].boxRaw.map((b2, j2) => ((bufferedFactor - 1) * bufferedResult.object[i2].boxRaw[j2] + b2) / bufferedFactor);
-      bufferedResult.object[i2] = { ...newResult.object[i2], box: box4, boxRaw };
+      bufferedResult.object[i2] = { ...newResult.object[i2], box: box5, boxRaw };
     }
   }
   if (newResult.persons) {
@@ -111023,7 +111535,7 @@ function calc2(newResult, config3) {
       bufferedResult.persons = JSON.parse(JSON.stringify(newPersons));
     } else {
       for (let i2 = 0; i2 < newPersons.length; i2++) {
-        bufferedResult.persons[i2].box = newPersons[i2].box.map((box4, j2) => ((bufferedFactor - 1) * bufferedResult.persons[i2].box[j2] + box4) / bufferedFactor);
+        bufferedResult.persons[i2].box = newPersons[i2].box.map((box5, j2) => ((bufferedFactor - 1) * bufferedResult.persons[i2].box[j2] + box5) / bufferedFactor);
       }
     }
   }
@@ -111110,10 +111622,10 @@ function join2(faces, bodies, hands, gestures, shape) {
     }
     const x2 = [];
     const y2 = [];
-    const extractXY = (box4) => {
-      if (box4 && box4.length === 4) {
-        x2.push(box4[0], box4[0] + box4[2]);
-        y2.push(box4[1], box4[1] + box4[3]);
+    const extractXY = (box5) => {
+      if (box5 && box5.length === 4) {
+        x2.push(box5[0], box5[0] + box5[2]);
+        y2.push(box5[1], box5[1] + box5[3]);
       }
     };
     extractXY((_k = person2.face) == null ? void 0 : _k.box);
@@ -111891,11 +112403,13 @@ async function warmupCanvas(instance) {
       img = new Image();
     else if (env2.Image)
       img = new env2.Image();
+    else
+      return;
     img.onload = async () => {
       const canvas3 = canvas(img.naturalWidth, img.naturalHeight);
       if (!canvas3) {
         log("Warmup: Canvas not found");
-        resolve({});
+        resolve(void 0);
       } else {
         const ctx = canvas3.getContext("2d");
         if (ctx)
@@ -111908,7 +112422,7 @@ async function warmupCanvas(instance) {
     if (src)
       img.src = src;
     else
-      resolve(null);
+      resolve(void 0);
   });
 }
 async function warmupNode(instance) {
@@ -111916,12 +112430,10 @@ async function warmupNode(instance) {
   let img;
   if (instance.config.warmup === "face")
     img = atob2(face3);
-  if (instance.config.warmup === "body" || instance.config.warmup === "full")
+  else
     img = atob2(body3);
-  if (!img)
-    return null;
   let res2;
-  if (false) {
+  if ("node" in tfjs_esm_exports) {
     const data = (void 0).decodeJpeg(img);
     const expanded = data.expandDims(0);
     instance.tf.dispose(data);
@@ -111938,8 +112450,9 @@ async function warmup(instance, userConfig) {
   instance.state = "warmup";
   if (userConfig)
     instance.config = mergeDeep(instance.config, userConfig);
-  if (!instance.config.warmup || instance.config.warmup.length === 0 || instance.config.warmup === "none")
-    return { error: "null" };
+  if (!instance.config.warmup || instance.config.warmup.length === 0 || instance.config.warmup === "none") {
+    return { face: [], body: [], hand: [], gesture: [], object: [], performance: instance.performance, timestamp: now2(), persons: [], error: null };
+  }
   let res2;
   return new Promise(async (resolve) => {
     if (typeof createImageBitmap === "function")
@@ -112011,11 +112524,11 @@ var Human = class {
         (_a = this.events) == null ? void 0 : _a.dispatchEvent(new Event(event));
     });
     this.env = env2;
-    config.wasmPath = version_core.includes("-") ? "https://vladmandic.github.io/tfjs/dist/" : `https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${version_core}/dist/`;
+    config.wasmPath = version8["tfjs-core"].includes("-") ? "https://vladmandic.github.io/tfjs/dist/" : `https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${version}/dist/`;
     config.modelBasePath = env2.browser ? "../models/" : "file://models/";
     config.backend = env2.browser ? "humangl" : "tensorflow";
-    this.version = version;
-    Object.defineProperty(this, "version", { value: version });
+    this.version = version9;
+    Object.defineProperty(this, "version", { value: version9 });
     this.config = JSON.parse(JSON.stringify(config));
     Object.seal(this.config);
     if (userConfig)
@@ -112083,7 +112596,7 @@ var Human = class {
       if (this.config.debug)
         log(`version: ${this.version}`);
       if (this.config.debug)
-        log(`tfjs version: ${this.tf.version_core}`);
+        log(`tfjs version: ${this.tf.version["tfjs-core"]}`);
       if (!await check(this))
         log("error: backend check failed");
       await ready();
@@ -112470,7 +112983,7 @@ var humanConfig = {
   gesture: { enabled: false },
   segmentation: { enabled: false }
 };
-async function log3(...msg) {
+async function log6(...msg) {
   console.log(...msg);
   const div3 = document.getElementById("log");
   div3.innerText = msg.join(" ");
@@ -112509,14 +113022,14 @@ async function loadVRM(f2) {
       ye.from(gltf).then((vrmInstance) => resolve(vrmInstance));
     }, () => {
     }, (error) => {
-      log3("error:", error);
+      log6("error:", error);
       reject(error);
     });
   });
 }
 async function initHuman() {
   human = new Human(humanConfig);
-  log3(`human ${human.version}`);
+  log6(`human ${human.version}`);
   await human.load();
   await human.warmup();
 }
@@ -112586,16 +113099,16 @@ async function startupAnimation() {
 async function main() {
   await setupScene();
   vrm = await loadVRM(model19);
-  log3("vrm model:", model19);
+  log6("vrm model:", model19);
   scene.add(vrm.scene);
   if (!vrm.humanoid)
     return;
   renderer.render(scene, camera);
   await initHuman();
   await initWebCam();
-  log3("vrm schema", h);
-  log3("vrm scene:", vrm);
-  log3("vrm pose:", vrm.humanoid.getPose());
+  log6("vrm schema", h);
+  log6("vrm scene:", vrm);
+  log6("vrm pose:", vrm.humanoid.getPose());
   window["light"] = light;
   window["camera"] = camera;
   window["human"] = human;
@@ -112604,7 +113117,7 @@ async function main() {
   await startupAnimation();
   animateFrame();
   detectionLoop();
-  log3("");
+  log6("");
 }
 window.onload = main;
 /*! (c) 2019-2021 pixiv Inc. - https://github.com/pixiv/three-vrm/blob/release/LICENSE */

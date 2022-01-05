@@ -1,7 +1,7 @@
 {
   "name": "human-vrm",
   "version": "0.2.7",
-  "description": "VR Humanoid Avatar using Human library",
+  "description": "VR Humanoid Avatar using Human library and ThreeJS",
   "main": "",
   "engines": {
     "node": ">=14.0.0"
@@ -22,17 +22,21 @@
   },
   "keywords": [
     "human",
-    "person",
+    "human-library",
+    "face-detection",
+    "body-tracking",
+    "hand-tracking",
+    "avatar",
+    "skeleton",
     "vrm",
-    "tensorflow",
-    "tensorflowjs",
+    "vrm-model",
     "tfjs",
-    "three"
+    "tensorflowjs"
   ],
   "dependencies": {
     "@pixiv/three-vrm": "^0.6.7",
     "@vladmandic/build": "^0.6.6",
-    "@vladmandic/human": "github:vladmandic/human",
+    "@vladmandic/human": "^2.5.7",
     "@vladmandic/pilogger": "^0.3.5",
     "three": "^0.135.0"
   },
