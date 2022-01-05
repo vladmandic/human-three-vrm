@@ -1,7 +1,7 @@
 {
   "name": "human-vrm",
   "version": "0.2.7",
-  "description": "VR Humanoid Avatar using Human library and ThreeJS",
+  "description": "Realtime VRM Humanoid Avatar Animation using Human library and ThreeJS",
   "main": "",
   "engines": {
     "node": ">=14.0.0"
