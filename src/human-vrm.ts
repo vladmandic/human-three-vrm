@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import Stats from 'three/examples/jsm/libs/stats.module';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { VRM, VRMSchema, VRMUtils } from '@pixiv/three-vrm'; // npm package <https://github.com/pixiv/three-vrm>
 import { Human, Result, Config } from '@vladmandic/human';
 import * as vrmCalc from './vrm-calculate';
@@ -21,7 +21,6 @@ let camera: THREE.PerspectiveCamera;
 let scene: THREE.Scene;
 let light: THREE.DirectionalLight;
 let clock: THREE.Clock;
-let stats: THREE.Stats;
 let human: Human;
 let res: Result;
 
@@ -80,9 +79,6 @@ async function setupScene() {
   loader.load('../assets/background.jpg', (texture) => scene.background = texture);
   // clock
   clock = new THREE.Clock();
-  // stats
-  stats = Stats();
-  document.body.appendChild(stats.dom);
   // initial render
   renderer.render(scene, camera);
 }
@@ -132,7 +128,6 @@ async function animateFrame() {
 
   vrm.update(deltaTime);
   renderer.render(scene, camera);
-  stats.update();
   requestAnimationFrame(animateFrame);
 }
 
