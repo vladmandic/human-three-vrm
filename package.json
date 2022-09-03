@@ -35,7 +35,7 @@
   ],
   "dependencies": {
     "@pixiv/three-vrm": "^0.6.11",
-    "@types/three": "^0.140.0",
+    "@types/three": "^0.143.0",
     "@vladmandic/build": "^0.7.4",
     "@vladmandic/human": "^2.7.3",
     "@vladmandic/pilogger": "^0.4.4",
