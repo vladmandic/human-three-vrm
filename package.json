@@ -35,22 +35,22 @@
   ],
   "dependencies": {
     "@pixiv/three-vrm": "^0.6.11",
-    "@types/three": "^0.143.0",
-    "@vladmandic/build": "^0.7.4",
-    "@vladmandic/human": "^2.7.3",
-    "@vladmandic/pilogger": "^0.4.4",
-    "three": "^0.143.0"
+    "@types/three": "^0.144.0",
+    "@vladmandic/build": "^0.7.12",
+    "@vladmandic/human": "^2.10.2",
+    "@vladmandic/pilogger": "^0.4.6",
+    "three": "^0.144.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.26.0",
-    "@typescript-eslint/parser": "^5.26.0",
-    "esbuild": "^0.14.39",
-    "eslint": "^8.16.0",
+    "@typescript-eslint/eslint-plugin": "^5.37.0",
+    "@typescript-eslint/parser": "^5.37.0",
+    "esbuild": "^0.15.7",
+    "eslint": "^8.23.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-json": "^3.1.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.0.0",
-    "typescript": "^4.7.2"
+    "eslint-plugin-promise": "^6.0.1",
+    "typescript": "^4.8.3"
   }
 }
