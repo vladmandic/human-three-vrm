@@ -31,7 +31,7 @@
   "build": {
     "global": {
       "target": "es2018",
-      "banner": { "js": "/*\n  Human-VRM\n  homepage: <https://github.com/vladmandic/human-vrm>\n  author: <https://github.com/vladmandic>'\n*/\n" }
+      "banner": { "js": "/*\n  Human-VRM\n  homepage: <https://github.com/vladmandic/human-three-vrm>\n  author: <https://github.com/vladmandic>'\n*/\n" }
     },
     "targets": [
       {

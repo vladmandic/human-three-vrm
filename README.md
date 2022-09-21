@@ -1,7 +1,7 @@
-![Git Version](https://img.shields.io/github/package-json/v/vladmandic/human-vrm?style=flat-square&svg=true&label=git)
-![Last Commit](https://img.shields.io/github/last-commit/vladmandic/human-vrm?style=flat-square&svg=true)
-![License](https://img.shields.io/github/license/vladmandic/human-vrm?style=flat-square&svg=true)
-![GitHub Status Checks](https://img.shields.io/github/checks-status/vladmandic/human-vrm/main?style=flat-square&svg=true)
+![Git Version](https://img.shields.io/github/package-json/v/vladmandic/human-three-vrm?style=flat-square&svg=true&label=git)
+![Last Commit](https://img.shields.io/github/last-commit/vladmandic/human-three-vrm?style=flat-square&svg=true)
+![License](https://img.shields.io/github/license/vladmandic/human-three-vrm?style=flat-square&svg=true)
+![GitHub Status Checks](https://img.shields.io/github/checks-status/vladmandic/human-three-vrm/main?style=flat-square&svg=true)
 
 # VR Humanoid Avatar using Human library
 

@@ -1,5 +1,5 @@
 {
-  "name": "human-vrm",
+  "name": "human-three-vrm",
   "version": "0.2.7",
   "description": "Realtime VRM Humanoid Avatar Animation using Human library and ThreeJS",
   "main": "",
@@ -13,12 +13,12 @@
   "author": "Vladimir Mandic <mandic00@live.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vladmandic/human-vrm/issues"
+    "url": "https://github.com/vladmandic/human-three-vrm/issues"
   },
-  "homepage": "https://vladmandic.github.io/human/src/human-vrm.html",
+  "homepage": "https://vladmandic.github.io/human-three-vrm/src/human-vrm.html",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vladmandic/human-vrm.git"
+    "url": "git+https://github.com/vladmandic/human-three-vrm.git"
   },
   "keywords": [
     "human",
