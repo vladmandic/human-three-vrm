@@ -39,7 +39,7 @@
     "@vladmandic/build": "^0.7.12",
     "@vladmandic/human": "^2.10.2",
     "@vladmandic/pilogger": "^0.4.6",
-    "three": "^0.144.0"
+    "three": "^0.145.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.37.0",
