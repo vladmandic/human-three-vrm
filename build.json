@@ -22,8 +22,8 @@
   "serve": {
     "sslKey": "node_modules/@vladmandic/build/cert/https.key",
     "sslCrt": "node_modules/@vladmandic/build/cert/https.crt",
-    "httpPort": 10030,
-    "httpsPort": 10031,
+    "httpPort": 8000,
+    "httpsPort": 8001,
     "documentRoot": ".",
     "defaultFolder": "src",
     "defaultFile": "human-vrm.html"

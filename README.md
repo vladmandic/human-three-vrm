@@ -47,8 +47,8 @@ Implementation in [TypeScript](https://www.typescriptlang.org/) using [`Human`](
 2021-09-16 09:50:30 INFO:  Environment: { profile: 'development', config: 'build.json', tsconfig: true, eslintrc: true, git: true }
 2021-09-16 09:50:30 INFO:  Toolchain: { build: '0.4.1', esbuild: '0.12.28', typescript: '4.4.3', typedoc: '0.21.9', eslint: '7.32.0' }
 2021-09-16 09:50:30 INFO:  Build: { profile: 'development', steps: [ 'serve', 'watch', 'compile' ] }
-2021-09-16 09:50:30 STATE: WebServer: { ssl: false, port: 10030, root: '.' }
-2021-09-16 09:50:30 STATE: WebServer: { ssl: true, port: 10031, root: '.', sslKey: 'node_modules/@vladmandic/build/cert/https.key', sslCrt: 'node_modules/@vladmandic/build/cert/https.crt' }
+2021-09-16 09:50:30 STATE: WebServer: { ssl: false, port: 8000, root: '.' }
+2021-09-16 09:50:30 STATE: WebServer: { ssl: true, port: 8001, root: '.', sslKey: 'node_modules/@vladmandic/build/cert/https.key', sslCrt: 'node_modules/@vladmandic/build/cert/https.crt' }
 2021-09-16 09:50:30 STATE: Watch: { locations: [ 'src/**', 'src/**' ] }
 2021-09-16 09:50:31 STATE: Compile: { name: 'human-vrm', format: 'esm', platform: 'browser', input: 'src/human-vrm.ts', output: 'dist/human-vrm.esm.js', files: 2, inputBytes: 17217, outputBytes: 3780124 }
 2021-09-16 09:50:31 INFO:  Listening...
