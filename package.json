@@ -1,6 +1,6 @@
 {
   "name": "human-three-vrm",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Realtime VRM Humanoid Avatar Animation using Human library and ThreeJS",
   "main": "",
   "engines": {
