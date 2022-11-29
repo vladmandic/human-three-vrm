@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { VRMSchema } from '@pixiv/three-vrm'; // npm package <https://github.com/pixiv/three-vrm>
+import { VRM, VRMHumanBone, VRMExpressionPresetName } from '@pixiv/three-vrm';
+import type { Result } from '@vladmandic/human';
 
 // shared variables
 let leanBody = 0; // face angle is relative to body
@@ -12,7 +13,7 @@ const angle = (pt1, pt2) => {
   return radians;
 };
 
-async function updateBody(vrm, res) {
+async function updateBody(vrm: VRM, res: Result) {
   const body = (res && res.body) ? res.body[0] : null;
   if (!body) return;
   const part = (what) => {
@@ -24,27 +25,27 @@ async function updateBody(vrm, res) {
   const posLeftShoulder = part('leftShoulder');
   const posRightShoulder = part('rightShoulder');
   leanBody = angle(posRightShoulder, posLeftShoulder);
-  if (posLeftShoulder && posRightShoulder) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Chest).rotation.z = leanBody;
+  if (posLeftShoulder && posRightShoulder) (vrm.humanoid.getNormalizedBone('chest') as VRMHumanBone).node.rotation.z = leanBody;
 
   // arms
   const posRightElbow = part('rightElbow');
-  if (posRightShoulder && posRightElbow) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.y = angle(posRightElbow, posRightShoulder);
+  if (posRightShoulder && posRightElbow) (vrm.humanoid.getNormalizedBone('rightUpperArm') as VRMHumanBone).node.rotation.y = angle(posRightElbow, posRightShoulder);
   const posLeftElbow = part('leftElbow');
-  if (posLeftShoulder && posLeftElbow) vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftUpperArm).rotation.y = angle(posLeftShoulder, posLeftElbow);
+  if (posLeftShoulder && posLeftElbow) (vrm.humanoid.getNormalizedBone('leftUpperArm') as VRMHumanBone).node.rotation.y = angle(posLeftShoulder, posLeftElbow);
 
   // elbows
   posRightWrist = part('rightWrist');
-  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightLowerArm).rotation.y = (posRightWrist && posRightElbow && posRightShoulder) ? angle(posRightWrist, posRightElbow) - angle(posRightElbow, posRightShoulder) : 0;
+  (vrm.humanoid.getNormalizedBone('rightLowerArm') as VRMHumanBone).node.rotation.y = (posRightWrist && posRightElbow && posRightShoulder) ? angle(posRightWrist, posRightElbow) - angle(posRightElbow, posRightShoulder) : 0;
   posLeftWrist = part('leftWrist');
-  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftLowerArm).rotation.y = (posLeftWrist && posLeftElbow) ? angle(posLeftElbow, posLeftWrist) - angle(posLeftShoulder, posLeftElbow) : 0;
+  (vrm.humanoid.getNormalizedBone('leftLowerArm') as VRMHumanBone).node.rotation.y = (posLeftWrist && posLeftElbow) ? angle(posLeftElbow, posLeftWrist) - angle(posLeftShoulder, posLeftElbow) : 0;
 
   // legs
   const posRightHip = part('rightHip');
   const posRightKnee = part('rightKnee');
-  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperLeg).rotation.z = (posRightHip && posRightKnee) ? angle(posRightHip, posRightKnee) - (Math.PI / 2) : 0;
+  (vrm.humanoid.getNormalizedBone('rightUpperLeg') as VRMHumanBone).node.rotation.z = (posRightHip && posRightKnee) ? angle(posRightHip, posRightKnee) - (Math.PI / 2) : 0;
   const posLeftHip = part('leftHip');
   const posLeftKnee = part('leftKnee');
-  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftUpperLeg).rotation.z = (posLeftHip && posLeftKnee) ? angle(posLeftHip, posLeftKnee) - (Math.PI / 2) : 0;
+  (vrm.humanoid.getNormalizedBone('leftUpperLeg') as VRMHumanBone).node.rotation.z = (posLeftHip && posLeftKnee) ? angle(posLeftHip, posLeftKnee) - (Math.PI / 2) : 0;
 
   // knees
   /*
@@ -55,7 +56,7 @@ async function updateBody(vrm, res) {
   */
 }
 
-async function updateHands(vrm, res) {
+async function updateHands(vrm: VRM, res) {
   const hands = (res && res.hand) ? res.hand : [];
   for (const hand of hands) {
     const distanceLeft = posLeftWrist ? Math.sqrt((hand.boxRaw[0] - posLeftWrist[0]) ** 2) + ((hand.boxRaw[1] - posLeftWrist[1]) ** 2) : Number.MAX_VALUE;
@@ -65,7 +66,7 @@ async function updateHands(vrm, res) {
 
     const handSize = Math.sqrt(((hand.box[2] || 1) ** 2) + (hand.box[3] || 1) ** 2) / Math.PI;
     const handRotation = (hand.annotations.pinky[0][2] - hand.annotations.thumb[0][2]) / handSize; // normalized z-coord of root of pinky and thumb fingers
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[left ? 'LeftHand' : 'RightHand']).rotation.z = -handRotation * Math.PI / 2; // rotate palm towards camera
+    (vrm.humanoid.getNormalizedBone(left ? 'leftHand' : 'rightHand') as VRMHumanBone).node.rotation.z = -handRotation * Math.PI / 2; // rotate palm towards camera
 
     // finger curls
     const getCurl = (finger) => {
@@ -77,75 +78,80 @@ async function updateHands(vrm, res) {
 
     let val;
     val = getCurl('index');
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}IndexIntermediate`]).rotation.z = val;
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}IndexProximal`]).rotation.z = val;
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}IndexDistal`]).rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}IndexIntermediate`) as VRMHumanBone).node.rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}IndexProximal`) as VRMHumanBone).node.rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}IndexDistal`) as VRMHumanBone).node.rotation.z = val;
     val = getCurl('middle');
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}MiddleIntermediate`]).rotation.z = val;
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}MiddleProximal`]).rotation.z = val;
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}MiddleDistal`]).rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}MiddleIntermediate`) as VRMHumanBone).node.rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}MiddleProximal`) as VRMHumanBone).node.rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}MiddleDistal`) as VRMHumanBone).node.rotation.z = val;
     val = getCurl('ring');
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}RingIntermediate`]).rotation.z = val;
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}RingProximal`]).rotation.z = val;
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}RingDistal`]).rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}RingIntermediate`) as VRMHumanBone).node.rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}RingProximal`) as VRMHumanBone).node.rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}RingDistal`) as VRMHumanBone).node.rotation.z = val;
     val = getCurl('pinky');
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}LittleIntermediate`]).rotation.z = val;
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}LittleProximal`]).rotation.z = val;
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}LittleDistal`]).rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}LittleIntermediate`) as VRMHumanBone).node.rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}LittleProximal`) as VRMHumanBone).node.rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}LittleDistal`) as VRMHumanBone).node.rotation.z = val;
     val = getCurl('thumb');
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}ThumbIntermediate`]).rotation.x = 2 * -val;
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}ThumbProximal`]).rotation.x = 2 * -val;
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}ThumbDistal`]).rotation.x = 2 * -val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}ThumbMetacarpal`) as VRMHumanBone).node.rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}ThumbProximal`) as VRMHumanBone).node.rotation.z = val;
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}ThumbDistal`) as VRMHumanBone).node.rotation.z = val;
 
     // palm wave
-    const q = angle(hand.annotations.index[3], hand.annotations.palm[0]) - (Math.PI / 2);
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName[`${left ? 'Left' : 'Right'}Hand`]).rotation.y = q;
+    val = angle(hand.annotations.index[3], hand.annotations.palm[0]) - (Math.PI / 2);
+    (vrm.humanoid.getNormalizedBone(`${left ? 'left' : 'right'}Hand`) as VRMHumanBone).node.rotation.y = val;
   }
 }
 
-async function updateFace(vrm, res) {
+async function updateFace(vrm: VRM, res: Result) {
   const face = (res && res.face) ? res.face[0] : null;
   if (!face) return;
   // face angles
   const faceAngle = face.rotation?.angle || { roll: 0, yaw: 0, pitch: 0 };
-  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.x = -faceAngle.pitch / 2;
-  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.y = -faceAngle.yaw / 2;
-  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Head).rotation.z = faceAngle.roll / 2 - leanBody;
-  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.x = -faceAngle.pitch / 2;
-  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.y = -faceAngle.yaw / 2;
-  vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Neck).rotation.z = (faceAngle.roll / 2 - leanBody) / 2;
-  // eye blinks
-  if (face.mesh.length > 300) {
-    const blinkL = 3 * (Math.abs(face.mesh[374][1] - face.mesh[386][1]) / Math.abs(face.mesh[443][1] - face.mesh[450][1]) - 0.15); // center of eye inner lid y coord div center of wider eye border y coord
-    const blinkR = 3 * (Math.abs(face.mesh[145][1] - face.mesh[159][1]) / Math.abs(face.mesh[223][1] - face.mesh[230][1]) - 0.15); // center of eye inner lid y coord div center of wider eye border y coord
-    vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.BlinkL, 1 - blinkL);
-    vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.BlinkR, 1 - blinkR);
-  }
-  // emotion reset
-  vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Fun, 0);
-  vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Angry, 0);
-  vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Sorrow, 0);
-  vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Neutral, 0);
-  // emotion set
-  const emotion = face.emotion?.reduce((prev, curr) => (prev.score > curr.score ? prev : curr));
-  switch (emotion?.emotion || '') {
-    case 'happy': vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Fun, 1); break;
-    case 'angry': vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Angry, 1); break;
-    case 'sad': vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Sorrow, 1); break;
-    default: vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Neutral, 1);
-  }
-  // mouth open
-  if (face.mesh.length > 300) {
-    const mouth = Math.min(1, 5 * Math.abs(face.mesh[13][1] - face.mesh[14][1]) / Math.abs(face.mesh[10][1] - face.mesh[152][1]));
-    vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.O, mouth);
-  }
+  (vrm.humanoid.getNormalizedBone('head') as VRMHumanBone).node.rotation.x = -faceAngle.pitch / 2;
+  (vrm.humanoid.getNormalizedBone('head') as VRMHumanBone).node.rotation.y = -faceAngle.yaw / 2;
+  (vrm.humanoid.getNormalizedBone('head') as VRMHumanBone).node.rotation.z = faceAngle.roll / 2 - leanBody;
+  (vrm.humanoid.getNormalizedBone('neck') as VRMHumanBone).node.rotation.x = -faceAngle.pitch / 2;
+  (vrm.humanoid.getNormalizedBone('neck') as VRMHumanBone).node.rotation.y = -faceAngle.yaw / 2;
+  (vrm.humanoid.getNormalizedBone('neck') as VRMHumanBone).node.rotation.z = (faceAngle.roll / 2 - leanBody) / 2;
   // eye gaze direction
   const gaze = face.rotation?.gaze;
   if (gaze) {
     const target = new THREE.Object3D();
     if (gaze) target.position.x = 10 * gaze.strength * Math.sin(gaze.bearing);
     if (gaze) target.position.y = 10 * gaze.strength * Math.cos(gaze.bearing);
-    vrm.lookAt.target = target;
+    if (vrm.lookAt) vrm.lookAt.target = target;
+  }
+  if (!vrm.expressionManager) return;
+  // eye blinks
+  if (face.mesh.length > 300) {
+    const blinkL = 3 * (Math.abs(face.mesh[374][1] - face.mesh[386][1]) / Math.abs(face.mesh[443][1] - face.mesh[450][1]) - 0.15); // center of eye inner lid y coord div center of wider eye border y coord
+    const blinkR = 3 * (Math.abs(face.mesh[145][1] - face.mesh[159][1]) / Math.abs(face.mesh[223][1] - face.mesh[230][1]) - 0.15); // center of eye inner lid y coord div center of wider eye border y coord
+    vrm.expressionManager.setValue(VRMExpressionPresetName.BlinkLeft, 1 - blinkL);
+    vrm.expressionManager.setValue(VRMExpressionPresetName.BlinkRight, 1 - blinkR);
+  }
+  // emotion reset
+  vrm.expressionManager.setValue(VRMExpressionPresetName.Happy, 0);
+  vrm.expressionManager.setValue(VRMExpressionPresetName.Angry, 0);
+  vrm.expressionManager.setValue(VRMExpressionPresetName.Sad, 0);
+  vrm.expressionManager.setValue(VRMExpressionPresetName.Surprised, 0);
+  vrm.expressionManager.setValue(VRMExpressionPresetName.Relaxed, 0);
+  vrm.expressionManager.setValue(VRMExpressionPresetName.Neutral, 0);
+  // emotion set
+  const emotion = face.emotion?.reduce((prev, curr) => (prev.score > curr.score ? prev : curr));
+  switch (emotion?.emotion || '') {
+    case 'happy': vrm.expressionManager.setValue(VRMExpressionPresetName.Happy, 1); break;
+    case 'angry': vrm.expressionManager.setValue(VRMExpressionPresetName.Angry, 1); break;
+    case 'sad': vrm.expressionManager.setValue(VRMExpressionPresetName.Sad, 1); break;
+    case 'surprise': vrm.expressionManager.setValue(VRMExpressionPresetName.Surprised, 1); break;
+    case 'neutral': vrm.expressionManager.setValue(VRMExpressionPresetName.Neutral, 1); break;
+    default: break;
+  }
+  // mouth open
+  if (face.mesh.length > 300) {
+    const mouth = Math.min(1, 5 * Math.abs(face.mesh[13][1] - face.mesh[14][1]) / Math.abs(face.mesh[10][1] - face.mesh[152][1]));
+    vrm.expressionManager.setValue(VRMExpressionPresetName.Oh, mouth);
   }
 }
 

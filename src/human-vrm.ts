@@ -1,12 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-// import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { VRM, VRMSchema, VRMUtils } from '@pixiv/three-vrm'; // npm package <https://github.com/pixiv/three-vrm>
+import { VRM, VRMHumanBone, VRMUtils, VRMLoaderPlugin } from '@pixiv/three-vrm'; // npm package <https://github.com/pixiv/three-vrm>
 import { Human, Result, Config } from '@vladmandic/human';
 import * as vrmCalc from './vrm-calculate';
-
-// import { VRM, VRMSchema, VRMUtils } from '../assets/three-vrm.module'; // custom build from 1.0 beta branch <https://github.com/pixiv/three-vrm/tree/1.0>
 
 const model = '../assets/victoria-jeans.vrm';
 // const model = '../assets/downloads/base.vrm';
@@ -25,7 +22,7 @@ let human: Human;
 let res: Result;
 
 const humanConfig: Partial<Config> = {
-  modelBasePath: 'https://vladmandic.github.io/human/models',
+  modelBasePath: 'https://vladmandic.github.io/human-models/models',
   face: { enabled: true,
     detector: { return: false, rotation: true },
     mesh: { enabled: true },
@@ -41,8 +38,7 @@ const humanConfig: Partial<Config> = {
 };
 
 async function log(...msg) {
-  // eslint-disable-next-line no-console
-  console.log(...msg);
+  console.log(...msg); // eslint-disable-line no-console
   const div = document.getElementById('log') as HTMLElement;
   div.innerText = msg.join(' ');
 }
@@ -55,7 +51,6 @@ async function setupScene() {
   // renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
-  // document.body.appendChild(renderer.domElement);
   // camera
   camera = new THREE.PerspectiveCamera(22.0, canvas.width / canvas.height, 0.1, 20.0);
   camera.position.set(0.0, 0.9, 15.0);
@@ -85,18 +80,23 @@ async function setupScene() {
 
 async function loadVRM(f): Promise<VRM> {
   const loader = new GLTFLoader();
+  loader.register((parser) => new VRMLoaderPlugin(parser));
   return new Promise((resolve, reject) => {
     loader.load(
       f,
       (gltf) => {
+        const vrmInstance = gltf.userData.vrm;
+        VRMUtils.removeUnnecessaryVertices(gltf.scene);
         VRMUtils.removeUnnecessaryJoints(gltf.scene);
-        VRM.from(gltf).then((vrmInstance) => resolve(vrmInstance));
+        vrmInstance.scene.traverse((obj) => { obj.frustumCulled = false; });
+        log('vrm instance', vrmInstance);
+        resolve(vrmInstance);
       },
-      () => {
-        // log('loading vrm model:', progress);
+      (progress) => {
+        log('vrm load', progress.loaded);
       },
       (error) => {
-        log('error:', error);
+        log('vrm load error', error);
         reject(error);
       },
     );
@@ -160,15 +160,15 @@ async function initWebCam() {
 
 async function startupAnimation() { // rotate to face camera
   const wait = async (t) => new Promise((resolve) => { setTimeout(() => resolve(true), t); });
-  if (!vrm.humanoid || !vrm.blendShapeProxy) return;
+  if (!vrm.humanoid) return;
   while (clock.elapsedTime < Math.PI) {
     const deltaTime = clock.getDelta();
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.Hips).rotation.y = clock.elapsedTime; // rotate body to face camera
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftUpperArm).rotation.x = clock.elapsedTime / 2; // turn palms towards camera
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.x = clock.elapsedTime / 2; // turn palms towards camera
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.LeftUpperArm).rotation.y = clock.elapsedTime / 3; // lower arms
-    vrm.humanoid.getBoneNode(VRMSchema.HumanoidBoneName.RightUpperArm).rotation.y = -clock.elapsedTime / 3; // lower arms
-    vrm.blendShapeProxy.setValue(VRMSchema.BlendShapePresetName.Blink, Math.PI - clock.elapsedTime); // open eyes
+    (vrm.humanoid.getNormalizedBone('hips') as VRMHumanBone).node.rotation.y = clock.elapsedTime; // rotate body to face camera
+    (vrm.humanoid.getNormalizedBone('leftUpperArm') as VRMHumanBone).node.rotation.x = clock.elapsedTime / 2; // turn palms towards camera
+    (vrm.humanoid.getNormalizedBone('rightUpperArm') as VRMHumanBone).node.rotation.x = clock.elapsedTime / 2; // turn palms towards camera
+    (vrm.humanoid.getNormalizedBone('leftUpperArm') as VRMHumanBone).node.rotation.y = clock.elapsedTime / 3; // lower arms
+    (vrm.humanoid.getNormalizedBone('rightUpperArm') as VRMHumanBone).node.rotation.y = clock.elapsedTime / 3; // lower arms
+    (vrm.humanoid.getNormalizedBone('hips') as VRMHumanBone).node.rotation.y = clock.elapsedTime;
     light.position.set(Math.cos(Math.PI * clock.elapsedTime), Math.sin(Math.PI * clock.elapsedTime), Math.sin(Math.PI * clock.elapsedTime) + Math.cos(Math.PI * clock.elapsedTime)).normalize(); // rotate light
     camera.position.set(0.0, 0.9, 10 * (1 - (clock.elapsedTime / Math.PI)) + 5.0); // zoom in
     vrm.update(deltaTime);
@@ -187,16 +187,14 @@ async function main() {
 
   await initHuman(); // initialize human library
   await initWebCam(); // initialize webcam
-  log('vrm schema', VRMSchema);
   log('vrm scene:', vrm);
-  log('vrm pose:', vrm.humanoid.getPose()); // print all pose details
+  log('vrm pose:', vrm.humanoid.getRawPose()); // print all pose details
 
   // debug: export globals so they can be accessed from browser inspector
   window['light'] = light;
   window['camera'] = camera;
   window['human'] = human;
   window['vrm'] = vrm;
-  window['VRMSchema'] = VRMSchema;
 
   await startupAnimation();
   animateFrame(); // starts animation draw loop
