@@ -5,7 +5,7 @@ import { VRM, VRMHumanBone, VRMUtils, VRMLoaderPlugin } from '@pixiv/three-vrm';
 import { Human, Result, Config } from '@vladmandic/human';
 import * as vrmCalc from './vrm-calculate';
 
-const model = '../assets/victoria-jeans.vrm';
+const model = '../assets/CC_Model_Clonex.vrm';
 // const model = '../assets/downloads/base.vrm';
 // const model = '../assets/downloads/mikumiku.vrm';
 // const model = '../assets/downloads/chim.vrm';
