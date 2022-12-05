@@ -74086,7 +74086,7 @@ async function setupScene() {
   const gridHelper = new GridHelper(100, 100);
   scene.add(gridHelper);
   const loader = new TextureLoader();
-  loader.load("../assets/background.jpg", (texture) => scene.background = texture);
+  loader.load("../assets/2.png", (texture) => scene.background = texture);
   clock = new Clock();
   renderer.render(scene, camera);
 }

@@ -71,7 +71,7 @@ async function setupScene() {
   scene.add(gridHelper);
   // background
   const loader = new THREE.TextureLoader();
-  loader.load('../assets/background.jpg', (texture) => scene.background = texture);
+  loader.load('../assets/2.png', (texture) => scene.background = texture);
   // clock
   clock = new THREE.Clock();
   // initial render
